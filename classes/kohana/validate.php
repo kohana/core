@@ -504,7 +504,7 @@ class Kohana_Validate extends ArrayObject {
 	 * @param   array   extra parameters for the callback
 	 * @return  $this
 	 */
-	public function add_filter($field, $filter, array $params = NULL)
+	public function filter($field, $filter, array $params = NULL)
 	{
 		if ($field !== TRUE AND ! isset($this->labels[$field]))
 		{
@@ -531,7 +531,7 @@ class Kohana_Validate extends ArrayObject {
 	 * @param   array   extra parameters for the callback
 	 * @return  $this
 	 */
-	public function add_rule($field, $rule, array $params = NULL)
+	public function rule($field, $rule, array $params = NULL)
 	{
 		if ($field !== TRUE AND ! isset($this->labels[$field]))
 		{
@@ -558,7 +558,7 @@ class Kohana_Validate extends ArrayObject {
 	 * @param   mixed   callback to add
 	 * @return  $this
 	 */
-	public function add_callback($field, $callback)
+	public function callback($field, $callback)
 	{
 		if ( ! isset($this->callbacks[$field]))
 		{
