@@ -43,6 +43,7 @@ class Kohana_Route {
 	 */
 	public static $default_action = 'index';
 
+	// List of route objects
 	protected static $_routes = array();
 
 	/**
@@ -54,10 +55,13 @@ class Kohana_Route {
 	public static function __set_state(array $values)
 	{
 		// Reconstruct the route
-		$route = new Route($values['uri'], $values['regex']);
+		$route = new Route;
 
-		// Set defaults
-		$route->defaults = $values['defaults'];
+		foreach ($values as $key => $value)
+		{
+			// Set the route properties
+			$route->$key = $value;
+		}
 
 		return $route;
 	}
@@ -103,6 +107,37 @@ class Kohana_Route {
 		return Route::$_routes;
 	}
 
+	/**
+	 * Saves or loads the route cache.
+	 *
+	 * @param   boolean   cache the current routes
+	 * @return  void      when saving routes
+	 * @return  boolean   when loading routes
+	 */
+	public static function cache($save = FALSE)
+	{
+		if ($save === TRUE)
+		{
+			// Cache all defined routes
+			Kohana::cache('Route::cache()', Route::$_routes);
+		}
+		else
+		{
+			if ($routes = Kohana::cache('Route::cache()'))
+			{
+				Route::$_routes = $routes;
+
+				// Routes were cached
+				return TRUE;
+			}
+			else
+			{
+				// Routes were not cached
+				return FALSE;
+			}
+		}
+	}
+
 	// Route URI string
 	protected $_uri = '';
 
@@ -120,29 +155,26 @@ class Kohana_Route {
 	 *
 	 * @param   string   route URI pattern
 	 * @param   array    key patterns
+	 * @return  void
 	 */
-	public function __construct($uri, array $regex = NULL)
+	public function __construct($uri = NULL, array $regex = NULL)
 	{
+		if ($uri === NULL)
+		{
+			// Assume the route is from cache
+			return;
+		}
+
 		if ( ! empty($regex))
+		{
 			$this->_regex = $regex;
+		}
 
 		// Store the URI that this route will match
 		$this->_uri = $uri;
 
-		// Set the cache key
-		$cache_key = 'Route::compile("'.$uri.'")';
-
-		if (($regex = Kohana::cache($cache_key)) === NULL)
-		{
-			// Compile the complete regex for this uri
-			$regex = $this->_compile();
-
-			// Cache the compiled regex
-			Kohana::cache($cache_key, $regex);
-		}
-
 		// Store the compiled regex locally
-		$this->_route_regex = $regex;
+		$this->_route_regex = $this->_compile();
 	}
 
 	/**
