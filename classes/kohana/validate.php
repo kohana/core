@@ -10,7 +10,7 @@
 class Kohana_Validate extends ArrayObject {
 
 	public static $messages = array(
-		'required'     => ':field is required',
+		'not_empty'    => ':field must not empty',
 		'default'      => ':field value is invalid',
 
 		'regex'        => ':field does not match the required format',
@@ -33,7 +33,7 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
-	 * Checks if a field is empty.
+	 * Checks if a field is not empty.
 	 *
 	 * @return  boolean
 	 */
@@ -93,8 +93,8 @@ class Kohana_Validate extends ArrayObject {
 	/**
 	 * Check an email address for correct format.
 	 *
-	 * @see  http://www.iamcal.com/publish/articles/php/parsing_email/
-	 * @see  http://www.w3.org/Protocols/rfc822/
+	 * @link  http://www.iamcal.com/publish/articles/php/parsing_email/
+	 * @link  http://www.w3.org/Protocols/rfc822/
 	 *
 	 * @param   string   email address
 	 * @param   boolean  strict RFC compatibility
@@ -130,7 +130,7 @@ class Kohana_Validate extends ArrayObject {
 	 * Validate the domain of an email address by checking if the domain has a
 	 * valid MX record.
 	 *
-	 * Note: checkdnsrr() was not added to Windows until PHP 5.3.0
+	 * @link  http://php.net/checkdnsrr  not added to Windows until PHP 5.3.0
 	 *
 	 * @param   string   email address
 	 * @return  boolean
@@ -142,7 +142,7 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
-	 * Validate URL
+	 * Validate a URL.
 	 *
 	 * @param   string   URL
 	 * @return  boolean
@@ -153,7 +153,7 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
-	 * Validate IP
+	 * Validate an IP.
 	 *
 	 * @param   string   IP address
 	 * @param   boolean  allow private IP networks
@@ -175,7 +175,8 @@ class Kohana_Validate extends ArrayObject {
 
 	/**
 	 * Validates a credit card number using the Luhn (mod10) formula.
-	 * @see http://en.wikipedia.org/wiki/Luhn_algorithm
+	 *
+	 * @link http://en.wikipedia.org/wiki/Luhn_algorithm
 	 *
 	 * @param   integer       credit card number
 	 * @param   string|array  card type, or an array of card types
@@ -493,14 +494,13 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
-	 * Overwrites or appends rules to a field. Each rule will be executed once.
-	 * All rules must be string names of functions method names.
+	 * Overwrites or appends filters to a field. Each filter will be executed once.
+	 * All rules must be valid callbacks.
 	 *
-	 *     $validation->add_rule('username', 'required')
-	 *                ->add_rule('username', 'length', array(4, 32));
+	 *     $validation->add_filter(TRUE, 'trim');
 	 *
 	 * @param   string  field name
-	 * @param   string  function or method name
+	 * @param   mixed   valid PHP callback
 	 * @param   array   extra parameters for the callback
 	 * @return  $this
 	 */
@@ -547,6 +547,8 @@ class Kohana_Validate extends ArrayObject {
 
 	/**
 	 * Adds a callback to a field. Each callback will be executed only once.
+	 * No extra parameters can be passed as the format for callbacks is
+	 * predefined as (Validate $array, $field, array $errors).
 	 *
 	 *     $validation->add_callback('username', array($this, 'check_username'));
 	 *
@@ -580,7 +582,7 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
-	 * Executes all validation rules.
+	 * Executes all validation filters, rules, and callbacks.
 	 *
 	 * @param   array    error list
 	 * @return  boolean
