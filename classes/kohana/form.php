@@ -190,7 +190,7 @@ class Kohana_Form {
 		$attributes['name'] = $name;
 
 		// Make the textarea body HTML-safe
-		$body = htmlspecialchars($title, ENT_NOQUOTES, Kohana::$charset, $double_encode);
+		$body = htmlspecialchars($body, ENT_NOQUOTES, Kohana::$charset, $double_encode);
 
 		return '<textarea'.HTML::attributes($attributes).'>'.$body.'</textarea>';
 	}
