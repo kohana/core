@@ -86,7 +86,7 @@ class Kohana_Session_Database extends Session {
 	{
 		// Create the query to find an ID
 		$query = DB::query(Database::SELECT, "SELECT session_id FROM {$this->_table} WHERE session_id = :id LIMIT 1")
-			->bind(':id' => $id);
+			->bind(':id', $id);
 
 		do
 		{
