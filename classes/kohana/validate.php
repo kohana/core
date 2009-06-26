@@ -10,7 +10,7 @@
 class Kohana_Validate extends ArrayObject {
 
 	public static $messages = array(
-		'not_empty'    => ':field must not empty',
+		'not_empty'    => ':field must not be empty',
 		'default'      => ':field value is invalid',
 
 		'regex'        => ':field does not match the required format',
@@ -39,7 +39,7 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public static function not_empty($value)
 	{
-		return ! empty($value);
+		return ($value === '0' OR ! empty($value));
 	}
 
 	/**
@@ -504,7 +504,7 @@ class Kohana_Validate extends ArrayObject {
 	 * @param   array   extra parameters for the callback
 	 * @return  $this
 	 */
-	public function add_filter($field, $filter, array $params = NULL)
+	public function filter($field, $filter, array $params = NULL)
 	{
 		if ($field !== TRUE AND ! isset($this->labels[$field]))
 		{
@@ -531,7 +531,7 @@ class Kohana_Validate extends ArrayObject {
 	 * @param   array   extra parameters for the callback
 	 * @return  $this
 	 */
-	public function add_rule($field, $rule, array $params = NULL)
+	public function rule($field, $rule, array $params = NULL)
 	{
 		if ($field !== TRUE AND ! isset($this->labels[$field]))
 		{
@@ -558,7 +558,7 @@ class Kohana_Validate extends ArrayObject {
 	 * @param   mixed   callback to add
 	 * @return  $this
 	 */
-	public function add_callback($field, $callback)
+	public function callback($field, $callback)
 	{
 		if ( ! isset($this->callbacks[$field]))
 		{
@@ -726,6 +726,9 @@ class Kohana_Validate extends ArrayObject {
 
 			foreach ($set as $rule => $params)
 			{
+				// Skip all rules except for "not_empty" with empty fields
+				if ($rule !== 'not_empty' AND ($value === '' OR $value === NULL)) continue;
+
 				// Add the field value to the parameters
 				array_unshift($params, $value);
 

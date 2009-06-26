@@ -69,7 +69,7 @@ class Kohana_Form {
 	 * @param   array   html attributes
 	 * @return  string
 	 */
-	public static function input($name, $value = '', array $attributes = NULL)
+	public static function input($name, $value = NULL, array $attributes = NULL)
 	{
 		// Set the input name
 		$attributes['name'] = $name;
@@ -94,7 +94,7 @@ class Kohana_Form {
 	 * @param   array   html attributes
 	 * @return  string
 	 */
-	public static function hidden($name, $value = '', array $attributes = NULL)
+	public static function hidden($name, $value = NULL, array $attributes = NULL)
 	{
 		$attributes['type'] = 'hidden';
 
@@ -109,7 +109,7 @@ class Kohana_Form {
 	 * @param   array   html attributes
 	 * @return  string
 	 */
-	public static function password($name, $value = '', array $attributes = NULL)
+	public static function password($name, $value = NULL, array $attributes = NULL)
 	{
 		$attributes['type'] = 'password';
 
@@ -140,7 +140,7 @@ class Kohana_Form {
 	 * @param   array    html attributes
 	 * @return  string
 	 */
-	public static function checkbox($name, $value = '', $checked = FALSE, array $attributes = NULL)
+	public static function checkbox($name, $value = NULL, $checked = FALSE, array $attributes = NULL)
 	{
 		$attributes['type'] = 'checkbox';
 
@@ -162,7 +162,7 @@ class Kohana_Form {
 	 * @param   array    html attributes
 	 * @return  string
 	 */
-	public static function radio($name, $value = '', $checked = FALSE, array $attributes = NULL)
+	public static function radio($name, $value = NULL, $checked = FALSE, array $attributes = NULL)
 	{
 		$attributes['type'] = 'radio';
 
@@ -190,7 +190,7 @@ class Kohana_Form {
 		$attributes['name'] = $name;
 
 		// Make the textarea body HTML-safe
-		$body = htmlspecialchars($title, ENT_NOQUOTES, Kohana::$charset, $double_encode);
+		$body = htmlspecialchars($body, ENT_NOQUOTES, Kohana::$charset, $double_encode);
 
 		return '<textarea'.HTML::attributes($attributes).'>'.$body.'</textarea>';
 	}
@@ -231,7 +231,7 @@ class Kohana_Form {
 						// Create a new attribute set for this option
 						$option = array('value' => $_value);
 
-						if ($_value === $selected)
+						if ($_value == $selected)
 						{
 							// This option is selected
 							$option['selected'] = 'selected';
@@ -254,7 +254,7 @@ class Kohana_Form {
 					// Create a new attribute set for this option
 					$option = array('value' => $value);
 
-					if ($value === $selected)
+					if ($value == $selected)
 					{
 						// This option is selected
 						$option['selected'] = 'selected';
