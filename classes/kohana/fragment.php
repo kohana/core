@@ -78,4 +78,19 @@ class Kohana_Fragment {
 		}
 	}
 
+	/**
+	 * Delete a cached fragment.
+	 *
+	 * @param   string   fragment name
+	 * @return  void
+	 */
+	public static function delete($name)
+	{
+		// Set the cache key name
+		$cache_key = 'Fragment::cache('.$name.')';
+
+		// Invalid the cache
+		Kohana::cache($cache_key, FALSE, -3600);
+	}
+
 } // End Fragment
