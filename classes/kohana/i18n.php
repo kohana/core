@@ -35,12 +35,12 @@ class Kohana_i18n {
 	}
 
 	/**
-	 * Loads the translation table for a given language.
-	 * 
+	 * Returns the translation table for a given language.
+	 *
 	 * @param   string   language to load
 	 * @return  array
 	 */
-	protected static function load($lang)
+	public static function load($lang)
 	{
 		if ( ! isset(I18n::$_cache[$lang]))
 		{
