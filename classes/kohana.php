@@ -134,12 +134,6 @@ final class Kohana {
 		// Start an output buffer
 		ob_start();
 
-		if (version_compare(PHP_VERSION, '6.0', '<='))
-		{
-			// Disable magic quotes at runtime
-			set_magic_quotes_runtime(0);
-		}
-
 		if (ini_get('register_globals'))
 		{
 			if (isset($_REQUEST['GLOBALS']))
