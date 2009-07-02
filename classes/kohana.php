@@ -664,8 +664,11 @@ final class Kohana {
 			// Set the text version of the exception
 			$text = "{$type} [ {$code} ]: {$message} ".self::debug_path($file)." [ {$line} ]";
 
-			// Add this exception to the log
-			self::$log->add(Kohana::ERROR, $text);
+			if (is_object(self::$log))
+			{
+				// Add this exception to the log
+				self::$log->add(Kohana::ERROR, $text);
+			}
 
 			if (Kohana::$is_cli)
 			{
