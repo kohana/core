@@ -892,5 +892,28 @@ class Kohana_Request {
 
 		return $this;
 	}
+	
+	/**
+	 * Validate cache
+	 * Checks the browser cache to determine whether the request needs to be sent or not
+	 * Currently only makes use of (strong) etags
+	 */
+	public function validate_cache()
+	{
+	    //Generate a unique etag for the returnable resource
+	    $etag = '"' . sha1($this->response) . '"';
+
+        $this->set_header('Cache-Control', 'must-revalidate');
+        $this->set_header('ETag', $etag);
+        
+        if(isset($_SERVER['HTTP_IF_NONE_MATCH']) AND $_SERVER['HTTP_IF_NONE_MATCH'] == $etag)
+        {
+            //No need to send data again
+            $this->status = 304;
+            $this->send_headers();
+            exit;
+        }
+        return $this;
+	}
 
 } // End Request
