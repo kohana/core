@@ -907,7 +907,7 @@ class Kohana_Request {
 	    $etag = '"' . sha1($this->response) . '"';
 
         //Only set cache-controll if not allready set - this means etags can be used in conjunction with max-age etc
-        if($this->get_header('Cache-Control'))
+        if($this->get_header('Cache-Control') === false)
         {
             $this->set_header('Cache-Control', 'must-revalidate');
         }
