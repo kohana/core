@@ -750,25 +750,184 @@ final class Kohana {
 		$output = array();
 		foreach ($variables as $var)
 		{
-			$type = gettype($var);
-
-			switch ($type)
-			{
-				case 'null':
-					$var = 'NULL';
-				break;
-				case 'boolean':
-					$var = $var ? 'TRUE' : 'FALSE';
-				break;
-				default:
-					$var = htmlspecialchars(print_r($var, TRUE), ENT_NOQUOTES, self::$charset);
-				break;
-			}
-
-			$output[] = '<pre>('.$type.') '.$var.'</pre>';
+			$output[] = self::_dump($var);
 		}
 
-		return implode("\n", $output);
+		return '<pre class="debug">'.implode("\n", $output).'</pre>';
+	}
+
+	/**
+	 * Returns an HTML string of information about a single variable.
+	 *
+	 * Borrows heavily on concepts from the Debug class of {@link http://nettephp.com/ Nette}.
+	 *
+	 * @param   mixed    variable to dump
+	 * @param   integer  level of recursion
+	 * @return  string
+	 */
+	private static function _dump( & $var, $level = 0)
+	{
+		if ($var === NULL)
+		{
+			return '<small>NULL</small>';
+		}
+		elseif (is_bool($var))
+		{
+			return '<small>bool</small> '.($var ? 'TRUE' : 'FALSE');
+		}
+		elseif (is_float($var))
+		{
+			return '<small>float</small> '.$var;
+		}
+		elseif (is_resource($var))
+		{
+			if (($type = get_resource_type($var)) === 'stream' AND $meta = stream_get_meta_data($var))
+			{
+				$meta = stream_get_meta_data($var);
+
+				if (isset($meta['uri']))
+				{
+					$file = $meta['uri'];
+
+					if (function_exists('stream_is_local'))
+					{
+						// Only exists on PHP >= 5.2.4
+						if (stream_is_local($file))
+						{
+							$file = self::debug_path($file);
+						}
+					}
+
+					return '<small>resource</small> ('.$type.') '.htmlspecialchars($file, ENT_NOQUOTES, self::$charset);
+				}
+			}
+			else
+			{
+				return '<small>resource</small> ('.$type.')';
+			}
+		}
+		elseif (is_string($var))
+		{
+			$str = $var;
+
+			if (($length = strlen($str)) > 128)
+			{
+				$str = substr($str, 0, 128).' ...';
+			}
+
+			return '<small>string</small> ('.$length.') "'.htmlspecialchars($str, ENT_NOQUOTES, self::$charset).'"';
+		}
+		elseif (is_array($var))
+		{
+			$output = array();
+
+			// Indentation for this variable
+			$space = str_repeat($s = '    ', $level);
+
+			static $marker;
+
+			if ($marker === NULL)
+			{
+				// Make a unique marker
+				$marker = uniqid("\x00");
+			}
+
+			if (empty($var))
+			{
+				// Do nothing
+			}
+			elseif (isset($var[$marker]))
+			{
+				$output[] = "(\n$space$s*RECURSION*\n$space)";
+			}
+			elseif ($level < 5)
+			{
+				$output[] = "<span>(";
+
+				$var[$marker] = TRUE;
+				foreach ($var as $key => & $val)
+				{
+					if ($key === $marker) continue;
+					if ( ! is_int($key))
+					{
+						$key = '"'.$key.'"';
+					}
+
+					$output[] = "$space$s$key => ".self::_dump($val, $level + 1);
+				}
+				unset($var[$marker]);
+
+				$output[] = "$space)</span>";
+			}
+			else
+			{
+				// Depth too great
+				$output[] = "(\n$space$s...\n$space)";
+			}
+
+			return '<small>array</small> ('.count($var).') '.implode("\n", $output);
+		}
+		elseif (is_object($var))
+		{
+			// Copy the object as an array
+			$array = (array) $var;
+
+			$output = array();
+
+			// Indentation for this variable
+			$space = str_repeat($s = '    ', $level);
+
+			$hash = spl_object_hash($var);
+
+			// Objects that are being dumped
+			static $objects = array();
+
+			if (empty($var))
+			{
+				// Do nothing
+			}
+			elseif (isset($objects[$hash]))
+			{
+				$output[] = "{\n$space$s*RECURSION*\n$space}";
+			}
+			elseif ($level < 5)
+			{
+				$output[] = "<span>{";
+
+				$objects[$hash] = TRUE;
+				foreach ($array as $key => & $val)
+				{
+					if ($key[0] === "\x00")
+					{
+						// Determine if the access is private or protected
+						$access = '<small>'.($key[1] === '*' ? 'protected' : 'private').'</small>';
+
+						// Remove the access level from the variable name
+						$key = substr($key, strrpos($key, "\x00") + 1);
+					}
+					else
+					{
+						$access = '<small>public</small>';
+					}
+
+					$output[] = "$space$s$access $key => ".self::_dump($val, $level + 1);
+				}
+				unset($objects[$hash]);
+
+				$output[] = "$space}</span>";
+			}
+			else
+			{
+				// Depth too great
+				$output[] = "{\n$space$s...\n$space}";
+			}
+
+			return '<small>object</small> ('.count($array).') '.get_class($var).' '.implode("\n", $output);
+		}
+		else
+		{
+			return '<small>'.gettype($var).'</small> '.htmlspecialchars(print_r($var, TRUE), ENT_NOQUOTES, self::$charset);
+		}
 	}
 
 	/**
