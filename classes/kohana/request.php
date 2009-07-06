@@ -900,10 +900,18 @@ class Kohana_Request {
 	 */
 	public function validate_cache()
 	{
+	    //Request must of been executed
+	    if(isset($this->response) === false) throw new Kohana_Request_Exception('No response yet associated with request');
+	    
 	    //Generate a unique etag for the returnable resource
 	    $etag = '"' . sha1($this->response) . '"';
 
-        $this->set_header('Cache-Control', 'must-revalidate');
+        //Only set cache-controll if not allready set - this means etags can be used in conjunction with max-age etc
+        if($this->get_header('Cache-Control') === false)
+        {
+            $this->set_header('Cache-Control', 'must-revalidate');
+        }
+        
         $this->set_header('ETag', $etag);
         
         if(isset($_SERVER['HTTP_IF_NONE_MATCH']) AND $_SERVER['HTTP_IF_NONE_MATCH'] == $etag)
