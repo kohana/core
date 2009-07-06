@@ -1,24 +1,76 @@
 <?php
 
-// JS toggling of the error details
-$toggle_details =
-
-	// Get the error details div for this error
-	'var d=document.getElementById(\'kohana_error_'.$error_id.'_details\');'.
-
-	// Toggle the display value of the div
-	'd.style.display=(d.style.display==\'none\'?\'\':\'none\');'.
-
-	// Do not activate the link
-	'return false;'
+// Unique error identifier
+$error_id = uniqid('error');
 
 ?>
-<div id="kohana_error_<?php echo $error_id ?>" class="kohana_error" style="display:block;position:relative;z-index:1000;background:#cff292;font-size:1em;font-family:sans-serif;text-align:left">
-	<div class="message" style="display:block;margin:0;padding:1em;color:#111">
-		<p class="text" style="display:block;margin:0;padding:0;color:#111"><a href="#toggle_details" class="toggle_details" style="padding:0color:#39530c;text-decoration:underline;background:transparent" onclick="javascript:<?php echo $toggle_details ?>"><?php echo $type, ' [ ', $code, ' ]' ?></a>: <code style="display:inline;margin:0;padding:0;font-size:1em;background:transparent:color:#111;font-family:sans-serif"><?php echo $message ?></code> <span class="file"><?php echo Kohana::debug_path($file), ' [ ', $line, ' ]' ?></span></p>
+<style type="text/css">
+#kohana_error { display: block; position: relative; z-index: 1000; background: #cff292; font-size: 1em; font-family:sans-serif; text-align: left; color: #111; }
+#kohana_error a { color: #1b323b; }
+#kohana_error p { margin: 0; padding: 0.2em 0; }
+#kohana_error div.content { padding: 1em;  }
+	#kohana_error div.content span.file { padding-right: 1em; }
+#kohana_error pre.source { margin: 0 0 1em; padding: 0.4em; background: #fff; border: dotted 1px #b7c680; line-height: 1.2em; }
+	#kohana_error pre.source span.line { display: block; }
+	#kohana_error pre.source span.highlight { background: #f0eb96; }
+		#kohana_error pre.source span.line span.number { color: #666; }
+#kohana_error table.args { width: 100%; display: block; margin: 0 0 0.4em; padding: 0; border-collapse: collapse; background: #fff; }
+	#kohana_error table.args td { border: solid 1px #ddd; text-align: left; vertical-align: top; padding: 0.4em; }
+#kohana_error ol.trace { display: block; margin: 0 0 0 2em; padding: 0; list-style: decimal; }
+	#kohana_error ol.trace li { margin: 0; padding: 0; }
+</style>
+<script type="text/javascript">
+document.write('<style type="text/css">.collapsed { display: none; } </style>');
+function koggle(elem)
+{
+	elem = document.getElementById(elem);
+	elem.style.display = elem.style.display == 'block' ? '' : 'block';
+	return false;
+}
+</script>
+<div id="kohana_error">
+	<div class="content">
+		<p>
+			<span class="type"><a href="#" onclick="return koggle('<?php echo $error_id ?>')"><?php echo $type ?> [ <?php echo $code ?> ]</a>:</span>
+			<span class="message"><?php echo $message ?></span>
+			&mdash;
+			<span class="file"><?php echo Kohana::debug_path($file) ?> [ <?php echo $line ?> ]</span>
+		</p>
 	</div>
-	<div id="kohana_error_<?php echo $error_id ?>_details" class="details" style="display:none;margin:0;padding:0 1em 1em;color:#111">
-		<pre class="source" style="display:block;margin:0;padding:1em;font-family:monospace;background:#efefef;color:#111"><?php echo $source ?></pre>
-		<ol class="trace" style="display:block;margin:0 2em 0;padding:1em 0 0;color:#111"><?php foreach (Kohana::trace($trace) as $step): ?><li style="padding:0 0 0.8em;line-height:1.3em"><code style="font-size:1.2em"><?php echo $step['function'] ?></code><br/><?php echo $step['file'], ' [ ', $step['line'], ' ]' ?></li><?php endforeach ?></ol>
+	<div id="<?php echo $error_id ?>" class="content collapsed">
+		<pre class="source"><code><?php echo $source ?></code></pre>
+		<ol class="trace">
+		<?php foreach (Kohana::trace($trace) as $i => $step): ?>
+		<li>
+			<p>
+				<span class="file">
+					<?php if ($step['file']): ?>
+						<a href="#" onclick="return koggle('<?php echo $error_id, 'source', $i ?>')"><?php echo Kohana::debug_path($step['file']) ?> [ <?php echo $step['line'] ?> ]</a>
+					<?php else: ?>
+						{<?php echo __('PHP internal call') ?>}
+					<?php endif ?>
+				</span>
+				<?php echo $step['function'] ?>
+					(<?php if ($step['args']): ?>
+						<a href="#" onclick="return koggle('<?php echo $error_id, 'args', $i ?>')"><?php echo __('arguments') ?></a>
+					<?php endif ?>)
+			</p>
+			<?php if ($step['args']): ?>
+			<div id="<?php echo $error_id, 'args', $i ?>" class="collapsed">
+				<table class="args" cellspacing="0">
+				<?php foreach ($step['args'] as $name => $arg): ?>
+					<tr>
+						<td><code><?php echo $name ?></code></td>
+						<td><?php echo Kohana::debug($arg) ?></td>
+					</tr>
+				<?php endforeach ?>
+				</table>
+			</div>
+			<?php endif ?>
+			<?php if ($step['file']): ?>
+			<pre id="<?php echo $error_id, 'source', $i ?>" class="source collapsed"><code><?php echo $step['source'] ?></code></pre>
+			<?php endif ?>
+		</li>
+		<?php endforeach ?>
 	</div>
 </div>

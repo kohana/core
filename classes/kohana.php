@@ -701,9 +701,6 @@ final class Kohana {
 			// Get the source of the error
 			$source = self::debug_source($file, $line);
 
-			// Generate a new error id
-			$error_id = uniqid();
-
 			// Start an output buffer
 			ob_start();
 
@@ -798,24 +795,17 @@ final class Kohana {
 						}
 					}
 
-					return '<small>resource</small> ('.$type.') '.htmlspecialchars($file, ENT_NOQUOTES, self::$charset);
+					return '<small>resource</small><span>('.$type.')</span> '.htmlspecialchars($file, ENT_NOQUOTES, self::$charset);
 				}
 			}
 			else
 			{
-				return '<small>resource</small> ('.$type.')';
+				return '<small>resource</small><span>('.$type.')</span>';
 			}
 		}
 		elseif (is_string($var))
 		{
-			$str = $var;
-
-			if (($length = strlen($str)) > 128)
-			{
-				$str = substr($str, 0, 128).' ...';
-			}
-
-			return '<small>string</small> ('.$length.') "'.htmlspecialchars($str, ENT_NOQUOTES, self::$charset).'"';
+			return '<small>string</small><span>('.strlen($var).')</span> "'.htmlspecialchars($var, ENT_NOQUOTES, self::$charset).'"';
 		}
 		elseif (is_array($var))
 		{
@@ -865,7 +855,7 @@ final class Kohana {
 				$output[] = "(\n$space$s...\n$space)";
 			}
 
-			return '<small>array</small> ('.count($var).') '.implode("\n", $output);
+			return '<small>array</small><span>('.count($var).')</span> '.implode("\n", $output);
 		}
 		elseif (is_object($var))
 		{
@@ -892,7 +882,7 @@ final class Kohana {
 			}
 			elseif ($level < 5)
 			{
-				$output[] = "<span>{";
+				$output[] = "<code>{";
 
 				$objects[$hash] = TRUE;
 				foreach ($array as $key => & $val)
@@ -914,7 +904,7 @@ final class Kohana {
 				}
 				unset($objects[$hash]);
 
-				$output[] = "$space}</span>";
+				$output[] = "$space}</code>";
 			}
 			else
 			{
@@ -922,7 +912,7 @@ final class Kohana {
 				$output[] = "{\n$space$s...\n$space}";
 			}
 
-			return '<small>object</small> ('.count($array).') '.get_class($var).' '.implode("\n", $output);
+			return '<small>object</small> <span>'.get_class($var).'('.count($array).')</span> '.implode("\n", $output);
 		}
 		else
 		{
@@ -975,7 +965,7 @@ final class Kohana {
 	 * @param   integer  number of padding lines
 	 * @return  string
 	 */
-	public static function debug_source($file, $line_number, $padding = 3)
+	public static function debug_source($file, $line_number, $padding = 5)
 	{
 		// Open the file and set the line position
 		$file = fopen($file, 'r');
@@ -984,7 +974,10 @@ final class Kohana {
 		// Set the reading range
 		$range = array('start' => $line_number - $padding, 'end' => $line_number + $padding);
 
-		$source = array();
+		// Set the zero-padding amount for line numbers
+		$format = '% '.strlen($range['end']).'d';
+
+		$source = '';
 		while (($row = fgets($file)) !== FALSE)
 		{
 			// Increment the line number
@@ -993,61 +986,31 @@ final class Kohana {
 
 			if ($line >= $range['start'])
 			{
+				// Make the row safe for output
+				$row = htmlspecialchars($row, ENT_NOQUOTES, self::$charset);
+
 				// Trim whitespace and sanitize the row
-				$row = htmlspecialchars(rtrim($row), ENT_NOQUOTES, self::$charset);
+				$row = '<span class="number">'.sprintf($format, $line).'</span> '.$row;
 
 				if ($line === $line_number)
 				{
-					// Apply highlighting to the row
-					$row = '<span style="background:#f2df92">'.$row.'</span>';
+					// Apply highlighting to this row
+					$row = '<span class="line highlight">'.$row.'</span>';
+				}
+				else
+				{
+					$row = '<span class="line">'.$row.'</span>';
 				}
 
 				// Add to the captured source
-				$source[] = $row;
+				$source .= $row;
 			}
 		}
 
 		// Close the file
 		fclose($file);
 
-		return implode("\n", $source);
-	}
-
-	/**
-	 * Returns a single line representation of a variable. Internally, this is
-	 * used only for showing function arguments in stack traces.
-	 *
-	 *     echo Kohana::debug_var($my_var);
-	 *
-	 * @param   mixed  variable to debug
-	 * @return  string
-	 */
-	public static function debug_var($var)
-	{
-		switch (gettype($var))
-		{
-			case 'null':
-				return 'NULL';
-			break;
-			case 'boolean':
-				return $var ? 'TRUE' : 'FALSE';
-			break;
-			case 'string':
-				return var_export($var, TRUE);
-			break;
-			case 'object':
-				return 'object '.get_class($var);
-			break;
-			case 'array':
-				if (Arr::is_assoc($var))
-					return print_r($var, TRUE);
-
-				return 'array('.implode(', ', array_map(array(__CLASS__, __FUNCTION__), $var)).')';
-			break;
-			default:
-				return var_export($var, TRUE);
-			break;
-		}
+		return $source;
 	}
 
 	/**
@@ -1073,43 +1036,82 @@ final class Kohana {
 		$output = array();
 		foreach ($trace as $step)
 		{
-			if ( ! (isset($step['function']) AND isset($step['file'])))
+			if ( ! isset($step['function']))
 			{
-				// Ignore this line, it has unusable data
+				// Invalid trace step
 				continue;
 			}
 
-			// Set the function name
-			$function = $step['function'];
-
-			// Set the file and line
-			$file = self::debug_path($step['file']);
-			$line = $step['line'];
-
-			if (isset($step['class']))
+			if (isset($step['file']) AND isset($step['line']))
 			{
-				// Change the function to a method
-				$function = $step['class'].$step['type'].$function;
+				// Include the source of this step
+				$source = self::debug_source($step['file'], $step['line']);
 			}
 
-			if (isset($step['args']))
+			if (isset($step['file']))
 			{
-				if (in_array($function, $statements))
+				$file = $step['file'];
+
+				if (isset($step['line']))
 				{
-					// Sanitize the path name
-					$function .= ' '.self::debug_path($step['args'][0]);
+					$line = $step['line'];
+				}
+			}
+
+			// function()
+			$function = $step['function'];
+
+			if (in_array($step['function'], $statements))
+			{
+				// Sanitize the file path
+				$args = array($step['args'][0]);
+			}
+			elseif (isset($step['args']))
+			{
+				if (isset($step['class']))
+				{
+					$reflection = new ReflectionMethod($step['class'], $step['function']);
 				}
 				else
 				{
-					// Sanitize the function arguments
-					$function .= '('.implode(', ', $args = array_map(array('Kohana', 'debug_var'), $step['args'])).')';
+					$reflection = new ReflectionFunction($step['function']);
 				}
+
+				// Get the function parameters
+				$params = $reflection->getParameters();
+
+				$args = array();
+
+				foreach ($step['args'] as $i => $arg)
+				{
+					if (isset($params[$i]))
+					{
+						// Assign the argument by the parameter name
+						$args[$params[$i]->name] = $arg;
+					}
+					else
+					{
+						// Assign the argument by number
+						$args[$i] = $arg;
+					}
+				}
+			}
+
+			if (isset($step['class']))
+			{
+				// Class->method() or Class::method()
+				$function = $step['class'].$step['type'].$step['function'];
 			}
 
 			$output[] = array(
 				'function' => $function,
-				'file'     => self::debug_path($step['file']),
-				'line'     => $step['line']);
+				'args'     => isset($args)   ? $args : NULL,
+				'file'     => isset($file)   ? $file : NULL,
+				'line'     => isset($line)   ? $line : NULL,
+				'source'   => isset($source) ? $source : NULL,
+			);
+
+			unset($function, $args, $file, $line, $source);
 		}
 
 		return $output;
