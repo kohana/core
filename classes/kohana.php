@@ -80,6 +80,11 @@ final class Kohana {
 	public static $profiling = TRUE;
 
 	/**
+	 * @var  boolean  enable error handling?
+	 */
+	public static $errors = TRUE;
+
+	/**
 	 * @var  object  logging object
 	 */
 	public static $log;
@@ -111,10 +116,13 @@ final class Kohana {
 	 */
 	public static function init(array $settings = NULL)
 	{
-		static $_init;
+		static $run;
 
 		// This function can only be run once
-		if ($_init === TRUE) return;
+		if ($run === TRUE) return;
+
+		// The system is now ready
+		$run = TRUE;
 
 		if (isset($settings['profile']))
 		{
@@ -128,11 +136,26 @@ final class Kohana {
 			$benchmark = Profiler::start(__CLASS__, __FUNCTION__);
 		}
 
-		// The system will now be initialized
-		$_init = TRUE;
-
 		// Start an output buffer
 		ob_start();
+
+		if (isset($settings['errors']))
+		{
+			// Enable error handling
+			Kohana::$errors = (bool) $settings['errors'];
+		}
+
+		if (Kohana::$errors === TRUE)
+		{
+			// Enable the Kohana shutdown handler, which catches E_FATAL errors.
+			register_shutdown_function(array('Kohana', 'shutdown_handler'));
+
+			// Enable Kohana exception handling, adds stack traces and error source.
+			set_exception_handler(array('Kohana', 'exception_handler'));
+
+			// Enable Kohana error handling, converts all PHP errors to exceptions.
+			set_error_handler(array('Kohana', 'error_handler'));
+		}
 
 		if (ini_get('register_globals'))
 		{
