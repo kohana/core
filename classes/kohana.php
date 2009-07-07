@@ -726,6 +726,23 @@ final class Kohana {
 	}
 
 	/**
+	 * Catches errors that are not caught the error handler, such as E_PARSE.
+	 *
+	 * @return  void
+	 */
+	public static function shutdown_handler()
+	{
+		if ($error = error_get_last())
+		{
+			// If an output buffer exists, clear it
+			ob_get_level() and ob_clean();
+
+			// Fake an exception for nice debugging
+			Kohana::exception_handler(new Kohana_Error($error['message'], $error['type'], 0, $error['file'], $error['line']));
+		}
+	}
+
+	/**
 	 * Returns an HTML string of debugging information about any number of
 	 * variables, each wrapped in a <pre> tag:
 	 *
