@@ -732,31 +732,68 @@ class Kohana_Request {
 	}
 
 	/**
-	 * Sends a file as the request response.
+	 * Send file download as the response. All execution will be halted when
+	 * this method is called! Use TRUE for the filename to send the current
+	 * response as the file content.
 	 *
-	 * @param   string   file path
+	 * @param   string   filename with path, or TRUE for the current response
 	 * @param   string   download file name
 	 * @param   boolean  allow the download to be resumed
 	 * @return  void
 	 */
-	public function send_file($filename, $nicename = NULL, $resumable = TRUE)
+	public function send_file($filename, $download = NULL, $resumable = FALSE)
 	{
-		// Get the complete file path
-		$filename = realpath($filename);
-
-		if (empty($nicename))
+		if ($filename === TRUE)
 		{
-			// Use the file name as the nice name
-			$nicename = pathinfo($filename, PATHINFO_BASENAME);
-		}
+			if (empty($download))
+			{
+				throw new Kohana_Exception('Download name must be provided for streaming files');
+			}
 
-		// Get the file size
-		$size = filesize($filename);
+			// Get the content size
+			$size = strlen($this->response);
+
+			// Get the extension of the download
+			$extension = strtolower(pathinfo($download, PATHINFO_EXTENSION));
+
+			// Guess the mime using the file extension
+			$mime = Kohana::config('mimes');
+			$mime = $mime[$extension][0];
+
+			// Create a temporary file to hold the current response
+			$file = tmpfile();
+
+			// Write the current response into the file
+			fwrite($file, $this->response);
+
+			// Prepare the file for reading
+			fseek($file, 0);
+		}
+		else
+		{
+			// Get the complete file path
+			$filename = realpath($filename);
+
+			if (empty($download))
+			{
+				// Use the file name as the download file name
+				$download = pathinfo($filename, PATHINFO_BASENAME);
+			}
+
+			// Get the file size
+			$size = filesize($filename);
+
+			// Get the mime type
+			$mime = File::mime($filename);
+
+			// Open the file for reading
+			$file = fopen($filename, 'rb');
+		}
 
 		// Set the starting offset and length to send
 		$ranges = NULL;
 
-		if ($resumable)
+		if ($resumable === TRUE)
 		{
 			if (isset($_SERVER['HTTP_RANGE']))
 			{
@@ -768,10 +805,10 @@ class Kohana_Request {
 		}
 
 		// Set the headers
-		$this->set_header('content-disposition', 'attachment; filename="'.$nicename.'"');
+		$this->set_header('content-disposition', 'attachment; filename="'.$download.'"');
 
 		// Set the content type of the response
-		$this->set_header('content-type', File::mime($filename));
+		$this->set_header('content-type', $mime);
 
 		// Set the content size in bytes
 		$this->set_header('content-length', $size);
@@ -790,9 +827,6 @@ class Kohana_Request {
 
 		// Keep the script running forever
 		set_time_limit(0);
-
-		// Open the file for reading
-		$file = fopen($filename, 'rb');
 
 		// Send data in 16kb blocks
 		$block = 1024 * 16;
