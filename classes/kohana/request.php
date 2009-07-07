@@ -501,10 +501,11 @@ class Kohana_Request {
 	/**
 	 * Creates a new request object for the given URI. Global GET and POST data
 	 * can be overloaded by setting "get" and "post" in the parameters.
+	 * Throws an exception when no route can be found for the URI.
 	 *
+	 * @throws  Kohana_Request_Exception
 	 * @param   string  URI of the request
 	 * @return  void
-	 * @throws  Kohana_Exception  if no route matches the URI
 	 */
 	public function __construct($uri)
 	{
@@ -550,7 +551,10 @@ class Kohana_Request {
 		}
 
 		// No matching route for this URI
-		$this->request->status = 404;
+		$this->status = 404;
+
+		throw new Kohana_Request_Exception('Unable to find a route to match the URI: :uri',
+			array(':uri' => $uri));
 	}
 
 	/**
