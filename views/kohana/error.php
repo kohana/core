@@ -5,11 +5,12 @@ $error_id = uniqid('error');
 
 ?>
 <style type="text/css">
-#kohana_error { display: block; position: relative; z-index: 1000; background: #cff292; font-size: 1em; font-family:sans-serif; text-align: left; color: #111; overflow: auto; }
-#kohana_error a { color: #1b323b; }
+#kohana_error { display: block; position: relative; z-index: 1000; background: #ddd; font-size: 1em; font-family:sans-serif; text-align: left; color: #111; overflow: auto; }
+#kohana_error h1 { margin: 0; padding: 1em; font-size: 1em; font-weight: normal; background: #911; color: #fff; }
+	#kohana_error h1 a { color: #fff; }
 #kohana_error p { margin: 0; padding: 0.2em 0; }
-#kohana_error div.content { padding: 1em;  }
-	#kohana_error div.content span.file { padding-right: 1em; }
+#kohana_error a { color: #1b323b; }
+#kohana_error div.content { padding: 1em; }
 #kohana_error pre.source { margin: 0 0 1em; padding: 0.4em; background: #fff; border: dotted 1px #b7c680; line-height: 1.2em; }
 	#kohana_error pre.source span.line { display: block; }
 	#kohana_error pre.source span.highlight { background: #f0eb96; }
@@ -20,43 +21,47 @@ $error_id = uniqid('error');
 	#kohana_error ol.trace li { margin: 0; padding: 0; }
 </style>
 <script type="text/javascript">
-document.write('<style type="text/css">.collapsed { display: none; } </style>');
+document.write('<style type="text/css"> .collapsed { display: none; } </style>');
 function koggle(elem)
 {
 	elem = document.getElementById(elem);
-	elem.style.display = elem.style.display == 'block' ? '' : 'block';
+
+	if (elem.style && elem.style['display'])
+		// Only works with the "style" attr
+		var disp = elem.style['display'];
+	else if (elem.currentStyle)
+		// For MSIE, naturally
+		var disp = elem.currentStyle['display'];
+	else if (window.getComputedStyle)
+		// For most other browsers
+		var disp = document.defaultView.getComputedStyle(elem, null).getPropertyValue('display');
+
+	// Toggle the state of the "display" style
+	elem.style.display = disp == 'block' ? 'none' : 'block';
 	return false;
 }
 </script>
 <div id="kohana_error">
-	<div class="content">
-		<p>
-			<span class="type"><a href="#" onclick="return koggle('<?php echo $error_id ?>')"><?php echo $type ?> [ <?php echo $code ?> ]</a>:</span>
-			<span class="message"><?php echo $message ?></span>
-			&mdash;
-			<span class="file"><?php echo Kohana::debug_path($file) ?> [ <?php echo $line ?> ]</span>
-		</p>
-	</div>
-	<div id="<?php echo $error_id ?>" class="content collapsed">
+	<h1><span class="type"><?php echo $type ?> [ <?php echo $code ?> ]:</span> <span class="message"><?php echo $message ?></span></h1>
+	<div id="<?php echo $error_id ?>" class="content">
+		<p><span class="file"><?php echo Kohana::debug_path($file) ?> [ <?php echo $line ?> ]</span></p>
 		<pre class="source"><code><?php echo $source ?></code></pre>
 		<ol class="trace">
 		<?php foreach (Kohana::trace($trace) as $i => $step): ?>
 		<li>
 			<p>
 				<span class="file">
-					<?php if ($step['file']): ?>
-						<a href="#" onclick="return koggle('<?php echo $error_id, 'source', $i ?>')"><?php echo Kohana::debug_path($step['file']) ?> [ <?php echo $step['line'] ?> ]</a>
+					<?php if ($step['file']): $source_id = $error_id.'source'.$i; ?>
+						<a href="#<?php echo $source_id ?>" onclick="return koggle('<?php echo $source_id ?>')"><?php echo Kohana::debug_path($step['file']) ?> [ <?php echo $step['line'] ?> ]</a>
 					<?php else: ?>
 						{<?php echo __('PHP internal call') ?>}
 					<?php endif ?>
 				</span>
-				<?php echo $step['function'] ?>
-					(<?php if ($step['args']): ?>
-						<a href="#" onclick="return koggle('<?php echo $error_id, 'args', $i ?>')"><?php echo __('arguments') ?></a>
-					<?php endif ?>)
+				&raquo;
+				<?php echo $step['function'] ?>(<?php if ($step['args']): $args_id = $error_id.'args'.$i; ?><a href="#<?php echo $args_id ?>" onclick="return koggle('<?php echo $args_id ?>')"><?php echo __('arguments') ?></a><?php endif ?>)
 			</p>
-			<?php if ($step['args']): ?>
-			<div id="<?php echo $error_id, 'args', $i ?>" class="collapsed">
+			<?php if (isset($args_id)): ?>
+			<div id="<?php echo $args_id ?>" class="collapsed">
 				<table class="args" cellspacing="0">
 				<?php foreach ($step['args'] as $name => $arg): ?>
 					<tr>
@@ -67,10 +72,11 @@ function koggle(elem)
 				</table>
 			</div>
 			<?php endif ?>
-			<?php if ($step['file']): ?>
-			<pre id="<?php echo $error_id, 'source', $i ?>" class="source collapsed"><code><?php echo $step['source'] ?></code></pre>
+			<?php if (isset($source_id)): ?>
+				<pre id="<?php echo $source_id ?>" class="source collapsed"><code><?php echo $step['source'] ?></code></pre>
 			<?php endif ?>
 		</li>
+		<?php unset($args_id, $source_id); ?>
 		<?php endforeach ?>
 	</div>
 </div>
