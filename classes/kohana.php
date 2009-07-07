@@ -636,6 +636,7 @@ final class Kohana {
 		if ((error_reporting() & $code) !== 0)
 		{
 			// This error is not suppressed by current error reporting settings
+			// Convert the error into an ErrorException
 			throw new Kohana_Error($error, $code, 0, $file, $line);
 		}
 
@@ -700,6 +701,12 @@ final class Kohana {
 
 			// Get the source of the error
 			$source = self::debug_source($file, $line);
+
+			if ( ! headers_sent())
+			{
+				// Make sure the proper content type is sent with a 500 status
+				header('Content-Type: text/html; charset='.Kohana::$charset, TRUE, 500);
+			}
 
 			// Start an output buffer
 			ob_start();
