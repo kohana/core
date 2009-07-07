@@ -461,11 +461,6 @@ class Kohana_Request {
 	public $route;
 
 	/**
-	 * @var  decimal  HTTP version: 1.0, 1.1, etc
-	 */
-	public $version = 1.1;
-
-	/**
 	 * @var  integer  HTTP response code: 200, 404, 500, etc
 	 */
 	public $status = 200;
@@ -618,12 +613,6 @@ class Kohana_Request {
 	{
 		if ( ! headers_sent())
 		{
-			// Get the status message
-			$message = Request::$messages[$this->status];
-
-			// Send the HTTP status message
-			header("HTTP/{$this->version} {$this->status} {$message}", TRUE, $this->status);
-
 			foreach ($this->headers as $name => $value)
 			{
 				if (is_string($name))
@@ -633,7 +622,7 @@ class Kohana_Request {
 				}
 
 				// Send the raw header
-				header($value, TRUE);
+				header($value, TRUE, $this->status);
 			}
 		}
 
