@@ -4,7 +4,7 @@ class Kohana_Error extends ErrorException {
 
 	protected $codes = array
 	(
-		E_ERROR              => 'Error',
+		E_ERROR              => 'Fatal Error',
 		E_USER_ERROR         => 'User Error',
 		E_PARSE              => 'Parse Error',
 		E_WARNING            => 'Warning',
