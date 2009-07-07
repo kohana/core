@@ -478,7 +478,7 @@ class Kohana_Request {
 	/**
 	 * @var  array  headers to send with the response body
 	 */
-	public $headers = array('content-type' => 'text/html; charset=utf-8');
+	public $headers = array('Content-Type' => 'text/html; charset=utf-8');
 
 	/**
 	 * @var  string  controller directory
@@ -554,7 +554,8 @@ class Kohana_Request {
 			}
 		}
 
-		throw new Kohana_Request_Exception('Unable to find a route to handle :uri', array(':uri' => $uri));
+		// No matching route for this URI
+		$this->request->status = 404;
 	}
 
 	/**
@@ -565,17 +566,6 @@ class Kohana_Request {
 	public function __toString()
 	{
 		return (string) $this->response;
-	}
-
-	/**
-	 * Generates a complete URL for the current route.
-	 *
-	 * @param   array   additional route parameters
-	 * @return  string
-	 */
-	public function url(array $params = NULL)
-	{
-		return Kohana::$base_url.$this->uri($params);
 	}
 
 	/**
@@ -620,61 +610,6 @@ class Kohana_Request {
 	}
 
 	/**
-	 * Gets an named header.
-	 *
-	 * @param   string   header name
-	 * @return  string   header value
-	 * @return  FALSE    if no header is found
-	 */
-	public function get_header($name)
-	{
-		// The header name is always stored lowercase
-		$name = strtolower($name);
-
-		return isset($this->headers[$name]) ? $this->headers[$name] : FALSE;
-	}
-
-	/**
-	 * Sets an named header. Use NULL as the header value to remove it from
-	 * the header list.
-	 *
-	 * @param   string   header name
-	 * @param   string   header value
-	 * @return  $this
-	 */
-	public function set_header($name, $value)
-	{
-		// The header name is always stored lowercase
-		$name = strtolower($name);
-
-		if ($value === NULL)
-		{
-			// Remove the header
-			unset($this->headers[$name]);
-		}
-		else
-		{
-			// Add the header to the list
-			$this->headers[$name] = $value;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Sets an unnamed header. Raw headers cannot be retrieved with get_header!
-	 *
-	 * @param   string   header string
-	 * @return  $this
-	 */
-	public function set_raw_header($value)
-	{
-		$this->headers[] = $value;
-
-		return $this;
-	}
-
-	/**
 	 * Sends the response status and all set headers.
 	 *
 	 * @return  $this
@@ -693,10 +628,6 @@ class Kohana_Request {
 			{
 				if (is_string($name))
 				{
-					// Convert the header name to Title-Case, to match RFC spec
-					$name = str_replace('-', ' ', $name);
-					$name = str_replace(' ', '-', ucwords($name));
-
 					// Combine the name and value to make a raw header
 					$value = "{$name}: {$value}";
 				}
@@ -722,7 +653,7 @@ class Kohana_Request {
 		$this->status = $code;
 
 		// Set the location header
-		$this->set_header('location', $url);
+		$this->headers['Location'] = $url;
 
 		// Send headers
 		$this->send_headers();
@@ -790,6 +721,11 @@ class Kohana_Request {
 			$file = fopen($filename, 'rb');
 		}
 
+		// Set the headers for a download
+		$this->headers['Content-Disposition'] = 'attachment; filename="'.$download.'"';
+		$this->headers['Content-Type']        = $mime;
+		$this->headers['Content-Length']      = $size;
+
 		// Set the starting offset and length to send
 		$ranges = NULL;
 
@@ -801,17 +737,8 @@ class Kohana_Request {
 			}
 
 			// Accept accepted range type
-			$this->set_header('accept-ranges', 'bytes');
+			$this->headers['Accept-Ranges'] = 'bytes';
 		}
-
-		// Set the headers
-		$this->set_header('content-disposition', 'attachment; filename="'.$download.'"');
-
-		// Set the content type of the response
-		$this->set_header('content-type', $mime);
-
-		// Set the content size in bytes
-		$this->set_header('content-length', $size);
 
 		// Send all headers now
 		$this->send_headers();
@@ -847,7 +774,7 @@ class Kohana_Request {
 		fclose($file);
 
 		// Stop execution
-		exit(0);
+		exit;
 	}
 
 	/**
@@ -926,36 +853,43 @@ class Kohana_Request {
 
 		return $this;
 	}
-	
+
 	/**
-	 * Validate cache
-	 * Checks the browser cache to determine whether the request needs to be sent or not
-	 * Currently only makes use of (strong) etags
+	 * Checks the browser cache to determine whether the request needs to be
+	 * sent or not. Only (strong) etags are supported.
+	 *
+	 * @return  $this
 	 */
 	public function validate_cache()
 	{
-	    //Request must of been executed
-	    if(isset($this->response) === false) throw new Kohana_Request_Exception('No response yet associated with request');
-	    
-	    //Generate a unique etag for the returnable resource
-	    $etag = '"' . sha1($this->response) . '"';
+		if ($this->response === NULL)
+		{
+			throw new Kohana_Request_Exception('No response yet associated with request');
+		}
 
-        //Only set cache-controll if not allready set - this means etags can be used in conjunction with max-age etc
-        if($this->get_header('Cache-Control') === false)
-        {
-            $this->set_header('Cache-Control', 'must-revalidate');
-        }
-        
-        $this->set_header('ETag', $etag);
-        
-        if(isset($_SERVER['HTTP_IF_NONE_MATCH']) AND $_SERVER['HTTP_IF_NONE_MATCH'] == $etag)
-        {
-            //No need to send data again
-            $this->status = 304;
-            $this->send_headers();
-            exit;
-        }
-        return $this;
+		// Generate a unique hash for the response
+		$etag = '"'.sha1($this->response).'"';
+
+		// Set the ETag header
+		$this->headers['ETag'] = $etag;
+
+		// Add the Cache-Control header if it is not already set
+		// This allows etags to be used with Max-Age, etc
+		$this->headers += array(
+			'Cache-Control' => 'must-revalidate',
+		);
+
+		if (isset($_SERVER['HTTP_IF_NONE_MATCH']) AND $_SERVER['HTTP_IF_NONE_MATCH'] === $etag)
+		{
+			// No need to send data again
+			$this->status = 304;
+			$this->send_headers();
+
+			// Stop execution
+			exit;
+		}
+
+		return $this;
 	}
 
 } // End Request

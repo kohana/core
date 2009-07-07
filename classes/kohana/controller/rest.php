@@ -21,7 +21,7 @@ abstract class Controller_REST extends Controller {
 			$this->request->status = 405;
 			$this->request->action = 'invalid';
 
-			$this->request->set_header('Allow', implode(', ', array_keys($this->_action_map)));
+			$this->request->header('Allow', implode(', ', array_keys($this->_action_map)));
 		}
 		else
 		{
