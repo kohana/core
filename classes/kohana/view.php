@@ -124,6 +124,28 @@ class Kohana_View {
 	}
 
 	/**
+	 * Magic method, determines if a variable is set and is not NULL.
+	 *
+	 * @param   string  variable name
+	 * @return  boolean
+	 */
+	public function __isset($key)
+	{
+		return (isset($this->_data[$key]) OR isset(View::$_global_data[$key]));
+	}
+
+	/**
+	 * Magic method, unsets a given variable.
+	 *
+	 * @param   string  variable name
+	 * @return  void
+	 */
+	public function __unset($key)
+	{
+		unset($this->_data[$key], View::$_global_data[$key]);
+	}
+
+	/**
 	 * Magic method, returns the output of render(). If any exceptions are
 	 * thrown, the exception output will be returned instead.
 	 *
