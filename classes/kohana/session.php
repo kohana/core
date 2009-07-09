@@ -32,7 +32,10 @@ abstract class Kohana_Session {
 			$class = 'Session_'.ucfirst($type);
 
 			// Create a new session instance
-			Session::$instances[$type] = new $class($config, $id);
+			Session::$instances[$type] = $session = new $class($config, $id);
+
+			// Write the session at shutdown
+			register_shutdown_function(array($session, 'write'));
 		}
 
 		return Session::$instances[$type];
@@ -216,6 +219,12 @@ abstract class Kohana_Session {
 	 */
 	public function write()
 	{
+		if (headers_sent())
+		{
+			// Session cannot be written after headers are sent
+			return FALSE;
+		}
+
 		// Set the last active timestamp
 		$this->_data['last_active'] = time();
 
