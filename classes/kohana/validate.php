@@ -527,7 +527,7 @@ class Kohana_Validate extends ArrayObject {
 	 *                ->add_rule('username', 'length', array(4, 32));
 	 *
 	 * @param   string  field name
-	 * @param   string  function or method name
+	 * @param   string  function or static method name
 	 * @param   array   extra parameters for the callback
 	 * @return  $this
 	 */
@@ -541,6 +541,23 @@ class Kohana_Validate extends ArrayObject {
 
 		// Store the rule and params for this rule
 		$this->rules[$field][$rule] = (array) $params;
+
+		return $this;
+	}
+
+	/**
+	 * Add rules using an array.
+	 *
+	 * @param   string  field name
+	 * @param   array   list of functions or static method name
+	 * @return  $this
+	 */
+	public function rule_set($field, array $rules)
+	{
+		foreach ($rules as $rule => $params)
+		{
+			$this->rule($field, $rule, $params);
+		}
 
 		return $this;
 	}
