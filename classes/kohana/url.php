@@ -23,16 +23,8 @@ class Kohana_URL {
 	{
 		if ($protocol === TRUE)
 		{
-			if (isset($_SERVER['HTTPS']) AND $_SERVER['HTTPS'] !== 'off')
-			{
-				// Secure HTTP connection
-				$protocol = 'https';
-			}
-			else
-			{
-				// Standard HTTP connection
-				$protocol = 'http';
-			}
+			// Use the current protocol
+			Request::$protocol;
 		}
 
 		// Start with the configured base URL
