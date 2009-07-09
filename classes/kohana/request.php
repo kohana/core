@@ -852,23 +852,39 @@ class Kohana_Request {
 
 		return $this;
 	}
-
+	
+	
 	/**
-	 * Checks the browser cache to determine whether the request needs to be
-	 * sent or not. Only (strong) etags are supported.
-	 *
-	 * @return  $this
+	 * Generate ETag
+	 * Generates an ETag from the response ready to be returned
+	 * 
+	 * @throws Kohana_Request_Exception
+	 * @return String Generated ETag
 	 */
-	public function validate_cache()
+	public function generate_etag()
 	{
-		if ($this->response === NULL)
+	    if ($this->response === NULL)
 		{
-			throw new Kohana_Request_Exception('No response yet associated with request');
+			throw new Kohana_Request_Exception('No response yet associated with request - cannot auto generate resource ETag');
 		}
 
 		// Generate a unique hash for the response
-		$etag = '"'.sha1($this->response).'"';
-
+		return '"'.sha1($this->response).'"';
+	}
+	
+	
+	/**
+	 * Check Cache
+	 * Checks the browser cache to see the response needs to be returned
+	 * 
+	 * @param String Resource ETag
+	 * @throws Kohana_Request_Exception
+	 * @chainable
+	 */
+	public function check_cache($etag = null)
+	{
+	    $etag = ($etag) ? $etag : $this->generate_etag();
+	
 		// Set the ETag header
 		$this->headers['ETag'] = $etag;
 
@@ -888,7 +904,7 @@ class Kohana_Request {
 			exit;
 		}
 
-		return $this;
+		return $this;    
 	}
 
 } // End Request
