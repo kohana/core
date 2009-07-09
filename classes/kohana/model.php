@@ -14,11 +14,18 @@ abstract class Kohana_Model {
 
 	/**
 	 * Loads the database.
-	 * 
+	 *
+	 * @param   mixed  Database instance object or string
 	 * @return  void
 	 */
-	public function __construct()
+	public function __construct($db = NULL)
 	{
+		if ($db !== NULL)
+		{
+			// Set the database instance name
+			$this->_db = $db;
+		}
+
 		if (is_string($this->_db))
 		{
 			// Load the database
