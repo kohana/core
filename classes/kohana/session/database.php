@@ -131,13 +131,12 @@ class Kohana_Session_Database extends Session {
 			->param(':active',   $this->_data['last_active'])
 			->param(':contents', $this->__toString());
 
-		// Execute the query
-		$query->execute($this->_db);
-
 		try
 		{
+			// Execute the query
+			$query->execute($this->_db);
 		}
-		catch (Exeception $e)
+		catch (Exception $e)
 		{
 			// Ignore all errors when a write fails
 			return FALSE;
