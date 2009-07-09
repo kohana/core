@@ -642,6 +642,12 @@ class Kohana_Request {
 	 */
 	public function redirect($url, $code = 302)
 	{
+		if (strpos($url, '://') === FALSE)
+		{
+			// Make the URI into a URL
+			$url = URL::site($url);
+		}
+
 		// Set the response status
 		$this->status = $code;
 
@@ -652,7 +658,7 @@ class Kohana_Request {
 		$this->send_headers();
 
 		// Stop execution
-		exit(0);
+		exit;
 	}
 
 	/**
