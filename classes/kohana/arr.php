@@ -111,7 +111,7 @@ class Kohana_Arr {
 	 * Note that this function does not validate the callback string.
 	 *
 	 *     // Get the callback function and parameters
-	 *     list($func, $params) = Arr::callback('Foo::bar[apple,orange]');
+	 *     list($func, $params) = Arr::callback('Foo::bar(apple,orange)');
 	 *
 	 *     // Get the result of the callback
 	 *     $result = call_user_func_array($func, $params);
@@ -125,7 +125,7 @@ class Kohana_Arr {
 		$command = $params = NULL;
 
 		// command[param,param]
-		if (preg_match('/^([^\[]*+)\[(.*)\]$/', $str, $match))
+		if (preg_match('/^([^\(]*+)\((.*)\)$/', $str, $match))
 		{
 			// command
 			$command = $match[1];
