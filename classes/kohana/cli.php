@@ -21,19 +21,14 @@ class Kohana_CLI {
 	 */
 	public static function options($options)
 	{
-		if ( ! Kohana::$is_cli)
-		{
-			// Not in command-line mode
-			return FALSE;
-		}
-
 		// Get all of the requested options
 		$options = func_get_args();
 
 		// Found option values
 		$values = array();
 
-		for ($i = 1, $max = $_SERVER['argc']; $i < $max; $i++)
+		// Skip the first option, it is always the file executed
+		for ($i = 1; $i < $_SERVER['argc']; $i++)
 		{
 			if ( ! isset($_SERVER['argv'][$i]))
 			{
@@ -44,9 +39,9 @@ class Kohana_CLI {
 			// Get the option
 			$opt = $_SERVER['argv'][$i];
 
-			if ( ! (isset($opt[0]) AND isset($opt[1]) AND $opt[0] === '-' AND $opt[0] === $opt[1]))
+			if (substr($opt, 0, 2) !== '--')
 			{
-				// This is not an option or it does not a value
+				// This is not an option argument
 				continue;
 			}
 
