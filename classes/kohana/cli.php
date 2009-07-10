@@ -46,17 +46,27 @@ class Kohana_CLI {
 
 			if ( ! (isset($opt[0]) AND isset($opt[1]) AND $opt[0] === '-' AND $opt[0] === $opt[1]))
 			{
-				// This is not an option
+				// This is not an option or it does not a value
 				continue;
 			}
 
 			// Remove the "--" prefix
 			$opt = substr($opt, 2);
 
-			if (in_array($opt, $options) AND isset($_SERVER['argv'][$i + 1]))
+			if (strpos($opt, '='))
+			{
+				// Separate the name and value
+				list ($opt, $value) = explode('=', $opt);
+			}
+			else
+			{
+				$value = NULL;
+			}
+
+			if (in_array($opt, $options))
 			{
 				// Set the given value
-				$values[$opt] = $_SERVER['argv'][$i + 1];
+				$values[$opt] = $value;
 			}
 		}
 
