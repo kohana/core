@@ -806,9 +806,13 @@ final class Kohana {
 	 * Borrows heavily on concepts from the Debug class of {@link http://nettephp.com/ Nette}.
 	 *
 	 * @param   mixed    variable to dump
-	 * @param   integer  level of recursion
 	 * @return  string
 	 */
+	public static function dump($value)
+	{
+		return self::_dump($value);
+	}
+
 	private static function _dump( & $var, $level = 0)
 	{
 		if ($var === NULL)
