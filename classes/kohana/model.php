@@ -9,6 +9,21 @@
  */
 abstract class Kohana_Model {
 
+	/**
+	 * Create a new model instance.
+	 *
+	 * @param   string   model name
+	 * @param   mixed    Database instance object or string
+	 * @return  Model
+	 */
+	public static function factory($name, $db = NULL)
+	{
+		// Add the model prefix
+		$class = 'Model_'.$name;
+
+		return new $class($db);
+	}
+
 	// Database instance
 	protected $_db = 'default';
 
