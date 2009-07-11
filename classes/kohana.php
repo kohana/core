@@ -473,7 +473,7 @@ final class Kohana {
 	 * @param   string  directory name
 	 * @return  array
 	 */
-	public static function list_files($directory = NULL)
+	public static function list_files($directory = NULL, array $paths = NULL)
 	{
 		if ($directory !== NULL)
 		{
@@ -481,10 +481,16 @@ final class Kohana {
 			$directory .= DIRECTORY_SEPARATOR;
 		}
 
+		if ($paths === NULL)
+		{
+			// Use the default paths
+			$paths = self::$_paths;
+		}
+
 		// Create an array for the files
 		$found = array();
 
-		foreach (self::$_paths as $path)
+		foreach ($paths as $path)
 		{
 			if (is_dir($path.$directory))
 			{
