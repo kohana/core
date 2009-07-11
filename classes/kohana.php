@@ -862,7 +862,18 @@ final class Kohana {
 		}
 		elseif (is_string($var))
 		{
-			return '<small>string</small><span>('.strlen($var).')</span> "'.htmlspecialchars($var, ENT_NOQUOTES, self::$charset).'"';
+			if (strlen($var) > 128)
+			{
+				// Encode the truncated string
+				$str = htmlspecialchars(substr($var, 0, 128), ENT_NOQUOTES, self::$charset).'&nbsp;&hellip;';
+			}
+			else
+			{
+				// Encode the string
+				$str = htmlspecialchars($var, ENT_NOQUOTES, self::$charset);
+			}
+
+			return '<small>string</small><span>('.strlen($var).')</span> "'.$str.'"';
 		}
 		elseif (is_array($var))
 		{
