@@ -497,7 +497,8 @@ class Kohana_Validate extends ArrayObject {
 	 * Overwrites or appends filters to a field. Each filter will be executed once.
 	 * All rules must be valid callbacks.
 	 *
-	 *     $validation->add_filter(TRUE, 'trim');
+	 *     // Run trim() on all fields
+	 *     $validation->filter(TRUE, 'trim');
 	 *
 	 * @param   string  field name
 	 * @param   mixed   valid PHP callback
@@ -523,8 +524,9 @@ class Kohana_Validate extends ArrayObject {
 	 * Overwrites or appends rules to a field. Each rule will be executed once.
 	 * All rules must be string names of functions method names.
 	 *
-	 *     $validation->add_rule('username', 'required')
-	 *                ->add_rule('username', 'length', array(4, 32));
+	 *     // The "username" must not be empty and have a minimum length of 4
+	 *     $validation->rule('username', 'not_empty')
+	 *                ->rule('username', 'min_length', array(4));
 	 *
 	 * @param   string  field name
 	 * @param   string  function or static method name
@@ -567,7 +569,8 @@ class Kohana_Validate extends ArrayObject {
 	 * No extra parameters can be passed as the format for callbacks is
 	 * predefined as (Validate $array, $field, array $errors).
 	 *
-	 *     $validation->add_callback('username', array($this, 'check_username'));
+	 *     // The "username" must be checked with a custom method
+	 *     $validation->callback('username', array($this, 'check_username'));
 	 *
 	 * To add a callback to every field already set, use TRUE for the field name.
 	 *
@@ -599,7 +602,10 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
-	 * Executes all validation filters, rules, and callbacks.
+	 * Executes all validation filters, rules, and callbacks. Errors will be
+	 * stored in the variable passed by reference.
+	 *
+	 *     $validation->check($errors);
 	 *
 	 * @param   array    error list
 	 * @return  boolean
