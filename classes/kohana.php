@@ -1129,7 +1129,7 @@ final class Kohana {
 			// function()
 			$function = $step['function'];
 
-			if (in_array($step['function'], $statements))
+			if (in_array($step['function'], $statements) AND isset($step['args']))
 			{
 				// Sanitize the file path
 				$args = array($step['args'][0]);
