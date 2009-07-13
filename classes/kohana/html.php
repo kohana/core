@@ -185,14 +185,15 @@ class Kohana_HTML {
 	 *
 	 * @param   string  file name
 	 * @param   array   default attributes
+	 * @param   boolean  include the index page
 	 * @return  string
 	 */
-	public static function style($file, array $attributes = NULL)
+	public static function style($file, array $attributes = NULL, $index = FALSE)
 	{
 		if (strpos($file, '://') === FALSE)
 		{
 			// Add the base URL
-			$file = URL::base(FALSE).$file;
+			$file = URL::base($index).$file;
 		}
 
 		// Set the stylesheet link
@@ -212,14 +213,15 @@ class Kohana_HTML {
 	 *
 	 * @param   string   file name
 	 * @param   array    default attributes
+	 * @param   boolean  include the index page
 	 * @return  string
 	 */
-	public static function script($file, array $attributes = NULL)
+	public static function script($file, array $attributes = NULL, $index = FALSE)
 	{
 		if (strpos($file, '://') === FALSE)
 		{
 			// Add the base URL
-			$file = URL::base(FALSE).$file;
+			$file = URL::base($index).$file;
 		}
 
 		// Set the script link
