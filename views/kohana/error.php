@@ -50,7 +50,7 @@ function koggle(elem)
 	<h1><span class="type"><?php echo $type ?> [ <?php echo $code ?> ]:</span> <span class="message"><?php echo $message ?></span></h1>
 	<div id="<?php echo $error_id ?>" class="content">
 		<p><span class="file"><?php echo Kohana::debug_path($file) ?> [ <?php echo $line ?> ]</span></p>
-		<pre class="source"><code><?php echo $source ?></code></pre>
+		<?php echo Kohana::debug_source($file, $line) ?>
 		<ol class="trace">
 		<?php foreach (Kohana::trace($trace) as $i => $step): ?>
 			<li>

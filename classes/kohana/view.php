@@ -159,7 +159,7 @@ class Kohana_View {
 		}
 		catch (Exception $e)
 		{
-			return $e->getMessage().' in '.Kohana::debug_path($e->getFile()).' [ '.$e->getLine().' ]';
+			return Kohana::exception_text($e);
 		}
 	}
 
