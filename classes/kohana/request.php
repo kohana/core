@@ -826,8 +826,11 @@ class Kohana_Request {
 		}
 		catch (Exception $e)
 		{
-			// Delete the benchmark, it is invalid
-			Profiler::delete($benchmark);
+			if (isset($benchmark))
+			{
+				// Delete the benchmark, it is invalid
+				Profiler::delete($benchmark);
+			}
 
 			if ($e instanceof ReflectionException)
 			{
