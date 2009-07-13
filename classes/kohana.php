@@ -1078,7 +1078,7 @@ final class Kohana {
 		// Close the file
 		fclose($file);
 
-		return $source;
+		return '<pre class="source"><code>'.$source.'</code></pre>';
 	}
 
 	/**
