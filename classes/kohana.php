@@ -577,8 +577,9 @@ final class Kohana {
 	 *
 	 * @param   string   group name
 	 * @param   boolean  enable caching
+	 * @return  Kohana_Config
 	 */
-	public static function config($group, $cache = TRUE)
+	public static function config($group, $cache = NULL)
 	{
 		return new Kohana_Config($group, $cache);
 	}
