@@ -356,33 +356,14 @@ class Kohana_Validate extends ArrayObject {
 	/**
 	 * Tests if a number is within a range.
 	 *
-	 * @param   integer  number to check
-	 * @param   array    valid range of input
+	 * @param   string   number to check
+	 * @param   integer  minimum value
+	 * @param   integer  maximum value
 	 * @return  boolean
 	 */
-	public static function range($number, array $range)
+	public static function range($number, $min, $max)
 	{
-		// Invalid by default
-		$status = FALSE;
-
-		if (is_int($number) OR ctype_digit($number))
-		{
-			if (count($range) > 1)
-			{
-				if ($number >= $range[0] AND $number <= $range[1])
-				{
-					// Number is within the required range
-					$status = TRUE;
-				}
-			}
-			elseif ($number >= $range[0])
-			{
-				// Number is greater than the minimum
-				$status = TRUE;
-			}
-		}
-
-		return $status;
+		return ($number >= $min AND $number <= $max);
 	}
 
 	/**
