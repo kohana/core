@@ -290,9 +290,16 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public static function alpha($str, $utf8 = FALSE)
 	{
-		return ($utf8 === TRUE)
-			? (bool) preg_match('/^\pL++$/uD', (string) $str)
-			: ctype_alpha((string) $str);
+		$str = (string) $str;
+
+		if ($utf8 === TRUE)
+		{
+			return (bool) preg_match('/^\pL++$/uD', $str);
+		}
+		else
+		{
+			return ctype_alpha($str);
+		}
 	}
 
 	/**
@@ -304,9 +311,14 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public static function alpha_numeric($str, $utf8 = FALSE)
 	{
-		return ($utf8 === TRUE)
-			? (bool) preg_match('/^[\pL\pN]++$/uD', (string) $str)
-			: ctype_alnum((string) $str);
+		if ($utf8 === TRUE)
+		{
+			return (bool) preg_match('/^[\pL\pN]++$/uD', $str);
+		}
+		else
+		{
+			return ctype_alnum($str);
+		}
 	}
 
 	/**
@@ -318,9 +330,16 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public static function alpha_dash($str, $utf8 = FALSE)
 	{
-		return ($utf8 === TRUE)
-			? (bool) preg_match('/^[-\pL\pN_]++$/uD', (string) $str)
-			: (bool) preg_match('/^[-a-z0-9_]++$/iD', (string) $str);
+		if ($utf8 === TRUE)
+		{
+			$regex = '/^[-\pL\pN_]++$/uD';
+		}
+		else
+		{
+			$regex = '/^[-a-z0-9_]++$/iD';
+		}
+
+		return (bool) preg_match($regex, $str);
 	}
 
 	/**
@@ -332,25 +351,31 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public static function digit($str, $utf8 = FALSE)
 	{
-		return ($utf8 === TRUE)
-			? (bool) preg_match('/^\pN++$/uD', (string) $str)
-			: ctype_digit((string) $str);
+		if ($utf8 === TRUE)
+		{
+			return (bool) preg_match('/^\pN++$/uD', $str);
+		}
+		else
+		{
+			return ctype_digit($str);
+		}
 	}
 
 	/**
 	 * Checks whether a string is a valid number (negative and decimal numbers allowed).
 	 *
-	 * @see Uses locale conversion to allow decimal point to be locale specific.
-	 * @see http://www.php.net/manual/en/function.localeconv.php
+	 * Uses {@link http://www.php.net/manual/en/function.localeconv.php locale conversion}
+	 * to allow decimal point to be locale specific.
 	 *
 	 * @param   string   input string
 	 * @return  boolean
 	 */
 	public static function numeric($str)
 	{
-		// Use localeconv to set the decimal_point value: Usually a comma or period.
-		$locale = localeconv();
-		return (bool) preg_match('/^-?[0-9'.$locale['decimal_point'].']++$/D', (string) $str);
+		// Get the decimal point for the current locale
+		list($decimal) = array_values(localeconv());
+
+		return (bool) preg_match('/^-?[0-9'.$decimal.']++$/D', (string) $str);
 	}
 
 	/**
@@ -372,42 +397,22 @@ class Kohana_Validate extends ArrayObject {
 	 * array(2) would force the number to have 2 decimal places, array(4,2)
 	 * would force the number to have 4 digits and 2 decimal places.
 	 *
-	 * @param   string   input string
-	 * @param   array    decimal format: y or x,y
+	 * @param   string   number to check
+	 * @param   integer  number of decimal places
 	 * @return  boolean
 	 */
-	public static function decimal($str, $format = NULL)
+	public static function decimal($str, $places = 2)
 	{
-		// Create the pattern
-		$pattern = '/^[0-9]%s\.[0-9]%s$/';
+		// Get the decimal point for the current locale
+		list($decimal) = array_values(localeconv());
 
-		if ( ! empty($format))
-		{
-			if (count($format) > 1)
-			{
-				// Use the format for number and decimal length
-				$pattern = sprintf($pattern, '{'.$format[0].'}', '{'.$format[1].'}');
-			}
-			elseif (count($format) > 0)
-			{
-				// Use the format as decimal length
-				$pattern = sprintf($pattern, '+', '{'.$format[0].'}');
-			}
-		}
-		else
-		{
-			// No format
-			$pattern = sprintf($pattern, '+', '+');
-		}
-
-		return (bool) preg_match($pattern, (string) $str);
+		return (bool) preg_match('/^[0-9]+'.preg_quote($decimal).'[0-9]{'.(int) $places.'}$/', $str);
 	}
 
 	/**
 	 * Checks if a string is a proper hexadecimal HTML color value. The validation
 	 * is quite flexible as it does not require an initial "#" and also allows for
 	 * the short notation using only three instead of six hexadecimal characters.
-	 * You may want to normalize these values with Format::color().
 	 *
 	 * @param   string   input string
 	 * @return  boolean
