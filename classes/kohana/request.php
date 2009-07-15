@@ -95,20 +95,17 @@ class Kohana_Request {
 	public static $is_ajax = FALSE;
 
 	/**
-	 * @var  Request  primary request
-	 */
-	public static $instance;
-
-	/**
 	 * Main request singleton instance. If no URI is provided, the URI will
 	 * be automatically detected using PATH_INFO, REQUEST_URI, or PHP_SELF.
 	 *
 	 * @param   string   URI of the request
 	 * @return  Request
 	 */
-	public static function instance( & $uri = FALSE)
+	public static function instance( & $uri = TRUE)
 	{
-		if (Request::$instance === NULL)
+		static $instance;
+
+		if ($instance === NULL)
 		{
 			if (Kohana::$is_cli)
 			{
@@ -199,18 +196,16 @@ class Kohana_Request {
 					parse_str(file_get_contents('php://input'), $_POST);
 				}
 
-				if ($uri === FALSE)
+				if ($uri === TRUE)
 				{
 					if (isset($_SERVER['PATH_INFO']))
 					{
-						// PATH_INFO is most realiable way to handle routing, as it
-						// does not include the document root or index file
+						// PATH_INFO does not contain the docroot or index
 						$uri = $_SERVER['PATH_INFO'];
 					}
 					else
 					{
-						// REQUEST_URI and PHP_SELF both provide the full path,
-						// including the document root and index file
+						// REQUEST_URI and PHP_SELF include the docroot and index
 						if (isset($_SERVER['REQUEST_URI']))
 						{
 							$uri = $_SERVER['REQUEST_URI'];
@@ -219,12 +214,26 @@ class Kohana_Request {
 						{
 							$uri = $_SERVER['PHP_SELF'];
 						}
-
-						if (isset($_SERVER['SCRIPT_NAME']) AND strpos($uri, $_SERVER['SCRIPT_NAME']) === 0)
+						else
 						{
-							// Remove the document root and index file from the URI
-							$uri = substr($uri, strlen($_SERVER['SCRIPT_NAME']));
+							// If you ever see this error, please report an issue and include a dump of $_SERVER
+							throw new Kohana_Exception('Unable to detect the URI using PATH_INFO, REQUEST_URI, or PHP_SELF');
 						}
+
+						// Get the path from the base URL, including the index file
+						$base_url = parse_url(Kohana::$base_url.Kohana::$index_file, PHP_URL_PATH);
+
+						for ($i = 0, $max = strlen($base_url); $i < $max; $i++)
+						{
+							if ( ! isset($uri[$i]) OR $base_url[$i] !== $uri[$i])
+							{
+								// The URI has diverged from the base URL
+								break;
+							}
+						}
+
+						// Remove the base URL from the URI
+						$uri = substr($uri, $i);
 					}
 				}
 			}
@@ -236,10 +245,10 @@ class Kohana_Request {
 			$uri = preg_replace('#\.[\s./]*/#', '', $uri);
 
 			// Create the instance singleton
-			Request::$instance = new Request($uri);
+			$instance = new Request($uri);
 		}
 
-		return Request::$instance;
+		return $instance;
 	}
 
 	/**
