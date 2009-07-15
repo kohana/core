@@ -780,11 +780,8 @@ class Kohana_Validate extends ArrayObject {
 					// Make a text list of the parameters without the value
 					$params = implode(', ', array_slice($params, 1));
 
-					// Translate the field name
-					$field = __($this->labels[$field]);
-
 					// Add the field error using i18n
-					$errors[$field] = __(Validate::$messages[$rule], array(':field'  => $field, ':params' => $params));
+					$errors[$field] = __(Validate::$messages[$rule], array(':field'  => __($this->labels[$field]), ':params' => $params));
 
 					// This field has an error, stop executing rules
 					break;
