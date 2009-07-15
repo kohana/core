@@ -1184,7 +1184,14 @@ final class Kohana {
 			{
 				if (isset($step['class']))
 				{
-					$reflection = new ReflectionMethod($step['class'], $step['function']);
+					if (method_exists($step['class'], $step['function']))
+					{
+						$reflection = new ReflectionMethod($step['class'], $step['function']);
+					}
+					else
+					{
+						$reflection = new ReflectionMethod($step['class'], '__call');
+					}
 				}
 				else
 				{
