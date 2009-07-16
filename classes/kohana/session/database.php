@@ -48,7 +48,7 @@ class Kohana_Session_Database extends Session {
 	}
 
 	/**
-	 * Loads the session data from the database.
+	 * Loads the session contents from the database.
 	 *
 	 * @param   string   session id
 	 * @return  string
@@ -57,8 +57,8 @@ class Kohana_Session_Database extends Session {
 	{
 		if ($id OR $id = Cookie::get($this->_name))
 		{
-			$result = DB::query(Database::SELECT, "SELECT data FROM {$this->_table} WHERE session_id = :id LIMIT 1")
-				->set(':id', $id)
+			$result = DB::query(Database::SELECT, "SELECT contents FROM {$this->_table} WHERE session_id = :id LIMIT 1")
+				->param(':id', $id)
 				->execute($this->_db);
 
 			if ($result->count())
@@ -66,8 +66,8 @@ class Kohana_Session_Database extends Session {
 				// Set the current session id
 				$this->_session_id = $this->_update_id = $id;
 
-				// Return the data string
-				return $result->get('data');
+				// Return the contents
+				return $result->get('contents');
 			}
 		}
 
@@ -109,31 +109,34 @@ class Kohana_Session_Database extends Session {
 		if ($this->_update_id === NULL)
 		{
 			// Insert a new row
-			$query = DB::query(Database::INSERT, "INSERT INTO {$this->_table} (session_id, last_active, data) VALUES (:new_id, :active, :data)");
+			$query = DB::query(Database::INSERT,
+				"INSERT INTO {$this->_table} (session_id, last_active, contents) VALUES (:new_id, :active, :contents)");
 		}
 		elseif ($this->_update_id === $this->_session_id)
 		{
-			// Update just the activity and data
-			$query = DB::query(Database::UPDATE, "UPDATE {$this->_table} SET last_active = :active, data = :data WHERE session_id = :old_id");
+			// Update just the activity and contents
+			$query = DB::query(Database::UPDATE,
+				"UPDATE {$this->_table} SET last_active = :active, contents = :contents WHERE session_id = :old_id");
 		}
 		else
 		{
 			// Update all fields
-			$query = DB::query(Database::UPDATE, "UPDATE {$this->_table} SET session_id = :new_id, last_active = :active, data = :data WHERE session_id = :old_id");
+			$query = DB::query(Database::UPDATE,
+				"UPDATE {$this->_table} SET session_id = :new_id, last_active = :active, contents = :contents WHERE session_id = :old_id");
 		}
 
 		$query
-			->set(':new_id', $this->_session_id)
-			->set(':old_id', $this->_update_id)
-			->set(':active', $this->_data['last_active'])
-			->set(':data', $this->__toString());
+			->param(':new_id',   $this->_session_id)
+			->param(':old_id',   $this->_update_id)
+			->param(':active',   $this->_data['last_active'])
+			->param(':contents', $this->__toString());
 
 		try
 		{
 			// Execute the query
 			$query->execute($this->_db);
 		}
-		catch (Exeception $e)
+		catch (Exception $e)
 		{
 			// Ignore all errors when a write fails
 			return FALSE;

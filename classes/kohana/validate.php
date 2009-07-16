@@ -290,9 +290,16 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public static function alpha($str, $utf8 = FALSE)
 	{
-		return ($utf8 === TRUE)
-			? (bool) preg_match('/^\pL++$/uD', (string) $str)
-			: ctype_alpha((string) $str);
+		$str = (string) $str;
+
+		if ($utf8 === TRUE)
+		{
+			return (bool) preg_match('/^\pL++$/uD', $str);
+		}
+		else
+		{
+			return ctype_alpha($str);
+		}
 	}
 
 	/**
@@ -304,9 +311,14 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public static function alpha_numeric($str, $utf8 = FALSE)
 	{
-		return ($utf8 === TRUE)
-			? (bool) preg_match('/^[\pL\pN]++$/uD', (string) $str)
-			: ctype_alnum((string) $str);
+		if ($utf8 === TRUE)
+		{
+			return (bool) preg_match('/^[\pL\pN]++$/uD', $str);
+		}
+		else
+		{
+			return ctype_alnum($str);
+		}
 	}
 
 	/**
@@ -318,9 +330,16 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public static function alpha_dash($str, $utf8 = FALSE)
 	{
-		return ($utf8 === TRUE)
-			? (bool) preg_match('/^[-\pL\pN_]++$/uD', (string) $str)
-			: (bool) preg_match('/^[-a-z0-9_]++$/iD', (string) $str);
+		if ($utf8 === TRUE)
+		{
+			$regex = '/^[-\pL\pN_]++$/uD';
+		}
+		else
+		{
+			$regex = '/^[-a-z0-9_]++$/iD';
+		}
+
+		return (bool) preg_match($regex, $str);
 	}
 
 	/**
@@ -332,57 +351,44 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public static function digit($str, $utf8 = FALSE)
 	{
-		return ($utf8 === TRUE)
-			? (bool) preg_match('/^\pN++$/uD', (string) $str)
-			: ctype_digit((string) $str);
+		if ($utf8 === TRUE)
+		{
+			return (bool) preg_match('/^\pN++$/uD', $str);
+		}
+		else
+		{
+			return ctype_digit($str);
+		}
 	}
 
 	/**
 	 * Checks whether a string is a valid number (negative and decimal numbers allowed).
 	 *
-	 * @see Uses locale conversion to allow decimal point to be locale specific.
-	 * @see http://www.php.net/manual/en/function.localeconv.php
+	 * Uses {@link http://www.php.net/manual/en/function.localeconv.php locale conversion}
+	 * to allow decimal point to be locale specific.
 	 *
 	 * @param   string   input string
 	 * @return  boolean
 	 */
 	public static function numeric($str)
 	{
-		// Use localeconv to set the decimal_point value: Usually a comma or period.
-		$locale = localeconv();
-		return (bool) preg_match('/^-?[0-9'.$locale['decimal_point'].']++$/D', (string) $str);
+		// Get the decimal point for the current locale
+		list($decimal) = array_values(localeconv());
+
+		return (bool) preg_match('/^-?[0-9'.$decimal.']++$/D', (string) $str);
 	}
 
 	/**
 	 * Tests if a number is within a range.
 	 *
-	 * @param   integer  number to check
-	 * @param   array    valid range of input
+	 * @param   string   number to check
+	 * @param   integer  minimum value
+	 * @param   integer  maximum value
 	 * @return  boolean
 	 */
-	public static function range($number, array $range)
+	public static function range($number, $min, $max)
 	{
-		// Invalid by default
-		$status = FALSE;
-
-		if (is_int($number) OR ctype_digit($number))
-		{
-			if (count($range) > 1)
-			{
-				if ($number >= $range[0] AND $number <= $range[1])
-				{
-					// Number is within the required range
-					$status = TRUE;
-				}
-			}
-			elseif ($number >= $range[0])
-			{
-				// Number is greater than the minimum
-				$status = TRUE;
-			}
-		}
-
-		return $status;
+		return ($number >= $min AND $number <= $max);
 	}
 
 	/**
@@ -391,42 +397,22 @@ class Kohana_Validate extends ArrayObject {
 	 * array(2) would force the number to have 2 decimal places, array(4,2)
 	 * would force the number to have 4 digits and 2 decimal places.
 	 *
-	 * @param   string   input string
-	 * @param   array    decimal format: y or x,y
+	 * @param   string   number to check
+	 * @param   integer  number of decimal places
 	 * @return  boolean
 	 */
-	public static function decimal($str, $format = NULL)
+	public static function decimal($str, $places = 2)
 	{
-		// Create the pattern
-		$pattern = '/^[0-9]%s\.[0-9]%s$/';
+		// Get the decimal point for the current locale
+		list($decimal) = array_values(localeconv());
 
-		if ( ! empty($format))
-		{
-			if (count($format) > 1)
-			{
-				// Use the format for number and decimal length
-				$pattern = sprintf($pattern, '{'.$format[0].'}', '{'.$format[1].'}');
-			}
-			elseif (count($format) > 0)
-			{
-				// Use the format as decimal length
-				$pattern = sprintf($pattern, '+', '{'.$format[0].'}');
-			}
-		}
-		else
-		{
-			// No format
-			$pattern = sprintf($pattern, '+', '+');
-		}
-
-		return (bool) preg_match($pattern, (string) $str);
+		return (bool) preg_match('/^[0-9]+'.preg_quote($decimal).'[0-9]{'.(int) $places.'}$/', $str);
 	}
 
 	/**
 	 * Checks if a string is a proper hexadecimal HTML color value. The validation
 	 * is quite flexible as it does not require an initial "#" and also allows for
 	 * the short notation using only three instead of six hexadecimal characters.
-	 * You may want to normalize these values with Format::color().
 	 *
 	 * @param   string   input string
 	 * @return  boolean
@@ -497,7 +483,8 @@ class Kohana_Validate extends ArrayObject {
 	 * Overwrites or appends filters to a field. Each filter will be executed once.
 	 * All rules must be valid callbacks.
 	 *
-	 *     $validation->add_filter(TRUE, 'trim');
+	 *     // Run trim() on all fields
+	 *     $validation->filter(TRUE, 'trim');
 	 *
 	 * @param   string  field name
 	 * @param   mixed   valid PHP callback
@@ -523,11 +510,12 @@ class Kohana_Validate extends ArrayObject {
 	 * Overwrites or appends rules to a field. Each rule will be executed once.
 	 * All rules must be string names of functions method names.
 	 *
-	 *     $validation->add_rule('username', 'required')
-	 *                ->add_rule('username', 'length', array(4, 32));
+	 *     // The "username" must not be empty and have a minimum length of 4
+	 *     $validation->rule('username', 'not_empty')
+	 *                ->rule('username', 'min_length', array(4));
 	 *
 	 * @param   string  field name
-	 * @param   string  function or method name
+	 * @param   string  function or static method name
 	 * @param   array   extra parameters for the callback
 	 * @return  $this
 	 */
@@ -546,11 +534,29 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
+	 * Add rules using an array.
+	 *
+	 * @param   string  field name
+	 * @param   array   list of functions or static method name
+	 * @return  $this
+	 */
+	public function rule_set($field, array $rules)
+	{
+		foreach ($rules as $rule => $params)
+		{
+			$this->rule($field, $rule, $params);
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Adds a callback to a field. Each callback will be executed only once.
 	 * No extra parameters can be passed as the format for callbacks is
 	 * predefined as (Validate $array, $field, array $errors).
 	 *
-	 *     $validation->add_callback('username', array($this, 'check_username'));
+	 *     // The "username" must be checked with a custom method
+	 *     $validation->callback('username', array($this, 'check_username'));
 	 *
 	 * To add a callback to every field already set, use TRUE for the field name.
 	 *
@@ -582,7 +588,10 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
-	 * Executes all validation filters, rules, and callbacks.
+	 * Executes all validation filters, rules, and callbacks. Errors will be
+	 * stored in the variable passed by reference.
+	 *
+	 *     $validation->check($errors);
 	 *
 	 * @param   array    error list
 	 * @return  boolean
@@ -771,11 +780,8 @@ class Kohana_Validate extends ArrayObject {
 					// Make a text list of the parameters without the value
 					$params = implode(', ', array_slice($params, 1));
 
-					// Translate the field name
-					$field = __($this->labels[$field]);
-
 					// Add the field error using i18n
-					$errors[$field] = __(Validate::$messages[$rule], array(':field'  => $field, ':params' => $params));
+					$errors[$field] = __(Validate::$messages[$rule], array(':field'  => __($this->labels[$field]), ':params' => $params));
 
 					// This field has an error, stop executing rules
 					break;

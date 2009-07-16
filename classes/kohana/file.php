@@ -15,7 +15,7 @@ class Kohana_File {
 	 * determining the mime type of a file.
 	 *
 	 * @param   string  file path
-	 * @return  string  mime type, on success
+	 * @return  string  mime type on success
 	 * @return  FALSE   on failure
 	 */
 	public static function mime($filename)
@@ -57,15 +57,26 @@ class Kohana_File {
 
 		if ( ! empty($extension))
 		{
-			// Guess the mime using the file extension
-			$mimes = Kohana::config('mimes');
-
-			if (isset($mimes[$extension]))
-				return $mimes[$extension][0];
+			return File::mime_by_ext($extension);
 		}
 
 		// Unable to find the mime-type
 		return FALSE;
+	}
+
+	/**
+	 * Return the mime type of an extension.
+	 *
+	 * @param   string  extension: php, pdf, txt, etc
+	 * @return  string  mime type on success
+	 * @return  FALSE   on failure
+	 */
+	public static function mime_by_ext($extension)
+	{
+		// Load all of the mime types
+		$mimes = Kohana::config('mimes');
+
+		return isset($mimes[$extension]) ? $mimes[$extension][0] : FALSE;
 	}
 
 	/**

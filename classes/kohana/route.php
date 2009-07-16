@@ -98,7 +98,7 @@ class Kohana_Route {
 	}
 
 	/**
-	 * Retrieves all named routes, with the default route last.
+	 * Retrieves all named routes.
 	 *
 	 * @return  array  named routes
 	 */

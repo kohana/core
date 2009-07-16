@@ -73,7 +73,7 @@ class Kohana_Date {
 
 		for ($i = $start; $i < $end; $i += $step)
 		{
-			$seconds[$i] = ($i < 10) ? '0'.$i : $i;
+			$seconds[$i] = sprintf('%02d', $i);
 		}
 
 		return $seconds;
@@ -122,7 +122,7 @@ class Kohana_Date {
 
 		for ($i = $start; $i <= $size; $i += $step)
 		{
-			$hours[$i] = $i;
+			$hours[$i] = (string) $i;
 		}
 
 		return $hours;
@@ -166,7 +166,7 @@ class Kohana_Date {
 			break;
 		}
 
-		return sprintf('%02s', $hour);
+		return sprintf('%02d', $hour);
 	}
 
 	/**
@@ -180,12 +180,15 @@ class Kohana_Date {
 	{
 		static $months;
 
+		if ($year === FALSE)
+		{
+			// Use the current year by default
+			$year = date('Y');
+		}
+
 		// Always integers
 		$month = (int) $month;
 		$year  = (int) $year;
-
-		// Use the current year by default
-		$year  = ($year == FALSE) ? date('Y') : $year;
 
 		// We use caching for months, because time functions are used
 		if (empty($months[$year][$month]))
@@ -197,7 +200,7 @@ class Kohana_Date {
 
 			for ($i = 1; $i < $total; $i++)
 			{
-				$months[$year][$month][$i] = $i;
+				$months[$year][$month][$i] = (string) $i;
 			}
 		}
 
@@ -235,7 +238,7 @@ class Kohana_Date {
 
 		for ($i = $start; $i < $end; $i++)
 		{
-			$years[$i] = $i;
+			$years[$i] = (string) $i;
 		}
 
 		return $years;

@@ -58,24 +58,25 @@ class Kohana_Config extends ArrayObject {
 			$cache = Kohana::$caching;
 		}
 
-		if ($cache === FALSE)
-		{
-			// Load the configuration
-			$config = Kohana_Config::load($group);
-		}
-		else
+		if ($cache === TRUE)
 		{
 			// Set the cache key
 			$cache_key = 'Kohana_Config::load("'.$group.'")';
 
-			if (($config = Kohana::cache($cache_key)) === NULL)
-			{
-				// Load the configuration, it has not been cached
-				$config = Kohana_Config::load($group);
+			// Load the configuration, it has not been cached
+			$config = Kohana::cache($cache_key);
+		}
 
-				// Create a cache of the configuration group
-				Kohana::cache($cache_key, $config);
-			}
+		if ( ! isset($config))
+		{
+			// Load the configuration
+			$config = Kohana_Config::load($group);
+		}
+
+		if (isset($cache_key))
+		{
+			// Cache the configuration
+			Kohana::cache($cache_key, $config);
 		}
 
 		// Load the array using the values as properties

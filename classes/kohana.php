@@ -30,6 +30,20 @@ final class Kohana {
 	const FILE_CACHE = ":header \n\n// :name\n\n:data\n";
 
 	/**
+	 * @var  array  PHP error code => human readable name
+	 */
+	public static $php_errors = array(
+		E_ERROR              => 'Fatal Error',
+		E_USER_ERROR         => 'User Error',
+		E_PARSE              => 'Parse Error',
+		E_WARNING            => 'Warning',
+		E_USER_WARNING       => 'User Warning',
+		E_STRICT             => 'Strict',
+		E_NOTICE             => 'Notice',
+		E_RECOVERABLE_ERROR  => 'Recoverable Error',
+	);
+
+	/**
 	 * @var  string  current environment name
 	 */
 	public static $environment = 'development';
@@ -367,6 +381,17 @@ final class Kohana {
 	}
 
 	/**
+	 * Returns the the currently active include paths, including the
+	 * application and system paths.
+	 *
+	 * @return  array
+	 */
+	public static function include_paths()
+	{
+		return self::$_paths;
+	}
+
+	/**
 	 * Finds the path of a file by directory, filename, and extension.
 	 * If no extension is given, the default EXT extension will be used.
 	 *
@@ -473,7 +498,7 @@ final class Kohana {
 	 * @param   string  directory name
 	 * @return  array
 	 */
-	public static function list_files($directory = NULL)
+	public static function list_files($directory = NULL, array $paths = NULL)
 	{
 		if ($directory !== NULL)
 		{
@@ -481,10 +506,16 @@ final class Kohana {
 			$directory .= DIRECTORY_SEPARATOR;
 		}
 
+		if ($paths === NULL)
+		{
+			// Use the default paths
+			$paths = self::$_paths;
+		}
+
 		// Create an array for the files
 		$found = array();
 
-		foreach (self::$_paths as $path)
+		foreach ($paths as $path)
 		{
 			if (is_dir($path.$directory))
 			{
@@ -557,8 +588,9 @@ final class Kohana {
 	 *
 	 * @param   string   group name
 	 * @param   boolean  enable caching
+	 * @return  Kohana_Config
 	 */
-	public static function config($group, $cache = TRUE)
+	public static function config($group, $cache = NULL)
 	{
 		return new Kohana_Config($group, $cache);
 	}
@@ -660,7 +692,7 @@ final class Kohana {
 		{
 			// This error is not suppressed by current error reporting settings
 			// Convert the error into an ErrorException
-			throw new Kohana_Error($error, $code, 0, $file, $line);
+			throw new ErrorException($error, $code, 0, $file, $line);
 		}
 
 		// Do not execute the PHP error handler
@@ -671,6 +703,8 @@ final class Kohana {
 	 * Inline exception handler, displays the error message, source of the
 	 * exception, and the stack trace of the error.
 	 *
+	 * @uses    Kohana::$php_errors
+	 * @uses    Kohana::exception_text()
 	 * @param   object   exception object
 	 * @return  boolean
 	 */
@@ -685,19 +719,19 @@ final class Kohana {
 			$file    = $e->getFile();
 			$line    = $e->getLine();
 
-			// Set the text version of the exception
-			$text = "{$type} [ {$code} ]: {$message} ".self::debug_path($file)." [ {$line} ]";
+			// Create a text version of the exception
+			$error = self::exception_text($e);
 
 			if (is_object(self::$log))
 			{
 				// Add this exception to the log
-				self::$log->add(Kohana::ERROR, $text);
+				self::$log->add(Kohana::ERROR, $error);
 			}
 
 			if (Kohana::$is_cli)
 			{
 				// Just display the text of the exception
-				echo "\n{$text}\n";
+				echo "\n{$error}\n";
 
 				return TRUE;
 			}
@@ -705,25 +739,31 @@ final class Kohana {
 			// Get the exception backtrace
 			$trace = $e->getTrace();
 
-			if ($e instanceof ErrorException AND version_compare(PHP_VERSION, '5.3', '<'))
+			if ($e instanceof ErrorException)
 			{
-				// Workaround for a bug in ErrorException::getTrace() that exists in
-				// all PHP 5.2 versions. @see http://bugs.php.net/bug.php?id=45895
-				for ($i = count($trace) - 1; $i > 0; --$i)
+				if (isset(self::$php_errors[$code]))
 				{
-					if (isset($trace[$i - 1]['args']))
-					{
-						// Re-position the args
-						$trace[$i]['args'] = $trace[$i - 1]['args'];
+					// Use the human-readable error name
+					$code = self::$php_errors[$code];
+				}
 
-						// Remove the args
-						unset($trace[$i - 1]['args']);
+				if (version_compare(PHP_VERSION, '5.3', '<'))
+				{
+					// Workaround for a bug in ErrorException::getTrace() that exists in
+					// all PHP 5.2 versions. @see http://bugs.php.net/bug.php?id=45895
+					for ($i = count($trace) - 1; $i > 0; --$i)
+					{
+						if (isset($trace[$i - 1]['args']))
+						{
+							// Re-position the args
+							$trace[$i]['args'] = $trace[$i - 1]['args'];
+
+							// Remove the args
+							unset($trace[$i - 1]['args']);
+						}
 					}
 				}
 			}
-
-			// Get the source of the error
-			$source = self::debug_source($file, $line);
 
 			if ( ! headers_sent())
 			{
@@ -747,8 +787,8 @@ final class Kohana {
 			// Clean the output buffer if one exists
 			ob_get_level() and ob_clean();
 
-			// This can happen when the kohana error view has a PHP error
-			echo $e->getMessage(), ' [ ', Kohana::debug_path($e->getFile()), ', ', $e->getLine(), ' ]';
+			// Display the exception text
+			echo Kohana::exception_text($e), "\n";
 
 			// Exit with an error status
 			exit(1);
@@ -758,6 +798,7 @@ final class Kohana {
 	/**
 	 * Catches errors that are not caught the error handler, such as E_PARSE.
 	 *
+	 * @uses    Kohana::exception_handler()
 	 * @return  void
 	 */
 	public static function shutdown_handler()
@@ -768,8 +809,22 @@ final class Kohana {
 			ob_get_level() and ob_clean();
 
 			// Fake an exception for nice debugging
-			Kohana::exception_handler(new Kohana_Error($error['message'], $error['type'], 0, $error['file'], $error['line']));
+			Kohana::exception_handler(new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']));
 		}
+	}
+
+	/**
+	 * Get a single line of text representing the exception:
+	 *
+	 * Error [ Code ]: Message ~ File [ Line ]
+	 *
+	 * @param   object  Exception
+	 * @return  string
+	 */
+	public static function exception_text(Exception $e)
+	{
+		return sprintf('%s [ %s ]: %s ~ %s [ %d ]',
+			get_class($e), $e->getCode(), strip_tags($e->getMessage()), Kohana::debug_path($e->getFile()), $e->getLine());
 	}
 
 	/**
@@ -806,9 +861,13 @@ final class Kohana {
 	 * Borrows heavily on concepts from the Debug class of {@link http://nettephp.com/ Nette}.
 	 *
 	 * @param   mixed    variable to dump
-	 * @param   integer  level of recursion
 	 * @return  string
 	 */
+	public static function dump($value)
+	{
+		return self::_dump($value);
+	}
+
 	private static function _dump( & $var, $level = 0)
 	{
 		if ($var === NULL)
@@ -852,7 +911,18 @@ final class Kohana {
 		}
 		elseif (is_string($var))
 		{
-			return '<small>string</small><span>('.strlen($var).')</span> "'.htmlspecialchars($var, ENT_NOQUOTES, self::$charset).'"';
+			if (strlen($var) > 128)
+			{
+				// Encode the truncated string
+				$str = htmlspecialchars(substr($var, 0, 128), ENT_NOQUOTES, self::$charset).'&nbsp;&hellip;';
+			}
+			else
+			{
+				// Encode the string
+				$str = htmlspecialchars($var, ENT_NOQUOTES, self::$charset);
+			}
+
+			return '<small>string</small><span>('.strlen($var).')</span> "'.$str.'"';
 		}
 		elseif (is_array($var))
 		{
@@ -1057,7 +1127,7 @@ final class Kohana {
 		// Close the file
 		fclose($file);
 
-		return $source;
+		return '<pre class="source"><code>'.$source.'</code></pre>';
 	}
 
 	/**
@@ -1110,14 +1180,29 @@ final class Kohana {
 
 			if (in_array($step['function'], $statements))
 			{
-				// Sanitize the file path
-				$args = array($step['args'][0]);
+				if (empty($step['args']))
+				{
+					// No arguments
+					$args = array();
+				}
+				else
+				{
+					// Sanitize the file path
+					$args = array($step['args'][0]);
+				}
 			}
 			elseif (isset($step['args']))
 			{
 				if (isset($step['class']))
 				{
-					$reflection = new ReflectionMethod($step['class'], $step['function']);
+					if (method_exists($step['class'], $step['function']))
+					{
+						$reflection = new ReflectionMethod($step['class'], $step['function']);
+					}
+					else
+					{
+						$reflection = new ReflectionMethod($step['class'], '__call');
+					}
 				}
 				else
 				{
