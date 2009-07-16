@@ -381,6 +381,17 @@ final class Kohana {
 	}
 
 	/**
+	 * Returns the the currently active include paths, including the
+	 * application and system paths.
+	 *
+	 * @return  array
+	 */
+	public static function include_paths()
+	{
+		return self::$_paths;
+	}
+
+	/**
 	 * Finds the path of a file by directory, filename, and extension.
 	 * If no extension is given, the default EXT extension will be used.
 	 *
