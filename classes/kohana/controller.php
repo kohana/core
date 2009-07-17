@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Controller class.
+ * Abstract controller class.
  *
  * @package    Kohana
  * @author     Kohana Team

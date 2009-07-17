@@ -1,5 +1,12 @@
 <?php defined('SYSPATH') or die('No direct script access.');
-
+/**
+ * Abstract controller class for automatic templating.
+ *
+ * @package    Kohana
+ * @author     Kohana Team
+ * @copyright  (c) 2008-2009 Kohana Team
+ * @license    http://kohanaphp.com/license.html
+ */
 abstract class Kohana_Controller_Template extends Controller {
 
 	/**
@@ -19,7 +26,11 @@ abstract class Kohana_Controller_Template extends Controller {
 	 */
 	public function before()
 	{
-		$this->template = View::factory($this->template);
+		if ($this->auto_render === TRUE)
+		{
+			// Load the template
+			$this->template = View::factory($this->template);
+		}
 	}
 
 	/**
@@ -33,7 +44,7 @@ abstract class Kohana_Controller_Template extends Controller {
 		if ($this->auto_render === TRUE)
 		{
 			// Assign the template as the request response and render it
-			$this->request->response = $this->template->render();
+			$this->request->response = $this->template;
 		}
 	}
 
