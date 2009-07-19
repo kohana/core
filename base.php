@@ -9,11 +9,12 @@
  * @param   array   values to replace in the translated text
  * @return  string
  */
-function __($string, array $values = NULL)
+function __($string, array $values = NULL, $lang = 'en-us')
 {
-	if (I18n::$lang !== I18n::$default_lang)
+	if ($lang !== I18n::$lang)
 	{
-		// Get the translation for this string
+		// The message and target languages are different
+		// Get the translation for this message
 		$string = I18n::get($string);
 	}
 

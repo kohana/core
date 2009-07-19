@@ -3,5 +3,5 @@
 return array
 (
 	'French' => 'Français',
-	'Hello, world' => 'Bonjour, monde',
+	'Hello, world!' => 'Bonjour, monde!',
 );

@@ -9,11 +9,10 @@
  */
 class Kohana_i18n {
 
-	// The default language of all messages
-	public static $default_lang = 'en-US';
-
-	// The current language
-	public static $lang = 'en-US';
+	/**
+	 * @var  string   target language: en-us, es-es, zh-cn, etc
+	 */
+	public static $lang = 'en-us';
 
 	// Cache of loaded languages
 	protected static $_cache = array();
@@ -27,11 +26,14 @@ class Kohana_i18n {
 	 */
 	public static function get($string)
 	{
-		// Load the translation table
-		$table = I18n::load(I18n::$lang);
+		if ( ! isset(I18n::$_cache[I18n::$lang]))
+		{
+			// Load the translation table
+			I18n::load(I18n::$lang);
+		}
 
 		// Return the translated string if it exists
-		return isset($table[$string]) ? $table[$string] : $string;
+		return isset(I18n::$_cache[I18n::$lang][$string]) ? I18n::$_cache[I18n::$lang][$string] : $string;
 	}
 
 	/**
