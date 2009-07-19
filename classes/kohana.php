@@ -120,10 +120,12 @@ final class Kohana {
 	 *
 	 * Any of the global settings can be set here:
 	 *
-	 * > boolean "display_errors" : display errors and exceptions
-	 * > boolean "log_errors"     : log errors and exceptions
-	 * > boolean "caching"        : cache the location of files between requests
-	 * > string  "charset"        : character set used for all input and output
+	 * > boolean "errors"      : use internal error and exception handling?
+	 * > boolean "profile"     : do internal benchmarking?
+	 * > boolean "caching"     : cache the location of files between requests?
+	 * > string  "charset"     : character set used for all input and output
+	 * > string  "base_url"    : set the base URL for the application
+	 * > string  "index_file"  : set the index.php file name
 	 *
 	 * @param   array   global settings
 	 * @return  void
