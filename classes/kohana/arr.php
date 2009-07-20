@@ -26,6 +26,27 @@ class Kohana_Arr {
 	}
 
 	/**
+	 * Fill an array with a range of numbers.
+	 *
+	 * @param   integer  stepping
+	 * @param   integer  ending number
+	 * @return  array
+	 */
+	public static function range($step = 10, $max = 100)
+	{
+		if ($step < 1)
+			return array();
+
+		$array = array();
+		for ($i = $step; $i <= $max; $i += $step)
+		{
+			$array[$i] = $i;
+		}
+
+		return $array;
+	}
+
+	/**
 	 * Retrieves multiple keys from an array. If the key does not exist in the
 	 * array, the default value will be added instead (NULL by default).
 	 *
