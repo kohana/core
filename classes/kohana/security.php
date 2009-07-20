@@ -50,12 +50,6 @@ class Kohana_Security {
 		//   * Split up alternation alternatives
 		//   * Made some quantifiers possessive
 
-		if (is_array($str))
-		{
-			// Apply XSS cleaning recursively
-			return array_map(array('Security', 'xss_clean'), $str)
-		}
-
 		// Fix &entity\n;
 		$str = str_replace(array('&amp;','&lt;','&gt;'), array('&amp;amp;','&amp;lt;','&amp;gt;'), $str);
 		$str = preg_replace('/(&#*\w+)[\x00-\x20]+;/u', '$1;', $str);
