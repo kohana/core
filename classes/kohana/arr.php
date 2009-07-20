@@ -107,6 +107,35 @@ class Kohana_Arr {
 	}
 
 	/**
+	 * Overwrites an array with values from input array(s).
+	 * Non-existing keys will not be appended!
+	 *
+	 * @param   array   key array
+	 * @param   array   input array(s) that will overwrite key array values
+	 * @return  array
+	 */
+	public static function overwrite($array1, $array2)
+	{
+		foreach (array_intersect_key($array2, $array1) as $key => $value)
+		{
+			$array1[$key] = $value;
+		}
+
+		if (func_num_args() > 2)
+		{
+			foreach (array_slice(func_get_args(), 2) as $array2)
+			{
+				foreach (array_intersect_key($array2, $array1) as $key => $value)
+				{
+					$array1[$key] = $value;
+				}
+			}
+		}
+
+		return $array1;
+	}
+
+	/**
 	 * Creates a callable function and parameter list from a string representation.
 	 * Note that this function does not validate the callback string.
 	 *
