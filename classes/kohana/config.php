@@ -137,7 +137,7 @@ class Kohana_Config extends ArrayObject {
 	 */
 	public function offsetSet($key, $value)
 	{
-		if ($this->offsetGet($key) !== $value)
+		if ( ! $this->offsetExists($key) OR $this->offsetGet($key) !== $value)
 		{
 			// The value is about to be modified
 			$this->_configuration_modified = TRUE;
