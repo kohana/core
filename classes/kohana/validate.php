@@ -10,14 +10,13 @@
 class Kohana_Validate extends ArrayObject {
 
 	public static $messages = array(
-		'not_empty'    => ':field must not be empty',
 		'default'      => ':field value is invalid',
-
+		'not_empty'    => ':field must not be empty',
+		'matches'      => ':field must be the same as :params',
 		'regex'        => ':field does not match the required format',
 		'exact_length' => ':field must be exactly :params characters long',
 		'min_length'   => ':field must be at least :params characters long',
 		'max_length'   => ':field must be less than :params characters long',
-
 		'in_array'     => ':field must be of the these options: :params',
 	);
 
@@ -746,8 +745,16 @@ class Kohana_Validate extends ArrayObject {
 					// Use a method in this object
 					$method = new ReflectionMethod($this, $rule);
 
-					// Call static::$rule($this[$field], $param, ...) with Reflection
-					$passed = $method->invokeArgs(NULL, $params);
+					if ($method->isStatic())
+					{
+						// Call static::$rule($this[$field], $param, ...) with Reflection
+						$passed = $method->invokeArgs(NULL, $params);
+					}
+					else
+					{
+						// Do not use Reflection here, the method may be protected
+						$passed = call_user_func_array(array($this, $rule), $params);
+					}
 				}
 				elseif (strpos($rule, '::') === FALSE)
 				{
@@ -839,6 +846,18 @@ class Kohana_Validate extends ArrayObject {
 		}
 
 		return empty($errors);
+	}
+
+	/**
+	 * Checks if a field matches the value of another field.
+	 *
+	 * @param   string   field value
+	 * @param   string   field name to match
+	 * @return  boolean
+	 */
+	protected function matches($value, $match)
+	{
+		return ($value === $this[$match]);
 	}
 
 } // End Validation
