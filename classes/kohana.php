@@ -442,7 +442,7 @@ final class Kohana {
 			}
 		}
 
-		if ($dir === 'config' OR $dir === 'i18n')
+		if ($dir === 'config' OR $dir === 'i18n' OR $dir === 'messages')
 		{
 			// Include paths must be searched in reverse
 			$paths = array_reverse(self::$_paths);
@@ -679,6 +679,54 @@ final class Kohana {
 			':name'   => $name,
 			':data'   => 'return '.var_export($data, TRUE).';',
 		)));
+	}
+
+	/**
+	 * Get a message from a file. Messages are arbitary strings that are stored
+	 * in the messages/ directory and reference by a key. Translation is not
+	 * performed on the returned values.
+	 *
+	 *     // Get "username" from messages/text.php
+	 *     $username = Kohana::message('text', 'username');
+	 *
+	 * @uses  Arr::merge
+	 * @uses  Arr::path
+	 *
+	 * @param   string  file name
+	 * @param   string  key path to get
+	 * @param   mixed   default value if the path does not exist
+	 * @return  string  message string for the given path
+	 * @return  array   complete message list, when no path is specified
+	 */
+	public static function message($file, $path = NULL, $default = NULL)
+	{
+		static $messages;
+
+		if ( ! isset($messages[$file]))
+		{
+			// Create a new message list
+			$messages[$file] = array();
+
+			if ($files = Kohana::find_file('messages', $file))
+			{
+				foreach ($files as $f)
+				{
+					// Combine all the messages recursively
+					$messages[$file] = Arr::merge($messages[$file], self::load($f));
+				}
+			}
+		}
+
+		if ($path === NULL)
+		{
+			// Return all of the messages
+			return $messages[$file];
+		}
+		else
+		{
+			// Get a message using the path
+			return Arr::path($messages[$file], $path, $default);
+		}
 	}
 
 	/**
