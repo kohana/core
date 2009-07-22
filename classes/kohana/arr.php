@@ -26,6 +26,65 @@ class Kohana_Arr {
 	}
 
 	/**
+	 * Gets a value from an array using a path.
+	 *
+	 *     // Get the value of $array['foo']['bar']
+	 *     $value = Arr::path($array, 'foo/bar');
+	 *
+	 * @param   array   array to search
+	 * @param   string  key path
+	 * @param   mixed   default value if the path is not set
+	 * @return  mixed
+	 */
+	public static function path(array $array, $path, $default = NULL)
+	{
+		// Split the keys by slashes
+		$keys = explode('/', trim($path, '/'));
+
+		do
+		{
+			$key = array_shift($keys);
+
+			if (ctype_digit($key))
+			{
+				// Make the key an integer
+				$key = (int) $key;
+			}
+
+			if (isset($array[$key]))
+			{
+				if ($keys)
+				{
+					if (is_array($array[$key]))
+					{
+						// Dig down into the next part of the path
+						$array = $array[$key];
+					}
+					else
+					{
+						// Unable to dig deeper
+						break;
+					}
+				}
+				else
+				{
+					// Found the path requested
+					return $array[$key];
+				}
+			}
+			else
+			{
+				// Unable to dig deeper
+				break;
+			}
+		}
+		while ($keys);
+
+		// Unable to find the value requested
+		return $default;
+	}
+
+	/**
 	 * Fill an array with a range of numbers.
 	 *
 	 * @param   integer  stepping
