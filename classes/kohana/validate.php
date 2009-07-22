@@ -504,6 +504,22 @@ class Kohana_Validate extends ArrayObject {
 		return $this;
 	}
 
+	/**
+	 * Add filters using an array.
+	 *
+	 * @param   string  field name
+	 * @param   array   list of functions or static method name
+	 * @return  $this
+	 */
+	public function filter_set($field, array $filters)
+	{
+		foreach ($filters as $filter => $params)
+		{
+			$this->filter($field, $filter, $params);
+		}
+
+		return $this;
+	}
 
 	/**
 	 * Overwrites or appends rules to a field. Each rule will be executed once.
@@ -581,6 +597,23 @@ class Kohana_Validate extends ArrayObject {
 		{
 			// Store the callback
 			$this->callbacks[$field][] = $callback;
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Add callbacks using an array.
+	 *
+	 * @param   string  field name
+	 * @param   array   list of callbacks
+	 * @return  $this
+	 */
+	public function callback_set($field, array $callbacks)
+	{
+		foreach ($callbacks as $callback)
+		{
+			$this->callback($field, $callback);
 		}
 
 		return $this;
