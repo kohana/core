@@ -25,10 +25,7 @@ abstract class Kohana_Controller_REST extends Controller {
 
 		if ( ! isset($this->_action_map[Request::$method]))
 		{
-			$this->request->status = 405;
 			$this->request->action = 'invalid';
-
-			$this->request->headers['Allow'] = implode(', ', array_keys($this->_action_map));
 		}
 		else
 		{
@@ -36,17 +33,11 @@ abstract class Kohana_Controller_REST extends Controller {
 		}
 	}
 
-	abstract public function action_get();
-
-	abstract public function action_put();
-
-	abstract public function action_post();
-
-	abstract public function action_delete();
-
 	public function action_invalid()
 	{
-		// Do nothing
+		// Send the "Method Not Allowed" response
+		$this->request->status = 405;
+		$this->request->headers['Allow'] = implode(', ', array_keys($this->_action_map));
 	}
 
-} // End Name
+} // End REST
