@@ -38,6 +38,12 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public static function not_empty($value)
 	{
+		if (is_object($value) AND $value instanceof ArrayObject)
+		{
+			// Get the array from the ArrayObject
+			$value = $value->getArrayCopy();
+		}
+
 		return ($value === '0' OR ! empty($value));
 	}
 
