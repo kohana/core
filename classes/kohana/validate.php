@@ -803,8 +803,11 @@ class Kohana_Validate extends ArrayObject {
 
 				if ($passed === FALSE)
 				{
+					// Remove the field name from the parameters
+					array_shift($params);
+
 					// Add the rule to the errors
-					$this->error($field, $rule);
+					$this->error($field, $rule, $params);
 
 					// This field has an error, stop executing rules
 					break;
@@ -880,9 +883,9 @@ class Kohana_Validate extends ArrayObject {
 	 * @param   string  error message
 	 * @return  $this
 	 */
-	public function error($field, $error)
+	public function error($field, $error, array $params = NULL)
 	{
-		$this->_errors[$field] = $error;
+		$this->_errors[$field] = array($error, $params);
 
 		return $this;
 	}
@@ -917,8 +920,19 @@ class Kohana_Validate extends ArrayObject {
 		// Create a new message list
 		$messages = array();
 
-		foreach ($this->_errors as $field => $error)
+		foreach ($this->_errors as $field => $set)
 		{
+			list($error, $params) = $set;
+
+			// Start the translation values list
+			$values = array(':field' => $field);
+
+			foreach ($params as $key => $value)
+			{
+				// Add each parameter as a numbered value, starting from 1
+				$values[':param'.($key + 1)] = $value;
+			}
+
 			if ($message = Kohana::message($file, "$field/$error"))
 			{
 				// Found a message for this field and error
@@ -926,6 +940,10 @@ class Kohana_Validate extends ArrayObject {
 			elseif ($message = Kohana::message($file, "$field/default"))
 			{
 				// Found a default message for this field
+			}
+			elseif ($message = Kohana::message('validate', $error))
+			{
+				// Found a default message for this error
 			}
 			else
 			{
@@ -938,12 +956,12 @@ class Kohana_Validate extends ArrayObject {
 				if (is_string($translate))
 				{
 					// Translate the message using specified language
-					$message = __($message, NULL, $translate);
+					$message = __($message, $values, $translate);
 				}
 				else
 				{
 					// Translate the message using the default language
-					$message = __($message);
+					$message = __($message, $values);
 				}
 			}
 
