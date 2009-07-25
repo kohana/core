@@ -714,7 +714,7 @@ abstract class Kohana_Core {
 			catch (Exception $e)
 			{
 				throw new Kohana_Exception('Directory :dir must be writable',
-					array(':dir' => Kohana::debug_path(APPPATH.'cache')));
+					array(':dir' => Kohana::debug_path(self::$cache_dir)));
 			}
 		}
 
