@@ -933,11 +933,11 @@ class Kohana_Validate extends ArrayObject {
 				$values[':param'.($key + 1)] = $value;
 			}
 
-			if ($message = Kohana::message($file, "$field/$error"))
+			if ($message = Kohana::message($file, "{$field}.{$error}"))
 			{
 				// Found a message for this field and error
 			}
-			elseif ($message = Kohana::message($file, "$field/default"))
+			elseif ($message = Kohana::message($file, "{$field}.default"))
 			{
 				// Found a default message for this field
 			}
@@ -948,7 +948,7 @@ class Kohana_Validate extends ArrayObject {
 			else
 			{
 				// No message exists, display the path expected
-				$message = "$file/$field/$error";
+				$message = "{$file}.{$field}.{$error}";
 			}
 
 			if ($translate == TRUE)
