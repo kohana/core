@@ -103,6 +103,11 @@ final class Kohana {
 	 */
 	public static $log;
 
+	/**
+	 * @var  object  config object
+	 */
+	public static $config;
+
 	// Currently active modules
 	private static $_modules = array();
 
@@ -242,6 +247,9 @@ final class Kohana {
 
 		// Load the logger
 		self::$log = Kohana_Log::instance();
+
+		// Load the config
+		self::$config = Kohana_Config::instance();
 
 		if (isset($benchmark))
 		{
@@ -592,9 +600,30 @@ final class Kohana {
 	 * @param   boolean  enable caching
 	 * @return  Kohana_Config
 	 */
-	public static function config($group, $cache = NULL)
+	public static function config($group)
 	{
-		return new Kohana_Config($group, $cache);
+		static $config;
+
+		if (strpos($group, '.') !== FALSE)
+		{
+			// Split the config group and path
+			list ($group, $path) = explode('.', $group, 2);
+		}
+
+		if ( ! isset($config[$group]))
+		{
+			// Load the config group into the cache
+			$config[$group] = Kohana::$config->load($group);
+		}
+
+		if (isset($path))
+		{
+			return Arr::path($config[$group], $path);
+		}
+		else
+		{
+			return $config[$group];
+		}
 	}
 
 	/**

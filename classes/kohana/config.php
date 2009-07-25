@@ -4,146 +4,139 @@
  *
  * @package    Kohana
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
+ * @copyright  (c) 2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Kohana_Config extends ArrayObject {
+class Kohana_Config {
+
+	// Singleton static instance
+	protected static $_instance;
 
 	/**
-	 * Loads all of the files in a configuration group and returns a merged
-	 * array of the values.
+	 * Get the singleton instance of Kohana_Config.
 	 *
-	 * @param   string  group name
-	 * @return  array
+	 * @return  Kohana_Config
 	 */
-	protected static function load($group)
+	public static function instance()
 	{
-		// Find all of the files in this group
-		$files = Kohana::find_file('config', $group);
-
-		// Configuration array
-		$config = array();
-
-		foreach ($files as $file)
+		if (self::$_instance === NULL)
 		{
-			// Merge each file to the configuration array
-			$config = array_merge($config, require $file);
+			// Create a new instance
+			self::$_instance = new self;
 		}
 
-		return $config;
+		return self::$_instance;
 	}
 
-	// Configuration group name
-	protected $_configuration_group;
-
-	// Has the config group changed?
-	protected $_configuration_modified = FALSE;
+	// Configuration readers
+	protected $_readers = array();
 
 	/**
-	 * Creates a new configuration object for the specified group. When caching
-	 * is enabled, Kohana_Config will attempt to load the group from the cache.
+	 * Attach a configuration reader.
+	 *
+	 * @param   object   Kohana_Config_Reader instance
+	 * @param   boolean  add the reader as the first used object
+	 * @return  $this
+	 */
+	public function attach(Kohana_Config_Reader $reader, $first = TRUE)
+	{
+		if ($first === TRUE)
+		{
+			// Place the log reader at the top of the stack
+			array_unshift($this->_readers, $reader);
+		}
+		else
+		{
+			// Place the reader at the bottom of the stack
+			$this->_readers[] = $reader;
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Detaches a configuration reader.
+	 *
+	 * @param   object  Kohana_Config_Reader instance
+	 * @return  $this
+	 */
+	public function detach(Kohana_Config_Reader $reader)
+	{
+		if (($key = array_search($reader, $this->_readers)))
+		{
+			// Remove the writer
+			unset($this->_readers[$key]);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Load a configuration group. Searches the readers in order until the
+	 * group is found. If the group does not exist, an empty configuration
+	 * array will be loaded using the first reader.
+	 *
+	 * @param   string  configuration group
+	 * @return  object  Kohana_Config_Reader
+	 */
+	public function load($group)
+	{
+		foreach ($this->_readers as $reader)
+		{
+			if ($config = $reader->load($group))
+			{
+				// Found a reader for this configuration group
+				return $config;
+			}
+		}
+
+		// Use the first reader
+		$config = current($this->_readers);
+
+		// Load the reader as an empty array
+		return $config->load($group, array());
+	}
+
+	/**
+	 * Copy one configuration group to all of the other readers.
 	 *
 	 * @param   string   group name
-	 * @param   boolean  cache the group array
-	 * @return  void
+	 * @return  $this
 	 */
-	public function __construct($group, $cache = NULL)
+	public function copy($group)
 	{
-		// Set the configuration group name
-		$this->_configuration_group = $group;
+		// Load the configuration group
+		$config = $this->load($group);
 
-		if ($cache === NULL)
+		foreach ($this->_readers as $reader)
 		{
-			// Use the global caching
-			$cache = Kohana::$caching;
+			if ($config instanceof $reader)
+			{
+				// Do not copy the config to the same group
+				continue;
+			}
+
+			// Load the configuration object
+			$object = $reader->load($group, array());
+
+			foreach ($config as $key => $value)
+			{
+				// Copy each value in the config
+				$object->offsetSet($key, $value);
+			}
 		}
 
-		if ($cache === TRUE)
-		{
-			// Set the cache key
-			$cache_key = 'Kohana_Config::load("'.$group.'")';
-
-			// Load the configuration, it has not been cached
-			$config = Kohana::cache($cache_key);
-		}
-
-		if ( ! isset($config))
-		{
-			// Load the configuration
-			$config = Kohana_Config::load($group);
-		}
-
-		if (isset($cache_key))
-		{
-			// Cache the configuration
-			Kohana::cache($cache_key, $config);
-		}
-
-		// Load the array using the values as properties
-		ArrayObject::__construct($config, ArrayObject::ARRAY_AS_PROPS);
+		return $this;
 	}
 
-	/**
-	 * Return the "changed" status of the configuration object.
-	 *
-	 * @return  boolean
-	 */
-	public function changed()
+	final private function __construct()
 	{
-		return $this->_configuration_modified;
+		// Enforce singleton behavior
 	}
 
-	/**
-	 * Return the raw array that is being used for this object.
-	 *
-	 * @return  array
-	 */
-	public function as_array()
+	final private function __clone()
 	{
-		return $this->getArrayCopy();
-	}
-
-	/**
-	 * Get a variable from the configuration or return the default value.
-	 *
-	 * @param   string   array key
-	 * @param   mixed    default value
-	 * @return  mixed
-	 */
-	public function get($key, $default = NULL)
-	{
-		return $this->offsetExists($key) ? $this->offsetGet($key) : $default;
-	}
-
-	/**
-	 * Sets a value in the configuration array.
-	 *
-	 * @param   string   array key
-	 * @param   mixed    array value
-	 * @return  mixed
-	 */
-	public function set($key, $value)
-	{
-		return $this->offsetSet($key, $value);
-	}
-
-	/**
-	 * Overloads ArrayObject::offsetSet() to set the "changed" status when
-	 * modifying a configuration value.
-	 *
-	 * @param   string  array key
-	 * @param   mixed   array value
-	 * @return  mixed
-	 */
-	public function offsetSet($key, $value)
-	{
-		if ( ! $this->offsetExists($key) OR $this->offsetGet($key) !== $value)
-		{
-			// The value is about to be modified
-			$this->_configuration_modified = TRUE;
-		}
-
-		return parent::offsetSet($key, $value);
+		// Enforce singleton behavior
 	}
 
 } // End Kohana_Config
