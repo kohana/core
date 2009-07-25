@@ -119,6 +119,12 @@ abstract class Kohana_Core {
 	// Include paths that are used to find files
 	private static $_paths = array(APPPATH, SYSPATH);
 
+	// File path cache
+	private static $_files = array();
+
+	// Has the file cache changed?
+	private static $_files_changed = FALSE;
+
 	/**
 	 * Initializes the environment:
 	 *
@@ -219,6 +225,18 @@ abstract class Kohana_Core {
 		// Determine if we are running in a Windows environment
 		self::$is_windows = (DIRECTORY_SEPARATOR === '\\');
 
+		if (isset($settings['caching']))
+		{
+			// Enable or disable internal caching
+			self::$caching = (bool) $settings['caching'];
+		}
+
+		if (self::$caching === TRUE)
+		{
+			// Load the file path cache
+			self::$_files = Kohana::cache('Kohana::find_file()');
+		}
+
 		if (isset($settings['cache_dir']))
 		{
 			// Set the cache directory path
@@ -228,12 +246,6 @@ abstract class Kohana_Core {
 		{
 			// Use the default cache directory
 			self::$cache_dir = APPPATH.'cache';
-		}
-
-		if (isset($settings['caching']))
-		{
-			// Enable or disable internal caching
-			self::$caching = (bool) $settings['caching'];
 		}
 
 		if (isset($settings['charset']))
@@ -443,28 +455,22 @@ abstract class Kohana_Core {
 	 */
 	public static function find_file($dir, $file, $ext = NULL)
 	{
-		if (self::$profiling === TRUE AND class_exists('Profiler', FALSE))
-		{
-			// Start a new benchmark
-			$benchmark = Profiler::start(__CLASS__, __FUNCTION__);
-		}
-
 		// Use the defined extension by default
 		$ext = ($ext === NULL) ? EXT : '.'.$ext;
 
 		// Create a partial path of the filename
 		$path = $dir.'/'.$file.$ext;
 
-		if (self::$caching === TRUE)
+		if (self::$caching === TRUE AND isset(self::$_files[$path]))
 		{
-			// Set the cache key for this path
-			$cache_key = 'Kohana::find_file("'.$path.'")';
+			// This path has been cached
+			return self::$_files[$path];
+		}
 
-			if (($found = self::cache($cache_key)) !== NULL)
-			{
-				// Return the cached path
-				return $found;
-			}
+		if (self::$profiling === TRUE AND class_exists('Profiler', FALSE))
+		{
+			// Start a new benchmark
+			$benchmark = Profiler::start(__CLASS__, __FUNCTION__);
 		}
 
 		if ($dir === 'config' OR $dir === 'i18n' OR $dir === 'messages')
@@ -502,10 +508,13 @@ abstract class Kohana_Core {
 			}
 		}
 
-		if (isset($cache_key))
+		if (self::$caching === TRUE)
 		{
-			// Save the path cache
-			Kohana::cache($cache_key, $found);
+			// Add the path to the cache
+			self::$_files[$path] = $found;
+
+			// Files have been changed
+			self::$_files_changed = TRUE;
 		}
 
 		if (isset($benchmark))
@@ -899,6 +908,12 @@ abstract class Kohana_Core {
 	 */
 	public static function shutdown_handler()
 	{
+		if (self::$caching === TRUE AND self::$_files_changed === TRUE)
+		{
+			// Write the file path cache
+			Kohana::cache('Kohana::find_file()', self::$_files);
+		}
+
 		if ($error = error_get_last())
 		{
 			// If an output buffer exists, clear it
