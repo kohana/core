@@ -52,29 +52,26 @@ class Kohana_i18n {
 			// Start a new translation table
 			$table = array();
 
-			if ($files = Kohana::find_file('i18n', $language))
-			{
-				foreach ($files as $file)
-				{
-					// Load the strings that are in this file
-					$strings = Kohana::load($file);
-
-					// Merge the language strings into the translation table
-					$table = array_merge($table, $strings);
-				}
-			}
-
+			// Add the locale-specific language strings
 			if ($files = Kohana::find_file('i18n', $language.'/'.$locale))
 			{
 				foreach ($files as $file)
 				{
-					// Load the strings that are in this file
-					$strings = Kohana::load($file);
-
 					// Merge the locale strings into the translation table
-					$table = array_merge($table, $strings);
+					$table += Kohana::load($file);
 				}
 			}
+
+			// Add the non-specific language strings
+			if ($files = Kohana::find_file('i18n', $language))
+			{
+				foreach ($files as $file)
+				{
+					// Merge the language strings into the translation table
+					$table += Kohana::load($file);
+				}
+			}
+
 
 			// Cache the translation table locally
 			I18n::$_cache[$lang] = $table;
