@@ -84,6 +84,11 @@ abstract class Kohana_Core {
 	public static $index_file = 'index.php';
 
 	/**
+	 * @var  string  cache directory
+	 */
+	public static $cache_dir;
+
+	/**
 	 * @var  boolean  enabling internal caching?
 	 */
 	public static $caching = FALSE;
@@ -131,6 +136,7 @@ abstract class Kohana_Core {
 	 * > string  "charset"     : character set used for all input and output
 	 * > string  "base_url"    : set the base URL for the application
 	 * > string  "index_file"  : set the index.php file name
+	 * > string  "cache_dir"   : set the cache directory path
 	 *
 	 * @param   array   global settings
 	 * @return  void
@@ -212,6 +218,17 @@ abstract class Kohana_Core {
 
 		// Determine if we are running in a Windows environment
 		self::$is_windows = (DIRECTORY_SEPARATOR === '\\');
+
+		if (isset($settings['cache_dir']))
+		{
+			// Set the cache directory path
+			self::$cache_dir = realpath($settings['cache_dir']);
+		}
+		else
+		{
+			// Use the default cache directory
+			self::$cache_dir = APPPATH.'cache';
+		}
 
 		if (isset($settings['caching']))
 		{
@@ -653,7 +670,7 @@ abstract class Kohana_Core {
 		$file = sha1($name).EXT;
 
 		// Cache directories are split by keys to prevent filesystem overload
-		$dir = APPPATH."cache/{$file[0]}{$file[1]}/";
+		$dir = self::$cache_dir."/{$file[0]}{$file[1]}/";
 
 		if ($data === NULL)
 		{
