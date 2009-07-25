@@ -26,20 +26,20 @@ class Kohana_Arr {
 	}
 
 	/**
-	 * Gets a value from an array using a path.
+	 * Gets a value from an array using a dot separated path.
 	 *
 	 *     // Get the value of $array['foo']['bar']
-	 *     $value = Arr::path($array, 'foo/bar');
+	 *     $value = Arr::path($array, 'foo.bar');
 	 *
 	 * @param   array   array to search
-	 * @param   string  key path
+	 * @param   string  key path, dot separated
 	 * @param   mixed   default value if the path is not set
 	 * @return  mixed
 	 */
-	public static function path(array $array, $path, $default = NULL)
+	public static function path($array, $path, $default = NULL)
 	{
 		// Split the keys by slashes
-		$keys = explode('/', trim($path, '/'));
+		$keys = explode('.', $path);
 
 		do
 		{
