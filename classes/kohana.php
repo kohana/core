@@ -901,7 +901,7 @@ abstract class Kohana_Core {
 	}
 
 	/**
-	 * Catches errors that are not caught the error handler, such as E_PARSE.
+	 * Catches errors that are not caught by the error handler, such as E_PARSE.
 	 *
 	 * @uses    Kohana::exception_handler()
 	 * @return  void
