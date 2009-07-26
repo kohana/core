@@ -90,6 +90,9 @@ class Kohana_Config {
 			}
 		}
 
+		// Reset the iterator
+		reset($this->_readers);
+
 		// Use the first reader
 		$config = current($this->_readers);
 
