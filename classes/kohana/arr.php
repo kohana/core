@@ -4,7 +4,7 @@
  *
  * @package    Kohana
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
+ * @copyright  (c) 2007-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
 class Kohana_Arr {
@@ -26,6 +26,86 @@ class Kohana_Arr {
 	}
 
 	/**
+	 * Gets a value from an array using a dot separated path.
+	 *
+	 *     // Get the value of $array['foo']['bar']
+	 *     $value = Arr::path($array, 'foo.bar');
+	 *
+	 * @param   array   array to search
+	 * @param   string  key path, dot separated
+	 * @param   mixed   default value if the path is not set
+	 * @return  mixed
+	 */
+	public static function path($array, $path, $default = NULL)
+	{
+		// Split the keys by slashes
+		$keys = explode('.', $path);
+
+		do
+		{
+			$key = array_shift($keys);
+
+			if (ctype_digit($key))
+			{
+				// Make the key an integer
+				$key = (int) $key;
+			}
+
+			if (isset($array[$key]))
+			{
+				if ($keys)
+				{
+					if (is_array($array[$key]))
+					{
+						// Dig down into the next part of the path
+						$array = $array[$key];
+					}
+					else
+					{
+						// Unable to dig deeper
+						break;
+					}
+				}
+				else
+				{
+					// Found the path requested
+					return $array[$key];
+				}
+			}
+			else
+			{
+				// Unable to dig deeper
+				break;
+			}
+		}
+		while ($keys);
+
+		// Unable to find the value requested
+		return $default;
+	}
+
+	/**
+	 * Fill an array with a range of numbers.
+	 *
+	 * @param   integer  stepping
+	 * @param   integer  ending number
+	 * @return  array
+	 */
+	public static function range($step = 10, $max = 100)
+	{
+		if ($step < 1)
+			return array();
+
+		$array = array();
+		for ($i = $step; $i <= $max; $i += $step)
+		{
+			$array[$i] = $i;
+		}
+
+		return $array;
+	}
+
+	/**
 	 * Retrieves multiple keys from an array. If the key does not exist in the
 	 * array, the default value will be added instead (NULL by default).
 	 *
@@ -42,6 +122,53 @@ class Kohana_Arr {
 		}
 
 		return $found;
+	}
+
+	/**
+	 * Binary search algorithm.
+	 *
+	 * @param   mixed    the value to search for
+	 * @param   array    an array of values to search in
+	 * @param   boolean  return false, or the nearest value
+	 * @param   mixed    sort the array before searching it
+	 * @return  integer
+	 */
+	public static function binary_search($needle, $haystack, $nearest = FALSE, $sort = FALSE)
+	{
+		if ($sort === TRUE)
+		{
+			sort($haystack);
+		}
+
+		$high = count($haystack);
+		$low = 0;
+
+		while ($high - $low > 1)
+		{
+			$probe = ($high + $low) / 2;
+			if ($haystack[$probe] < $needle)
+			{
+				$low = $probe;
+			}
+			else
+			{
+				$high = $probe;
+			}
+		}
+
+		if ($high == count($haystack) OR $haystack[$high] != $needle)
+		{
+			if ($nearest === FALSE)
+				return FALSE;
+
+			// return the nearest value
+			$high_distance = $haystack[ceil($low)] - $needle;
+			$low_distance = $needle - $haystack[floor($low)];
+
+			return ($high_distance >= $low_distance) ? $haystack[ceil($low)] : $haystack[floor($low)];
+		}
+
+		return $high;
 	}
 
 	/**
@@ -104,6 +231,35 @@ class Kohana_Arr {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Overwrites an array with values from input array(s).
+	 * Non-existing keys will not be appended!
+	 *
+	 * @param   array   key array
+	 * @param   array   input array(s) that will overwrite key array values
+	 * @return  array
+	 */
+	public static function overwrite($array1, $array2)
+	{
+		foreach (array_intersect_key($array2, $array1) as $key => $value)
+		{
+			$array1[$key] = $value;
+		}
+
+		if (func_num_args() > 2)
+		{
+			foreach (array_slice(func_get_args(), 2) as $array2)
+			{
+				foreach (array_intersect_key($array2, $array1) as $key => $value)
+				{
+					$array1[$key] = $value;
+				}
+			}
+		}
+
+		return $array1;
 	}
 
 	/**

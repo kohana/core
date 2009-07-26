@@ -9,18 +9,6 @@
  */
 class Kohana_Validate extends ArrayObject {
 
-	public static $messages = array(
-		'not_empty'    => ':field must not be empty',
-		'default'      => ':field value is invalid',
-
-		'regex'        => ':field does not match the required format',
-		'exact_length' => ':field must be exactly :params characters long',
-		'min_length'   => ':field must be at least :params characters long',
-		'max_length'   => ':field must be less than :params characters long',
-
-		'in_array'     => ':field must be of the these options: :params',
-	);
-
 	/**
 	 * Creates a new Validation instance.
 	 *
@@ -39,6 +27,12 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public static function not_empty($value)
 	{
+		if (is_object($value) AND $value instanceof ArrayObject)
+		{
+			// Get the array from the ArrayObject
+			$value = $value->getArrayCopy();
+		}
+
 		return ($value === '0' OR ! empty($value));
 	}
 
@@ -422,25 +416,23 @@ class Kohana_Validate extends ArrayObject {
 		return (bool) preg_match('/^#?+[0-9a-f]{3}(?:[0-9a-f]{3})?$/iD', $str);
 	}
 
-	/**
-	 * @var  array  filters
-	 */
-	protected $filters = array();
+	// Field filters
+	protected $_filters = array();
 
-	/**
-	 * @var  array  rules
-	 */
-	protected $rules = array();
+	// Field rules
+	protected $_rules = array();
 
-	/**
-	 * @var  array  callbacks
-	 */
-	protected $callbacks = array();
+	// Field callbacks
+	protected $_callbacks = array();
 
-	/**
-	 * @var  array  field labels
-	 */
-	protected $labels = array();
+	// Field labels
+	protected $_labels = array();
+
+	// Rules that are executed even when the value is empty
+	protected $_empty_rules = array('not_empty', 'matches', 'min_length', 'exact_length');
+
+	// Error list, field => rule
+	protected $_errors = array();
 
 	/**
 	 * Sets the unique "any field" key and creates an ArrayObject from the
@@ -474,7 +466,7 @@ class Kohana_Validate extends ArrayObject {
 	public function label($field, $label)
 	{
 		// Set the label for this field
-		$this->labels[$field] = $label;
+		$this->_labels[$field] = $label;
 
 		return $this;
 	}
@@ -493,18 +485,34 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public function filter($field, $filter, array $params = NULL)
 	{
-		if ($field !== TRUE AND ! isset($this->labels[$field]))
+		if ($field !== TRUE AND ! isset($this->_labels[$field]))
 		{
 			// Set the field label to the field name
-			$this->labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
+			$this->_labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
 		}
 
 		// Store the filter and params for this rule
-		$this->filters[$field][$filter] = (array) $params;
+		$this->_filters[$field][$filter] = (array) $params;
 
 		return $this;
 	}
 
+	/**
+	 * Add filters using an array.
+	 *
+	 * @param   string  field name
+	 * @param   array   list of functions or static method name
+	 * @return  $this
+	 */
+	public function filters($field, array $filters)
+	{
+		foreach ($filters as $filter => $params)
+		{
+			$this->filter($field, $filter, $params);
+		}
+
+		return $this;
+	}
 
 	/**
 	 * Overwrites or appends rules to a field. Each rule will be executed once.
@@ -521,14 +529,14 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public function rule($field, $rule, array $params = NULL)
 	{
-		if ($field !== TRUE AND ! isset($this->labels[$field]))
+		if ($field !== TRUE AND ! isset($this->_labels[$field]))
 		{
 			// Set the field label to the field name
-			$this->labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
+			$this->_labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
 		}
 
 		// Store the rule and params for this rule
-		$this->rules[$field][$rule] = (array) $params;
+		$this->_rules[$field][$rule] = (array) $params;
 
 		return $this;
 	}
@@ -540,7 +548,7 @@ class Kohana_Validate extends ArrayObject {
 	 * @param   array   list of functions or static method name
 	 * @return  $this
 	 */
-	public function rule_set($field, array $rules)
+	public function rules($field, array $rules)
 	{
 		foreach ($rules as $rule => $params)
 		{
@@ -566,37 +574,56 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public function callback($field, $callback)
 	{
-		if ( ! isset($this->callbacks[$field]))
+		if ( ! isset($this->_callbacks[$field]))
 		{
 			// Create the list for this field
-			$this->callbacks[$field] = array();
+			$this->_callbacks[$field] = array();
 		}
 
-		if ($field !== TRUE AND ! isset($this->labels[$field]))
+		if ($field !== TRUE AND ! isset($this->_labels[$field]))
 		{
 			// Set the field label to the field name
-			$this->labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
+			$this->_labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
 		}
 
-		if ( ! in_array($callback, $this->callbacks[$field], TRUE))
+		if ( ! in_array($callback, $this->_callbacks[$field], TRUE))
 		{
 			// Store the callback
-			$this->callbacks[$field][] = $callback;
+			$this->_callbacks[$field][] = $callback;
 		}
 
 		return $this;
 	}
 
 	/**
-	 * Executes all validation filters, rules, and callbacks. Errors will be
-	 * stored in the variable passed by reference.
+	 * Add callbacks using an array.
 	 *
-	 *     $validation->check($errors);
+	 * @param   string  field name
+	 * @param   array   list of callbacks
+	 * @return  $this
+	 */
+	public function callbacks($field, array $callbacks)
+	{
+		foreach ($callbacks as $callback)
+		{
+			$this->callback($field, $callback);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Executes all validation filters, rules, and callbacks. This should
+	 * typically be called within an in/else block.
 	 *
-	 * @param   array    error list
+	 *     if ($validation->check())
+	 *     {
+	 *          // The data is valid, do something here
+	 *     }
+	 *
 	 * @return  boolean
 	 */
-	public function check( & $errors)
+	public function check()
 	{
 		if (Kohana::$profiling === TRUE)
 		{
@@ -605,18 +632,18 @@ class Kohana_Validate extends ArrayObject {
 		}
 
 		// New data set
-		$data = array();
+		$data = $this->_errors = array();
 
 		// Assume nothing has been submitted
 		$submitted = FALSE;
 
 		// Get a list of the expected fields
-		$expected = array_keys($this->labels);
+		$expected = array_keys($this->_labels);
 
 		// Import the filters, rules, and callbacks locally
-		$filters   = $this->filters;
-		$rules     = $this->rules;
-		$callbacks = $this->callbacks;
+		$filters   = $this->_filters;
+		$rules     = $this->_rules;
+		$callbacks = $this->_callbacks;
 
 		foreach ($expected as $field)
 		{
@@ -674,9 +701,6 @@ class Kohana_Validate extends ArrayObject {
 		// Overload the current array with the new one
 		$this->exchangeArray($data);
 
-		// Make sure that the errors are an array
-		$errors = (array) $errors;
-
 		if ($submitted === FALSE)
 		{
 			// Because no data was submitted, validation will not be forced
@@ -690,9 +714,6 @@ class Kohana_Validate extends ArrayObject {
 
 		foreach ($filters as $field => $set)
 		{
-			// Skip empty fields
-			if ($this[$field] === NULL OR $this[$field] === '') continue;
-
 			// Get the field value
 			$value = $this[$field];
 
@@ -735,8 +756,11 @@ class Kohana_Validate extends ArrayObject {
 
 			foreach ($set as $rule => $params)
 			{
-				// Skip all rules except for "not_empty" with empty fields
-				if ($rule !== 'not_empty' AND ($value === '' OR $value === NULL)) continue;
+				if ( ! in_array($rule, $this->_empty_rules) AND ! Validate::not_empty($value))
+				{
+					// Skip this rule for empty fields
+					continue;
+				}
 
 				// Add the field value to the parameters
 				array_unshift($params, $value);
@@ -746,8 +770,16 @@ class Kohana_Validate extends ArrayObject {
 					// Use a method in this object
 					$method = new ReflectionMethod($this, $rule);
 
-					// Call static::$rule($this[$field], $param, ...) with Reflection
-					$passed = $method->invokeArgs(NULL, $params);
+					if ($method->isStatic())
+					{
+						// Call static::$rule($this[$field], $param, ...) with Reflection
+						$passed = $method->invokeArgs(NULL, $params);
+					}
+					else
+					{
+						// Do not use Reflection here, the method may be protected
+						$passed = call_user_func_array(array($this, $rule), $params);
+					}
 				}
 				elseif (strpos($rule, '::') === FALSE)
 				{
@@ -771,17 +803,11 @@ class Kohana_Validate extends ArrayObject {
 
 				if ($passed === FALSE)
 				{
-					if ( ! isset(Validate::$messages[$rule]))
-					{
-						// Use the default message, no custom message exists
-						$rule = 'default';
-					}
+					// Remove the field name from the parameters
+					array_shift($params);
 
-					// Make a text list of the parameters without the value
-					$params = implode(', ', array_slice($params, 1));
-
-					// Add the field error using i18n
-					$errors[$field] = __(Validate::$messages[$rule], array(':field'  => __($this->labels[$field]), ':params' => $params));
+					// Add the rule to the errors
+					$this->error($field, $rule, $params);
 
 					// This field has an error, stop executing rules
 					break;
@@ -793,11 +819,14 @@ class Kohana_Validate extends ArrayObject {
 
 		foreach ($callbacks as $field => $set)
 		{
-			foreach ($set as $callback)
+			if (isset($this->_errors[$field]))
 			{
 				// Skip any field that already has an error
-				if (isset($errors[$field])) continue;
+				continue;
+			}
 
+			foreach ($set as $callback)
+			{
 				if (is_string($callback) AND strpos($callback, '::') !== FALSE)
 				{
 					// Make the static callback into an array
@@ -819,7 +848,7 @@ class Kohana_Validate extends ArrayObject {
 					}
 
 					// Call $object->$method($this, $field, $errors) with Reflection
-					$errors = $method->invoke($object, $this, $field, $errors);
+					$method->invoke($object, $this, $field);
 				}
 				else
 				{
@@ -827,7 +856,13 @@ class Kohana_Validate extends ArrayObject {
 					$function = new ReflectionFunction($callback);
 
 					// Call $function($this, $field, $errors) with Reflection
-					$errors = $function->invoke($this, $field, $errors);
+					$function->invoke($this, $field);
+				}
+
+				if (isset($this->_errors[$field]))
+				{
+					// An error was added, stop processing callbacks
+					break;
 				}
 			}
 		}
@@ -838,7 +873,115 @@ class Kohana_Validate extends ArrayObject {
 			Profiler::stop($benchmark);
 		}
 
-		return empty($errors);
+		return empty($this->_errors);
+	}
+
+	/**
+	 * Add an error to a field.
+	 *
+	 * @param   string  field name
+	 * @param   string  error message
+	 * @return  $this
+	 */
+	public function error($field, $error, array $params = NULL)
+	{
+		$this->_errors[$field] = array($error, $params);
+
+		return $this;
+	}
+
+	/**
+	 * Returns the error messages. If no file is specified, the error message
+	 * will be the name of the rule that failed. When a file is specified, the
+	 * message will be loaded from "field/rule", or if no rule-specific message
+	 * exists, "field/default" will be used. If neither is set, the returned
+	 * message will be "file/field/rule".
+	 *
+	 * By default all messages are translated using the default language.
+	 * A string can be used as the second parameter to specified the language
+	 * that the message was written in.
+	 *
+	 *     // Get errors from messages/forms/login.php
+	 *     $errors = $validate->errors('forms/login');
+	 *
+	 * @uses    Kohana::message
+	 * @param   string  file to load error messages from
+	 * @param   mixed   translate the message
+	 * @return  array
+	 */
+	public function errors($file = NULL, $translate = TRUE)
+	{
+		if ($file === NULL)
+		{
+			// Return the error list
+			return $this->_errors;
+		}
+
+		// Create a new message list
+		$messages = array();
+
+		foreach ($this->_errors as $field => $set)
+		{
+			list($error, $params) = $set;
+
+			// Start the translation values list
+			$values = array(':field' => $field);
+
+			foreach ($params as $key => $value)
+			{
+				// Add each parameter as a numbered value, starting from 1
+				$values[':param'.($key + 1)] = $value;
+			}
+
+			if ($message = Kohana::message($file, "{$field}.{$error}"))
+			{
+				// Found a message for this field and error
+			}
+			elseif ($message = Kohana::message($file, "{$field}.default"))
+			{
+				// Found a default message for this field
+			}
+			elseif ($message = Kohana::message('validate', $error))
+			{
+				// Found a default message for this error
+			}
+			else
+			{
+				// No message exists, display the path expected
+				$message = "{$file}.{$field}.{$error}";
+			}
+
+			if ($translate == TRUE)
+			{
+				if (is_string($translate))
+				{
+					// Translate the message using specified language
+					$message = __($message, $values, $translate);
+				}
+				else
+				{
+					// Translate the message using the default language
+					$message = __($message, $values);
+				}
+			}
+
+			// Set the message for this field
+			$messages[$field] = $message;
+		}
+
+		return $messages;
+	}
+
+	/**
+	 * Checks if a field matches the value of another field.
+	 *
+	 * @param   string   field value
+	 * @param   string   field name to match
+	 * @return  boolean
+	 */
+	protected function matches($value, $match)
+	{
+		return ($value === $this[$match]);
 	}
 
 } // End Validation

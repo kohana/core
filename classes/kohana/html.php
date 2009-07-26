@@ -128,7 +128,7 @@ class Kohana_HTML {
 		// Add the file link to the attributes
 		$attributes['href'] = URL::base(FALSE, $protocol).$file;
 
-		return '<a'.HTML::attributes($attributes).'">'.$title.'</a>';
+		return '<a'.HTML::attributes($attributes).'>'.$title.'</a>';
 
 	}
 

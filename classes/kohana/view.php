@@ -159,7 +159,10 @@ class Kohana_View {
 		}
 		catch (Exception $e)
 		{
-			return Kohana::exception_text($e);
+			// Display the exception message
+			Kohana::exception_handler($e);
+
+			return '';
 		}
 	}
 

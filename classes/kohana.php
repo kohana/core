@@ -12,7 +12,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-final class Kohana {
+abstract class Kohana_Core {
 
 	// Release version and codename
 	const VERSION  = '3.0';
@@ -84,6 +84,11 @@ final class Kohana {
 	public static $index_file = 'index.php';
 
 	/**
+	 * @var  string  cache directory
+	 */
+	public static $cache_dir;
+
+	/**
 	 * @var  boolean  enabling internal caching?
 	 */
 	public static $caching = FALSE;
@@ -103,11 +108,22 @@ final class Kohana {
 	 */
 	public static $log;
 
+	/**
+	 * @var  object  config object
+	 */
+	public static $config;
+
 	// Currently active modules
 	private static $_modules = array();
 
 	// Include paths that are used to find files
 	private static $_paths = array(APPPATH, SYSPATH);
+
+	// File path cache
+	private static $_files = array();
+
+	// Has the file cache changed?
+	private static $_files_changed = FALSE;
 
 	/**
 	 * Initializes the environment:
@@ -120,10 +136,13 @@ final class Kohana {
 	 *
 	 * Any of the global settings can be set here:
 	 *
-	 * > boolean "display_errors" : display errors and exceptions
-	 * > boolean "log_errors"     : log errors and exceptions
-	 * > boolean "caching"        : cache the location of files between requests
-	 * > string  "charset"        : character set used for all input and output
+	 * > boolean "errors"      : use internal error and exception handling?
+	 * > boolean "profile"     : do internal benchmarking?
+	 * > boolean "caching"     : cache the location of files between requests?
+	 * > string  "charset"     : character set used for all input and output
+	 * > string  "base_url"    : set the base URL for the application
+	 * > string  "index_file"  : set the index.php file name
+	 * > string  "cache_dir"   : set the cache directory path
 	 *
 	 * @param   array   global settings
 	 * @return  void
@@ -212,6 +231,23 @@ final class Kohana {
 			self::$caching = (bool) $settings['caching'];
 		}
 
+		if (self::$caching === TRUE)
+		{
+			// Load the file path cache
+			self::$_files = Kohana::cache('Kohana::find_file()');
+		}
+
+		if (isset($settings['cache_dir']))
+		{
+			// Set the cache directory path
+			self::$cache_dir = realpath($settings['cache_dir']);
+		}
+		else
+		{
+			// Use the default cache directory
+			self::$cache_dir = APPPATH.'cache';
+		}
+
 		if (isset($settings['charset']))
 		{
 			// Set the system character set
@@ -240,6 +276,9 @@ final class Kohana {
 
 		// Load the logger
 		self::$log = Kohana_Log::instance();
+
+		// Load the config
+		self::$config = Kohana_Config::instance();
 
 		if (isset($benchmark))
 		{
@@ -416,31 +455,25 @@ final class Kohana {
 	 */
 	public static function find_file($dir, $file, $ext = NULL)
 	{
-		if (self::$profiling === TRUE AND class_exists('Profiler', FALSE))
-		{
-			// Start a new benchmark
-			$benchmark = Profiler::start(__CLASS__, __FUNCTION__);
-		}
-
 		// Use the defined extension by default
 		$ext = ($ext === NULL) ? EXT : '.'.$ext;
 
 		// Create a partial path of the filename
 		$path = $dir.'/'.$file.$ext;
 
-		if (self::$caching === TRUE)
+		if (self::$caching === TRUE AND isset(self::$_files[$path]))
 		{
-			// Set the cache key for this path
-			$cache_key = 'Kohana::find_file("'.$path.'")';
-
-			if (($found = self::cache($cache_key)) !== NULL)
-			{
-				// Return the cached path
-				return $found;
-			}
+			// This path has been cached
+			return self::$_files[$path];
 		}
 
-		if ($dir === 'config' OR $dir === 'i18n')
+		if (self::$profiling === TRUE AND class_exists('Profiler', FALSE))
+		{
+			// Start a new benchmark
+			$benchmark = Profiler::start(__CLASS__, __FUNCTION__);
+		}
+
+		if ($dir === 'config' OR $dir === 'i18n' OR $dir === 'messages')
 		{
 			// Include paths must be searched in reverse
 			$paths = array_reverse(self::$_paths);
@@ -475,10 +508,13 @@ final class Kohana {
 			}
 		}
 
-		if (isset($cache_key))
+		if (self::$caching === TRUE)
 		{
-			// Save the path cache
-			Kohana::cache($cache_key, $found);
+			// Add the path to the cache
+			self::$_files[$path] = $found;
+
+			// Files have been changed
+			self::$_files_changed = TRUE;
 		}
 
 		if (isset($benchmark))
@@ -590,9 +626,30 @@ final class Kohana {
 	 * @param   boolean  enable caching
 	 * @return  Kohana_Config
 	 */
-	public static function config($group, $cache = NULL)
+	public static function config($group)
 	{
-		return new Kohana_Config($group, $cache);
+		static $config;
+
+		if (strpos($group, '.') !== FALSE)
+		{
+			// Split the config group and path
+			list ($group, $path) = explode('.', $group, 2);
+		}
+
+		if ( ! isset($config[$group]))
+		{
+			// Load the config group into the cache
+			$config[$group] = Kohana::$config->load($group);
+		}
+
+		if (isset($path))
+		{
+			return Arr::path($config[$group], $path);
+		}
+		else
+		{
+			return $config[$group];
+		}
 	}
 
 	/**
@@ -622,7 +679,7 @@ final class Kohana {
 		$file = sha1($name).EXT;
 
 		// Cache directories are split by keys to prevent filesystem overload
-		$dir = APPPATH."cache/{$file[0]}{$file[1]}/";
+		$dir = self::$cache_dir."/{$file[0]}{$file[1]}/";
 
 		if ($data === NULL)
 		{
@@ -657,7 +714,7 @@ final class Kohana {
 			catch (Exception $e)
 			{
 				throw new Kohana_Exception('Directory :dir must be writable',
-					array(':dir' => Kohana::debug_path(APPPATH.'cache')));
+					array(':dir' => Kohana::debug_path(self::$cache_dir)));
 			}
 		}
 
@@ -677,6 +734,54 @@ final class Kohana {
 			':name'   => $name,
 			':data'   => 'return '.var_export($data, TRUE).';',
 		)));
+	}
+
+	/**
+	 * Get a message from a file. Messages are arbitary strings that are stored
+	 * in the messages/ directory and reference by a key. Translation is not
+	 * performed on the returned values.
+	 *
+	 *     // Get "username" from messages/text.php
+	 *     $username = Kohana::message('text', 'username');
+	 *
+	 * @uses  Arr::merge
+	 * @uses  Arr::path
+	 *
+	 * @param   string  file name
+	 * @param   string  key path to get
+	 * @param   mixed   default value if the path does not exist
+	 * @return  string  message string for the given path
+	 * @return  array   complete message list, when no path is specified
+	 */
+	public static function message($file, $path = NULL, $default = NULL)
+	{
+		static $messages;
+
+		if ( ! isset($messages[$file]))
+		{
+			// Create a new message list
+			$messages[$file] = array();
+
+			if ($files = Kohana::find_file('messages', $file))
+			{
+				foreach ($files as $f)
+				{
+					// Combine all the messages recursively
+					$messages[$file] = Arr::merge($messages[$file], self::load($f));
+				}
+			}
+		}
+
+		if ($path === NULL)
+		{
+			// Return all of the messages
+			return $messages[$file];
+		}
+		else
+		{
+			// Get a message using the path
+			return Arr::path($messages[$file], $path, $default);
+		}
 	}
 
 	/**
@@ -803,6 +908,12 @@ final class Kohana {
 	 */
 	public static function shutdown_handler()
 	{
+		if (self::$caching === TRUE AND self::$_files_changed === TRUE)
+		{
+			// Write the file path cache
+			Kohana::cache('Kohana::find_file()', self::$_files);
+		}
+
 		if ($error = error_get_last())
 		{
 			// If an output buffer exists, clear it

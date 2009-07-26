@@ -1,6 +1,13 @@
 <?php defined('SYSPATH') or die('No direct script access.');
-
-abstract class Controller_REST extends Controller {
+/**
+ * Abstract Controller class for RESTful controller mapping.
+ *
+ * @package    Kohana
+ * @author     Kohana Team
+ * @copyright  (c) 2009 Kohana Team
+ * @license    http://kohanaphp.com/license.html
+ */
+abstract class Kohana_Controller_REST extends Controller {
 
 	protected $_action_map = array
 	(
@@ -18,10 +25,7 @@ abstract class Controller_REST extends Controller {
 
 		if ( ! isset($this->_action_map[Request::$method]))
 		{
-			$this->request->status = 405;
 			$this->request->action = 'invalid';
-
-			$this->request->headers['Allow'] = implode(', ', array_keys($this->_action_map));
 		}
 		else
 		{
@@ -29,17 +33,11 @@ abstract class Controller_REST extends Controller {
 		}
 	}
 
-	abstract public function action_get();
-
-	abstract public function action_put();
-
-	abstract public function action_post();
-
-	abstract public function action_delete();
-
 	public function action_invalid()
 	{
-		// Do nothing
+		// Send the "Method Not Allowed" response
+		$this->request->status = 405;
+		$this->request->headers['Allow'] = implode(', ', array_keys($this->_action_map));
 	}
 
-} // End Name
+} // End REST

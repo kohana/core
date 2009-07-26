@@ -9,11 +9,10 @@
  */
 class Kohana_i18n {
 
-	// The default language of all messages
-	public static $default_lang = 'en-US';
-
-	// The current language
-	public static $lang = 'en-US';
+	/**
+	 * @var  string   target language: en-us, es-es, zh-cn, etc
+	 */
+	public static $lang = 'en-us';
 
 	// Cache of loaded languages
 	protected static $_cache = array();
@@ -27,11 +26,14 @@ class Kohana_i18n {
 	 */
 	public static function get($string)
 	{
-		// Load the translation table
-		$table = I18n::load(I18n::$lang);
+		if ( ! isset(I18n::$_cache[I18n::$lang]))
+		{
+			// Load the translation table
+			I18n::load(I18n::$lang);
+		}
 
 		// Return the translated string if it exists
-		return isset($table[$string]) ? $table[$string] : $string;
+		return isset(I18n::$_cache[I18n::$lang][$string]) ? I18n::$_cache[I18n::$lang][$string] : $string;
 	}
 
 	/**
@@ -50,29 +52,26 @@ class Kohana_i18n {
 			// Start a new translation table
 			$table = array();
 
-			if ($files = Kohana::find_file('i18n', $language))
-			{
-				foreach ($files as $file)
-				{
-					// Load the strings that are in this file
-					$strings = Kohana::load($file);
-
-					// Merge the language strings into the translation table
-					$table = array_merge($table, $strings);
-				}
-			}
-
+			// Add the locale-specific language strings
 			if ($files = Kohana::find_file('i18n', $language.'/'.$locale))
 			{
 				foreach ($files as $file)
 				{
-					// Load the strings that are in this file
-					$strings = Kohana::load($file);
-
 					// Merge the locale strings into the translation table
-					$table = array_merge($table, $strings);
+					$table += Kohana::load($file);
 				}
 			}
+
+			// Add the non-specific language strings
+			if ($files = Kohana::find_file('i18n', $language))
+			{
+				foreach ($files as $file)
+				{
+					// Merge the language strings into the translation table
+					$table += Kohana::load($file);
+				}
+			}
+
 
 			// Cache the translation table locally
 			I18n::$_cache[$lang] = $table;
