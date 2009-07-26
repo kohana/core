@@ -9,34 +9,25 @@
  */
 class Kohana_Session_Cookie extends Session {
 
-	/**
-	 * Loads the session data from the secure cookie.
-	 *
-	 * @return  string
-	 */
 	protected function _read($id = NULL)
 	{
 		return Cookie::get($this->_name, NULL);
 	}
 
-	/**
-	 * Cookie sessions have no id.
-	 *
-	 * @return  void
-	 */
 	protected function _regenerate()
 	{
+		// Cookie sessions have no id
 		return NULL;
 	}
 
-	/**
-	 * Sets a secure cookie.
-	 *
-	 * @return  boolean
-	 */
 	protected function _write()
 	{
 		return Cookie::set($this->_name, $this->__toString(), $this->_lifetime);
+	}
+
+	protected function _destroy()
+	{
+		return Cookie::delete($this->_name);
 	}
 
 } // End Session_Cookie

@@ -9,12 +9,6 @@
  */
 class Kohana_Session_Native extends Session {
 
-	/**
-	 * Starts the session and references the $_SESSION global internally.
-	 *
-	 * @param   string  session id
-	 * @return  void
-	 */
 	protected function _read($id = NULL)
 	{
 		// Set the cookie lifetime
@@ -38,11 +32,6 @@ class Kohana_Session_Native extends Session {
 		return NULL;
 	}
 
-	/**
-	 * Generate a new session id and return it.
-	 *
-	 * @return  string
-	 */
 	protected function _regenerate()
 	{
 		// Regenerate the session id
@@ -51,17 +40,20 @@ class Kohana_Session_Native extends Session {
 		return session_id();
 	}
 
-	/**
-	 * Writes and closes the current session. This can only be called once
-	 *
-	 * @return  boolean
-	 */
 	protected function _write()
 	{
 		// Write and close the session
 		session_write_close();
 
 		return TRUE;
+	}
+
+	protected function _destroy()
+	{
+		// Destroy the current session
+		session_destroy();
+
+		return ! session_id();
 	}
 
 } // End Session_Native
