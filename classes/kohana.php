@@ -225,6 +225,17 @@ abstract class Kohana_Core {
 		// Determine if we are running in a Windows environment
 		self::$is_windows = (DIRECTORY_SEPARATOR === '\\');
 
+		if (isset($settings['cache_dir']))
+		{
+			// Set the cache directory path
+			self::$cache_dir = realpath($settings['cache_dir']);
+		}
+		else
+		{
+			// Use the default cache directory
+			self::$cache_dir = APPPATH.'cache';
+		}
+
 		if (isset($settings['caching']))
 		{
 			// Enable or disable internal caching
@@ -235,17 +246,6 @@ abstract class Kohana_Core {
 		{
 			// Load the file path cache
 			self::$_files = Kohana::cache('Kohana::find_file()');
-		}
-
-		if (isset($settings['cache_dir']))
-		{
-			// Set the cache directory path
-			self::$cache_dir = realpath($settings['cache_dir']);
-		}
-		else
-		{
-			// Use the default cache directory
-			self::$cache_dir = APPPATH.'cache';
 		}
 
 		if (isset($settings['charset']))

@@ -53,6 +53,9 @@ abstract class Kohana_Session {
 	// Session data
 	protected $_data = array();
 
+	// Is the session destroyed?
+	protected $_destroyed = FALSE;
+
 	/**
 	 * Overloads the name, lifetime, and encrypted session settings.
 	 *
@@ -219,9 +222,10 @@ abstract class Kohana_Session {
 	 */
 	public function write()
 	{
-		if (headers_sent())
+		if (headers_sent() OR $this->_destroyed)
 		{
-			// Session cannot be written after headers are sent
+			// Session cannot be written when the headers are sent or when
+			// the session has been destroyed
 			return FALSE;
 		}
 
@@ -229,6 +233,22 @@ abstract class Kohana_Session {
 		$this->_data['last_active'] = time();
 
 		return $this->_write();
+	}
+
+	/**
+	 * Destroy the current session.
+	 *
+	 * @return  boolean
+	 */
+	public function destroy()
+	{
+		if ($this->_destroyed === FALSE)
+		{
+			// Destroy the session
+			$this->_destroyed = $this->_destroy();
+		}
+
+		return $this->_destroyed;
 	}
 
 	/**
@@ -252,5 +272,12 @@ abstract class Kohana_Session {
 	 * @return  boolean
 	 */
 	abstract protected function _write();
+
+	/**
+	 * Destroys the current session.
+	 *
+	 * @return  boolean
+	 */
+	abstract protected function _destroy();
 
 } // End Session
