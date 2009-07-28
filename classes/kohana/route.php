@@ -15,7 +15,7 @@
  *     // This route will match when <path> is anything
  *     Route::factory('<path>', array('path' => '.*'));
  *
- * It is also possible to create optional segments by using parenthesis in
+ * It is also possible to create optional segments by using parentheses in
  * the URI definition:
  *
  *     // This is the standard default route, and no keys are required
@@ -200,12 +200,12 @@ class Kohana_Route {
 	 *
 	 *     // This route will only match if the <controller>, <action>, and <id> exist
 	 *     $params = Route::factory('<controller>/<action>/<id>', array('id' => '\d+'))
-	 *         ->match('users/edit/10');
+	 *         ->matches('users/edit/10');
 	 *     // The parameters are now: controller = users, action = edit, id = 10
 	 *
 	 * This method should almost always be used within an if/else block:
 	 *
-	 *     if ($params = $route->match($uri))
+	 *     if ($params = $route->matches($uri))
 	 *     {
 	 *         // Parse the parameters
 	 *     }
