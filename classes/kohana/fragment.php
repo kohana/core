@@ -94,7 +94,7 @@ class Kohana_Fragment {
 		$cache_key = 'Fragment::cache('.$name.')';
 
 		// Invalid the cache
-		Kohana::cache($cache_key, FALSE, -3600);
+		Kohana::cache($cache_key, NULL, -3600);
 	}
 
 } // End Fragment
