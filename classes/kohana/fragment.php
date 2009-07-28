@@ -78,7 +78,7 @@ class Kohana_Fragment {
 			$fragment = ob_get_flush();
 
 			// Cache the fragment
-			Kohana::cache($cache_key, $fragment, Fragment::$lifetime);
+			Kohana::cache($cache_key, $fragment);
 		}
 	}
 
