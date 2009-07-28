@@ -14,7 +14,7 @@
 class Kohana_Fragment {
 
 	/**
-	 * @var  integer  number of seconds to cache for
+	 * @var  integer  default number of seconds to cache for
 	 */
 	public static $lifetime = 30;
 
@@ -26,14 +26,18 @@ class Kohana_Fragment {
 	 * be nested.
 	 *
 	 * @param   string   fragment name
+	 * @param   integer  fragment cache lifetime
 	 * @return  boolean
 	 */
-	public static function load($name)
+	public static function load($name, $lifetime = NULL)
 	{
 		// Set the cache key name
 		$cache_key = 'Fragment::cache('.$name.')';
 
-		if ($fragment = Kohana::cache($cache_key, NULL, Fragment::$lifetime))
+		// Set the cache lifetime
+		$lifetime = ($lifetime === NULL) ? Fragment::$lifetime : (int) $lifetime;
+
+		if ($fragment = Kohana::cache($cache_key, NULL, $lifetime))
 		{
 			// Display the cached fragment now
 			echo $fragment;
