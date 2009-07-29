@@ -9,8 +9,6 @@
  */
 class Kohana_URL {
 
-	public static $suffix = '';
-
 	/**
 	 * Gets the base URL to the application. To include the current protocol,
 	 * use TRUE. To specify a protocol, provide the protocol as a string.
