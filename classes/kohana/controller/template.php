@@ -13,9 +13,9 @@ abstract class Kohana_Controller_Template extends Controller {
 	 * @var  string  page template
 	 */
 	public $template = 'template';
-	
+
 	/**
-	 * @var bool auto render template
+	 * @var  boolean  auto render template
 	 **/
 	public $auto_render = TRUE;
 
