@@ -927,10 +927,13 @@ class Kohana_Validate extends ArrayObject {
 			// Start the translation values list
 			$values = array(':field' => $field);
 
-			foreach ($params as $key => $value)
+			if ( ! empty($params))
 			{
-				// Add each parameter as a numbered value, starting from 1
-				$values[':param'.($key + 1)] = $value;
+				foreach ($params as $key => $value)
+				{
+					// Add each parameter as a numbered value, starting from 1
+					$values[':param'.($key + 1)] = $value;
+				}
 			}
 
 			if ($message = Kohana::message($file, "{$field}.{$error}"))
