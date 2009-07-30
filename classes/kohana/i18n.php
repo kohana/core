@@ -7,7 +7,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-class Kohana_i18n {
+class Kohana_I18n {
 
 	/**
 	 * @var  string   target language: en-us, es-es, zh-cn, etc
@@ -85,4 +85,4 @@ class Kohana_i18n {
 		// This is a static class
 	}
 
-} // End i18n
+} // End I18n

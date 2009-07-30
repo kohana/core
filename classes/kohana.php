@@ -236,6 +236,12 @@ abstract class Kohana_Core {
 			self::$cache_dir = APPPATH.'cache';
 		}
 
+		if ( ! is_writable(self::$cache_dir))
+		{
+			throw new Kohana_Exception('Directory :dir must be writable',
+				array(':dir' => Kohana::debug_path(self::$cache_dir)));
+		}
+
 		if (isset($settings['caching']))
 		{
 			// Enable or disable internal caching
@@ -681,29 +687,29 @@ abstract class Kohana_Core {
 		// Cache directories are split by keys to prevent filesystem overload
 		$dir = self::$cache_dir."/{$file[0]}{$file[1]}/";
 
-		if ($data === NULL)
+		try
 		{
-			if (is_file($dir.$file))
+			if ($data === NULL)
 			{
-				if ((time() - filemtime($dir.$file)) < $lifetime)
+				if (is_file($dir.$file))
 				{
-					// Return the cache
-					return include $dir.$file;
+					if ((time() - filemtime($dir.$file)) < $lifetime)
+					{
+						// Return the cache
+						return include $dir.$file;
+					}
+					else
+					{
+						// Cache has expired
+						unlink($dir.$file);
+					}
 				}
-				else
-				{
-					// Cache has expired
-					unlink($dir.$file);
-				}
+
+				// Cache not found
+				return NULL;
 			}
 
-			// Cache not found
-			return NULL;
-		}
-
-		if ( ! is_dir($dir))
-		{
-			try
+			if ( ! is_dir($dir))
 			{
 				// Create the cache directory
 				mkdir($dir, 0777, TRUE);
@@ -711,29 +717,20 @@ abstract class Kohana_Core {
 				// Set permissions (must be manually set to fix umask issues)
 				chmod($dir, 0777);
 			}
-			catch (Exception $e)
-			{
-				throw new Kohana_Exception('Directory :dir must be writable',
-					array(':dir' => Kohana::debug_path(self::$cache_dir)));
-			}
-		}
 
-		if ( ! is_file($dir.$file))
+			// Write the cache
+			return (bool) file_put_contents($dir.$file, strtr(self::FILE_CACHE, array
+			(
+				':header' => self::FILE_SECURITY,
+				':name'   => $name,
+				':data'   => 'return '.var_export($data, TRUE).';',
+			)));
+		}
+		catch (Exception $e)
 		{
-			// Create the file
-			touch($dir.$file);
-
-			// Make the file world writable
-			chmod($dir.$file, 0666);
+			throw new Kohana_Exception('Cache directory :dir is corrupt, unable to write :file',
+				array(':dir' => Kohana::debug_path(self::$cache_dir), ':file' => Kohana::debug_path($dir.$file)));
 		}
-
-		// Write the cache
-		return (bool) file_put_contents($dir.$file, strtr(self::FILE_CACHE, array
-		(
-			':header' => self::FILE_SECURITY,
-			':name'   => $name,
-			':data'   => 'return '.var_export($data, TRUE).';',
-		)));
 	}
 
 	/**
@@ -908,10 +905,18 @@ abstract class Kohana_Core {
 	 */
 	public static function shutdown_handler()
 	{
-		if (self::$caching === TRUE AND self::$_files_changed === TRUE)
+		try
 		{
-			// Write the file path cache
-			Kohana::cache('Kohana::find_file()', self::$_files);
+			if (self::$caching === TRUE AND self::$_files_changed === TRUE)
+			{
+				// Write the file path cache
+				Kohana::cache('Kohana::find_file()', self::$_files);
+			}
+		}
+		catch (Exception $e)
+		{
+			// Pass the exception to the handler
+			Kohana::exception_handler($e);
 		}
 
 		if ($error = error_get_last())
