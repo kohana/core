@@ -12,7 +12,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
-abstract class Kohana_Core {
+class Kohana_Core {
 
 	// Release version and codename
 	const VERSION  = '3.0';
