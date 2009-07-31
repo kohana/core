@@ -320,7 +320,7 @@ class Kohana_Form {
 		if ($text === NULL)
 		{
 			// Use the input name as the text
-			$text = $input;
+			$text = ucwords(str_replace('_', ' ', $input));
 		}
 
 		// Set the label target
