@@ -287,10 +287,16 @@ class Kohana_View {
 	 * overwritten by the local variable.
 	 *
 	 * @throws   View_Exception
+	 * @param    view filename
 	 * @return   string
 	 */
 	public function render($file = NULL)
 	{
+		if ($file !== NULL)
+		{
+			$this->set_filename($file);
+		}
+
 		if (empty($this->_file))
 		{
 			throw new Kohana_View_Exception('You must set the file to use within your view before rendering');
