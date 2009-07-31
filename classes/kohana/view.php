@@ -76,7 +76,7 @@ class Kohana_View {
 	 */
 	public function __construct($file = NULL, array $data = NULL)
 	{
-		if ( ! empty($file))
+		if ($file !== NULL)
 		{
 			$this->set_filename($file);
 		}
