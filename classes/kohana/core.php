@@ -144,6 +144,7 @@ class Kohana_Core {
 	 * > string  "index_file"  : set the index.php file name
 	 * > string  "cache_dir"   : set the cache directory path
 	 *
+	 * @throws  Kohana_Exception
 	 * @param   array   global settings
 	 * @return  void
 	 */
@@ -629,7 +630,6 @@ class Kohana_Core {
 	 * Creates a new configuration object for the requested group.
 	 *
 	 * @param   string   group name
-	 * @param   boolean  enable caching
 	 * @return  Kohana_Config
 	 */
 	public static function config($group)
@@ -673,6 +673,7 @@ class Kohana_Core {
 	 *
 	 * [ref-var]: http://php.net/var_export
 	 *
+	 * @throws  Kohana_Exception
 	 * @param   string   name of the cache
 	 * @param   mixed    data to cache
 	 * @param   integer  number of seconds the cache is valid for
