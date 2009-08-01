@@ -80,15 +80,15 @@ class Kohana_URL {
 	 */
 	public static function query(array $params = NULL)
 	{
-		if ( ! empty($params))
-		{
-			// Merge the current and new parameters
-			$params = array_merge($_GET, $params);
-		}
-		else
+		if ($params === NULL)
 		{
 			// Use only the current parameters
 			$params = $_GET;
+		}
+		else
+		{
+			// Merge the current and new parameters
+			$params = array_merge($_GET, $params);
 		}
 
 		if (empty($params))

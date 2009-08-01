@@ -81,10 +81,10 @@ class Kohana_View {
 			$this->set_filename($file);
 		}
 
-		if ( ! empty($data))
+		if ( $data !== NULL)
 		{
 			// Add the values to the current data
-			$this->_data = array_merge($this->_data, $data);
+			$this->_data = $data + $this->_data;
 		}
 	}
 
@@ -302,11 +302,8 @@ class Kohana_View {
 			throw new Kohana_View_Exception('You must set the file to use within your view before rendering');
 		}
 
-		// Combine global and local data. Global variables with the same name
-		// will be overwritten by local variables.
-		$data = array_merge(View::$_global_data, $this->_data);
-
-		return View::capture($this->_file, $data);
+		// Combine local and global data and capture the output
+		return View::capture($this->_file, $this->_data + View::$_global_data);
 	}
 
 } // End View

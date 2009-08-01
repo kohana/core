@@ -29,8 +29,16 @@ class Kohana_Remote {
 	 */
 	public static function get($url, array $options = NULL)
 	{
-		// Add default options
-		$options = array_merge((array) $options, Remote::$default_options);
+		if ($options === NULL)
+		{
+			// Use default options
+			$options = Remote::$default_options;
+		}
+		else
+		{
+			// Add default options
+			$options = $options + Remote::$default_options;
+		}
 
 		// The transfer must always be returned
 		$options[CURLOPT_RETURNTRANSFER] = TRUE;

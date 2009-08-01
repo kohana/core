@@ -41,7 +41,7 @@ class Kohana_Config_File extends Kohana_Config_Reader {
 			foreach ($files as $file)
 			{
 				// Merge each file to the configuration array
-				$config = array_merge($config, require $file);
+				$config += require $file;
 			}
 		}
 
