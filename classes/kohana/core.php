@@ -683,7 +683,7 @@ class Kohana_Core {
 	public static function cache($name, $data = NULL, $lifetime = 60)
 	{
 		// Cache file is a hash of the name
-		$file = sha1($name).EXT;
+		$file = sha1($name).'.txt';
 
 		// Cache directories are split by keys to prevent filesystem overload
 		$dir = self::$cache_dir."/{$file[0]}{$file[1]}/";
@@ -697,7 +697,7 @@ class Kohana_Core {
 					if ((time() - filemtime($dir.$file)) < $lifetime)
 					{
 						// Return the cache
-						return unserialize(include $dir.$file);
+						return unserialize(file_get_contents($dir.$file));
 					}
 					else
 					{
@@ -720,12 +720,7 @@ class Kohana_Core {
 			}
 
 			// Write the cache
-			return (bool) file_put_contents($dir.$file, strtr(self::FILE_CACHE, array
-			(
-				':header' => self::FILE_SECURITY,
-				':name'   => $name,
-				':data'   => 'return '.var_export(serialize($data), TRUE).';',
-			)));
+			return (bool) file_put_contents($dir.$file, serialize($data));
 		}
 		catch (Exception $e)
 		{
