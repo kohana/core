@@ -697,7 +697,7 @@ class Kohana_Core {
 					if ((time() - filemtime($dir.$file)) < $lifetime)
 					{
 						// Return the cache
-						return include $dir.$file;
+						return unserialize(include $dir.$file);
 					}
 					else
 					{
@@ -724,13 +724,14 @@ class Kohana_Core {
 			(
 				':header' => self::FILE_SECURITY,
 				':name'   => $name,
-				':data'   => 'return '.var_export($data, TRUE).';',
+				':data'   => 'return '.var_export(serialize($data), TRUE).';',
 			)));
 		}
 		catch (Exception $e)
 		{
-			throw new Kohana_Exception('Cache directory :dir is corrupt, unable to write :file',
-				array(':dir' => Kohana::debug_path(self::$cache_dir), ':file' => Kohana::debug_path($dir.$file)));
+			throw $e;
+			// throw new Kohana_Exception('Cache directory :dir is corrupt, unable to write :file',
+				// array(':dir' => Kohana::debug_path(self::$cache_dir), ':file' => Kohana::debug_path($dir.$file)));
 		}
 	}
 
