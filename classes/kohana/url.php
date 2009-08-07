@@ -22,7 +22,7 @@ class Kohana_URL {
 		if ($protocol === TRUE)
 		{
 			// Use the current protocol
-			Request::$protocol;
+			$protocol = Request::$protocol;
 		}
 
 		// Start with the configured base URL
