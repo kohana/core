@@ -93,8 +93,10 @@ class Kohana_Config {
 		// Reset the iterator
 		reset($this->_readers);
 
-		// Use the first reader
-		$config = current($this->_readers);
+		if ( ! is_object($config = current($this->_readers)))
+		{
+			throw new Kohana_Exception('No configuration readers attached');
+		}
 
 		// Load the reader as an empty array
 		return $config->load($group, array());

@@ -1,10 +1,17 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * File-based configuration loader.
+ * Database-based configuration loader.
+ *
+ * Schema for configuration table:
+ *
+ *     group_name    varchar(128)
+ *     config_key    varchar(128)
+ *     config_value  text
+ *     primary key   (group_name, config_key)
  *
  * @package    Kohana
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
+ * @copyright  (c) 2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
  */
 class Kohana_Config_Database extends Kohana_Config_Reader {
@@ -31,7 +38,7 @@ class Kohana_Config_Database extends Kohana_Config_Reader {
 	/**
 	 * Query the configuration table for all values for this group and
 	 * unserialize each of the values.
-	 * 
+	 *
 	 * @param   string  group name
 	 * @param   array   configuration array
 	 * @return  $this   clone of the current object
@@ -41,15 +48,15 @@ class Kohana_Config_Database extends Kohana_Config_Reader {
 		if ($config === NULL AND $group !== 'database')
 		{
 			// Load all of the configuration values for this group
-			$query = DB::select('key', 'value')
+			$query = DB::select('config_key', 'config_value')
 				->from($this->_database_table)
-				->where('group', '=', $group)
+				->where('group_name', '=', $group)
 				->execute($this->_database_instance);
 
 			if (count($query) > 0)
 			{
 				// Unserialize the configuration values
-				$config = array_map('unserialize', $query->as_array('key', 'value'));
+				$config = array_map('unserialize', $query->as_array('config_key', 'config_value'));
 			}
 		}
 
@@ -69,7 +76,7 @@ class Kohana_Config_Database extends Kohana_Config_Reader {
 		if ( ! $this->offsetExists($key))
 		{
 			// Insert a new value
-			DB::insert($this->_database_table, array('group', 'key', 'value'))
+			DB::insert($this->_database_table, array('group_name', 'config_key', 'config_value'))
 				->values(array($this->_configuration_group, $key, serialize($value)))
 				->execute($this->_database_instance);
 		}
@@ -77,9 +84,9 @@ class Kohana_Config_Database extends Kohana_Config_Reader {
 		{
 			// Update the value
 			DB::update($this->_database_table)
-				->value('value', serialize($value))
-				->where('group', '=', $this->_configuration_group)
-				->where('key', '=', $key)
+				->value('config_value', serialize($value))
+				->where('group_name', '=', $this->_configuration_group)
+				->where('config_key', '=', $key)
 				->execute($this->_database_instance);
 		}
 
