@@ -58,7 +58,7 @@ class Kohana_I18n {
 				foreach ($files as $file)
 				{
 					// Merge the locale strings into the translation table
-					$table += Kohana::load($file);
+					$table = array_merge($table, require $file);
 				}
 			}
 
@@ -68,7 +68,7 @@ class Kohana_I18n {
 				foreach ($files as $file)
 				{
 					// Merge the language strings into the translation table
-					$table += Kohana::load($file);
+					$table = array_merge($table, require $file);
 				}
 			}
 

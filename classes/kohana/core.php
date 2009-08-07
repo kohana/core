@@ -962,7 +962,7 @@ class Kohana_Core {
 		$output = array();
 		foreach ($variables as $var)
 		{
-			$output[] = self::_dump($var);
+			$output[] = self::_dump($var, 1024);
 		}
 
 		return '<pre class="debug">'.implode("\n", $output).'</pre>';
@@ -974,14 +974,23 @@ class Kohana_Core {
 	 * Borrows heavily on concepts from the Debug class of {@link http://nettephp.com/ Nette}.
 	 *
 	 * @param   mixed    variable to dump
+	 * @param   integer  maximum length of strings
 	 * @return  string
 	 */
-	public static function dump($value)
+	public static function dump($value, $length = 128)
 	{
-		return self::_dump($value);
+		return self::_dump($value, $length);
 	}
 
-	private static function _dump( & $var, $level = 0)
+	/**
+	 * Helper for Kohana::dump(), handles recursion in arrays and objects.
+	 *
+	 * @param   mixed    variable to dump
+	 * @param   integer  maximum length of strings
+	 * @param   integer  recursion level (internal)
+	 * @return  string
+	 */
+	private static function _dump( & $var, $length = 128, $level = 0)
 	{
 		if ($var === NULL)
 		{
@@ -1024,10 +1033,10 @@ class Kohana_Core {
 		}
 		elseif (is_string($var))
 		{
-			if (strlen($var) > 128)
+			if (strlen($var) > $length)
 			{
 				// Encode the truncated string
-				$str = htmlspecialchars(substr($var, 0, 128), ENT_NOQUOTES, self::$charset).'&nbsp;&hellip;';
+				$str = htmlspecialchars(substr($var, 0, $length), ENT_NOQUOTES, self::$charset).'&nbsp;&hellip;';
 			}
 			else
 			{
@@ -1073,7 +1082,7 @@ class Kohana_Core {
 						$key = '"'.$key.'"';
 					}
 
-					$output[] = "$space$s$key => ".self::_dump($val, $level + 1);
+					$output[] = "$space$s$key => ".self::_dump($val, $length, $level + 1);
 				}
 				unset($var[$marker]);
 
@@ -1130,7 +1139,7 @@ class Kohana_Core {
 						$access = '<small>public</small>';
 					}
 
-					$output[] = "$space$s$access $key => ".self::_dump($val, $level + 1);
+					$output[] = "$space$s$access $key => ".self::_dump($val, $length, $level + 1);
 				}
 				unset($objects[$hash]);
 
