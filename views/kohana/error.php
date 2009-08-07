@@ -71,7 +71,7 @@ function koggle(elem)
 					<?php foreach ($step['args'] as $name => $arg): ?>
 						<tr>
 							<td><code><?php echo $name ?></code></td>
-							<td><?php echo Kohana::debug($arg) ?></td>
+							<td><pre><?php echo Kohana::dump($arg) ?></pre></td>
 						</tr>
 					<?php endforeach ?>
 					</table>
@@ -117,7 +117,7 @@ function koggle(elem)
 				<?php foreach ($GLOBALS[$var] as $key => $value): ?>
 				<tr>
 					<td><code><?php echo $key ?></code></td>
-					<td><code><?php echo Kohana::dump($value) ?></code></td>
+					<td><pre><?php echo Kohana::dump($value) ?></pre></td>
 				</tr>
 				<?php endforeach ?>
 			</table>
