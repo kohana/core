@@ -246,6 +246,9 @@ class Kohana_Request {
 
 			// Create the instance singleton
 			$instance = new Request($uri);
+
+			// Add the Content-Type header
+			$instance->headers['Content-Type'] = 'text/html; charset='.Kohana::$charset;
 		}
 
 		return $instance;
@@ -482,7 +485,7 @@ class Kohana_Request {
 	/**
 	 * @var  array  headers to send with the response body
 	 */
-	public $headers = array('Content-Type' => 'text/html; charset=utf-8');
+	public $headers = array();
 
 	/**
 	 * @var  string  controller directory
