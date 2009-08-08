@@ -206,9 +206,11 @@ class Kohana_Request {
 					else
 					{
 						// REQUEST_URI and PHP_SELF include the docroot and index
+
 						if (isset($_SERVER['REQUEST_URI']))
 						{
-							$uri = $_SERVER['REQUEST_URI'];
+							// REQUEST_URI includes the query string, remove it
+							$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 						}
 						elseif (isset($_SERVER['PHP_SELF']))
 						{
