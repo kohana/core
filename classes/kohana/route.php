@@ -261,7 +261,7 @@ class Kohana_Route {
 		// Start with the routed URI
 		$uri = $this->_uri;
 
-		if (strpos($uri, '<') === FALSE AND strpos('(', $uri) === FALSE)
+		if (strpos($uri, '<') === FALSE AND strpos($uri, '(') === FALSE)
 		{
 			// This is a static route, no need to replace anything
 			return $uri;
