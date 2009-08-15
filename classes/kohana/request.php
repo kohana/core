@@ -827,6 +827,12 @@ class Kohana_Request {
 			// Load the controller using reflection
 			$class = new ReflectionClass($prefix.$controller);
 
+			if ($class->isAbstract())
+			{
+				throw new Kohana_Exception('Cannot create instances of abstract :controller',
+					array(':controller' => $prefix.$controller));
+			}
+
 			// Create a new instance of the controller
 			$controller = $class->newInstance($this);
 
