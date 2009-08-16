@@ -206,9 +206,11 @@ class Kohana_Request {
 					else
 					{
 						// REQUEST_URI and PHP_SELF include the docroot and index
+
 						if (isset($_SERVER['REQUEST_URI']))
 						{
-							$uri = $_SERVER['REQUEST_URI'];
+							// REQUEST_URI includes the query string, remove it
+							$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 						}
 						elseif (isset($_SERVER['PHP_SELF']))
 						{
@@ -216,24 +218,25 @@ class Kohana_Request {
 						}
 						else
 						{
-							// If you ever see this error, please report an issue and include a dump of $_SERVER
+							// If you ever see this error, please report an issue at and include a dump of $_SERVER
+							// http://dev.kohanaphp.com/projects/kohana3/issues
 							throw new Kohana_Exception('Unable to detect the URI using PATH_INFO, REQUEST_URI, or PHP_SELF');
 						}
 
 						// Get the path from the base URL, including the index file
-						$base_url = parse_url(Kohana::$base_url.Kohana::$index_file, PHP_URL_PATH);
+						$base_url = parse_url(Kohana::$base_url, PHP_URL_PATH);
 
-						for ($i = 0, $max = strlen($base_url); $i < $max; $i++)
+						if (strpos($uri, $base_url) === 0)
 						{
-							if ( ! isset($uri[$i]) OR $base_url[$i] !== $uri[$i])
-							{
-								// The URI has diverged from the base URL
-								break;
-							}
+							// Remove the base URL from the URI
+							$uri = substr($uri, strlen($base_url));
 						}
 
-						// Remove the base URL from the URI
-						$uri = substr($uri, $i);
+						if (Kohana::$index_file AND strpos($uri, Kohana::$index_file) === 0)
+						{
+							// Remove the index file from the URI
+							$uri = substr($uri, strlen(Kohana::$index_file));
+						}
 					}
 				}
 			}
@@ -818,8 +821,17 @@ class Kohana_Request {
 
 		try
 		{
+			// Replace hyphens with underscores in the controller name
+			$controller = str_replace('-', '_', $this->controller);
+
 			// Load the controller using reflection
-			$class = new ReflectionClass($prefix.$this->controller);
+			$class = new ReflectionClass($prefix.$controller);
+
+			if ($class->isAbstract())
+			{
+				throw new Kohana_Exception('Cannot create instances of abstract :controller',
+					array(':controller' => $prefix.$controller));
+			}
 
 			// Create a new instance of the controller
 			$controller = $class->newInstance($this);
@@ -829,6 +841,9 @@ class Kohana_Request {
 
 			// Determine the action to use
 			$action = empty($this->action) ? Route::$default_action : $this->action;
+
+			// Replace hyphens with underscores in the action name
+			$action = str_replace('-', '_', $action);
 
 			// Execute the main action with the parameters
 			$class->getMethod('action_'.$action)->invokeArgs($controller, $this->_params);
