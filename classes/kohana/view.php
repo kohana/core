@@ -61,6 +61,40 @@ class Kohana_View {
 		return ob_get_clean();
 	}
 
+	/**
+	 * Sets a global variable, similar to the set() method.
+	 *
+	 * @param   string   variable name or an array of variables
+	 * @param   mixed    value
+	 * @return  View
+	 */
+	public static function set_global($key, $value = NULL)
+	{
+		if (is_array($key))
+		{
+			foreach ($key as $key2 => $value)
+			{
+				View::$_global_data[$key2] = $value;
+			}
+		}
+		else
+		{
+			View::$_global_data[$key] = $value;
+		}
+	}
+
+	/**
+	 * Assigns a global variable by reference, similar to the bind() method.
+	 *
+	 * @param   string   variable name
+	 * @param   mixed    referenced variable
+	 * @return  View
+	 */
+	public static function bind_global($key, & $value)
+	{
+		View::$_global_data[$key] =& $value;
+	}
+
 	// View filename
 	protected $_file;
 
@@ -222,30 +256,6 @@ class Kohana_View {
 	}
 
 	/**
-	 * Exactly the same as set, but assigns the value globally.
-	 *
-	 * @param   string   variable name or an array of variables
-	 * @param   mixed    value
-	 * @return  View
-	 */
-	public function set_global($key, $value = NULL)
-	{
-		if (is_array($key))
-		{
-			foreach ($key as $key2 => $value)
-			{
-				View::$_global_data[$key2] = $value;
-			}
-		}
-		else
-		{
-			View::$_global_data[$key] = $value;
-		}
-
-		return $this;
-	}
-
-	/**
 	 * Assigns a value by reference. The benefit of binding is that values can
 	 * be altered without re-setting them. It is also possible to bind variables
 	 * before they have values. Assigned values will be available as a
@@ -261,20 +271,6 @@ class Kohana_View {
 	public function bind($key, & $value)
 	{
 		$this->_data[$key] =& $value;
-
-		return $this;
-	}
-
-	/**
-	 * Exactly the same as bind, but assigns the value globally.
-	 *
-	 * @param   string   variable name
-	 * @param   mixed    referenced variable
-	 * @return  View
-	 */
-	public function bind_global($key, & $value)
-	{
-		View::$_global_data[$key] =& $value;
 
 		return $this;
 	}
