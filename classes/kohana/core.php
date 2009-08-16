@@ -193,7 +193,7 @@ class Kohana_Core {
 
 		if (ini_get('register_globals'))
 		{
-			if (isset($_REQUEST['GLOBALS']))
+			if (isset($_REQUEST['GLOBALS']) OR isset($_FILES['GLOBALS']))
 			{
 				// Prevent malicious GLOBALS overload attack
 				echo "Global variable overload attack detected! Request aborted.\n";
