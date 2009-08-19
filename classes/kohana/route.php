@@ -285,8 +285,8 @@ class Kohana_Route {
 			$uri = str_replace(array('(', ')'), '', $uri);
 		}
 
-		// Trim off extra slashes
-		$uri = rtrim($uri, '/');
+		// Trim all extra slashes from the URI
+		$uri = preg_replace('#//+#', '/', rtrim($uri, '/'));
 
 		return $uri;
 	}
