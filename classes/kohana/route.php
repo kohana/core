@@ -267,16 +267,18 @@ class Kohana_Route {
 			return $uri;
 		}
 
-		if (preg_match_all('#'.Route::REGEX_KEY.'#', $uri, $keys))
+		if (preg_match_all('#/?'.Route::REGEX_KEY.'#', $uri, $matches, PREG_SET_ORDER))
 		{
-			foreach ($keys[1] as $key)
+			foreach ($matches as $set)
 			{
-				$search[]  = "<$key>";
-				$replace[] = isset($params[$key]) ? $params[$key] : '';
+				// Split the match into the 
+				list($match, $param) = $set;
+
+				$replace[$match] = isset($params[$param]) ? $params[$param] : '';
 			}
 
 			// Replace all the variable keys in the URI
-			$uri = str_replace($search, $replace, $uri);
+			$uri = strtr($uri, $replace);
 		}
 
 		if (strpos($uri, '(') !== FALSE)
