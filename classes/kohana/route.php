@@ -267,7 +267,7 @@ class Kohana_Route {
 			return $uri;
 		}
 
-		if (preg_match_all('#/?'.Route::REGEX_KEY.'#', $uri, $matches, PREG_SET_ORDER))
+		if (preg_match_all('#'.Route::REGEX_KEY.'#', $uri, $matches, PREG_SET_ORDER))
 		{
 			foreach ($matches as $set)
 			{
