@@ -602,6 +602,9 @@ class Kohana_Request {
 			$params['action'] = $this->action;
 		}
 
+		// Add the current parameters
+		$params += $this->_params;
+
 		return $this->route->uri($params);
 	}
 
