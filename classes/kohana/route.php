@@ -272,24 +272,47 @@ class Kohana_Route {
 			return $uri;
 		}
 
-		if (preg_match_all('#'.Route::REGEX_KEY.'#', $uri, $matches, PREG_SET_ORDER))
+		while (preg_match('#\([^()]++\)#', $uri, $match))
 		{
-			foreach ($matches as $set)
-			{
-				// Split the match into the 
-				list($match, $param) = $set;
+			// Search for the matched value
+			$search = $match[0];
 
-				$replace[$match] = isset($params[$param]) ? $params[$param] : '';
+			// Remove the parenthesis from the match as the replace
+			$replace = substr($match[0], 1, -1);
+
+			while(preg_match('#'.Route::REGEX_KEY.'#', $replace, $match))
+			{
+				list($key, $param) = $match;
+
+				if ( ! empty($params[$param]))
+				{
+					// Replace the key with the parameter value
+					$replace = str_replace($key, $params[$param], $replace);
+				}
+				else
+				{
+					// This group has missing parameters
+					$replace = '';
+					break;
+				}
 			}
 
-			// Replace all the variable keys in the URI
-			$uri = strtr($uri, $replace);
+			// Replace the group in the URI
+			$uri = str_replace($search, $replace, $uri);
 		}
 
-		if (strpos($uri, '(') !== FALSE)
+		while(preg_match('#'.Route::REGEX_KEY.'#', $uri, $match))
 		{
-			// Remove all groupings from the URI
-			$uri = str_replace(array('(', ')'), '', $uri);
+			list($key, $param) = $match;
+
+			if (empty($params[$param]))
+			{
+				// Ungrouped parameters are required
+				throw new Kohana_Exception('Required route parameter not passed: :param',
+					array(':param' => $param));
+			}
+
+			$uri = str_replace($key, $params[$param], $uri);
 		}
 
 		// Trim all extra slashes from the URI
