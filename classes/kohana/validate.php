@@ -495,6 +495,21 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
+	 * Add labels using an array.
+	 *
+	 * @param   array   field names, and labels
+	 * @return  $this;
+	 */
+	public function labels(array $array)
+	{
+		foreach($array AS $field => $label)
+		{
+			$this->label($field, $label);
+		}
+		return $this;
+	}
+
+	/**
 	 * Overwrites or appends filters to a field. Each filter will be executed once.
 	 * All rules must be valid callbacks.
 	 *
