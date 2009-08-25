@@ -602,6 +602,9 @@ class Kohana_Request {
 			$params['action'] = $this->action;
 		}
 
+		// Add the current parameters
+		$params += $this->_params;
+
 		return $this->route->uri($params);
 	}
 
@@ -821,11 +824,8 @@ class Kohana_Request {
 
 		try
 		{
-			// Replace hyphens with underscores in the controller name
-			$controller = str_replace('-', '_', $this->controller);
-
 			// Load the controller using reflection
-			$class = new ReflectionClass($prefix.$controller);
+			$class = new ReflectionClass($prefix.$this->controller);
 
 			if ($class->isAbstract())
 			{
@@ -841,9 +841,6 @@ class Kohana_Request {
 
 			// Determine the action to use
 			$action = empty($this->action) ? Route::$default_action : $this->action;
-
-			// Replace hyphens with underscores in the action name
-			$action = str_replace('-', '_', $action);
 
 			// Execute the main action with the parameters
 			$class->getMethod('action_'.$action)->invokeArgs($controller, $this->_params);

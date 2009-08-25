@@ -106,12 +106,27 @@ class Kohana_Arr {
 	}
 
 	/**
+	 * Retreive a single key from an array. If the key does not exist in the
+	 * array, the default value will be returned instead.
+	 *
+	 * @param   array   array to extract from
+	 * @param   string  key name
+	 * @param   mixed   default value
+	 * @return  mixed
+	 */
+	public static function get(array $array, $key, $default = NULL)
+	{
+		return isset($array[$key]) ? $array[$key] : $default;
+	}
+
+	/**
 	 * Retrieves multiple keys from an array. If the key does not exist in the
-	 * array, the default value will be added instead (NULL by default).
+	 * array, the default value will be added instead.
 	 *
 	 * @param   array   array to extract keys from
-	 * @param   array   list of keys
+	 * @param   array   list of key names
 	 * @param   mixed   default value
+	 * @return  array
 	 */
 	public static function extract(array $array, array $keys, $default = NULL)
 	{

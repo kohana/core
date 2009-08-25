@@ -539,6 +539,7 @@ class Kohana_Core {
 	 *     $views = Kohana::list_files('views');
 	 *
 	 * @param   string  directory name
+	 * @param   array   list of paths to search
 	 * @return  array
 	 */
 	public static function list_files($directory = NULL, array $paths = NULL)
