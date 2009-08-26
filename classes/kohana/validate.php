@@ -526,7 +526,7 @@ class Kohana_Validate extends ArrayObject {
 		if ($field !== TRUE AND ! isset($this->_labels[$field]))
 		{
 			// Set the field label to the field name
-			$this->_labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
+			$this->_labels[$field] = ucfirst(preg_replace('/[^\pL]+/u', ' ', $field));
 		}
 
 		// Store the filter and params for this rule
@@ -570,7 +570,7 @@ class Kohana_Validate extends ArrayObject {
 		if ($field !== TRUE AND ! isset($this->_labels[$field]))
 		{
 			// Set the field label to the field name
-			$this->_labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
+			$this->_labels[$field] = ucfirst(preg_replace('/[^\pL]+/u', ' ', $field));
 		}
 
 		// Store the rule and params for this rule
