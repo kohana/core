@@ -234,7 +234,7 @@ class Kohana_Route {
 
 		foreach ($this->_defaults as $key => $value)
 		{
-			if ( ! isset($params[$key]))
+			if ( ! isset($params[$key]) OR $params[$key] === '')
 			{
 				// Set default values for any key that was not matched
 				$params[$key] = $value;
