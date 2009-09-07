@@ -139,7 +139,7 @@ final class UTF8 {
 	public static function strlen($str)
 	{
 		if (UTF8::$server_utf8)
-			return mb_strlen($str);
+			return mb_strlen($str, Kohana::$charset);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
 		{
@@ -167,7 +167,7 @@ final class UTF8 {
 	public static function strpos($str, $search, $offset = 0)
 	{
 		if (UTF8::$server_utf8)
-			return mb_strpos($str, $search, $offset);
+			return mb_strpos($str, $search, $offset, Kohana::$charset);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
 		{
@@ -195,7 +195,7 @@ final class UTF8 {
 	public static function strrpos($str, $search, $offset = 0)
 	{
 		if (UTF8::$server_utf8)
-			return mb_strrpos($str, $search, $offset);
+			return mb_strrpos($str, $search, $offset, Kohana::$charset);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
 		{
@@ -222,7 +222,9 @@ final class UTF8 {
 	public static function substr($str, $offset, $length = NULL)
 	{
 		if (UTF8::$server_utf8)
-			return ($length === NULL) ? mb_substr($str, $offset) : mb_substr($str, $offset, $length);
+			return ($length === NULL)
+				? mb_substr($str, $offset, mb_strlen($str), Kohana::$charset)
+				: mb_substr($str, $offset, $length, Kohana::$charset);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
 		{
@@ -271,7 +273,7 @@ final class UTF8 {
 	public static function strtolower($str)
 	{
 		if (UTF8::$server_utf8)
-			return mb_strtolower($str);
+			return mb_strtolower($str, Kohana::$charset);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
 		{
@@ -296,7 +298,7 @@ final class UTF8 {
 	public static function strtoupper($str)
 	{
 		if (UTF8::$server_utf8)
-			return mb_strtoupper($str);
+			return mb_strtoupper($str, Kohana::$charset);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
 		{
@@ -343,7 +345,7 @@ final class UTF8 {
 	public static function ucwords($str)
 	{
 		if (UTF8::$server_utf8)
-			return mb_convert_case($str, MB_CASE_TITLE);
+			return mb_convert_case($str, MB_CASE_TITLE, Kohana::$charset);
 
 		if ( ! isset(self::$called[__FUNCTION__]))
 		{
