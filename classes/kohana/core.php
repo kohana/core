@@ -924,6 +924,9 @@ class Kohana_Core {
 
 			// Fake an exception for nice debugging
 			Kohana::exception_handler(new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']));
+
+			// Shutdown now to avoid a "death loop"
+			exit(1);
 		}
 	}
 
