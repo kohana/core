@@ -21,12 +21,10 @@ class Kohana_Profiler {
 	 */
 	public static function start($group, $name)
 	{
-		do
-		{
-			// Create a unique token and make sure it is not already in use
-			$token = uniqid();
-		}
-		while (isset(Profiler::$_marks[$token]));
+		static $counter = 0;
+
+		// Create a unique token based on the counter
+		$token = 'kp/'.base_convert($counter++, 10, 32);
 
 		Profiler::$_marks[$token] = array
 		(
