@@ -85,7 +85,8 @@ class Kohana_Remote {
 		}
 
 		// Open a remote connection
-		$remote = fsockopen($url['host'], 80, $errno, $errstr, 5);
+		$port = isset($url['port']) ? $url['port'] : 80;
+		$remote = fsockopen($url['host'], $port, $errno, $errstr, 5);
 
 		if ( ! is_resource($remote))
 			return FALSE;
