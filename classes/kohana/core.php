@@ -167,7 +167,7 @@ class Kohana_Core {
 		if (self::$profiling === TRUE)
 		{
 			// Start a new benchmark
-			$benchmark = Profiler::start(__CLASS__, __FUNCTION__);
+			$benchmark = Profiler::start('Kohana', __FUNCTION__);
 		}
 
 		// Start an output buffer
@@ -379,7 +379,7 @@ class Kohana_Core {
 		if (self::$profiling === TRUE)
 		{
 			// Start a new benchmark
-			$benchmark = Profiler::start(__CLASS__, __FUNCTION__);
+			$benchmark = Profiler::start('Kohana', __FUNCTION__);
 		}
 
 		// Start a new list of include paths, APPPATH first
@@ -477,7 +477,7 @@ class Kohana_Core {
 		if (self::$profiling === TRUE AND class_exists('Profiler', FALSE))
 		{
 			// Start a new benchmark
-			$benchmark = Profiler::start(__CLASS__, __FUNCTION__);
+			$benchmark = Profiler::start('Kohana', __FUNCTION__);
 		}
 
 		if ($dir === 'config' OR $dir === 'i18n' OR $dir === 'messages')
