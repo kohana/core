@@ -18,7 +18,7 @@
  * [ref-ie]: http://php.net/iconv
  * [ref-mb]: http://php.net/mbstring
  *
- * @package    Kohana
+ * @package    I18n
  * @author     Kohana Team
  * @copyright  (c) 2007-2008 Kohana Team
  * @copyright  (c) 2005 Harry Fuecks

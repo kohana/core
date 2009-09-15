@@ -136,13 +136,13 @@ class Kohana_Core {
 	 *
 	 * Any of the global settings can be set here:
 	 *
-	 * > boolean "errors"      : use internal error and exception handling?
-	 * > boolean "profile"     : do internal benchmarking?
-	 * > boolean "caching"     : cache the location of files between requests?
-	 * > string  "charset"     : character set used for all input and output
-	 * > string  "base_url"    : set the base URL for the application
-	 * > string  "index_file"  : set the index.php file name
-	 * > string  "cache_dir"   : set the cache directory path
+	 * - **boolean "errors"**     use internal error and exception handling?
+	 * - **boolean "profile"**    do internal benchmarking?
+	 * - **boolean "caching"**    cache the location of files between requests?
+	 * - **string  "charset"**    character set used for all input and output
+	 * - **string  "base_url"**   set the base URL for the application
+	 * - **string  "index_file"** set the index.php file name
+	 * - **string  "cache_dir"**  set the cache directory path
 	 *
 	 * @throws  Kohana_Exception
 	 * @param   array   global settings
@@ -803,8 +803,7 @@ class Kohana_Core {
 	 * Inline exception handler, displays the error message, source of the
 	 * exception, and the stack trace of the error.
 	 *
-	 * @uses    Kohana::$php_errors
-	 * @uses    Kohana::exception_text()
+	 * @uses    Kohana::exception_text
 	 * @param   object   exception object
 	 * @return  boolean
 	 */
@@ -898,7 +897,7 @@ class Kohana_Core {
 	/**
 	 * Catches errors that are not caught by the error handler, such as E_PARSE.
 	 *
-	 * @uses    Kohana::exception_handler()
+	 * @uses    Kohana::exception_handler
 	 * @return  void
 	 */
 	public static function shutdown_handler()
@@ -946,7 +945,7 @@ class Kohana_Core {
 
 	/**
 	 * Returns an HTML string of debugging information about any number of
-	 * variables, each wrapped in a <pre> tag:
+	 * variables, each wrapped in a "pre" tag:
 	 *
 	 *     // Displays the type and value of each variable
 	 *     echo Kohana::debug($foo, $bar, $baz);
@@ -975,7 +974,7 @@ class Kohana_Core {
 	/**
 	 * Returns an HTML string of information about a single variable.
 	 *
-	 * Borrows heavily on concepts from the Debug class of {@link http://nettephp.com/ Nette}.
+	 * Borrows heavily on concepts from the Debug class of [Nette](http://nettephp.com/).
 	 *
 	 * @param   mixed    variable to dump
 	 * @param   integer  maximum length of strings

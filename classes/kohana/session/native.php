@@ -2,7 +2,7 @@
 /**
  * Native PHP session class.
  *
- * @package    Kohana
+ * @package    Session
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
