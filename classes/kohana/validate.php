@@ -2,7 +2,7 @@
 /**
  * Array and variable validation.
  *
- * @package    Core
+ * @package    Kohana
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
@@ -461,12 +461,25 @@ class Kohana_Validate extends ArrayObject {
 	 *
 	 * @param   string  field name
 	 * @param   string  label
-	 * @return  $this;
+	 * @return  $this
 	 */
 	public function label($field, $label)
 	{
 		// Set the label for this field
 		$this->_labels[$field] = $label;
+
+		return $this;
+	}
+
+	/**
+	 * Sets labels using an array.
+	 *
+	 * @param   array  list of field => label names
+	 * @return  $this
+	 */
+	public function labels(array $labels)
+	{
+		$this->_labels = $labels + $this->_labels;
 
 		return $this;
 	}

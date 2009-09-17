@@ -141,7 +141,8 @@ class Kohana_View {
 		}
 		else
 		{
-			return NULL;
+			throw new Kohana_Exception('View variable is not set: :var',
+				array(':var' => $key));
 		}
 	}
 

@@ -4,7 +4,7 @@
  * using the MCrypt extension.
  * @see http://php.net/mcrypt
  *
- * @package    Core
+ * @package    Security
  * @author     Kohana Team
  * @copyright  (c) 2007-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html

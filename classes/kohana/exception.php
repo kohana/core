@@ -2,7 +2,7 @@
 /**
  * Kohana exception class. Converts exceptions into HTML messages.
  *
- * @package    Kohana
+ * @package    Exception
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
@@ -28,7 +28,7 @@ class Kohana_Exception extends Exception {
 	/**
 	 * Magic object-to-string method.
 	 *
-	 * @uses    Kohana::exception_text()
+	 * @uses    Kohana::exception_text
 	 * @return  string
 	 */
 	public function __toString()
