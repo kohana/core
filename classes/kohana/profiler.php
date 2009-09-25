@@ -29,7 +29,7 @@ class Kohana_Profiler {
 		Profiler::$_marks[$token] = array
 		(
 			'group' => strtolower($group),
-			'name'  => $name,
+			'name'  => (string) $name,
 
 			// Start the benchmark
 			'start_time'   => microtime(TRUE),
