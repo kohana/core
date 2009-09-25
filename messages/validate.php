@@ -9,4 +9,5 @@ return array(
 	'max_length'   => ':field must be less than :param1 characters long',
 	'in_array'     => ':field must be one of the available options',
 	'digit'        => ':field must be a digit',
+	'range'        => ':field must be within the range of :param1 to :param2',
 );
