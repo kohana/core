@@ -575,9 +575,9 @@ class Kohana_Core {
 					// Get the file name
 					$filename = $file->getFilename();
 
-					if ($filename[0] === '.')
+					if ($filename[0] === '.' OR $filename[strlen($filename)-1] === '~')
 					{
-						// Skip all hidden files
+						// Skip all hidden files and UNIX backup files
 						continue;
 					}
 
