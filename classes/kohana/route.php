@@ -165,6 +165,26 @@ class Kohana_Route {
 			return;
 		}
 
+		// Find inline regex and remove it
+		if (preg_match_all('/<(.+?):(.+?)>/', $uri, $matches, PREG_SET_ORDER))
+		{
+			$replace = array();
+
+			foreach ($matches as $match)
+			{
+				list($search, $segment, $exp) = $match;
+
+				// Add the regex for this segment
+				$regex[$segment] = $exp;
+
+				// Add the replacment for this segment
+				$replace[$search] = '<'.$segment.'>';
+			}
+
+			// Remove all inline regex
+			$uri = strtr($uri, $replace);
+		}
+
 		if ( ! empty($regex))
 		{
 			$this->_regex = $regex;
