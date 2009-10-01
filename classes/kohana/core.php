@@ -1126,7 +1126,7 @@ class Kohana_Core {
 			{
 				$output[] = "{\n$space$s*RECURSION*\n$space}";
 			}
-			elseif ($level < 5)
+			elseif ($level < 10)
 			{
 				$output[] = "<code>{";
 
