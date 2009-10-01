@@ -216,6 +216,10 @@ class Kohana_Request {
 						{
 							$uri = $_SERVER['PHP_SELF'];
 						}
+						elseif (isset($_SERVER['REDIRECT_URL']))
+						{
+							$uri = $_SERVER['REDIRECT_URL'];
+						}
 						else
 						{
 							// If you ever see this error, please report an issue at and include a dump of $_SERVER
