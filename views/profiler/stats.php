@@ -10,10 +10,17 @@
 		<tr class="group">
 			<th class="name" colspan="5"><?php echo __(ucfirst($group)) ?></th>
 		</tr>
+		<tr class="headers">
+			<th class="name"><?php echo __('Benchmark') ?></th>
+			<th class="min"><?php echo __('Min') ?></th>
+			<th class="max"><?php echo __('Max') ?></th>
+			<th class="average"><?php echo __('Average') ?></th>
+			<th class="total"><?php echo __('Total') ?></th>
+		</tr>
 		<?php foreach ($benchmarks as $name => $tokens): ?>
 		<tr class="mark time">
-			<th class="name" rowspan="2"><?php echo $name, ' (', count($tokens), ')' ?></th>
 			<?php $stats = Profiler::stats($tokens); ?>
+			<th class="name" rowspan="2"><?php echo $name, ' (', count($tokens), ')' ?></th>
 			<?php foreach (array('min', 'max', 'average', 'total') as $key): ?>
 			<td class="<?php echo $key ?>"><?php echo number_format($stats[$key]['time'], 6), ' ', __('seconds') ?></td>
 			<?php endforeach ?>
