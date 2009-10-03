@@ -990,6 +990,11 @@ class Kohana_Validate extends ArrayObject {
 					$message = __($message, $values);
 				}
 			}
+			else
+			{
+				// Do not translate, just replace the values
+				$message = strtr($message, $values);
+			}
 
 			// Set the message for this field
 			$messages[$field] = $message;
