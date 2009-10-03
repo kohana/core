@@ -386,21 +386,31 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
-	 * Checks if a string is a proper decimal format. The format array can be
-	 * used to specify a decimal length, or a number and decimal length, eg:
-	 * array(2) would force the number to have 2 decimal places, array(4,2)
-	 * would force the number to have 4 digits and 2 decimal places.
+	 * Checks if a string is a proper decimal format. Optionally, a specific
+	 * number of digits can be checked too.
 	 *
 	 * @param   string   number to check
 	 * @param   integer  number of decimal places
+	 * @param   integer  number of digits
 	 * @return  boolean
 	 */
-	public static function decimal($str, $places = 2)
+	public static function decimal($str, $places = 2, $digits = NULL)
 	{
+		if ($digits > 0)
+		{
+			// Specific number of digits
+			$digits = '{'.(int) $digits.'}';
+		}
+		else
+		{
+			// Any number of digits
+			$digits = '+';
+		}
+
 		// Get the decimal point for the current locale
 		list($decimal) = array_values(localeconv());
 
-		return (bool) preg_match('/^[0-9]+'.preg_quote($decimal).'[0-9]{'.(int) $places.'}$/', $str);
+		return (bool) preg_match('/^[0-9]'.$digits.preg_quote($decimal).'[0-9]{'.(int) $places.'}$/', $str);
 	}
 
 	/**
