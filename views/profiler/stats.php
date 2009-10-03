@@ -30,12 +30,12 @@
 		<?php $stats = Profiler::application() ?>
 		<tr class="final mark time">
 			<th class="name" rowspan="2"><?php echo __('Application Execution').' ('.$stats['count'].')' ?></th>
-			<?php foreach (array('min', 'max', 'average', 'total') as $key): ?>
+			<?php foreach (array('min', 'max', 'average', 'current') as $key): ?>
 			<td class="<?php echo $key ?>"><?php echo number_format($stats[$key]['time'], 6), ' ', __('seconds') ?></td>
 			<?php endforeach ?>
 		</tr>
 		<tr class="final mark memory">
-			<?php foreach (array('min', 'max', 'average', 'total') as $key): ?>
+			<?php foreach (array('min', 'max', 'average', 'current') as $key): ?>
 			<td class="<?php echo $key ?>"><?php echo number_format($stats[$key]['memory'] / 1024, 4), ' kb' ?></td>
 			<?php endforeach ?>
 		</tr>
