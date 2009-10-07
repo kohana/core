@@ -284,7 +284,7 @@ class Kohana_Route {
 			{
 				list($key, $param) = $match;
 
-				if ( ! empty($params[$param]))
+				if (isset($params[$param]))
 				{
 					// Replace the key with the parameter value
 					$replace = str_replace($key, $params[$param], $replace);
@@ -305,7 +305,7 @@ class Kohana_Route {
 		{
 			list($key, $param) = $match;
 
-			if (empty($params[$param]))
+			if ( ! isset($params[$param]))
 			{
 				// Ungrouped parameters are required
 				throw new Kohana_Exception('Required route parameter not passed: :param',
