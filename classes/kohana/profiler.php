@@ -209,6 +209,9 @@ class Kohana_Profiler {
 				'max'   => array(
 					'time'   => NULL,
 					'memory' => NULL),
+				'total' => array(
+					'time'   => NULL,
+					'memory' => NULL),
 				'count' => 0);
 		}
 
@@ -226,6 +229,9 @@ class Kohana_Profiler {
 		if ($stats['min']['time'] === NULL OR $time < $stats['min']['time'])
 			$stats['min']['time'] = $time;
 
+		// Add to total time
+		$stats['total']['time'] += $time;
+
 		// Calculate max memory
 		if ($stats['max']['memory'] === NULL OR $memory > $stats['max']['memory'])
 			$stats['max']['memory'] = $memory;
@@ -233,6 +239,9 @@ class Kohana_Profiler {
 		// Calculate min memory
 		if ($stats['min']['memory'] === NULL OR $memory < $stats['min']['memory'])
 			$stats['min']['memory'] = $memory;
+
+		// Add to total memory
+		$stats['total']['memory'] += $memory;
 
 		// Another mark has been added to the stats
 		$stats['count']++;
