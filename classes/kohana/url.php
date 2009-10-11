@@ -36,6 +36,12 @@ class Kohana_URL {
 
 		if (is_string($protocol))
 		{
+			if (parse_url($base_url, PHP_URL_HOST))
+			{
+				// Remove everything but the path from the URL
+				$base_url = parse_url($base_url, PHP_URL_PATH);
+			}
+
 			// Add the protocol and domain to the base URL
 			$base_url = $protocol.'://'.$_SERVER['HTTP_HOST'].$base_url;
 		}
