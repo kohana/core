@@ -586,7 +586,7 @@ class Kohana_Core {
 
 					if ($file->isDir())
 					{
-						if ($sub_dir = self::list_files($key))
+						if ($sub_dir = self::list_files($key, $paths))
 						{
 							if (isset($found[$key]))
 							{
