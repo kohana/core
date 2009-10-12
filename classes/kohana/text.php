@@ -10,6 +10,43 @@
 class Kohana_Text {
 
 	/**
+	 * @var  array   number units and text equivilents
+	 */
+	public static $units = array(
+		1000000000 => 'billion',
+		1000000    => 'million',
+		1000       => 'thousand',
+		100        => 'hundred',
+		90 => 'ninety',
+		80 => 'eighty',
+		70 => 'seventy',
+		60 => 'sixty',
+		50 => 'fifty',
+		40 => 'fourty',
+		30 => 'thirty',
+		20 => 'twenty',
+		19 => 'nineteen',
+		18 => 'eighteen',
+		17 => 'seventeen',
+		16 => 'sixteen',
+		15 => 'fifteen',
+		14 => 'fourteen',
+		13 => 'thirteen',
+		12 => 'tweleve',
+		11 => 'eleven',
+		10 => 'ten',
+		9  => 'nine',
+		8  => 'eight',
+		7  => 'seven',
+		6  => 'six',
+		5  => 'five',
+		4  => 'four',
+		3  => 'three',
+		2  => 'two',
+		1  => 'one',
+	);
+
+	/**
 	 * Limits a phrase to a given number of words.
 	 *
 	 * @param   string   phrase to limit words of
@@ -387,6 +424,55 @@ class Kohana_Text {
 		}
 
 		return sprintf($format, $bytes / pow($mod, $power), $units[$power]);
+	}
+
+	/**
+	 * Format a number to human-readable text.
+	 *
+	 *     // Display: one thousand and twenty-four
+	 *     echo Text::number(1024);
+	 *
+	 * @param   integer   number to format
+	 * @return  string
+	 */
+	public static function number($number)
+	{
+		// The number must always be an integer
+		$number = (int) $number;
+
+		// Text version of number
+		$text = '';
+
+		// Last matched unit within the loop
+		$last_unit = NULL;
+
+		foreach (Text::$units as $unit => $name)
+		{
+			if ($number / $unit >= 1)
+			{
+				$number -= $unit * ($value = (int) floor($number / $unit));
+
+				if ($unit < 100)
+				{
+					if ($last_unit < 100 AND $last_unit >= 20)
+					{
+						$text .= '-'.$name;
+					}
+					else
+					{
+						$text .= ' '.$name;
+					}
+				}
+				else
+				{
+					$text .= ' '.Text::number($value).' '.$name;
+				}
+
+				$last_unit = $unit;
+			}
+		}
+
+		return trim($text, ' ,');
 	}
 
 	/**
