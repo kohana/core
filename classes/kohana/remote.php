@@ -55,14 +55,23 @@ class Kohana_Remote {
 		// Get the response information
 		$code = curl_getinfo($remote, CURLINFO_HTTP_CODE);
 
-		if ($response === FALSE OR $code !== 200)
+		if ($code !== 200)
 		{
-			throw new Kohana_Exception('Error fetching remote :url [ status :code ] :error',
-				array(':url' => $url, ':code' => $code, ':error' => curl_error($remote)));
+			$error = $response;
+		}
+		elseif ($response === FALSE)
+		{
+			$error = curl_error($remote);
 		}
 
 		// Close the connection
 		curl_close($remote);
+
+		if (isset($error))
+		{
+			throw new Kohana_Exception('Error fetching remote :url [ status :code ] :error',
+				array(':url' => $url, ':code' => $code, ':error' => $error));
+		}
 
 		return $response;
 	}

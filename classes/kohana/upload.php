@@ -71,7 +71,7 @@ class Kohana_Upload {
 		}
 
 		// Make the filename into a complete path
-		$filename = realpath($directory).'/'.$filename;
+		$filename = realpath($directory).DIRECTORY_SEPARATOR.$filename;
 
 		if (move_uploaded_file($file['tmp_name'], $filename))
 		{

@@ -136,13 +136,15 @@ class Kohana_Core {
 	 *
 	 * Any of the global settings can be set here:
 	 *
-	 * - **boolean "errors"**     use internal error and exception handling?
-	 * - **boolean "profile"**    do internal benchmarking?
-	 * - **boolean "caching"**    cache the location of files between requests?
-	 * - **string  "charset"**    character set used for all input and output
-	 * - **string  "base_url"**   set the base URL for the application
-	 * - **string  "index_file"** set the index.php file name
-	 * - **string  "cache_dir"**  set the cache directory path
+	 * Type      | Setting    | Description                                    | Default Value
+	 * ----------|------------|------------------------------------------------|---------------
+	 * `boolean` | errors     | use internal error and exception handling?     | `TRUE`
+	 * `boolean` | profile    | do internal benchmarking?                      | `TRUE`
+	 * `boolean` | caching    | cache the location of files between requests?  | `FALSE`
+	 * `string`  | charset    | character set used for all input and output    | `"utf-8"`
+	 * `string`  | base_url   | set the base URL for the application           | `"/"`
+	 * `string`  | index_file | set the index.php file name                    | `"index.php"`
+	 * `string`  | cache_dir  | set the cache directory path                   | `APPPATH."cache"`
 	 *
 	 * @throws  Kohana_Exception
 	 * @param   array   global settings
@@ -410,10 +412,12 @@ class Kohana_Core {
 
 		foreach (self::$_modules as $path)
 		{
-			if (is_file($path.'/init'.EXT))
+			$init = $path.DIRECTORY_SEPARATOR.'init'.EXT;
+
+			if (is_file($init))
 			{
 				// Include the module initialization file once
-				require_once $path.'/init'.EXT;
+				require_once $init;
 			}
 		}
 
@@ -466,7 +470,7 @@ class Kohana_Core {
 		$ext = ($ext === NULL) ? EXT : '.'.$ext;
 
 		// Create a partial path of the filename
-		$path = $dir.'/'.$file.$ext;
+		$path = $dir.DIRECTORY_SEPARATOR.$file.$ext;
 
 		if (self::$caching === TRUE AND isset(self::$_files[$path]))
 		{
@@ -571,9 +575,9 @@ class Kohana_Core {
 					// Get the file name
 					$filename = $file->getFilename();
 
-					if ($filename[0] === '.')
+					if ($filename[0] === '.' OR $filename[strlen($filename)-1] === '~')
 					{
-						// Skip all hidden files
+						// Skip all hidden files and UNIX backup files
 						continue;
 					}
 
@@ -582,7 +586,7 @@ class Kohana_Core {
 
 					if ($file->isDir())
 					{
-						if ($sub_dir = self::list_files($key))
+						if ($sub_dir = self::list_files($key, $paths))
 						{
 							if (isset($found[$key]))
 							{
@@ -687,7 +691,7 @@ class Kohana_Core {
 		$file = sha1($name).'.txt';
 
 		// Cache directories are split by keys to prevent filesystem overload
-		$dir = self::$cache_dir."/{$file[0]}{$file[1]}/";
+		$dir = self::$cache_dir.DIRECTORY_SEPARATOR.$file[0].$file[1].DIRECTORY_SEPARATOR;
 
 		try
 		{
@@ -1122,7 +1126,7 @@ class Kohana_Core {
 			{
 				$output[] = "{\n$space$s*RECURSION*\n$space}";
 			}
-			elseif ($level < 5)
+			elseif ($level < 10)
 			{
 				$output[] = "<code>{";
 

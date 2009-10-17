@@ -63,7 +63,7 @@ class Kohana_I18n {
 			}
 
 			// Add the locale-specific language strings
-			if ($files = Kohana::find_file('i18n', $language.'/'.$locale))
+			if ($files = Kohana::find_file('i18n', $language.DIRECTORY_SEPARATOR.$locale))
 			{
 				foreach ($files as $file)
 				{

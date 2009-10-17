@@ -144,46 +144,39 @@ class Kohana_Arr {
 	 *
 	 * @param   mixed    the value to search for
 	 * @param   array    an array of values to search in
-	 * @param   boolean  return false, or the nearest value
-	 * @param   mixed    sort the array before searching it
-	 * @return  integer
+	 * @param   boolean  sort the array now
+	 * @return  integer  the index of the match
+	 * @return  FALSE    no matching index found
 	 */
-	public static function binary_search($needle, $haystack, $nearest = FALSE, $sort = FALSE)
+	public static function binary_search($needle, $haystack, $sort = FALSE)
 	{
-		if ($sort === TRUE)
+		if ($sort)
 		{
 			sort($haystack);
 		}
 
-		$high = count($haystack);
+		$high = count($haystack) - 1;
 		$low = 0;
 
-		while ($high - $low > 1)
+		while ($low <= $high)
 		{
-			$probe = ($high + $low) / 2;
-			if ($haystack[$probe] < $needle)
+			$mid = ($low + $high) >> 1;
+
+			if ($haystack[$mid] < $needle)
 			{
-				$low = $probe;
+				$low = $mid + 1;
+			}
+			elseif ($haystack[$mid] > $needle)
+			{
+				$high = $mid - 1;
 			}
 			else
 			{
-				$high = $probe;
+				return $mid;
 			}
 		}
 
-		if ($high == count($haystack) OR $haystack[$high] != $needle)
-		{
-			if ($nearest === FALSE)
-				return FALSE;
-
-			// return the nearest value
-			$high_distance = $haystack[ceil($low)] - $needle;
-			$low_distance = $needle - $haystack[floor($low)];
-
-			return ($high_distance >= $low_distance) ? $haystack[ceil($low)] : $haystack[floor($low)];
-		}
-
-		return $high;
+		return FALSE;
 	}
 
 	/**

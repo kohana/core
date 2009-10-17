@@ -9,6 +9,11 @@
  */
 class Kohana_Profiler {
 
+	/**
+	 * @var  integer   maximium number of application stats to keep
+	 */
+	public static $rollover = 1000;
+
 	// Collected benchmarks
 	protected static $_marks = array();
 
@@ -29,7 +34,7 @@ class Kohana_Profiler {
 		Profiler::$_marks[$token] = array
 		(
 			'group' => strtolower($group),
-			'name'  => $name,
+			'name'  => (string) $name,
 
 			// Start the benchmark
 			'start_time'   => microtime(TRUE),
@@ -194,7 +199,7 @@ class Kohana_Profiler {
 		// Load the stats from cache, which is valid for 1 day
 		$stats = Kohana::cache('profiler_application_stats', NULL, 3600 * 24);
 
-		if ( ! is_array($stats) OR $stats['count'] > 1000)
+		if ( ! is_array($stats) OR $stats['count'] > Profiler::$rollover)
 		{
 			// Initialize the stats array
 			$stats = array(
@@ -214,24 +219,28 @@ class Kohana_Profiler {
 		$time = microtime(TRUE) - KOHANA_START_TIME;
 
 		// Get the total memory usage
-		$memory = memory_get_usage();
+		$memory = memory_get_usage() - KOHANA_START_MEMORY;
 
+		// Calculate max time
 		if ($stats['max']['time'] === NULL OR $time > $stats['max']['time'])
 			$stats['max']['time'] = $time;
 
+		// Calculate min time
 		if ($stats['min']['time'] === NULL OR $time < $stats['min']['time'])
 			$stats['min']['time'] = $time;
 
-		// Add on to the time
+		// Add to total time
 		$stats['total']['time'] += $time;
 
+		// Calculate max memory
 		if ($stats['max']['memory'] === NULL OR $memory > $stats['max']['memory'])
 			$stats['max']['memory'] = $memory;
 
+		// Calculate min memory
 		if ($stats['min']['memory'] === NULL OR $memory < $stats['min']['memory'])
 			$stats['min']['memory'] = $memory;
 
-		// Add on to the memory
+		// Add to total memory
 		$stats['total']['memory'] += $memory;
 
 		// Another mark has been added to the stats
@@ -244,6 +253,11 @@ class Kohana_Profiler {
 
 		// Cache the new stats
 		Kohana::cache('profiler_application_stats', $stats);
+
+		// Set the current application execution time and memory
+		// Do NOT cache these, they are specific to the current request only
+		$stats['current']['time']   = $time;
+		$stats['current']['memory'] = $memory;
 
 		// Return the total application run time and memory usage
 		return $stats;

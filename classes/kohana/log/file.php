@@ -27,7 +27,7 @@ class Kohana_Log_File extends Kohana_Log_Writer {
 		}
 
 		// Determine the directory path
-		$this->_directory = realpath($directory).'/';
+		$this->_directory = realpath($directory).DIRECTORY_SEPARATOR;
 	}
 
 	/**
@@ -39,7 +39,7 @@ class Kohana_Log_File extends Kohana_Log_Writer {
 	public function write(array $messages)
 	{
 		// Set the monthly directory name
-		$directory = $this->_directory.date('Y/m').'/';
+		$directory = $this->_directory.date('Y/m').DIRECTORY_SEPARATOR;
 
 		if ( ! is_dir($directory))
 		{
