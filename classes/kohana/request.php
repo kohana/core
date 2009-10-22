@@ -256,6 +256,11 @@ class Kohana_Request {
 
 			// Add the Content-Type header
 			$instance->headers['Content-Type'] = 'text/html; charset='.Kohana::$charset;
+
+			if (Kohana::$expose)
+			{
+				$instance->headers['X-Powered-By'] = 'Kohana Framework '.Kohana::VERSION;
+			}
 		}
 
 		return $instance;

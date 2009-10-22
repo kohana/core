@@ -104,6 +104,11 @@ class Kohana_Core {
 	public static $errors = TRUE;
 
 	/**
+	 * @var  boolean  set the X-Powered-By header
+	 */
+	public static $expose = TRUE;
+
+	/**
 	 * @var  object  logging object
 	 */
 	public static $log;
@@ -220,6 +225,11 @@ class Kohana_Core {
 				// Unset the global variable, effectively disabling register_globals
 				unset($GLOBALS[$name], $$name);
 			}
+		}
+
+		if (isset($settings['expose']))
+		{
+			self::$expose = (bool) $settings['expose'];
 		}
 
 		// Determine if we are running in a command line environment
