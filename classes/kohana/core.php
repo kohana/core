@@ -15,7 +15,7 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.0';
+	const VERSION  = '3.0.1.2';
 	const CODENAME = 'renaissance';
 
 	// Log message types
@@ -114,16 +114,16 @@ class Kohana_Core {
 	public static $config;
 
 	// Currently active modules
-	private static $_modules = array();
+	protected static $_modules = array();
 
 	// Include paths that are used to find files
-	private static $_paths = array(APPPATH, SYSPATH);
+	protected static $_paths = array(APPPATH, SYSPATH);
 
 	// File path cache
-	private static $_files = array();
+	protected static $_files = array();
 
 	// Has the file cache changed?
-	private static $_files_changed = FALSE;
+	protected static $_files_changed = FALSE;
 
 	/**
 	 * Initializes the environment:
@@ -163,10 +163,10 @@ class Kohana_Core {
 		if (isset($settings['profile']))
 		{
 			// Enable profiling
-			self::$profiling = (bool) $settings['profile'];
+			Kohana::$profiling = (bool) $settings['profile'];
 		}
 
-		if (self::$profiling === TRUE)
+		if (Kohana::$profiling === TRUE)
 		{
 			// Start a new benchmark
 			$benchmark = Profiler::start('Kohana', __FUNCTION__);
@@ -223,71 +223,71 @@ class Kohana_Core {
 		}
 
 		// Determine if we are running in a command line environment
-		self::$is_cli = (PHP_SAPI === 'cli');
+		Kohana::$is_cli = (PHP_SAPI === 'cli');
 
 		// Determine if we are running in a Windows environment
-		self::$is_windows = (DIRECTORY_SEPARATOR === '\\');
+		Kohana::$is_windows = (DIRECTORY_SEPARATOR === '\\');
 
 		if (isset($settings['cache_dir']))
 		{
 			// Set the cache directory path
-			self::$cache_dir = realpath($settings['cache_dir']);
+			Kohana::$cache_dir = realpath($settings['cache_dir']);
 		}
 		else
 		{
 			// Use the default cache directory
-			self::$cache_dir = APPPATH.'cache';
+			Kohana::$cache_dir = APPPATH.'cache';
 		}
 
-		if ( ! is_writable(self::$cache_dir))
+		if ( ! is_writable(Kohana::$cache_dir))
 		{
 			throw new Kohana_Exception('Directory :dir must be writable',
-				array(':dir' => Kohana::debug_path(self::$cache_dir)));
+				array(':dir' => Kohana::debug_path(Kohana::$cache_dir)));
 		}
 
 		if (isset($settings['caching']))
 		{
 			// Enable or disable internal caching
-			self::$caching = (bool) $settings['caching'];
+			Kohana::$caching = (bool) $settings['caching'];
 		}
 
-		if (self::$caching === TRUE)
+		if (Kohana::$caching === TRUE)
 		{
 			// Load the file path cache
-			self::$_files = Kohana::cache('Kohana::find_file()');
+			Kohana::$_files = Kohana::cache('Kohana::find_file()');
 		}
 
 		if (isset($settings['charset']))
 		{
 			// Set the system character set
-			self::$charset = strtolower($settings['charset']);
+			Kohana::$charset = strtolower($settings['charset']);
 		}
 
 		if (isset($settings['base_url']))
 		{
 			// Set the base URL
-			self::$base_url = rtrim($settings['base_url'], '/').'/';
+			Kohana::$base_url = rtrim($settings['base_url'], '/').'/';
 		}
 
 		if (isset($settings['index_file']))
 		{
 			// Set the index file
-			self::$index_file = trim($settings['index_file'], '/');
+			Kohana::$index_file = trim($settings['index_file'], '/');
 		}
 
 		// Determine if the extremely evil magic quotes are enabled
-		self::$magic_quotes = (bool) get_magic_quotes_gpc();
+		Kohana::$magic_quotes = (bool) get_magic_quotes_gpc();
 
 		// Sanitize all request variables
-		$_GET    = self::sanitize($_GET);
-		$_POST   = self::sanitize($_POST);
-		$_COOKIE = self::sanitize($_COOKIE);
+		$_GET    = Kohana::sanitize($_GET);
+		$_POST   = Kohana::sanitize($_POST);
+		$_COOKIE = Kohana::sanitize($_COOKIE);
 
 		// Load the logger
-		self::$log = Kohana_Log::instance();
+		Kohana::$log = Kohana_Log::instance();
 
 		// Load the config
-		self::$config = Kohana_Config::instance();
+		Kohana::$config = Kohana_Config::instance();
 
 		if (isset($benchmark))
 		{
@@ -312,12 +312,12 @@ class Kohana_Core {
 			foreach ($value as $key => $val)
 			{
 				// Recursively clean each value
-				$value[$key] = self::sanitize($val);
+				$value[$key] = Kohana::sanitize($val);
 			}
 		}
 		elseif (is_string($value))
 		{
-			if (self::$magic_quotes === TRUE)
+			if (Kohana::$magic_quotes === TRUE)
 			{
 				// Remove slashes added by magic quotes
 				$value = stripslashes($value);
@@ -351,7 +351,7 @@ class Kohana_Core {
 		// Transform the class name into a path
 		$file = str_replace('_', '/', strtolower($class));
 
-		if ($path = self::find_file('classes', $file))
+		if ($path = Kohana::find_file('classes', $file))
 		{
 			// Load the class file
 			require $path;
@@ -376,9 +376,9 @@ class Kohana_Core {
 	public static function modules(array $modules = NULL)
 	{
 		if ($modules === NULL)
-			return self::$_modules;
+			return Kohana::$_modules;
 
-		if (self::$profiling === TRUE)
+		if (Kohana::$profiling === TRUE)
 		{
 			// Start a new benchmark
 			$benchmark = Profiler::start('Kohana', __FUNCTION__);
@@ -405,12 +405,12 @@ class Kohana_Core {
 		$paths[] = SYSPATH;
 
 		// Set the new include paths
-		self::$_paths = $paths;
+		Kohana::$_paths = $paths;
 
 		// Set the current module list
-		self::$_modules = $modules;
+		Kohana::$_modules = $modules;
 
-		foreach (self::$_modules as $path)
+		foreach (Kohana::$_modules as $path)
 		{
 			$init = $path.DIRECTORY_SEPARATOR.'init'.EXT;
 
@@ -427,7 +427,7 @@ class Kohana_Core {
 			Profiler::stop($benchmark);
 		}
 
-		return self::$_modules;
+		return Kohana::$_modules;
 	}
 
 	/**
@@ -438,7 +438,7 @@ class Kohana_Core {
 	 */
 	public static function include_paths()
 	{
-		return self::$_paths;
+		return Kohana::$_paths;
 	}
 
 	/**
@@ -472,13 +472,13 @@ class Kohana_Core {
 		// Create a partial path of the filename
 		$path = $dir.DIRECTORY_SEPARATOR.$file.$ext;
 
-		if (self::$caching === TRUE AND isset(self::$_files[$path]))
+		if (Kohana::$caching === TRUE AND isset(Kohana::$_files[$path]))
 		{
 			// This path has been cached
-			return self::$_files[$path];
+			return Kohana::$_files[$path];
 		}
 
-		if (self::$profiling === TRUE AND class_exists('Profiler', FALSE))
+		if (Kohana::$profiling === TRUE AND class_exists('Profiler', FALSE))
 		{
 			// Start a new benchmark
 			$benchmark = Profiler::start('Kohana', __FUNCTION__);
@@ -487,7 +487,7 @@ class Kohana_Core {
 		if ($dir === 'config' OR $dir === 'i18n' OR $dir === 'messages')
 		{
 			// Include paths must be searched in reverse
-			$paths = array_reverse(self::$_paths);
+			$paths = array_reverse(Kohana::$_paths);
 
 			// Array of files that have been found
 			$found = array();
@@ -506,7 +506,7 @@ class Kohana_Core {
 			// The file has not been found yet
 			$found = FALSE;
 
-			foreach (self::$_paths as $dir)
+			foreach (Kohana::$_paths as $dir)
 			{
 				if (is_file($dir.$path))
 				{
@@ -519,13 +519,13 @@ class Kohana_Core {
 			}
 		}
 
-		if (self::$caching === TRUE)
+		if (Kohana::$caching === TRUE)
 		{
 			// Add the path to the cache
-			self::$_files[$path] = $found;
+			Kohana::$_files[$path] = $found;
 
 			// Files have been changed
-			self::$_files_changed = TRUE;
+			Kohana::$_files_changed = TRUE;
 		}
 
 		if (isset($benchmark))
@@ -557,7 +557,7 @@ class Kohana_Core {
 		if ($paths === NULL)
 		{
 			// Use the default paths
-			$paths = self::$_paths;
+			$paths = Kohana::$_paths;
 		}
 
 		// Create an array for the files
@@ -586,7 +586,7 @@ class Kohana_Core {
 
 					if ($file->isDir())
 					{
-						if ($sub_dir = self::list_files($key, $paths))
+						if ($sub_dir = Kohana::list_files($key, $paths))
 						{
 							if (isset($found[$key]))
 							{
@@ -691,7 +691,7 @@ class Kohana_Core {
 		$file = sha1($name).'.txt';
 
 		// Cache directories are split by keys to prevent filesystem overload
-		$dir = self::$cache_dir.DIRECTORY_SEPARATOR.$file[0].$file[1].DIRECTORY_SEPARATOR;
+		$dir = Kohana::$cache_dir.DIRECTORY_SEPARATOR.$file[0].$file[1].DIRECTORY_SEPARATOR;
 
 		try
 		{
@@ -731,7 +731,7 @@ class Kohana_Core {
 		{
 			throw $e;
 			// throw new Kohana_Exception('Cache directory :dir is corrupt, unable to write :file',
-				// array(':dir' => Kohana::debug_path(self::$cache_dir), ':file' => Kohana::debug_path($dir.$file)));
+				// array(':dir' => Kohana::debug_path(Kohana::$cache_dir), ':file' => Kohana::debug_path($dir.$file)));
 		}
 	}
 
@@ -766,7 +766,7 @@ class Kohana_Core {
 				foreach ($files as $f)
 				{
 					// Combine all the messages recursively
-					$messages[$file] = Arr::merge($messages[$file], self::load($f));
+					$messages[$file] = Arr::merge($messages[$file], Kohana::load($f));
 				}
 			}
 		}
@@ -823,12 +823,12 @@ class Kohana_Core {
 			$line    = $e->getLine();
 
 			// Create a text version of the exception
-			$error = self::exception_text($e);
+			$error = Kohana::exception_text($e);
 
-			if (is_object(self::$log))
+			if (is_object(Kohana::$log))
 			{
 				// Add this exception to the log
-				self::$log->add(Kohana::ERROR, $error);
+				Kohana::$log->add(Kohana::ERROR, $error);
 			}
 
 			if (Kohana::$is_cli)
@@ -844,10 +844,10 @@ class Kohana_Core {
 
 			if ($e instanceof ErrorException)
 			{
-				if (isset(self::$php_errors[$code]))
+				if (isset(Kohana::$php_errors[$code]))
 				{
 					// Use the human-readable error name
-					$code = self::$php_errors[$code];
+					$code = Kohana::$php_errors[$code];
 				}
 
 				if (version_compare(PHP_VERSION, '5.3', '<'))
@@ -878,7 +878,7 @@ class Kohana_Core {
 			ob_start();
 
 			// Include the exception HTML
-			include self::find_file('views', 'kohana/error');
+			include Kohana::find_file('views', 'kohana/error');
 
 			// Display the contents of the output buffer
 			echo ob_get_clean();
@@ -908,10 +908,10 @@ class Kohana_Core {
 	{
 		try
 		{
-			if (self::$caching === TRUE AND self::$_files_changed === TRUE)
+			if (Kohana::$caching === TRUE AND Kohana::$_files_changed === TRUE)
 			{
 				// Write the file path cache
-				Kohana::cache('Kohana::find_file()', self::$_files);
+				Kohana::cache('Kohana::find_file()', Kohana::$_files);
 			}
 		}
 		catch (Exception $e)
@@ -969,7 +969,7 @@ class Kohana_Core {
 		$output = array();
 		foreach ($variables as $var)
 		{
-			$output[] = self::_dump($var, 1024);
+			$output[] = Kohana::_dump($var, 1024);
 		}
 
 		return '<pre class="debug">'.implode("\n", $output).'</pre>';
@@ -986,7 +986,7 @@ class Kohana_Core {
 	 */
 	public static function dump($value, $length = 128)
 	{
-		return self::_dump($value, $length);
+		return Kohana::_dump($value, $length);
 	}
 
 	/**
@@ -997,7 +997,7 @@ class Kohana_Core {
 	 * @param   integer  recursion level (internal)
 	 * @return  string
 	 */
-	private static function _dump( & $var, $length = 128, $level = 0)
+	protected static function _dump( & $var, $length = 128, $level = 0)
 	{
 		if ($var === NULL)
 		{
@@ -1026,11 +1026,11 @@ class Kohana_Core {
 						// Only exists on PHP >= 5.2.4
 						if (stream_is_local($file))
 						{
-							$file = self::debug_path($file);
+							$file = Kohana::debug_path($file);
 						}
 					}
 
-					return '<small>resource</small><span>('.$type.')</span> '.htmlspecialchars($file, ENT_NOQUOTES, self::$charset);
+					return '<small>resource</small><span>('.$type.')</span> '.htmlspecialchars($file, ENT_NOQUOTES, Kohana::$charset);
 				}
 			}
 			else
@@ -1043,12 +1043,12 @@ class Kohana_Core {
 			if (strlen($var) > $length)
 			{
 				// Encode the truncated string
-				$str = htmlspecialchars(substr($var, 0, $length), ENT_NOQUOTES, self::$charset).'&nbsp;&hellip;';
+				$str = htmlspecialchars(substr($var, 0, $length), ENT_NOQUOTES, Kohana::$charset).'&nbsp;&hellip;';
 			}
 			else
 			{
 				// Encode the string
-				$str = htmlspecialchars($var, ENT_NOQUOTES, self::$charset);
+				$str = htmlspecialchars($var, ENT_NOQUOTES, Kohana::$charset);
 			}
 
 			return '<small>string</small><span>('.strlen($var).')</span> "'.$str.'"';
@@ -1089,7 +1089,7 @@ class Kohana_Core {
 						$key = '"'.$key.'"';
 					}
 
-					$output[] = "$space$s$key => ".self::_dump($val, $length, $level + 1);
+					$output[] = "$space$s$key => ".Kohana::_dump($val, $length, $level + 1);
 				}
 				unset($var[$marker]);
 
@@ -1135,7 +1135,7 @@ class Kohana_Core {
 				{
 					if ($key[0] === "\x00")
 					{
-						// Determine if the access is private or protected
+						// Determine if the access is protected or protected
 						$access = '<small>'.($key[1] === '*' ? 'protected' : 'private').'</small>';
 
 						// Remove the access level from the variable name
@@ -1146,7 +1146,7 @@ class Kohana_Core {
 						$access = '<small>public</small>';
 					}
 
-					$output[] = "$space$s$access $key => ".self::_dump($val, $length, $level + 1);
+					$output[] = "$space$s$access $key => ".Kohana::_dump($val, $length, $level + 1);
 				}
 				unset($objects[$hash]);
 
@@ -1162,7 +1162,7 @@ class Kohana_Core {
 		}
 		else
 		{
-			return '<small>'.gettype($var).'</small> '.htmlspecialchars(print_r($var, TRUE), ENT_NOQUOTES, self::$charset);
+			return '<small>'.gettype($var).'</small> '.htmlspecialchars(print_r($var, TRUE), ENT_NOQUOTES, Kohana::$charset);
 		}
 	}
 
@@ -1233,7 +1233,7 @@ class Kohana_Core {
 			if ($line >= $range['start'])
 			{
 				// Make the row safe for output
-				$row = htmlspecialchars($row, ENT_NOQUOTES, self::$charset);
+				$row = htmlspecialchars($row, ENT_NOQUOTES, Kohana::$charset);
 
 				// Trim whitespace and sanitize the row
 				$row = '<span class="number">'.sprintf($format, $line).'</span> '.$row;
@@ -1291,7 +1291,7 @@ class Kohana_Core {
 			if (isset($step['file']) AND isset($step['line']))
 			{
 				// Include the source of this step
-				$source = self::debug_source($step['file'], $step['line']);
+				$source = Kohana::debug_source($step['file'], $step['line']);
 			}
 
 			if (isset($step['file']))
