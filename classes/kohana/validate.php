@@ -132,7 +132,7 @@ class Kohana_Validate extends ArrayObject {
 	public static function email_domain($email)
 	{
 		// Check if the email domain has a valid MX record
-		return (bool) checkdnsrr(preg_replace('/^[^@]+@/', '', $email), 'MX');
+		return (bool) checkdnsrr(preg_replace('/^[^@]++@/', '', $email), 'MX');
 	}
 
 	/**
@@ -410,7 +410,7 @@ class Kohana_Validate extends ArrayObject {
 		// Get the decimal point for the current locale
 		list($decimal) = array_values(localeconv());
 
-		return (bool) preg_match('/^[0-9]'.$digits.preg_quote($decimal).'[0-9]{'.(int) $places.'}$/', $str);
+		return (bool) preg_match('/^[0-9]'.$digits.preg_quote($decimal).'[0-9]{'.(int) $places.'}$/D', $str);
 	}
 
 	/**

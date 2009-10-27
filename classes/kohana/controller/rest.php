@@ -29,7 +29,7 @@ abstract class Kohana_Controller_REST extends Controller {
 		}
 		else
 		{
-			$this->request->action = $this->_action_map[Request::$method];;
+			$this->request->action = $this->_action_map[Request::$method];
 		}
 	}
 
