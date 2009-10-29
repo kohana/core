@@ -2,7 +2,7 @@
 /**
  * Wrapper for configuration arrays.
  *
- * @package    Kohana
+ * @package    Configuration
  * @author     Kohana Team
  * @copyright  (c) 2009 Kohana Team
  * @license    http://kohanaphp.com/license.html
