@@ -1086,7 +1086,7 @@ class Kohana_Core {
 					if ($key === $marker) continue;
 					if ( ! is_int($key))
 					{
-						$key = '"'.$key.'"';
+						$key = '"'.htmlspecialchars($key, ENT_NOQUOTES, self::$charset).'"';
 					}
 
 					$output[] = "$space$s$key => ".Kohana::_dump($val, $length, $level + 1);
