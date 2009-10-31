@@ -55,7 +55,7 @@ class Kohana_Remote {
 		// Get the response information
 		$code = curl_getinfo($remote, CURLINFO_HTTP_CODE);
 
-		if ($code !== 200)
+		if ($code < 200 OR $code > 299)
 		{
 			$error = $response;
 		}
