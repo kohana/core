@@ -98,6 +98,16 @@ class Kohana_Route {
 	}
 
 	/**
+	 * Get the name of a route.
+	 *
+	 * @return  string
+	 */
+	public static function name(Route $route)
+	{
+		return array_search($route, Route::$_routes);
+	}
+
+	/**
 	 * Saves or loads the route cache.
 	 *
 	 * @param   boolean   cache the current routes
