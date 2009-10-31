@@ -47,26 +47,6 @@ class Kohana_Route {
 	protected static $_routes = array();
 
 	/**
-	 * Called when the object is re-constructed from the cache.
-	 *
-	 * @param   array   cached values
-	 * @return  Route
-	 */
-	public static function __set_state(array $values)
-	{
-		// Reconstruct the route
-		$route = new Route;
-
-		foreach ($values as $key => $value)
-		{
-			// Set the route properties
-			$route->$key = $value;
-		}
-
-		return $route;
-	}
-
-	/**
 	 * Stores a named route and returns it.
 	 *
 	 * @param   string   route name

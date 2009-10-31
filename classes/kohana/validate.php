@@ -947,6 +947,7 @@ class Kohana_Validate extends ArrayObject {
 		{
 			list($error, $params) = $set;
 
+			// Get the label for this field
 			$label = $this->_labels[$field];
 
 			if ($translate)
@@ -958,7 +959,7 @@ class Kohana_Validate extends ArrayObject {
 			// Start the translation values list
 			$values = array(':field' => $label);
 
-			if ( ! empty($params))
+			if ($params)
 			{
 				foreach ($params as $key => $value)
 				{
