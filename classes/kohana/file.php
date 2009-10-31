@@ -31,7 +31,7 @@ class Kohana_File {
 			// Use getimagesize() to find the mime type on images
 			$file = getimagesize($filename);
 
-			if (isset($image['mime']))
+			if (isset($file['mime']))
 				return $file['mime'];
 		}
 
