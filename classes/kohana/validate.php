@@ -947,8 +947,16 @@ class Kohana_Validate extends ArrayObject {
 		{
 			list($error, $params) = $set;
 
+			$label = $this->_labels[$field];
+
+			if ($translate)
+			{
+				// Translate the label
+				$label = __($label);
+			}
+
 			// Start the translation values list
-			$values = array(':field' => $this->_labels[$field]);
+			$values = array(':field' => $label);
 
 			if ( ! empty($params))
 			{
