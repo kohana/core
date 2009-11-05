@@ -1322,24 +1322,32 @@ class Kohana_Core {
 			}
 			elseif (isset($step['args']))
 			{
-				if (isset($step['class']))
+				if ($step['function'] === '{closure}')
 				{
-					if (method_exists($step['class'], $step['function']))
-					{
-						$reflection = new ReflectionMethod($step['class'], $step['function']);
-					}
-					else
-					{
-						$reflection = new ReflectionMethod($step['class'], '__call');
-					}
+					// Introspection on closures in a stack trace is impossible
+					$params = NULL;
 				}
 				else
 				{
-					$reflection = new ReflectionFunction($step['function']);
-				}
+					if (isset($step['class']))
+					{
+						if (method_exists($step['class'], $step['function']))
+						{
+							$reflection = new ReflectionMethod($step['class'], $step['function']);
+						}
+						else
+						{
+							$reflection = new ReflectionMethod($step['class'], '__call');
+						}
+					}
+					else
+					{
+						$reflection = new ReflectionFunction($step['function']);
+					}
 
-				// Get the function parameters
-				$params = $reflection->getParameters();
+					// Get the function parameters
+					$params = $reflection->getParameters();
+				}
 
 				$args = array();
 
