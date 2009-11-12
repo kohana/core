@@ -690,7 +690,7 @@ class Kohana_Request {
 	 *
 	 * @param   string   filename with path, or TRUE for the current response
 	 * @param   string   download file name
-	 * @param   array    additional options: boolean "inline"
+	 * @param   array    additional options: boolean "inline", string "mime_type"
 	 * @return  void
 	 */
 	public function send_file($filename, $download = NULL, array $options = NULL)
