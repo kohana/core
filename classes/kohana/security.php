@@ -5,7 +5,7 @@
  * @package    Security
  * @author     Kohana Team
  * @copyright  (c) 2007-2009 Kohana Team
- * @license    http://kohanaphp.com/license.html
+ * @license    http://kohanaphp.com/license
  */
 class Kohana_Security {
 
