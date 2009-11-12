@@ -746,7 +746,7 @@ class Kohana_Request {
 		$disposition = empty($options['inline']) ? 'attachment' : 'inline';
 
 		//Override default mime handling
-		$mime = empty($options['mime_type']) ? $mime : $options['mime_type']
+		$mime = empty($options['mime_type']) ? $mime : $options['mime_type'];
 
 		// Set the headers for a download
 		$this->headers['Content-Disposition'] = $disposition.'; filename="'.$download.'"';
