@@ -240,12 +240,12 @@ class Kohana_HTML {
 	 * @param   array    default attributes
 	 * @return  string
 	 */
-	public static function image($file, array $attributes = NULL)
+	public static function image($file, array $attributes = NULL, $index = FALSE)
 	{
 		if (strpos($file, '://') === FALSE)
 		{
 			// Add the base URL
-			$file = URL::base(FALSE).$file;
+			$file = URL::base($index).$file;
 		}
 
 		// Add the image link
