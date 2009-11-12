@@ -35,15 +35,11 @@ class Kohana_File {
 				return $file['mime'];
 		}
 
-		if (function_exists('finfo_open'))
+		if (class_exists('finfo', FALSE))
 		{
-			if ($file = finfo_open(FILEINFO_MIME))
+			if ($info = new finfo(FILEINFO_MIME))
 			{
-				// Get the mime type
-				$mime = finfo_file($file, $filename);
-
-				// Close the finfo
-				finfo_close($file);
+				return $info->file($filename);
 			}
 
 			return $mime;
