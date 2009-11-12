@@ -9,6 +9,12 @@
  */
 class Kohana_Num {
 
+	/**
+	 * Returns the English ordinal suffix (th, st, nd, etc) of a number.
+	 *
+	 * @param   integer  number
+	 * @return  string
+	 */
 	public static function ordinal($number)
 	{
 		if ($number % 100 > 10 AND $number % 100 < 14)
