@@ -690,10 +690,10 @@ class Kohana_Request {
 	 *
 	 * @param   string   filename with path, or TRUE for the current response
 	 * @param   string   download file name
-	 * @param   boolean  allow the download to be resumed
+	 * @param   array    additional options: boolean "inline"
 	 * @return  void
 	 */
-	public function send_file($filename, $download = NULL, $resumable = FALSE)
+	public function send_file($filename, $download = NULL, array $options = NULL)
 	{
 		if ($filename === TRUE)
 		{
@@ -742,23 +742,17 @@ class Kohana_Request {
 			$file = fopen($filename, 'rb');
 		}
 
+		// Inline or download?
+		$disposition = empty($options['inline']) ? 'attachment' : 'inline';
+
 		// Set the headers for a download
-		$this->headers['Content-Disposition'] = 'attachment; filename="'.$download.'"';
+		$this->headers['Content-Disposition'] = $disposition.'; filename="'.$download.'"';
 		$this->headers['Content-Type']        = $mime;
 		$this->headers['Content-Length']      = $size;
 
-		// Set the starting offset and length to send
-		$ranges = NULL;
-
-		if ($resumable === TRUE)
+		if ( ! empty($options['resumable']))
 		{
-			if (isset($_SERVER['HTTP_RANGE']))
-			{
-				// @todo: ranged download processing
-			}
-
-			// Accept accepted range type
-			$this->headers['Accept-Ranges'] = 'bytes';
+			// @todo: ranged download processing
 		}
 
 		// Send all headers now
