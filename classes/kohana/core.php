@@ -1209,10 +1209,17 @@ class Kohana_Core {
 	 * @param   string   file to open
 	 * @param   integer  line number to highlight
 	 * @param   integer  number of padding lines
-	 * @return  string
+	 * @return  string   source of file
+	 * @return  FALSE    file is unreadable
 	 */
 	public static function debug_source($file, $line_number, $padding = 5)
 	{
+		if ( ! $file OR ! is_readable($file))
+		{
+			// Continuing will cause errors
+			return FALSE;
+		}
+
 		// Open the file and set the line position
 		$file = fopen($file, 'r');
 		$line = 0;
