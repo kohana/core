@@ -686,15 +686,27 @@ class Kohana_Request {
 	/**
 	 * Send file download as the response. All execution will be halted when
 	 * this method is called! Use TRUE for the filename to send the current
-	 * response as the file content.
+	 * response as the file content. The third parameter allows the following
+	 * options to be set:
+	 *
+	 * Type      | Option    | Description                        | Default Value
+	 * ----------|-----------|------------------------------------|--------------
+	 * `boolean` | inline    | Display inline instead of download | `FALSE`
+	 * `string`  | mime_type | Manual mime type                   | Automatic
 	 *
 	 * @param   string   filename with path, or TRUE for the current response
 	 * @param   string   download file name
-	 * @param   array    additional options: boolean "inline", string "mime_type"
+	 * @param   array    additional options
 	 * @return  void
 	 */
 	public function send_file($filename, $download = NULL, array $options = NULL)
 	{
+		if ( ! empty($options['mime_type']))
+		{
+			// The mime-type has been manually set
+			$mime = $options['mime_type'];
+		}
+
 		if ($filename === TRUE)
 		{
 			if (empty($download))
@@ -702,15 +714,14 @@ class Kohana_Request {
 				throw new Kohana_Exception('Download name must be provided for streaming files');
 			}
 
+			if ( ! isset($mime))
+			{
+				// Guess the mime using the file extension
+				$mime = File::mime_by_ext($download);
+			}
+
 			// Get the content size
 			$size = strlen($this->response);
-
-			// Get the extension of the download
-			$extension = strtolower(pathinfo($download, PATHINFO_EXTENSION));
-
-			// Guess the mime using the file extension
-			$mime = Kohana::config('mimes');
-			$mime = $mime[$extension][0];
 
 			// Create a temporary file to hold the current response
 			$file = tmpfile();
@@ -735,8 +746,11 @@ class Kohana_Request {
 			// Get the file size
 			$size = filesize($filename);
 
-			// Get the mime type
-			$mime = File::mime($filename);
+			if ( ! isset($mime))
+			{
+				// Get the mime type
+				$mime = File::mime($filename);
+			}
 
 			// Open the file for reading
 			$file = fopen($filename, 'rb');
@@ -744,9 +758,6 @@ class Kohana_Request {
 
 		// Inline or download?
 		$disposition = empty($options['inline']) ? 'attachment' : 'inline';
-
-		//Override default mime handling
-		$mime = empty($options['mime_type']) ? $mime : $options['mime_type'];
 
 		// Set the headers for a download
 		$this->headers['Content-Disposition'] = $disposition.'; filename="'.$download.'"';
