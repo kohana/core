@@ -18,6 +18,23 @@ class Kohana_I18n {
 	protected static $_cache = array();
 
 	/**
+	 * Get and set the target language.
+	 *
+	 * @param   string   new language setting
+	 * @return  string
+	 */
+	public static function lang($lang = NULL)
+	{
+		if ($lang)
+		{
+			// Normalize the language
+			I18n::$lang = strtolower(str_replace(array(' ', '_'), '-', $lang));
+		}
+
+		return I18n::$lang;
+	}
+
+	/**
 	 * Returns translation of a string. If no translation exists, the original
 	 * string will be returned.
 	 *
