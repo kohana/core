@@ -46,31 +46,30 @@ class Kohana_I18n {
 	{
 		if ( ! isset(I18n::$_cache[$lang]))
 		{
-			// Separate the language and locale
-			list ($language, $locale) = explode('-', strtolower($lang), 2);
-
-			// Start a new translation table
+			// New translation table
 			$table = array();
 
-			// Add the non-specific language strings
-			if ($files = Kohana::find_file('i18n', $language))
-			{
-				foreach ($files as $file)
-				{
-					// Merge the language strings into the translation table
-					$table = array_merge($table, require $file);
-				}
-			}
+			// Split the language: language, region, locale, etc
+			$parts = explode('-', $lang);
 
-			// Add the locale-specific language strings
-			if ($files = Kohana::find_file('i18n', $language.DIRECTORY_SEPARATOR.$locale))
+			do
 			{
-				foreach ($files as $file)
+				// Create a path from the parts left
+				$path = implode(DIRECTORY_SEPARATOR, $parts);
+
+				if ($files = Kohana::find_file('i18n', $path))
 				{
-					// Merge the locale strings into the translation table
-					$table = array_merge($table, require $file);
+					foreach ($files as $file)
+					{
+						// Merge the language strings into the translation table
+						$table = array_merge($table, Kohana::load($file));
+					}
 				}
+
+				// Remove the last part
+				array_pop($parts);
 			}
+			while ($parts);
 
 			// Cache the translation table locally
 			I18n::$_cache[$lang] = $table;
