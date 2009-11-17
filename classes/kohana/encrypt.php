@@ -141,7 +141,8 @@ class Kohana_Encrypt {
 	 * Decrypts an encoded string back to its original value.
 	 *
 	 * @param   string  encoded string to be decrypted
-	 * @return  string  decrypted data, FALSE if decryption fails
+	 * @return  string  decrypted data
+	 * @return  FALSE   decryption fails
 	 */
 	public function decode($data)
 	{
