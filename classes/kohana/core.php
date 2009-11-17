@@ -113,6 +113,9 @@ class Kohana_Core {
 	 */
 	public static $config;
 
+	// Is the environment initialized?
+	protected static $_init = FALSE;
+
 	// Currently active modules
 	protected static $_modules = array();
 
@@ -152,13 +155,14 @@ class Kohana_Core {
 	 */
 	public static function init(array $settings = NULL)
 	{
-		static $run;
+		if (Kohana::$_init)
+		{
+			// Do not allow execution twice
+			return;
+		}
 
-		// This function can only be run once
-		if ($run === TRUE) return;
-
-		// The system is now ready
-		$run = TRUE;
+		// Kohana is now initialized
+		Kohana::$_init = TRUE;
 
 		if (isset($settings['profile']))
 		{
@@ -293,6 +297,45 @@ class Kohana_Core {
 		{
 			// Stop benchmarking
 			Profiler::stop($benchmark);
+		}
+	}
+
+	/**
+	 * Cleans up the environment:
+	 *
+	 * - Restore the previous error and exception handlers
+	 * - Destroy the Kohana::$log and Kohana::$config objects
+	 *
+	 * @return  void
+	 */
+	public static function deinit()
+	{
+		if (Kohana::$_init)
+		{
+			// Removed the autoloader
+			spl_autoload_unregister(array('Kohana', 'auto_load'));
+
+			if (Kohana::$errors)
+			{
+				// Go back to the previous error handler
+				restore_error_handler();
+
+				// Go back to the previous exception handler
+				restore_exception_handler();
+			}
+
+			// Destroy objects created by init
+			Kohana::$log = Kohana::$config = NULL;
+
+			// Reset internal storage
+			Kohana::$_modules = Kohana::$_files = array();
+			Kohana::$_paths   = array(APPPATH, SYSPATH);
+
+			// Reset file cache status
+			Kohana::$_files_changed = FALSE;
+
+			// Kohana is no longer initialized
+			Kohana::$_init = FALSE;
 		}
 	}
 
@@ -906,6 +949,12 @@ class Kohana_Core {
 	 */
 	public static function shutdown_handler()
 	{
+		if ( ! Kohana::$_init)
+		{
+			// Do not execute when not active
+			return;
+		}
+
 		try
 		{
 			if (Kohana::$caching === TRUE AND Kohana::$_files_changed === TRUE)
