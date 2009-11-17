@@ -80,11 +80,10 @@ class Kohana_I18n {
 			if ($files = Kohana::find_file('i18n', $path))
 			{
 				$t = array();
-
 				foreach ($files as $file)
 				{
 					// Merge the language strings into the sub table
-					$t = array_merge($table, Kohana::load($file));
+					$t = array_merge($t, Kohana::load($file));
 				}
 
 				// Append the sub table, preventing less specific language
