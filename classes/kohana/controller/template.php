@@ -43,7 +43,6 @@ abstract class Kohana_Controller_Template extends Controller {
 	{
 		if ($this->auto_render === TRUE)
 		{
-			// Assign the template as the request response and render it
 			$this->request->response = $this->template;
 		}
 	}
