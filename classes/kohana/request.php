@@ -518,8 +518,7 @@ class Kohana_Request {
 	protected $_params;
 
 	/**
-	 * Creates a new request object for the given URI. Global GET and POST data
-	 * can be overloaded by setting "get" and "post" in the parameters.
+	 * Creates a new request object for the given URI.
 	 * Throws an exception when no route can be found for the URI.
 	 *
 	 * @throws  Kohana_Request_Exception
