@@ -35,6 +35,34 @@ class Kohana_Num {
 		}
 	}
 
+	/**
+	 * Format a number.
+	 *
+	 * @param   float    number to format
+	 * @param   integer  decimal places
+	 * @param   boolean  monetary format?
+	 * @return  string
+	 */
+	public static function format($number, $places, $monetary = FALSE)
+	{
+		$info = localeconv();
+
+		if ($monetary)
+		{
+			$decimal   = $info['mon_decimal_point'];
+			$thousands = $info['mon_thousands_sep'];
+			$currency  = $info['currency_symbol'];
+		}
+		else
+		{
+			$decimal   = $info['decimal_point'];
+			$thousands = $info['thousands_sep'];
+			$currency  = NULL;
+		}
+
+		return $currency.number_format($number, $places, $decimal, $thousands);
+	}
+
 	final private function __construct()
 	{
 		// This is a static class
