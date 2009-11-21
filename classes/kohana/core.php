@@ -15,7 +15,7 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.0.1.2';
+	const VERSION  = '3.0.2';
 	const CODENAME = 'renaissance';
 
 	// Log message types
