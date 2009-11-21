@@ -593,6 +593,12 @@ class Kohana_Request {
 	 */
 	public function uri(array $params = NULL)
 	{
+		if ( ! isset($params['directory']))
+		{
+			// Add the current directory
+			$params['directory'] = $this->directory;
+		}
+
 		if ( ! isset($params['controller']))
 		{
 			// Add the current controller
