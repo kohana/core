@@ -41,6 +41,7 @@ class Kohana_Core {
 		E_STRICT             => 'Strict',
 		E_NOTICE             => 'Notice',
 		E_RECOVERABLE_ERROR  => 'Recoverable Error',
+		E_DEPRECATED         => 'Deprecated',
 	);
 
 	/**
@@ -194,7 +195,7 @@ class Kohana_Core {
 			set_exception_handler(array('Kohana', 'exception_handler'));
 
 			// Enable Kohana error handling, converts all PHP errors to exceptions.
-			set_error_handler(array('Kohana', 'error_handler'));
+			// set_error_handler(array('Kohana', 'error_handler'));
 		}
 
 		if (ini_get('register_globals'))
@@ -835,7 +836,7 @@ class Kohana_Core {
 	 */
 	public static function error_handler($code, $error, $file = NULL, $line = NULL)
 	{
-		if ((error_reporting() & $code) !== 0)
+		if (error_reporting() & $code)
 		{
 			// This error is not suppressed by current error reporting settings
 			// Convert the error into an ErrorException
@@ -969,7 +970,7 @@ class Kohana_Core {
 			Kohana::exception_handler($e);
 		}
 
-		if ($error = error_get_last())
+		if ($error = error_get_last() AND (error_reporting() & $error['type']))
 		{
 			// If an output buffer exists, clear it
 			ob_get_level() and ob_clean();
