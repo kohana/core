@@ -195,7 +195,7 @@ class Kohana_Core {
 			set_exception_handler(array('Kohana', 'exception_handler'));
 
 			// Enable Kohana error handling, converts all PHP errors to exceptions.
-			// set_error_handler(array('Kohana', 'error_handler'));
+			set_error_handler(array('Kohana', 'error_handler'));
 		}
 
 		if (ini_get('register_globals'))
