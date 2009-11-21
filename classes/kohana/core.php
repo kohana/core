@@ -41,7 +41,6 @@ class Kohana_Core {
 		E_STRICT             => 'Strict',
 		E_NOTICE             => 'Notice',
 		E_RECOVERABLE_ERROR  => 'Recoverable Error',
-		E_DEPRECATED         => 'Deprecated',
 	);
 
 	/**
@@ -179,6 +178,12 @@ class Kohana_Core {
 
 		// Start an output buffer
 		ob_start();
+
+		if (defined('E_DEPRECATED'))
+		{
+			// E_DEPRECATED only exists in PHP >= 5.3.0
+			Kohana::$php_errors[E_DEPRECATED] = 'Deprecated';
+		}
 
 		if (isset($settings['errors']))
 		{
