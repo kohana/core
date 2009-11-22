@@ -36,11 +36,11 @@ class Kohana_Num {
 	}
 
 	/**
-	 * Format a number.
+	 * Locale-aware number formatting.
 	 *
 	 * @param   float    number to format
 	 * @param   integer  decimal places
-	 * @param   boolean  monetary format?
+	 * @param   boolean  monetary formatting?
 	 * @return  string
 	 */
 	public static function format($number, $places, $monetary = FALSE)
@@ -51,16 +51,14 @@ class Kohana_Num {
 		{
 			$decimal   = $info['mon_decimal_point'];
 			$thousands = $info['mon_thousands_sep'];
-			$currency  = $info['currency_symbol'];
 		}
 		else
 		{
 			$decimal   = $info['decimal_point'];
 			$thousands = $info['thousands_sep'];
-			$currency  = NULL;
 		}
 
-		return $currency.number_format($number, $places, $decimal, $thousands);
+		return number_format($number, $places, $decimal, $thousands);
 	}
 
 	final private function __construct()
