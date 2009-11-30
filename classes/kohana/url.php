@@ -114,18 +114,23 @@ class Kohana_URL {
 	 * @param   boolean  transliterate to ASCII
 	 * @return  string
 	 */
-	public static function title($title, $separator = '-', $transliterate = FALSE)
+	public static function title($title, $separator = '-', $ascii_only = FALSE)
 	{
 		$separator = ($separator === '-') ? '-' : '_';
 
-		if ($transliterate === TRUE)
+		if ($ascii_only === TRUE)
 		{
 			// Transliterate non-ASCII characters
 			$title = UTF8::transliterate_to_ascii($title);
-		}
 
-		// Remove all characters that are not the separator, a-z, 0-9, or whitespace
-		$title = preg_replace('/[^'.$separator.'a-z0-9\s]+/', '', strtolower($title));
+			// Remove all characters that are not the separator, a-z, 0-9, or whitespace
+			$title = preg_replace('/[^'.$separator.'a-z0-9\s]+/', '', strtolower($title));
+		}
+		else
+		{
+			// Remove all characters that are not the separator, letters, numbers, or whitespace
+			$title = preg_replace('/[^'.$separator.'\pL\pN\s]+/u', '', UTF8::strtolower($title));
+		}
 
 		// Replace all separator characters and whitespace by a single separator
 		$title = preg_replace('/['.$separator.'\s]+/', $separator, $title);
