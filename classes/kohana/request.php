@@ -644,6 +644,9 @@ class Kohana_Request {
 	{
 		if ( ! headers_sent())
 		{
+			// HTTP status line
+			header('HTTP/1.1 '.$this->status.' '.Request::$messages[$this->status]);
+
 			foreach ($this->headers as $name => $value)
 			{
 				if (is_string($name))
@@ -653,7 +656,7 @@ class Kohana_Request {
 				}
 
 				// Send the raw header
-				header($value, TRUE, $this->status);
+				header($value, TRUE);
 			}
 		}
 
