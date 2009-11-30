@@ -107,16 +107,22 @@ class Kohana_URL {
 	}
 
 	/**
-	 * Convert a phrase to a URL-safe title. Note that non-ASCII characters
-	 * should be transliterated before using this function.
+	 * Convert a phrase to a URL-safe title.
 	 *
-	 * @param   string  phrase to convert
-	 * @param   string  word separator (- or _)
+	 * @param   string   phrase to convert
+	 * @param   string   word separator (- or _)
+	 * @param   boolean  transliterate to ASCII
 	 * @return  string
 	 */
-	public static function title($title, $separator = '-')
+	public static function title($title, $separator = '-', $transliterate = FALSE)
 	{
 		$separator = ($separator === '-') ? '-' : '_';
+
+		if ($transliterate === TRUE)
+		{
+			// Transliterate non-ASCII characters
+			$title = UTF8::transliterate_to_ascii($title);
+		}
 
 		// Remove all characters that are not the separator, a-z, 0-9, or whitespace
 		$title = preg_replace('/[^'.$separator.'a-z0-9\s]+/', '', strtolower($title));
