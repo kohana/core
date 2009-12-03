@@ -637,7 +637,7 @@ class Kohana_Validate extends ArrayObject {
 
 	/**
 	 * Executes all validation filters, rules, and callbacks. This should
-	 * typically be called within an in/else block.
+	 * typically be called within an if/else block.
 	 *
 	 *     if ($validation->check())
 	 *     {
