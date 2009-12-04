@@ -15,7 +15,7 @@ class Kohana_Security {
 	 * @author     Christian Stocker <chregu@bitflux.ch>
 	 * @copyright  (c) 2001-2006 Bitflux GmbH
 	 *
-	 * @param   string  string to sanitize
+	 * @param   mixed    string or array to sanitize
 	 * @return  string
 	 */
 	public static function xss_clean($str)
@@ -49,6 +49,17 @@ class Kohana_Security {
 		//   * Removed parentheses where possible
 		//   * Split up alternation alternatives
 		//   * Made some quantifiers possessive
+		// * Handle arrays recursively
+
+		if (is_array($str) OR is_object($str))
+		{
+			foreach ($str as $k => $s)
+			{
+				$str[$k] = Security::xss_clean($s);
+			}
+
+			return $str;
+		}
 
 		// Fix &entity\n;
 		$str = str_replace(array('&amp;','&lt;','&gt;'), array('&amp;amp;','&amp;lt;','&amp;gt;'), $str);
