@@ -15,7 +15,7 @@ class Kohana_Security {
 	 * @author     Christian Stocker <chregu@bitflux.ch>
 	 * @copyright  (c) 2001-2006 Bitflux GmbH
 	 *
-	 * @param   string  string to sanitize
+	 * @param   mixed    string or array to sanitize
 	 * @return  string
 	 */
 	public static function xss_clean($str)
@@ -49,6 +49,17 @@ class Kohana_Security {
 		//   * Removed parentheses where possible
 		//   * Split up alternation alternatives
 		//   * Made some quantifiers possessive
+		// * Handle arrays recursively
+
+		if (is_array($str) OR is_object($str))
+		{
+			foreach ($str as $k => $s)
+			{
+				$str[$k] = Security::xss_clean($s);
+			}
+
+			return $str;
+		}
 
 		// Fix &entity\n;
 		$str = str_replace(array('&amp;','&lt;','&gt;'), array('&amp;amp;','&amp;lt;','&amp;gt;'), $str);
@@ -57,7 +68,7 @@ class Kohana_Security {
 		$str = html_entity_decode($str, ENT_COMPAT, Kohana::$charset);
 
 		// Remove any attribute starting with "on" or xmlns
-		$str = preg_replace('#(<[^>]+?[\x00-\x20"\'])(?:on|xmlns)[^>]*+>#iu', '$1>', $str);
+		$str = preg_replace('#(?:on[a-z]+|xmlns)\s*=\s*[\'"\x00-\x20]?[^\'>"]*[\'"\x00-\x20]?\s?#iu', '', $data);
 
 		// Remove javascript: and vbscript: protocols
 		$str = preg_replace('#([a-z]*)[\x00-\x20]*=[\x00-\x20]*([`\'"]*)[\x00-\x20]*j[\x00-\x20]*a[\x00-\x20]*v[\x00-\x20]*a[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu', '$1=$2nojavascript...', $str);

@@ -193,15 +193,15 @@ class Kohana_Core {
 
 		if (Kohana::$errors === TRUE)
 		{
-			// Enable the Kohana shutdown handler, which catches E_FATAL errors.
-			register_shutdown_function(array('Kohana', 'shutdown_handler'));
-
 			// Enable Kohana exception handling, adds stack traces and error source.
 			set_exception_handler(array('Kohana', 'exception_handler'));
 
 			// Enable Kohana error handling, converts all PHP errors to exceptions.
 			set_error_handler(array('Kohana', 'error_handler'));
 		}
+
+		// Enable the Kohana shutdown handler, which catches E_FATAL errors.
+		register_shutdown_function(array('Kohana', 'shutdown_handler'));
 
 		if (ini_get('register_globals'))
 		{
@@ -779,8 +779,6 @@ class Kohana_Core {
 		catch (Exception $e)
 		{
 			throw $e;
-			// throw new Kohana_Exception('Cache directory :dir is corrupt, unable to write :file',
-				// array(':dir' => Kohana::debug_path(Kohana::$cache_dir), ':file' => Kohana::debug_path($dir.$file)));
 		}
 	}
 
@@ -975,7 +973,7 @@ class Kohana_Core {
 			Kohana::exception_handler($e);
 		}
 
-		if ($error = error_get_last() AND (error_reporting() & $error['type']))
+		if (Kohana::$errors AND $error = error_get_last() AND (error_reporting() & $error['type']))
 		{
 			// If an output buffer exists, clear it
 			ob_get_level() and ob_clean();
