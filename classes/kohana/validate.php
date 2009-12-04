@@ -648,6 +648,11 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public function check()
 	{
+		if (empty($this->_filters) AND empty($this->_rules) AND empty($this->_callbacks))
+		{
+			throw new Kohana_Exception('Cannot validate data when no rules, filters, or callbacks are added');
+		}
+
 		if (Kohana::$profiling === TRUE)
 		{
 			// Start a new benchmark
