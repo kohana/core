@@ -136,10 +136,8 @@ class Kohana_Upload {
 		if ($file['error'] !== UPLOAD_ERR_OK)
 			return TRUE;
 
-		// Extension of the filename
-		$ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+		$ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 
-		// Make sure there is an extension, that the extension is allowed, and that mime types exist
 		return in_array($ext, $allowed);
 	}
 
