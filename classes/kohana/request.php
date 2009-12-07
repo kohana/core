@@ -675,7 +675,7 @@ class Kohana_Request {
 		if (strpos($url, '://') === FALSE)
 		{
 			// Make the URI into a URL
-			$url = URL::site($url);
+			$url = URL::site($url, TRUE);
 		}
 
 		// Set the response status

@@ -52,8 +52,8 @@ class Kohana_URL {
 	/**
 	 * Fetches an absolute site URL based on a URI segment.
 	 *
-	 * @param   string  site URI to convert
-	 * @param   string  non-default protocol
+	 * @param   string          site URI to convert
+	 * @param   boolean|string  non-default protocol
 	 * @return  string
 	 */
 	public static function site($uri = '', $protocol = FALSE)
