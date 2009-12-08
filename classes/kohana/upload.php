@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct access allowed.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Upload helper class for working with the uploaded files and the Validate class.
  *
@@ -91,7 +91,7 @@ class Kohana_Upload {
 	/**
 	 * Tests if upload data is valid, even if no file was uploaded.
 	 *
-	 *     $validate->rule('file', 'Upload::valid')
+	 *     $validate->rule('file', 'Upload::valid');
 	 *
 	 * @param   array  $_FILES item
 	 * @return  bool
@@ -149,7 +149,7 @@ class Kohana_Upload {
 	 * B is the byte modifier: (B)ytes, (K)ilobytes, (M)egabytes, (G)igabytes.
 	 *
 	 *     // Uploaded file must be 1MB or less
-	 *     $validate->rule('file', 'Upload::size', array('1M'))
+	 *     $validate->rule('file', 'Upload::size', array('1M'));
 	 *
 	 * @param   array    $_FILES item
 	 * @param   string   maximum file size

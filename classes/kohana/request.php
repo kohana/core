@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Request and response wrapper.
  *
@@ -593,12 +593,6 @@ class Kohana_Request {
 	 */
 	public function uri(array $params = NULL)
 	{
-		if ( ! isset($params['directory']))
-		{
-			// Add the current directory
-			$params['directory'] = $this->directory;
-		}
-
 		if ( ! isset($params['controller']))
 		{
 			// Add the current controller
@@ -644,9 +638,6 @@ class Kohana_Request {
 	{
 		if ( ! headers_sent())
 		{
-			// HTTP status line
-			header('HTTP/1.1 '.$this->status.' '.Request::$messages[$this->status]);
-
 			foreach ($this->headers as $name => $value)
 			{
 				if (is_string($name))
@@ -656,7 +647,7 @@ class Kohana_Request {
 				}
 
 				// Send the raw header
-				header($value, TRUE);
+				header($value, TRUE, $this->status);
 			}
 		}
 

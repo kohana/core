@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct access');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Kohana exception class. Converts exceptions into HTML messages.
  *
