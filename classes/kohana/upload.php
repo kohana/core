@@ -91,7 +91,7 @@ class Kohana_Upload {
 	/**
 	 * Tests if upload data is valid, even if no file was uploaded.
 	 *
-	 *     $validate->add_rule('file', 'Upload::valid')
+	 *     $validate->rule('file', 'Upload::valid')
 	 *
 	 * @param   array  $_FILES item
 	 * @return  bool
@@ -108,7 +108,7 @@ class Kohana_Upload {
 	/**
 	 * Tests if a successful upload has been made.
 	 *
-	 *     $validate->add_rule('file', 'Upload::not_empty');
+	 *     $validate->rule('file', 'Upload::not_empty');
 	 *
 	 * @param   array    $_FILES item
 	 * @return  bool
@@ -125,7 +125,7 @@ class Kohana_Upload {
 	/**
 	 * Test if an uploaded file is an allowed file type, by extension.
 	 *
-	 *     $validate->add_rule('file', 'Upload::type', array(array('jpg', 'png', 'gif')));
+	 *     $validate->rule('file', 'Upload::type', array(array('jpg', 'png', 'gif')));
 	 *
 	 * @param   array    $_FILES item
 	 * @param   array    allowed file extensions
@@ -147,7 +147,7 @@ class Kohana_Upload {
 	 * B is the byte modifier: (B)ytes, (K)ilobytes, (M)egabytes, (G)igabytes.
 	 *
 	 *     // Uploaded file must be 1MB or less
-	 *     $validate->add_rule('file', 'Upload::size', array('1M'))
+	 *     $validate->rule('file', 'Upload::size', array('1M'))
 	 *
 	 * @param   array    $_FILES item
 	 * @param   string   maximum file size
