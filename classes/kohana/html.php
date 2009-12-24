@@ -133,15 +133,15 @@ class Kohana_HTML {
 	}
 
 	/**
-	 * Generates an obfuscated version of an email address.
+	 * Generates an obfuscated version of a string.
 	 *
-	 * @param   string  email address
+	 * @param   string  string to obfuscate
 	 * @return  string
 	 */
-	public static function email($email)
+	public static function obfuscate($string)
 	{
 		$safe = '';
-		foreach (str_split($email) as $letter)
+		foreach (str_split($string) as $letter)
 		{
 			switch (rand(1, 3))
 			{
@@ -155,6 +155,18 @@ class Kohana_HTML {
 		}
 
 		return $safe;
+	}
+
+	/**
+	 * Generates an obfuscated version of an email address.
+	 *
+	 * @param   string  email address
+	 * @return  string
+	 */
+	public static function email($email)
+	{
+		// Make sure the at sign is always obfuscated
+		return str_replace('@', '&#64;', HTML::obfuscate($email));
 	}
 
 	/**
