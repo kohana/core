@@ -24,9 +24,10 @@ $error_id = uniqid('error');
 		#kohana_error pre.source span.line span.number { color: #666; }
 #kohana_error ol.trace { display: block; margin: 0 0 0 2em; padding: 0; list-style: decimal; }
 	#kohana_error ol.trace li { margin: 0; padding: 0; }
+.js .collapsed { display: none; }
 </style>
 <script type="text/javascript">
-document.write('<style type="text/css"> .collapsed { display: none; } </style>');
+document.documentElement.className = 'js';
 function koggle(elem)
 {
 	elem = document.getElementById(elem);
