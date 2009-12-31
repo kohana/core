@@ -346,7 +346,7 @@ class Kohana_Route {
 			$regex = str_replace($search, $replace, $regex);
 		}
 
-		return '#^'.$regex.'$#';
+		return '#^'.$regex.'$#u';
 	}
 
 } // End Route
