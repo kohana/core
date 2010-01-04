@@ -265,8 +265,8 @@ class Kohana_Date {
 		extract(array_flip($output), EXTR_SKIP);
 
 		// Default values
-		$time1  = max(0, (int) $time1);
-		$time2  = empty($time2) ? time() : max(0, (int) $time2);
+		$time1 = max(0, (int) $time1);
+		$time2 = empty($time2) ? time() : max(0, (int) $time2);
 
 		// Calculate timespan (seconds)
 		$timespan = abs($time1 - $time2);
@@ -339,7 +339,7 @@ class Kohana_Date {
 	/**
 	 * Returns the difference between a time and now in a "fuzzy" way.
 	 *
-	 * @param   integer  past UNIX timestamp
+	 * @param   integer  UNIX timestamp
 	 * @return  string
 	 */
 	public static function fuzzy_span($timestamp)

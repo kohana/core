@@ -106,7 +106,7 @@ class Kohana_Arr {
 	}
 
 	/**
-	 * Retreive a single key from an array. If the key does not exist in the
+	 * Retrieve a single key from an array. If the key does not exist in the
 	 * array, the default value will be returned instead.
 	 *
 	 * @param   array   array to extract from

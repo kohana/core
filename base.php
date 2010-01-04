@@ -23,6 +23,7 @@ if ( ! defined('KOHANA_START_MEMORY'))
  *
  * @param   string  text to translate
  * @param   array   values to replace in the translated text
+ * @param   string  target language
  * @return  string
  */
 function __($string, array $values = NULL, $lang = 'en-us')
