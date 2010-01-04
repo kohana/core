@@ -10,19 +10,19 @@
  * a pattern for the key:
  *
  *     // This route will only match when <id> is a digit
- *     Route::factory('user/edit/<id>', array('id' => '\d+'));
+ *     Route::set('user/edit/<id>', array('id' => '\d+'));
  *
  *     // This route will match when <path> is anything
- *     Route::factory('<path>', array('path' => '.*'));
+ *     Route::set('<path>', array('path' => '.*'));
  *
  * It is also possible to create optional segments by using parentheses in
  * the URI definition:
  *
  *     // This is the standard default route, and no keys are required
- *     Route::default('(<controller>(/<action>(/<id>)))');
+ *     Route::set('(<controller>(/<action>(/<id>)))');
  *
- *     // This route only requires the :file key
- *     Route::factory('(<path>/)<file>(<format>)', array('path' => '.*', 'format' => '\.\w+'));
+ *     // This route only requires the <file> key
+ *     Route::set('(<path>/)<file>(<format>)', array('path' => '.*', 'format' => '\.\w+'));
  *
  * Routes also provide a way to generate URIs (called "reverse routing"), which
  * makes them an extremely powerful and flexible way to generate internal links.
