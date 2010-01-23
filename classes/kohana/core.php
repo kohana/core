@@ -294,7 +294,7 @@ class Kohana_Core {
 		$_COOKIE = Kohana::sanitize($_COOKIE);
 
 		// Load the logger
-		Kohana::$log = Kohana_Log::instance();
+		Kohana::$log = Log::instance();
 
 		// Load the config
 		Kohana::$config = Kohana_Config::instance();
