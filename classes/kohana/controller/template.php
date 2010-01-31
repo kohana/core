@@ -26,6 +26,8 @@ abstract class Kohana_Controller_Template extends Controller {
 	 */
 	public function before()
 	{
+		parent::before();
+		
 		if ($this->auto_render === TRUE)
 		{
 			// Load the template
@@ -41,6 +43,8 @@ abstract class Kohana_Controller_Template extends Controller {
 	 */
 	public function after()
 	{
+		parent::after();
+		
 		if ($this->auto_render === TRUE)
 		{
 			$this->request->response = $this->template;
