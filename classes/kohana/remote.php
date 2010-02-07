@@ -17,7 +17,14 @@ class Kohana_Remote {
 		CURLOPT_USERAGENT      => 'Mozilla/5.0 (compatible; Kohana v3.0 +http://kohanaphp.com/)',
 		CURLOPT_CONNECTTIMEOUT => 5,
 		CURLOPT_TIMEOUT        => 5,
+		CURLOPT_HEADERFUNCTION => array('Remote', '_parse_headers'),
+		CURLOPT_HEADER         => FALSE,
 	);
+
+	/**
+	 * @var     array  Headers from the request
+	 */
+	public static $headers = array();
 
 	/**
 	 * Returns the output of a remote URL.
@@ -29,6 +36,9 @@ class Kohana_Remote {
 	 */
 	public static function get($url, array $options = NULL)
 	{
+		// Reset the headers
+		self::$headers = array();
+
 		if ($options === NULL)
 		{
 			// Use default options
@@ -132,6 +142,31 @@ class Kohana_Remote {
 		fclose($remote);
 
 		return $response;
+	}
+
+	/**
+	 * Parses the returned headers from the remote
+	 * request
+	 *
+	 * @param   resource the curl resource
+	 * @param   string   the full header string
+	 * @return  int
+	 */
+	protected static function _parse_headers($remote, $header)
+	{
+		$headers = array();
+
+		if (preg_match_all('/(\w[^\s:]*):[ ]*([^\r\n]*(?:\r\n[ \t][^\r\n]*)*)/', $header, $matches))
+		{
+			foreach ($matches[0] as $key => $value)
+				$headers[$matches[1][$key]] = $matches[2][$key];
+		}
+
+		// If there are headers to apply
+		if ($headers)
+			self::$headers += $headers;
+
+		return strlen($header);
 	}
 
 	final private function __construct()

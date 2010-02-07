@@ -475,9 +475,39 @@ class Kohana_Request {
 	}
 
 	/**
+	 * Tests whether the request is for an internal call or
+	 * external call
+	 *
+	 * @param   string   the uri to test
+	 * @return  boolean  FALSE internal call, TRUE for external request
+	 */
+	protected static function _request_external($uri)
+	{
+		// If there is no protocal, request is internal
+		if (FALSE === strpos($uri, '://'))
+			return FALSE;
+
+		// Discover in uri is statistics
+		$base_path = URL::base(TRUE, TRUE);
+		$base_path_position = strpos($uri, $base_path);
+
+		// If the base_path did not match at all, or it was located beyond the start
+		// of the URI
+		if (FALSE === $base_path_position or 0 < $base_path_position)
+			return TRUE;
+
+		return FALSE;
+	}
+
+	/**
 	 * @var  object  route matched for this request
 	 */
 	public $route;
+
+	/**
+	 * @var  boolean  true if external request
+	 */
+	public $external = FALSE;
 
 	/**
 	 * @var  integer  HTTP response code: 200, 404, 500, etc
@@ -527,6 +557,14 @@ class Kohana_Request {
 	 */
 	public function __construct($uri)
 	{
+		// Test if request is internal or external
+		if (Request::_request_external($uri))
+		{
+			$this->external = TRUE;
+			$this->uri = $uri;
+			return;
+		}
+
 		// Remove trailing slashes from the URI
 		$uri = trim($uri, '/');
 
@@ -827,6 +865,10 @@ class Kohana_Request {
 	 */
 	public function execute()
 	{
+		// If this is an external request, process it as such
+		if ($this->external)
+			return $this->external_execute();
+
 		// Create the class prefix
 		$prefix = 'controller_';
 
@@ -957,4 +999,26 @@ class Kohana_Request {
 		return $this;
 	}
 
+	/**
+	 * Execute a request that is to an external source
+	 *
+	 * @return  self
+	 */
+	protected function external_execute()
+	{
+		// Start benchmarking if required
+		if (Kohana::$profiling === TRUE)
+			$benchmark = Profiler::start('External Requests', $this->uri);
+
+		// Get the resonse status
+		$this->status = Remote::status($this->uri);
+		$this->response = Remote::get($this->uri);
+		$this->headers = Remote::$headers;
+
+		// Stop benchmarking if required
+		if (isset($benchmark))
+			Profiler::stop($benchmark);
+
+		return $this;
+	}
 } // End Request
