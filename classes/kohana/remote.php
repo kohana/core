@@ -17,8 +17,6 @@ class Kohana_Remote {
 		CURLOPT_USERAGENT      => 'Mozilla/5.0 (compatible; Kohana v3.0 +http://kohanaphp.com/)',
 		CURLOPT_CONNECTTIMEOUT => 5,
 		CURLOPT_TIMEOUT        => 5,
-		CURLOPT_HEADERFUNCTION => array('Remote', '_parse_headers'),
-		CURLOPT_HEADER         => FALSE,
 	);
 
 	/**
@@ -90,9 +88,10 @@ class Kohana_Remote {
 	 * Returns the status code for a URL.
 	 *
 	 * @param   string  URL to check
+	 * @param   array   HTTP Headers to include
 	 * @return  integer
 	 */
-	public static function status($url)
+	public static function status($url, array $http_headers = array())
 	{
 		// Get the hostname and path
 		$url = parse_url($url);
@@ -118,6 +117,9 @@ class Kohana_Remote {
 		fwrite($remote, 'Host: '.$url['host'].$CRLF);
 		fwrite($remote, 'Connection: close'.$CRLF);
 		fwrite($remote, 'User-Agent: Kohana Framework (+http://kohanaphp.com/)'.$CRLF);
+
+		foreach ($http_headers as $name => $value)
+			fwrite($remote, $name.': '.$value.$CRLF);
 
 		// Send one more CRLF to terminate the headers
 		fwrite($remote, $CRLF);

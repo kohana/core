@@ -863,11 +863,11 @@ class Kohana_Request {
 	 *
 	 * @return  $this
 	 */
-	public function execute()
+	public function execute(array $http_headers = array())
 	{
 		// If this is an external request, process it as such
 		if ($this->external)
-			return $this->external_execute();
+			return $this->external_execute($http_headers);
 
 		// Create the class prefix
 		$prefix = 'controller_';
@@ -1004,7 +1004,7 @@ class Kohana_Request {
 	 *
 	 * @return  self
 	 */
-	protected function external_execute()
+	protected function external_execute(array $request_headers = array())
 	{
 		// Start benchmarking if required
 		if (Kohana::$profiling === TRUE)
@@ -1012,7 +1012,11 @@ class Kohana_Request {
 
 		// Get the resonse status
 		$this->status = Remote::status($this->uri);
-		$this->response = Remote::get($this->uri);
+		$this->response = Remote::get($this->uri, array(
+			CURLOPT_HEADERFUNCTION => array('Remote', '_parse_headers'),
+			CURLOPT_HEADER         => FALSE,
+			CURLOPT_HTTPHEADER    => $request_headers,
+		));
 		$this->headers = Remote::$headers;
 
 		// Stop benchmarking if required
