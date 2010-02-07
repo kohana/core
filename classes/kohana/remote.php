@@ -17,6 +17,8 @@ class Kohana_Remote {
 		CURLOPT_USERAGENT      => 'Mozilla/5.0 (compatible; Kohana v3.0 +http://kohanaphp.com/)',
 		CURLOPT_CONNECTTIMEOUT => 5,
 		CURLOPT_TIMEOUT        => 5,
+		CURLOPT_HEADERFUNCTION => array('Remote', '_parse_headers'),
+		CURLOPT_HEADER         => FALSE,
 	);
 
 	/**

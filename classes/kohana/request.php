@@ -1013,8 +1013,6 @@ class Kohana_Request {
 		// Get the resonse status
 		$this->status = Remote::status($this->uri);
 		$this->response = Remote::get($this->uri, array(
-			CURLOPT_HEADERFUNCTION => array('Remote', '_parse_headers'),
-			CURLOPT_HEADER         => FALSE,
 			CURLOPT_HTTPHEADER    => $request_headers,
 		));
 		$this->headers = Remote::$headers;
