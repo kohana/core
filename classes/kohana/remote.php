@@ -11,6 +11,16 @@
  */
 class Kohana_Remote {
 
+	// Request types
+	const CONNECT = 'CONNECT';
+	const DELETE  = 'DELETE';
+	const GET     = 'GET';
+	const HEAD    = 'HEAD';
+	const POST    = 'POST';
+	const PUT     = 'PUT';
+	const OPTIONS = 'OPTIONS';
+	const TRACE   = 'TRACE';
+
 	// Default curl options
 	public static $default_options = array
 	(

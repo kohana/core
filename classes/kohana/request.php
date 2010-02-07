@@ -861,13 +861,15 @@ class Kohana_Request {
 	 * By default, the output from the controller is captured and returned, and
 	 * no headers are sent.
 	 *
+	 * @param   array    Additional headers to send with the request
+	 * @param   string   The HTTP method to use
 	 * @return  $this
 	 */
-	public function execute(array $http_headers = array())
+	public function execute(array $http_headers = array(), $method = NULL)
 	{
 		// If this is an external request, process it as such
 		if ($this->external)
-			return $this->external_execute($http_headers);
+			return $this->external_execute($http_headers, $method);
 
 		// Create the class prefix
 		$prefix = 'controller_';
@@ -1002,18 +1004,24 @@ class Kohana_Request {
 	/**
 	 * Execute a request that is to an external source
 	 *
-	 * @return  self
+	 * @param   array    Additional headers to send with the request
+	 * @param   string   The HTTP method to use
+	 * @return  $this
 	 */
-	protected function external_execute(array $request_headers = array())
+	protected function external_execute(array $request_headers = array(), $method = NULL)
 	{
 		// Start benchmarking if required
 		if (Kohana::$profiling === TRUE)
 			$benchmark = Profiler::start('External Requests', $this->uri);
 
+		if (NULL === $method)
+			$method = Remote::GET;
+
 		// Get the resonse status
 		$this->status = Remote::status($this->uri);
 		$this->response = Remote::get($this->uri, array(
 			CURLOPT_HTTPHEADER    => $request_headers,
+			CURLOPT_CUSTOMREQUEST => $method,
 		));
 		$this->headers = Remote::$headers;
 
