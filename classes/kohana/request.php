@@ -1,6 +1,9 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Request and response wrapper.
+ * 
+ * @todo   Create a new Response object
+ * @todo   Isolate request variables from each other
  *
  * @package    Kohana
  * @author     Kohana Team
