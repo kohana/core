@@ -12,91 +12,6 @@
  */
 class Kohana_Request {
 
-	// HTTP status codes and messages
-	public static $messages = array(
-		// Informational 1xx
-		100 => 'Continue',
-		101 => 'Switching Protocols',
-
-		// Success 2xx
-		200 => 'OK',
-		201 => 'Created',
-		202 => 'Accepted',
-		203 => 'Non-Authoritative Information',
-		204 => 'No Content',
-		205 => 'Reset Content',
-		206 => 'Partial Content',
-
-		// Redirection 3xx
-		300 => 'Multiple Choices',
-		301 => 'Moved Permanently',
-		302 => 'Found', // 1.1
-		303 => 'See Other',
-		304 => 'Not Modified',
-		305 => 'Use Proxy',
-		// 306 is deprecated but reserved
-		307 => 'Temporary Redirect',
-
-		// Client Error 4xx
-		400 => 'Bad Request',
-		401 => 'Unauthorized',
-		402 => 'Payment Required',
-		403 => 'Forbidden',
-		404 => 'Not Found',
-		405 => 'Method Not Allowed',
-		406 => 'Not Acceptable',
-		407 => 'Proxy Authentication Required',
-		408 => 'Request Timeout',
-		409 => 'Conflict',
-		410 => 'Gone',
-		411 => 'Length Required',
-		412 => 'Precondition Failed',
-		413 => 'Request Entity Too Large',
-		414 => 'Request-URI Too Long',
-		415 => 'Unsupported Media Type',
-		416 => 'Requested Range Not Satisfiable',
-		417 => 'Expectation Failed',
-
-		// Server Error 5xx
-		500 => 'Internal Server Error',
-		501 => 'Not Implemented',
-		502 => 'Bad Gateway',
-		503 => 'Service Unavailable',
-		504 => 'Gateway Timeout',
-		505 => 'HTTP Version Not Supported',
-		509 => 'Bandwidth Limit Exceeded'
-	);
-
-	/**
-	 * @var  string  method: GET, POST, PUT, DELETE, etc
-	 */
-	public static $method = 'GET';
-
-	/**
-	 * @var  string  protocol: http, https, ftp, cli, etc
-	 */
-	public static $protocol = 'http';
-
-	/**
-	 * @var  string  referring URL
-	 */
-	public static $referrer;
-
-	/**
-	 * @var  string  client user agent
-	 */
-	public static $user_agent = '';
-
-	/**
-	 * @var  string  client IP address
-	 */
-	public static $client_ip = '0.0.0.0';
-
-	/**
-	 * @var  boolean  AJAX-generated request
-	 */
-	public static $is_ajax = FALSE;
-
 	/**
 	 * Main request singleton instance. If no URI is provided, the URI will
 	 * be automatically detected using PATH_INFO, REQUEST_URI, or PHP_SELF.
@@ -113,7 +28,7 @@ class Kohana_Request {
 			if (Kohana::$is_cli)
 			{
 				// Default protocol for command line is cli://
-				Request::$protocol = 'cli';
+				$config['protocol'] = 'cli';
 
 				// Get the command line options
 				$options = CLI::options('uri', 'method', 'get', 'post');
@@ -127,7 +42,7 @@ class Kohana_Request {
 				if (isset($options['method']))
 				{
 					// Use the specified method
-					Request::$method = strtoupper($options['method']);
+					$config['method'] = strtoupper($options['method']);
 				}
 
 				if (isset($options['get']))
@@ -147,52 +62,52 @@ class Kohana_Request {
 				if (isset($_SERVER['REQUEST_METHOD']))
 				{
 					// Use the server request method
-					Request::$method = $_SERVER['REQUEST_METHOD'];
+					$config['method'] = $_SERVER['REQUEST_METHOD'];
 				}
 
 				if ( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
 				{
 					// This request is secure
-					Request::$protocol = 'https';
+					$config['protocol'] = 'https';
 				}
 
 				if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
 				{
 					// This request is an AJAX request
-					Request::$is_ajax = TRUE;
+					$config['is_ajax'] = TRUE;
 				}
 
 				if (isset($_SERVER['HTTP_REFERER']))
 				{
 					// There is a referrer for this request
-					Request::$referrer = $_SERVER['HTTP_REFERER'];
+					$$config['referrer'] = $_SERVER['HTTP_REFERER'];
 				}
 
 				if (isset($_SERVER['HTTP_USER_AGENT']))
 				{
 					// Set the client user agent
-					Request::$user_agent = $_SERVER['HTTP_USER_AGENT'];
+					$config['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
 				}
 
 				if (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
 				{
 					// Use the forwarded IP address, typically set when the
 					// client is using a proxy server.
-					Request::$client_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+					$config['client_ip'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
 				}
 				elseif (isset($_SERVER['HTTP_CLIENT_IP']))
 				{
 					// Use the forwarded IP address, typically set when the
 					// client is using a proxy server.
-					Request::$client_ip = $_SERVER['HTTP_CLIENT_IP'];
+					$config['client_ip'] = $_SERVER['HTTP_CLIENT_IP'];
 				}
 				elseif (isset($_SERVER['REMOTE_ADDR']))
 				{
 					// The remote IP address
-					Request::$client_ip = $_SERVER['REMOTE_ADDR'];
+					$config['client_ip'] = $_SERVER['REMOTE_ADDR'];
 				}
 
-				if (Request::$method !== 'GET' AND Request::$method !== 'POST')
+				if ($config['method'] !== 'GET' AND $config['method'] !== 'POST')
 				{
 					// Methods besides GET and POST do not properly parse the form-encoded
 					// query string into the $_POST array, so we overload it manually.
@@ -254,11 +169,14 @@ class Kohana_Request {
 			// Remove all dot-paths from the URI, they are not valid
 			$uri = preg_replace('#\.[\s./]*/#', '', $uri);
 
+			$config['get'] = $_GET;
+			$config['post'] = $_POST;
+
 			// Create the instance singleton
-			$instance = new Request($uri);
+			$instance = new Request($uri, $config);
 
 			// Add the Content-Type header
-			$instance->headers['Content-Type'] = 'text/html; charset='.Kohana::$charset;
+//			$instance->headers['Content-Type'] = 'text/html; charset='.Kohana::$charset;
 		}
 
 		return $instance;
@@ -273,152 +191,6 @@ class Kohana_Request {
 	public static function factory($uri)
 	{
 		return new Request($uri);
-	}
-
-	/**
-	 * Returns information about the client user agent.
-	 *
-	 * @param   string  value to return: browser, version, robot, mobile, platform
-	 * @return  string  requested information
-	 * @return  FALSE   no information found
-	 */
-	public static function user_agent($value)
-	{
-		static $info;
-
-		if (isset($info[$value]))
-		{
-			// This value has already been found
-			return $info[$value];
-		}
-
-		if ($value === 'browser' OR $value == 'version')
-		{
-			// Load browsers
-			$browsers = Kohana::config('user_agents')->browser;
-
-			foreach ($browsers as $search => $name)
-			{
-				if (stripos(Request::$user_agent, $search) !== FALSE)
-				{
-					// Set the browser name
-					$info['browser'] = $name;
-
-					if (preg_match('#'.preg_quote($search).'[^0-9.]*+([0-9.][0-9.a-z]*)#i', Request::$user_agent, $matches))
-					{
-						// Set the version number
-						$info['version'] = $matches[1];
-					}
-					else
-					{
-						// No version number found
-						$info['version'] = FALSE;
-					}
-
-					return $info[$value];
-				}
-			}
-		}
-		else
-		{
-			// Load the search group for this type
-			$group = Kohana::config('user_agents')->$value;
-
-			foreach ($group as $search => $name)
-			{
-				if (stripos(Request::$user_agent, $search) !== FALSE)
-				{
-					// Set the value name
-					return $info[$value] = $name;
-				}
-			}
-		}
-
-		// The value requested could not be found
-		return $info[$value] = FALSE;
-	}
-
-	/**
-	 * Returns the accepted content types. If a specific type is defined,
-	 * the quality of that type will be returned.
-	 *
-	 * @param   string  content MIME type
-	 * @return  float   when checking a specific type
-	 * @return  array
-	 */
-	public static function accept_type($type = NULL)
-	{
-		static $accepts;
-
-		if ($accepts === NULL)
-		{
-			// Parse the HTTP_ACCEPT header
-			$accepts = Request::_parse_accept($_SERVER['HTTP_ACCEPT'], array('*/*' => 1.0));
-		}
-
-		if (isset($type))
-		{
-			// Return the quality setting for this type
-			return isset($accepts[$type]) ? $accepts[$type] : $accepts['*/*'];
-		}
-
-		return $accepts;
-	}
-
-	/**
-	 * Returns the accepted languages. If a specific language is defined,
-	 * the quality of that language will be returned. If the language is not
-	 * accepted, FALSE will be returned.
-	 *
-	 * @param   string  language code
-	 * @return  float   when checking a specific language
-	 * @return  array
-	 */
-	public static function accept_lang($lang = NULL)
-	{
-		static $accepts;
-
-		if ($accepts === NULL)
-		{
-			// Parse the HTTP_ACCEPT_LANGUAGE header
-			$accepts = Request::_parse_accept($_SERVER['HTTP_ACCEPT_LANGUAGE']);
-		}
-
-		if (isset($lang))
-		{
-			// Return the quality setting for this lang
-			return isset($accepts[$lang]) ? $accepts[$lang] : FALSE;
-		}
-
-		return $accepts;
-	}
-
-	/**
-	 * Returns the accepted encodings. If a specific encoding is defined,
-	 * the quality of that encoding will be returned. If the encoding is not
-	 * accepted, FALSE will be returned.
-	 *
-	 * @param   string  encoding type
-	 * @return  float   when checking a specific encoding
-	 * @return  array
-	 */
-	public static function accept_encoding($type = NULL)
-	{
-		static $accepts;
-
-		if ($accepts === NULL)
-		{
-			// Parse the HTTP_ACCEPT_LANGUAGE header
-			$accepts = Request::_parse_accept($_SERVER['HTTP_ACCEPT_ENCODING']);
-		}
-
-		if (isset($type))
-		{
-			// Return the quality setting for this type
-			return isset($accepts[$type]) ? $accepts[$type] : FALSE;
-		}
-
-		return $accepts;
 	}
 
 	/**
@@ -503,6 +275,36 @@ class Kohana_Request {
 	}
 
 	/**
+	 * @var  string  method: GET, POST, PUT, DELETE, etc
+	 */
+	public $method = 'GET';
+
+	/**
+	 * @var  string  protocol: http, https, ftp, cli, etc
+	 */
+	public $protocol = 'http';
+
+	/**
+	 * @var  string  referring URL
+	 */
+	public $referrer;
+
+	/**
+	 * @var  string  client user agent
+	 */
+	public $user_agent = '';
+
+	/**
+	 * @var  string  client IP address
+	 */
+	public $client_ip = '0.0.0.0';
+
+	/**
+	 * @var  boolean  AJAX-generated request
+	 */
+	public $is_ajax = FALSE;
+
+	/**
 	 * @var  object  route matched for this request
 	 */
 	public $route;
@@ -518,12 +320,12 @@ class Kohana_Request {
 	public $status = 200;
 
 	/**
-	 * @var  string  response body
+	 * @var  object  response 
 	 */
-	public $response = '';
+	public $response;
 
 	/**
-	 * @var  array  headers to send with the response body
+	 * @var  array  headers to send with the request
 	 */
 	public $headers = array();
 
@@ -547,6 +349,21 @@ class Kohana_Request {
 	 */
 	public $uri;
 
+	/**
+	 * @var  array   GET parameters for this request
+	 */
+	public $get = array();
+
+	/**
+	 * @var  array   POST parameters for this request
+	 */
+	public $post = array();
+
+	/**
+	 * @var  array|bool Original GET, POST, SERVER vars before alteration
+	 */
+	protected $_previous_environment = FALSE;
+
 	// Parameters extracted from the route
 	protected $_params;
 
@@ -556,10 +373,18 @@ class Kohana_Request {
 	 *
 	 * @throws  Kohana_Request_Exception
 	 * @param   string  URI of the request
+	 * @param   config  settings for this request object
 	 * @return  void
 	 */
-	public function __construct($uri)
+	public function __construct($uri, array $config = array())
 	{
+		// Parse an array of request properties
+		foreach ($config as $key => $value)
+		{
+			if (property_exists($this, $key))
+				$this->$key = $value;
+		}
+
 		// Test if request is internal or external
 		if (Request::_request_external($uri))
 		{
@@ -686,7 +511,7 @@ class Kohana_Request {
 		if ( ! headers_sent())
 		{
 			// HTTP status line
-			header('HTTP/1.1 '.$this->status.' '.Request::$messages[$this->status]);
+			header('HTTP/1.1 '.$this->status.' '.Response::$messages[$this->status]);
 
 			foreach ($this->headers as $name => $value)
 			{
@@ -891,6 +716,9 @@ class Kohana_Request {
 
 		try
 		{
+			// Initialise the Request environment
+			$this->init_environment();
+
 			// Load the controller using reflection
 			$class = new ReflectionClass($prefix.$this->controller);
 
@@ -914,6 +742,9 @@ class Kohana_Request {
 
 			// Execute the "after action" method
 			$class->getMethod('after')->invoke($controller);
+
+			// De-initialise the Request environment
+			$this->deinit_environment();
 		}
 		catch (Exception $e)
 		{
@@ -1002,6 +833,234 @@ class Kohana_Request {
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Returns information about the client user agent.
+	 *
+	 * @param   string  value to return: browser, version, robot, mobile, platform
+	 * @return  string  requested information
+	 * @return  FALSE   no information found
+	 */
+	public function user_agent($value)
+	{
+		static $info;
+
+		if (isset($info[$value]))
+		{
+			// This value has already been found
+			return $info[$value];
+		}
+
+		if ($value === 'browser' OR $value == 'version')
+		{
+			// Load browsers
+			$browsers = Kohana::config('user_agents')->browser;
+
+			foreach ($browsers as $search => $name)
+			{
+				if (stripos(Request::$user_agent, $search) !== FALSE)
+				{
+					// Set the browser name
+					$info['browser'] = $name;
+
+					if (preg_match('#'.preg_quote($search).'[^0-9.]*+([0-9.][0-9.a-z]*)#i', Request::$user_agent, $matches))
+					{
+						// Set the version number
+						$info['version'] = $matches[1];
+					}
+					else
+					{
+						// No version number found
+						$info['version'] = FALSE;
+					}
+
+					return $info[$value];
+				}
+			}
+		}
+		else
+		{
+			// Load the search group for this type
+			$group = Kohana::config('user_agents')->$value;
+
+			foreach ($group as $search => $name)
+			{
+				if (stripos(Request::$user_agent, $search) !== FALSE)
+				{
+					// Set the value name
+					return $info[$value] = $name;
+				}
+			}
+		}
+
+		// The value requested could not be found
+		return $info[$value] = FALSE;
+	}
+
+	/**
+	 * Returns the accepted content types. If a specific type is defined,
+	 * the quality of that type will be returned.
+	 *
+	 * @param   string  content MIME type
+	 * @return  float   when checking a specific type
+	 * @return  array
+	 */
+	public function accept_type($type = NULL)
+	{
+		static $accepts;
+
+		if ($accepts === NULL)
+		{
+			// Parse the HTTP_ACCEPT header
+			$accepts = Request::_parse_accept($_SERVER['HTTP_ACCEPT'], array('*/*' => 1.0));
+		}
+
+		if (isset($type))
+		{
+			// Return the quality setting for this type
+			return isset($accepts[$type]) ? $accepts[$type] : $accepts['*/*'];
+		}
+
+		return $accepts;
+	}
+
+	/**
+	 * Returns the accepted languages. If a specific language is defined,
+	 * the quality of that language will be returned. If the language is not
+	 * accepted, FALSE will be returned.
+	 *
+	 * @param   string  language code
+	 * @return  float   when checking a specific language
+	 * @return  array
+	 */
+	public function accept_lang($lang = NULL)
+	{
+		static $accepts;
+
+		if ($accepts === NULL)
+		{
+			// Parse the HTTP_ACCEPT_LANGUAGE header
+			$accepts = Request::_parse_accept($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+		}
+
+		if (isset($lang))
+		{
+			// Return the quality setting for this lang
+			return isset($accepts[$lang]) ? $accepts[$lang] : FALSE;
+		}
+
+		return $accepts;
+	}
+
+	/**
+	 * Returns the accepted encodings. If a specific encoding is defined,
+	 * the quality of that encoding will be returned. If the encoding is not
+	 * accepted, FALSE will be returned.
+	 *
+	 * @param   string  encoding type
+	 * @return  float   when checking a specific encoding
+	 * @return  array
+	 */
+	public function accept_encoding($type = NULL)
+	{
+		static $accepts;
+
+		if ($accepts === NULL)
+		{
+			// Parse the HTTP_ACCEPT_LANGUAGE header
+			$accepts = Request::_parse_accept($_SERVER['HTTP_ACCEPT_ENCODING']);
+		}
+
+		if (isset($type))
+		{
+			// Return the quality setting for this type
+			return isset($accepts[$type]) ? $accepts[$type] : FALSE;
+		}
+
+		return $accepts;
+	}
+
+	/**
+	 * Initialises the server environment variables
+	 * for this request execution.
+	 * 
+	 * - Stores _GET, _POST and select _SERVER vars
+	 * - Replaces _GET, _POST and select _SERVER vars
+	 *
+	 * @return void
+	 */
+	protected function init_environment()
+	{
+		// Store existing $_GET, $_POST, $_SERVER vars
+		$this->_previous_environment = array(
+			'_GET'    => $_GET,
+			'_POST'   => $_POST,
+			'_SERVER' => $_SERVER,
+		);
+
+		// Assign this requests values to globals
+		$_GET = $this->get;
+		$_POST = $this->post;
+
+		$query_strings = array();
+		foreach ($_GET as $key => $val)
+			$query_strings[] = $key.'='.urlencode($val);
+
+		// Get argc number
+		$_argc = $query_strings ? 1 : 0;
+
+		// Create the full query string
+		$query_string = implode('&', $query_strings);
+
+		// Augment the existing $_SERVER
+		$_REQUEST_SERVER = array(
+			'QUERY_STRING'     => $query_string,
+			'argv'             => $query_string,
+			'argc'             => $_argc,
+			'REQUEST_METHOD'   => $this->method,
+			'SCRIPT_NAME'      => '/'.Kohana::$index_file.'//'.$this->uri,
+			'REQUEST_URI'      => '/'.$this->uri,
+			'DOCUMENT_URI'     => '/'.Kohana::$index_file.'//'.$this->uri,
+			'REQUEST_TIME'     => time(),
+			'PHP_SELF'         => '/'.Kohana::$index_file.'/'.$this->uri,
+		);
+
+		// Apply new server settings
+		$_SERVER = ($_REQUEST_SERVER += $_SERVER);
+
+		$http_headers = array();
+		foreach ($_SERVER as $key => $value)
+		{
+			if ( ! preg_match_all('/HTTP_(\w+)/', $key, $headers))
+				continue;
+
+			$http_headers[ucwords(strtolower(str_replace('_', '-', $headers[1][0])))] = $value;
+		}
+
+		// Set new internal headings
+		$this->headers += $http_headers;
+	}
+
+	/**
+	 * Returns the server environment variables
+	 * to their initial state
+	 *
+	 * @return void
+	 */
+	protected function deinit_environment()
+	{
+		// Exit if now environment is available
+		if ( ! $this->_previous_environment)
+			return;
+
+		// Restore globals
+		$_GET = $this->_previous_environment['_GET'];
+		$_POST = $this->_previous_environment['_POST'];
+		$_SERVER = $this->_previous_environment['_SERVER'];
+
+		// Reset the previous environment
+		$this->_previous_environment = FALSE;
 	}
 
 	/**
