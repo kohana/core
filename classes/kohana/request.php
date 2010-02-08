@@ -871,8 +871,6 @@ class Kohana_Request {
 	{
 		static $external_executions;
 
-		var_dump($external_executions);
-
 		// Start benchmarking if required
 		if (Kohana::$profiling === TRUE)
 			$benchmark = Profiler::start('Requests', $this->uri);
