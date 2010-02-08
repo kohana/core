@@ -23,21 +23,21 @@ abstract class Kohana_Controller_REST extends Controller {
 	{
 		$this->_action_requested = $this->request->action;
 
-		if ( ! isset($this->_action_map[Request::$method]))
+		if ( ! isset($this->_action_map[$this->request->method]))
 		{
 			$this->request->action = 'invalid';
 		}
 		else
 		{
-			$this->request->action = $this->_action_map[Request::$method];
+			$this->request->action = $this->_action_map[$this->request->method];
 		}
 	}
 
 	public function action_invalid()
 	{
 		// Send the "Method Not Allowed" response
-		$this->request->status = 405;
-		$this->request->headers['Allow'] = implode(', ', array_keys($this->_action_map));
+		$this->response->status = 405;
+		$this->response->headers['Allow'] = implode(', ', array_keys($this->_action_map));
 	}
 
 } // End REST

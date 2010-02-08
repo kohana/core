@@ -13,6 +13,26 @@
 class Kohana_Request {
 
 	/**
+	 * @var  string  protocol: http, https, ftp, cli, etc
+	 */
+	public static $protocol = 'http';
+
+	/**
+	 * @var  string  referring URL
+	 */
+	public static $referrer;
+
+	/**
+	 * @var  string  client user agent
+	 */
+	public static $user_agent = '';
+
+	/**
+	 * @var  string  client IP address
+	 */
+	public static $client_ip = '0.0.0.0';
+
+	/**
 	 * Main request singleton instance. If no URI is provided, the URI will
 	 * be automatically detected using PATH_INFO, REQUEST_URI, or PHP_SELF.
 	 *
@@ -28,7 +48,7 @@ class Kohana_Request {
 			if (Kohana::$is_cli)
 			{
 				// Default protocol for command line is cli://
-				$config['protocol'] = 'cli';
+				Request::$protocol = 'cli';
 
 				// Get the command line options
 				$options = CLI::options('uri', 'method', 'get', 'post');
@@ -68,7 +88,7 @@ class Kohana_Request {
 				if ( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
 				{
 					// This request is secure
-					$config['protocol'] = 'https';
+					Request::$protocol = 'https';
 				}
 
 				if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
@@ -80,31 +100,31 @@ class Kohana_Request {
 				if (isset($_SERVER['HTTP_REFERER']))
 				{
 					// There is a referrer for this request
-					$$config['referrer'] = $_SERVER['HTTP_REFERER'];
+					Request::$referrer = $_SERVER['HTTP_REFERER'];
 				}
 
 				if (isset($_SERVER['HTTP_USER_AGENT']))
 				{
 					// Set the client user agent
-					$config['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+					Request::$user_agent = $_SERVER['HTTP_USER_AGENT'];
 				}
 
 				if (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
 				{
 					// Use the forwarded IP address, typically set when the
 					// client is using a proxy server.
-					$config['client_ip'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
+					Request::$client_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
 				}
 				elseif (isset($_SERVER['HTTP_CLIENT_IP']))
 				{
 					// Use the forwarded IP address, typically set when the
 					// client is using a proxy server.
-					$config['client_ip'] = $_SERVER['HTTP_CLIENT_IP'];
+					Request::$client_ip = $_SERVER['HTTP_CLIENT_IP'];
 				}
 				elseif (isset($_SERVER['REMOTE_ADDR']))
 				{
 					// The remote IP address
-					$config['client_ip'] = $_SERVER['REMOTE_ADDR'];
+					Request::$client_ip = $_SERVER['REMOTE_ADDR'];
 				}
 
 				if ($config['method'] !== 'GET' AND $config['method'] !== 'POST')
@@ -194,6 +214,153 @@ class Kohana_Request {
 	}
 
 	/**
+	 * Returns information about the client user agent.
+	 *
+	 * @param   string  value to return: browser, version, robot, mobile, platform
+	 * @return  string  requested information
+	 * @return  FALSE   no information found
+	 */
+	public static function user_agent($value)
+	{
+		static $info;
+
+		if (isset($info[$value]))
+		{
+			// This value has already been found
+			return $info[$value];
+		}
+
+		if ($value === 'browser' OR $value == 'version')
+		{
+			// Load browsers
+			$browsers = Kohana::config('user_agents')->browser;
+
+			foreach ($browsers as $search => $name)
+			{
+				if (stripos(Request::$user_agent, $search) !== FALSE)
+				{
+					// Set the browser name
+					$info['browser'] = $name;
+
+					if (preg_match('#'.preg_quote($search).'[^0-9.]*+([0-9.][0-9.a-z]*)#i', Request::$user_agent, $matches))
+					{
+						// Set the version number
+						$info['version'] = $matches[1];
+					}
+					else
+					{
+						// No version number found
+						$info['version'] = FALSE;
+					}
+
+					return $info[$value];
+				}
+			}
+		}
+		else
+		{
+			// Load the search group for this type
+			$group = Kohana::config('user_agents')->$value;
+
+			foreach ($group as $search => $name)
+			{
+				if (stripos(Request::$user_agent, $search) !== FALSE)
+				{
+					// Set the value name
+					return $info[$value] = $name;
+				}
+			}
+		}
+
+		// The value requested could not be found
+		return $info[$value] = FALSE;
+	}
+
+	/**
+	 * Returns the accepted content types. If a specific type is defined,
+	 * the quality of that type will be returned.
+	 *
+	 * @param   string  content MIME type
+	 * @return  float   when checking a specific type
+	 * @return  array
+	 */
+	public static function accept_type($type = NULL)
+	{
+		static $accepts;
+
+		if ($accepts === NULL)
+		{
+			// Parse the HTTP_ACCEPT header
+			$accepts = Request::_parse_accept($_SERVER['HTTP_ACCEPT'], array('*/*' => 1.0));
+		}
+
+		if (isset($type))
+		{
+			// Return the quality setting for this type
+			return isset($accepts[$type]) ? $accepts[$type] : $accepts['*/*'];
+		}
+
+		return $accepts;
+	}
+
+	/**
+	 * Returns the accepted languages. If a specific language is defined,
+	 * the quality of that language will be returned. If the language is not
+	 * accepted, FALSE will be returned.
+	 *
+	 * @param   string  language code
+	 * @return  float   when checking a specific language
+	 * @return  array
+	 */
+	public static function accept_lang($lang = NULL)
+	{
+		static $accepts;
+
+		if ($accepts === NULL)
+		{
+			// Parse the HTTP_ACCEPT_LANGUAGE header
+			$accepts = Request::_parse_accept($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+		}
+
+		if (isset($lang))
+		{
+			// Return the quality setting for this lang
+			return isset($accepts[$lang]) ? $accepts[$lang] : FALSE;
+		}
+
+		return $accepts;
+	}
+
+	/**
+	 * Returns the accepted encodings. If a specific encoding is defined,
+	 * the quality of that encoding will be returned. If the encoding is not
+	 * accepted, FALSE will be returned.
+	 *
+	 * @param   string  encoding type
+	 * @return  float   when checking a specific encoding
+	 * @return  array
+	 */
+	public static function accept_encoding($type = NULL)
+	{
+		static $accepts;
+
+		if ($accepts === NULL)
+		{
+			// Parse the HTTP_ACCEPT_LANGUAGE header
+			$accepts = Request::_parse_accept($_SERVER['HTTP_ACCEPT_ENCODING']);
+		}
+
+		if (isset($type))
+		{
+			// Return the quality setting for this type
+			return isset($accepts[$type]) ? $accepts[$type] : FALSE;
+		}
+
+		return $accepts;
+	}
+
+
+	/**
 	 * Parses an accept header and returns an array (type => quality) of the
 	 * accepted types, ordered by quality.
 	 *
@@ -280,31 +447,6 @@ class Kohana_Request {
 	public $method = 'GET';
 
 	/**
-	 * @var  string  protocol: http, https, ftp, cli, etc
-	 */
-	public $protocol = 'http';
-
-	/**
-	 * @var  string  referring URL
-	 */
-	public $referrer;
-
-	/**
-	 * @var  string  client user agent
-	 */
-	public $user_agent = '';
-
-	/**
-	 * @var  string  client IP address
-	 */
-	public $client_ip = '0.0.0.0';
-
-	/**
-	 * @var  boolean  AJAX-generated request
-	 */
-	public $is_ajax = FALSE;
-
-	/**
 	 * @var  object  route matched for this request
 	 */
 	public $route;
@@ -358,6 +500,11 @@ class Kohana_Request {
 	 * @var  array   POST parameters for this request
 	 */
 	public $post = array();
+
+	/**
+	 * @var  boolean  AJAX-generated request
+	 */
+	public $is_ajax = FALSE;
 
 	/**
 	 * @var  array|bool Original GET, POST, SERVER vars before alteration
@@ -500,35 +647,6 @@ class Kohana_Request {
 
 		return isset($this->_params[$key]) ? $this->_params[$key] : $default;
 	}
-
-	/**
-	 * Sends the response status and all set headers.
-	 *
-	 * @return  $this
-	 */
-	public function send_headers()
-	{
-		if ( ! headers_sent())
-		{
-			// HTTP status line
-			header('HTTP/1.1 '.$this->status.' '.Response::$messages[$this->status]);
-
-			foreach ($this->headers as $name => $value)
-			{
-				if (is_string($name))
-				{
-					// Combine the name and value to make a raw header
-					$value = "{$name}: {$value}";
-				}
-
-				// Send the raw header
-				header($value, TRUE);
-			}
-		}
-
-		return $this;
-	}
-
 	/**
 	 * Redirects as the request response.
 	 *
@@ -545,136 +663,15 @@ class Kohana_Request {
 		}
 
 		// Set the response status
-		$this->status = $code;
+		$config['status'] = $code;
 
 		// Set the location header
-		$this->headers['Location'] = $url;
+		$config['headers']['Location'] = $url;
+
+		$this->response = new Response($config);
 
 		// Send headers
-		$this->send_headers();
-
-		// Stop execution
-		exit;
-	}
-
-	/**
-	 * Send file download as the response. All execution will be halted when
-	 * this method is called! Use TRUE for the filename to send the current
-	 * response as the file content. The third parameter allows the following
-	 * options to be set:
-	 *
-	 * Type      | Option    | Description                        | Default Value
-	 * ----------|-----------|------------------------------------|--------------
-	 * `boolean` | inline    | Display inline instead of download | `FALSE`
-	 * `string`  | mime_type | Manual mime type                   | Automatic
-	 *
-	 * @param   string   filename with path, or TRUE for the current response
-	 * @param   string   download file name
-	 * @param   array    additional options
-	 * @return  void
-	 */
-	public function send_file($filename, $download = NULL, array $options = NULL)
-	{
-		if ( ! empty($options['mime_type']))
-		{
-			// The mime-type has been manually set
-			$mime = $options['mime_type'];
-		}
-
-		if ($filename === TRUE)
-		{
-			if (empty($download))
-			{
-				throw new Kohana_Exception('Download name must be provided for streaming files');
-			}
-
-			if ( ! isset($mime))
-			{
-				// Guess the mime using the file extension
-				$mime = File::mime_by_ext($download);
-			}
-
-			// Get the content size
-			$size = strlen($this->response);
-
-			// Create a temporary file to hold the current response
-			$file = tmpfile();
-
-			// Write the current response into the file
-			fwrite($file, $this->response);
-
-			// Prepare the file for reading
-			fseek($file, 0);
-		}
-		else
-		{
-			// Get the complete file path
-			$filename = realpath($filename);
-
-			if (empty($download))
-			{
-				// Use the file name as the download file name
-				$download = pathinfo($filename, PATHINFO_BASENAME);
-			}
-
-			// Get the file size
-			$size = filesize($filename);
-
-			if ( ! isset($mime))
-			{
-				// Get the mime type
-				$mime = File::mime($filename);
-			}
-
-			// Open the file for reading
-			$file = fopen($filename, 'rb');
-		}
-
-		// Inline or download?
-		$disposition = empty($options['inline']) ? 'attachment' : 'inline';
-
-		// Set the headers for a download
-		$this->headers['Content-Disposition'] = $disposition.'; filename="'.$download.'"';
-		$this->headers['Content-Type']        = $mime;
-		$this->headers['Content-Length']      = $size;
-
-		if ( ! empty($options['resumable']))
-		{
-			// @todo: ranged download processing
-		}
-
-		// Send all headers now
-		$this->send_headers();
-
-		while (ob_get_level())
-		{
-			// Flush all output buffers
-			ob_end_flush();
-		}
-
-		// Manually stop execution
-		ignore_user_abort(TRUE);
-
-		// Keep the script running forever
-		set_time_limit(0);
-
-		// Send data in 16kb blocks
-		$block = 1024 * 16;
-
-		while ( ! feof($file))
-		{
-			if (connection_aborted())
-				break;
-
-			// Output a block of the file
-			echo fread($file, $block);
-
-			// Send the data now
-			flush();
-		}
-
-		// Close the file
-		fclose($file);
+		$this->response->send_headers();
 
 		// Stop execution
 		exit;
@@ -693,11 +690,11 @@ class Kohana_Request {
 	 * @param   string   The HTTP method to use
 	 * @return  $this
 	 */
-	public function execute(array $http_headers = array(), $method = NULL)
+	public function execute()
 	{
 		// If this is an external request, process it as such
 		if ($this->external)
-			return $this->external_execute($http_headers, $method);
+			return $this->external_execute();
 
 		// Create the class prefix
 		$prefix = 'controller_';
@@ -727,6 +724,9 @@ class Kohana_Request {
 				throw new Kohana_Exception('Cannot create instances of abstract :controller',
 					array(':controller' => $prefix.$this->controller));
 			}
+
+			// Create a response
+			$this->response = new Response;
 
 			// Create a new instance of the controller
 			$controller = $class->newInstance($this);
@@ -775,210 +775,7 @@ class Kohana_Request {
 			Profiler::stop($benchmark);
 		}
 
-		return $this;
-	}
-
-
-	/**
-	 * Generate ETag
-	 * Generates an ETag from the response ready to be returned
-	 *
-	 * @throws Kohana_Request_Exception
-	 * @return String Generated ETag
-	 */
-	public function generate_etag()
-	{
-	    if ($this->response === NULL)
-		{
-			throw new Kohana_Request_Exception('No response yet associated with request - cannot auto generate resource ETag');
-		}
-
-		// Generate a unique hash for the response
-		return '"'.sha1($this->response).'"';
-	}
-
-
-	/**
-	 * Check Cache
-	 * Checks the browser cache to see the response needs to be returned
-	 *
-	 * @param String Resource ETag
-	 * @throws Kohana_Request_Exception
-	 * @chainable
-	 */
-	public function check_cache($etag = null)
-	{
-		if (empty($etag))
-		{
-			$etag = $this->generate_etag();
-		}
-
-		// Set the ETag header
-		$this->headers['ETag'] = $etag;
-
-		// Add the Cache-Control header if it is not already set
-		// This allows etags to be used with Max-Age, etc
-		$this->headers += array(
-			'Cache-Control' => 'must-revalidate',
-		);
-
-		if (isset($_SERVER['HTTP_IF_NONE_MATCH']) AND $_SERVER['HTTP_IF_NONE_MATCH'] === $etag)
-		{
-			// No need to send data again
-			$this->status = 304;
-			$this->send_headers();
-
-			// Stop execution
-			exit;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Returns information about the client user agent.
-	 *
-	 * @param   string  value to return: browser, version, robot, mobile, platform
-	 * @return  string  requested information
-	 * @return  FALSE   no information found
-	 */
-	public function user_agent($value)
-	{
-		static $info;
-
-		if (isset($info[$value]))
-		{
-			// This value has already been found
-			return $info[$value];
-		}
-
-		if ($value === 'browser' OR $value == 'version')
-		{
-			// Load browsers
-			$browsers = Kohana::config('user_agents')->browser;
-
-			foreach ($browsers as $search => $name)
-			{
-				if (stripos(Request::$user_agent, $search) !== FALSE)
-				{
-					// Set the browser name
-					$info['browser'] = $name;
-
-					if (preg_match('#'.preg_quote($search).'[^0-9.]*+([0-9.][0-9.a-z]*)#i', Request::$user_agent, $matches))
-					{
-						// Set the version number
-						$info['version'] = $matches[1];
-					}
-					else
-					{
-						// No version number found
-						$info['version'] = FALSE;
-					}
-
-					return $info[$value];
-				}
-			}
-		}
-		else
-		{
-			// Load the search group for this type
-			$group = Kohana::config('user_agents')->$value;
-
-			foreach ($group as $search => $name)
-			{
-				if (stripos(Request::$user_agent, $search) !== FALSE)
-				{
-					// Set the value name
-					return $info[$value] = $name;
-				}
-			}
-		}
-
-		// The value requested could not be found
-		return $info[$value] = FALSE;
-	}
-
-	/**
-	 * Returns the accepted content types. If a specific type is defined,
-	 * the quality of that type will be returned.
-	 *
-	 * @param   string  content MIME type
-	 * @return  float   when checking a specific type
-	 * @return  array
-	 */
-	public function accept_type($type = NULL)
-	{
-		static $accepts;
-
-		if ($accepts === NULL)
-		{
-			// Parse the HTTP_ACCEPT header
-			$accepts = Request::_parse_accept($_SERVER['HTTP_ACCEPT'], array('*/*' => 1.0));
-		}
-
-		if (isset($type))
-		{
-			// Return the quality setting for this type
-			return isset($accepts[$type]) ? $accepts[$type] : $accepts['*/*'];
-		}
-
-		return $accepts;
-	}
-
-	/**
-	 * Returns the accepted languages. If a specific language is defined,
-	 * the quality of that language will be returned. If the language is not
-	 * accepted, FALSE will be returned.
-	 *
-	 * @param   string  language code
-	 * @return  float   when checking a specific language
-	 * @return  array
-	 */
-	public function accept_lang($lang = NULL)
-	{
-		static $accepts;
-
-		if ($accepts === NULL)
-		{
-			// Parse the HTTP_ACCEPT_LANGUAGE header
-			$accepts = Request::_parse_accept($_SERVER['HTTP_ACCEPT_LANGUAGE']);
-		}
-
-		if (isset($lang))
-		{
-			// Return the quality setting for this lang
-			return isset($accepts[$lang]) ? $accepts[$lang] : FALSE;
-		}
-
-		return $accepts;
-	}
-
-	/**
-	 * Returns the accepted encodings. If a specific encoding is defined,
-	 * the quality of that encoding will be returned. If the encoding is not
-	 * accepted, FALSE will be returned.
-	 *
-	 * @param   string  encoding type
-	 * @return  float   when checking a specific encoding
-	 * @return  array
-	 */
-	public function accept_encoding($type = NULL)
-	{
-		static $accepts;
-
-		if ($accepts === NULL)
-		{
-			// Parse the HTTP_ACCEPT_LANGUAGE header
-			$accepts = Request::_parse_accept($_SERVER['HTTP_ACCEPT_ENCODING']);
-		}
-
-		if (isset($type))
-		{
-			// Return the quality setting for this type
-			return isset($accepts[$type]) ? $accepts[$type] : FALSE;
-		}
-
-		return $accepts;
+		return $this->response;
 	}
 
 	/**
@@ -1070,27 +867,41 @@ class Kohana_Request {
 	 * @param   string   The HTTP method to use
 	 * @return  $this
 	 */
-	protected function external_execute(array $request_headers = array(), $method = NULL)
+	protected function external_execute()
 	{
+		static $external_executions;
+
+		var_dump($external_executions);
+
 		// Start benchmarking if required
 		if (Kohana::$profiling === TRUE)
-			$benchmark = Profiler::start('External Requests', $this->uri);
+			$benchmark = Profiler::start('Requests', $this->uri);
 
-		if (NULL === $method)
-			$method = Remote::GET;
+		$request_hash = sha1($this->method.' '.$this->uri.'&'.implode('&', $this->headers));
 
-		// Get the resonse status
-		$this->status = Remote::status($this->uri);
-		$this->response = Remote::get($this->uri, array(
-			CURLOPT_HTTPHEADER    => $request_headers,
-			CURLOPT_CUSTOMREQUEST => $method,
-		));
-		$this->headers = Remote::$headers;
+		// If this request has been run
+		if (isset($external_executions[$request_hash]))
+			return $external_executions[$request_hash];
+
+		$config = array(
+			'status'   => Remote::status($this->uri),
+			'body'     => Remote::get($this->uri, array(
+				CURLOPT_HTTPHEADER    => $this->headers,
+				CURLOPT_CUSTOMREQUEST => $this->method,
+			)),
+			'headers'  => Remote::$headers,
+		);
+
+		// Create a response
+		$this->response = Response::factory($config);
+
+		// Cache the response
+		$external_executions[$request_hash] = $this->response;
 
 		// Stop benchmarking if required
 		if (isset($benchmark))
 			Profiler::stop($benchmark);
 
-		return $this;
+		return $this->response;
 	}
 } // End Request
