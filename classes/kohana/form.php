@@ -306,6 +306,21 @@ class Kohana_Form {
 	}
 
 	/**
+	 * Creates a image form input.
+	 *
+	 * @param   string  input name
+	 * @param   string  input value
+	 * @param   array   html attributes
+	 * @return  string
+	 */	
+	public static function image($name, $value, array $attributes = NULL)
+	{
+		$attributes['type'] = 'image';
+
+		return Form::input($name, $value, $attributes);
+	}
+
+	/**
 	 * Creates a button form input. Note that the body of a button is NOT escaped,
 	 * to allow images and other HTML to be used.
 	 *
