@@ -51,7 +51,7 @@ class Kohana_CLI {
 			if (strpos($opt, '='))
 			{
 				// Separate the name and value
-				list ($opt, $value) = explode('=', $opt);
+				list ($opt, $value) = explode('=', $opt, 2);
 			}
 			else
 			{
