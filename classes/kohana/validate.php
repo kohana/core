@@ -691,7 +691,7 @@ class Kohana_Validate extends ArrayObject {
 		$submitted = FALSE;
 
 		// Get a list of the expected fields
-		$expected = array_keys($this->_labels);
+		$expected = array_keys($this->_labels + $this->getArrayCopy());
 
 		// Import the filters, rules, and callbacks locally
 		$filters   = $this->_filters;
