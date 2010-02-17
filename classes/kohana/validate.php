@@ -726,8 +726,8 @@ class Kohana_Validate extends ArrayObject {
 
 		if ($submitted === FALSE)
 		{
-			// Check passes with no data or rules
-			return TRUE;
+			// Because no data was submitted, validation will not be forced
+			return FALSE;
 		}
 
 		// Remove the filters, rules, and callbacks that apply to every field
