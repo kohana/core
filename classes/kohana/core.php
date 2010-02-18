@@ -500,7 +500,8 @@ class Kohana_Core {
 	 * Finds the path of a file by directory, filename, and extension.
 	 * If no extension is given, the default EXT extension will be used.
 	 *
-	 * When searching the "config" or "i18n" directory, an array of files
+	 * When searching the "config" or "i18n" directories, or when the
+	 * $aggregate_files flag is set to true, an array of files
 	 * will be returned. These files will return arrays which must be
 	 * merged together.
 	 *
@@ -516,10 +517,11 @@ class Kohana_Core {
 	 * @param   string   directory name (views, i18n, classes, extensions, etc.)
 	 * @param   string   filename with subdirectory
 	 * @param   string   extension to search for
-	 * @return  array    file list from the "config" or "i18n" directories
+	 * @param   boolean  flag that determines the return type
+	 * @return  array    file list from the directory
 	 * @return  string   single file path
 	 */
-	public static function find_file($dir, $file, $ext = NULL)
+	public static function find_file($dir, $file, $ext = NULL, $aggregate_files = FALSE)
 	{
 		// Use the defined extension by default
 		$ext = ($ext === NULL) ? EXT : '.'.$ext;
@@ -539,7 +541,7 @@ class Kohana_Core {
 			$benchmark = Profiler::start('Kohana', __FUNCTION__);
 		}
 
-		if ($dir === 'config' OR $dir === 'i18n' OR $dir === 'messages')
+		if ($aggregate_files OR $dir === 'config' OR $dir === 'i18n' OR $dir === 'messages')
 		{
 			// Include paths must be searched in reverse
 			$paths = array_reverse(Kohana::$_paths);

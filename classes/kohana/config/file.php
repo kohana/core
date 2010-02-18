@@ -33,7 +33,7 @@ class Kohana_Config_File extends Kohana_Config_Reader {
 	 */
 	public function load($group, array $config = NULL)
 	{
-		if ($files = Kohana::find_file($this->_directory, $group))
+		if ($files = Kohana::find_file($this->_directory, $group, NULL, TRUE))
 		{
 			// Initialize the config array
 			$config = array();
