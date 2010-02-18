@@ -159,7 +159,7 @@ class Kohana_Text {
 				$pool = '123456789';
 			break;
 			case 'distinct':
-				$pool = '2345679ACDEFHJKLMNPRSTUVWXYZ';
+				$pool = '345679ACDEFHJKLMNPRSTUVWXY';
 			break;
 			default:
 				$pool = (string) $type;
