@@ -210,7 +210,21 @@ class Kohana_View {
 	 */
 	public function set_filename($file)
 	{
-		if (($path = Kohana::find_file('views', $file)) === FALSE)
+		// Detect if there was a file extension
+		$_file = explode('.', $file);
+
+		// If there are several components
+		if (count($_file) > 1)
+		{
+			// Take the extension
+			$ext = array_pop($_file);
+			$file = implode('.', $_file);
+		}
+		// Otherwise set the extension to the standard
+		else
+			$ext = ltrim(EXT, '.');
+
+		if (($path = Kohana::find_file('views', $file, $ext)) === FALSE)
 		{
 			throw new Kohana_View_Exception('The requested view :file could not be found', array(
 				':file' => $file,
