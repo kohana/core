@@ -198,7 +198,7 @@ class Kohana_Request {
 
 				if ($uri === TRUE)
 				{
-					if (isset($_SERVER['PATH_INFO']))
+					if ( ! empty($_SERVER['PATH_INFO']))
 					{
 						// PATH_INFO does not contain the docroot or index
 						$uri = $_SERVER['PATH_INFO'];
