@@ -211,7 +211,7 @@ return array
 	'xlm'   => array('application/excel', 'application/vnd.ms-excel'),
 	'xls'   => array('application/excel', 'application/vnd.ms-excel'),
 	'xlt'   => array('application/excel', 'application/vnd.ms-excel'),
-	'xml'   => array('text/xml'),
+	'xml'   => array('text/xml', 'application/xml'),
 	'xof'   => array('x-world/x-vrml'),
 	'xpm'   => array('image/x-xpixmap'),
 	'xsl'   => array('text/xml'),
