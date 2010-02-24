@@ -722,7 +722,7 @@ class Kohana_Request {
 			if ( ! isset($mime))
 			{
 				// Guess the mime using the file extension
-				$mime = File::mime_by_ext($download);
+				$mime = File::mime_by_ext(strtolower(pathinfo($download, PATHINFO_EXTENSION)));
 			}
 
 			// Get the content size
