@@ -122,14 +122,13 @@ class Kohana_HTML {
 		if ($title === NULL)
 		{
 			// Use the file name as the title
-			$title = $title;
+			$title = basename($file);
 		}
 
 		// Add the file link to the attributes
 		$attributes['href'] = URL::base(FALSE, $protocol).$file;
 
 		return '<a'.HTML::attributes($attributes).'>'.$title.'</a>';
-
 	}
 
 	/**
