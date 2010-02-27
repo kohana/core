@@ -198,7 +198,7 @@ class Kohana_Request {
 
 				if ($uri === TRUE)
 				{
-					if (isset($_SERVER['PATH_INFO']))
+					if ( ! empty($_SERVER['PATH_INFO']))
 					{
 						// PATH_INFO does not contain the docroot or index
 						$uri = $_SERVER['PATH_INFO'];
@@ -725,7 +725,7 @@ class Kohana_Request {
 			if ( ! isset($mime))
 			{
 				// Guess the mime using the file extension
-				$mime = File::mime_by_ext($download);
+				$mime = File::mime_by_ext(strtolower(pathinfo($download, PATHINFO_EXTENSION)));
 			}
 
 			// Get the content size

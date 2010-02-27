@@ -31,6 +31,8 @@ abstract class Kohana_Controller_Template extends Controller {
 			// Load the template
 			$this->template = View::factory($this->template);
 		}
+
+		return parent::before();
 	}
 
 	/**
@@ -45,6 +47,8 @@ abstract class Kohana_Controller_Template extends Controller {
 		{
 			$this->request->response = $this->template;
 		}
+
+		return parent::after();
 	}
 
 } // End Controller_Template
