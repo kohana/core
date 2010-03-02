@@ -21,7 +21,7 @@ class Kohana_Arr {
 		$keys = array_keys($array);
 
 		// If the array keys of the keys match the keys, then the array must
-		// be associative.
+		// not be associative (e.g. the keys array looked like {0:0, 1:1...}).
 		return array_keys($keys) !== $keys;
 	}
 
