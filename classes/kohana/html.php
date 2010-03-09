@@ -62,6 +62,18 @@ class Kohana_HTML {
 	}
 
 	/**
+	 * Convert all applicable characters to HTML entities.
+	 *
+	 * @param   string   string to convert
+	 * @param   boolean  encode existing entities
+	 * @return  string
+	 */
+	public static function entities($value, $double_encode = TRUE)
+	{
+		return htmlentities((string) $value, ENT_QUOTES, Kohana::$charset, $double_encode);
+	}
+
+	/**
 	 * Create HTML link anchors. Note that the title is not escaped, to allow
 	 * HTML elements within links (images, etc).
 	 *
