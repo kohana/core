@@ -120,7 +120,6 @@ class Kohana_Form {
 	 * Creates a file upload form input.
 	 *
 	 * @param   string  input name
-	 * @param   string  input value
 	 * @param   array   html attributes
 	 * @return  string
 	 */
