@@ -232,7 +232,17 @@ abstract class Kohana_Session {
 		// Set the last active timestamp
 		$this->_data['last_active'] = time();
 
-		return $this->_write();
+		try
+		{
+			return $this->_write();
+		}
+		catch (Exception $e)
+		{
+			// Log & ignore all errors when a write fails
+			Kohana::$log->add(Kohana::ERROR, Kohana::exception_text($e))->write();
+
+			return FALSE;
+		}
 	}
 
 	/**
