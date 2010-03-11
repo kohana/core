@@ -66,7 +66,7 @@ class Kohana_View {
 	 *
 	 * @param   string   variable name or an array of variables
 	 * @param   mixed    value
-	 * @return  View
+	 * @return  void
 	 */
 	public static function set_global($key, $value = NULL)
 	{
@@ -88,7 +88,7 @@ class Kohana_View {
 	 *
 	 * @param   string   variable name
 	 * @param   mixed    referenced variable
-	 * @return  View
+	 * @return  void
 	 */
 	public static function bind_global($key, & $value)
 	{
