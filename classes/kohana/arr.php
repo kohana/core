@@ -38,6 +38,9 @@ class Kohana_Arr {
 	 */
 	public static function path($array, $path, $default = NULL)
 	{
+		// Remove outer dots, wildcards, or spaces
+		$path = trim($path, '.* ');		
+
 		// Split the keys by slashes
 		$keys = explode('.', $path);
 
@@ -49,6 +52,34 @@ class Kohana_Arr {
 			{
 				// Make the key an integer
 				$key = (int) $key;
+			}
+
+			// Handle wildcards
+			if ($key == '*')
+			{
+				if (empty($keys))
+				{
+					return $array;
+				}
+				else
+				{
+					$results = array();
+					foreach ($array as $arr)
+					{
+						$result = Arr::path($arr, implode('.', $keys));
+						if ($result !== NULL)
+						{
+							$results[] = $result;
+						}
+					}
+
+					if (empty($results))
+					{
+						break;
+					}
+
+					return $results;
+				}
 			}
 
 			if (isset($array[$key]))
