@@ -15,7 +15,7 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.0.3';
+	const VERSION  = '3.0.4';
 	const CODENAME = 'renaissance';
 
 	// Log message types
@@ -294,7 +294,7 @@ class Kohana_Core {
 		$_COOKIE = Kohana::sanitize($_COOKIE);
 
 		// Load the logger
-		Kohana::$log = Log::instance();
+		Kohana::$log = Kohana_Log::instance();
 
 		// Load the config
 		Kohana::$config = Kohana_Config::instance();
