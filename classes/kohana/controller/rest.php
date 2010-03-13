@@ -12,8 +12,8 @@ abstract class Kohana_Controller_REST extends Controller {
 	protected $_action_map = array
 	(
 		'GET'    => 'index',
-		'PUT'    => 'create',
-		'POST'   => 'update',
+		'PUT'    => 'update',
+		'POST'   => 'create',
 		'DELETE' => 'delete',
 	);
 
