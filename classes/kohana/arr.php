@@ -10,7 +10,7 @@
 class Kohana_Arr {
 
 	/**
-	 * Tests if an array is associative or or not.
+	 * Tests if an array is associative or not.
 	 *
 	 * @param   array   array to check
 	 * @return  boolean
