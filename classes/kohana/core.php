@@ -876,6 +876,9 @@ class Kohana_Core {
 			{
 				// Add this exception to the log
 				Kohana::$log->add(Kohana::ERROR, $error);
+
+				// Make sure the logs are written
+				Kohana::$log->write();
 			}
 
 			if (Kohana::$is_cli)
