@@ -14,6 +14,11 @@ class Kohana_Log {
 	 */
 	public static $timestamp = 'Y-m-d H:i:s';
 
+	/**
+	 * @var  string  timezone for dates logged
+	 */
+	public static $timezone;
+
 	// Singleton static instance
 	private static $_instance;
 
@@ -83,10 +88,24 @@ class Kohana_Log {
 	 */
 	public function add($type, $message)
 	{
+		if (self::$timezone)
+		{
+			// Display the time according to the given timezone
+			$time = new DateTime('now', new DateTimeZone(self::$timezone));
+			$time = $time->format(self::$timestamp);
+		}
+		else
+		{
+			// Display the time in the current locale timezone
+			$time = date(self::$timestamp);
+		}
+
+		$timestamp = time();
+
 		// Create a new message and timestamp it
 		$this->_messages[] = array
 		(
-			'time' => date(self::$timestamp),
+			'time' => $time,
 			'type' => $type,
 			'body' => $message,
 		);
