@@ -755,8 +755,16 @@ class Kohana_Core {
 					}
 					else
 					{
-						// Cache has expired
-						unlink($dir.$file);
+						try
+						{
+							// Cache has expired
+							unlink($dir.$file);
+						}
+						catch (Exception $e)
+						{
+							// Cache has already been deleted
+							return NULL;
+						}
 					}
 				}
 
