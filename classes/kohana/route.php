@@ -141,7 +141,7 @@ class Kohana_Route {
 	}
 
 	// Route URI string
-	protected $_uri;
+	protected $_uri = '';
 
 	// Regular expressions for route keys
 	protected $_regex = array();
