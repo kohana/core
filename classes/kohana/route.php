@@ -39,6 +39,18 @@ class Kohana_Route {
 	const REGEX_ESCAPE  = '[.\\+*?[^\\]${}=!|]';
 
 	/**
+	 * @var  string  default protocol for all routes
+	 * 
+	 * @example  'http://'
+	 */
+	public static $default_protocol = 'http://';
+
+	/**
+	 * @var  array   list of valid localhost entries
+	 */
+	public static $localhosts = array(FALSE, '', 'local', 'localhost');
+
+	/**
 	 * @var  string  default action for all routes
 	 */
 	public static $default_action = 'index';
@@ -129,7 +141,7 @@ class Kohana_Route {
 	}
 
 	// Route URI string
-	protected $_uri = '';
+	protected $_uri;
 
 	// Regular expressions for route keys
 	protected $_regex = array();
@@ -274,6 +286,9 @@ class Kohana_Route {
 			{
 				list($key, $param) = $match;
 
+				if ($param === 'host')
+					continue;
+
 				if (isset($params[$param]))
 				{
 					// Replace the key with the parameter value
@@ -308,7 +323,19 @@ class Kohana_Route {
 		// Trim all extra slashes from the URI
 		$uri = preg_replace('#//+#', '/', rtrim($uri, '/'));
 
-		return $uri;
+		// If the localhost setting matches a local route, return the uri as is
+		if ( ! isset($params['host']) OR in_array($params['host'], Route::$localhosts))
+			return $uri;
+
+		// If the localhost setting does not have a protocol
+		if ( ! preg_match('/w+:\/\//', $params['host']))
+		{
+			// Use the default defined protocol
+			$params['host'] = Route::$default_protocol.$params['host'];
+		}
+
+		// Compile the final uri and return it
+		return sprintf('%s/%s', rtrim($params['host'], '/'), $uri);
 	}
 
 	/**
