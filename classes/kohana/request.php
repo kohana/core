@@ -472,6 +472,11 @@ class Kohana_Request {
 	public $headers = array();
 
 	/**
+	 * @var  array  cookies to be sent with the request
+	 */
+	public $cookies = array();
+
+	/**
 	 * @var  string  controller directory
 	 */
 	public $directory = '';
@@ -647,6 +652,7 @@ class Kohana_Request {
 
 		return isset($this->_params[$key]) ? $this->_params[$key] : $default;
 	}
+
 	/**
 	 * Redirects as the request response.
 	 *
@@ -694,7 +700,7 @@ class Kohana_Request {
 	{
 		// If this is an external request, process it as such
 		if ($this->external)
-			return $this->external_execute();
+			return $this->_external_execute();
 
 		// Create the class prefix
 		$prefix = 'controller_';
@@ -714,7 +720,7 @@ class Kohana_Request {
 		try
 		{
 			// Initialise the Request environment
-			$this->init_environment();
+			$this->_init_environment();
 
 			// Load the controller using reflection
 			$class = new ReflectionClass($prefix.$this->controller);
@@ -744,7 +750,7 @@ class Kohana_Request {
 			$class->getMethod('after')->invoke($controller);
 
 			// De-initialise the Request environment
-			$this->deinit_environment();
+			$this->_deinit_environment();
 		}
 		catch (Exception $e)
 		{
@@ -787,7 +793,7 @@ class Kohana_Request {
 	 *
 	 * @return void
 	 */
-	protected function init_environment()
+	protected function _init_environment()
 	{
 		// Store existing $_GET, $_POST, $_SERVER vars
 		$this->_previous_environment = array(
@@ -845,7 +851,7 @@ class Kohana_Request {
 	 *
 	 * @return void
 	 */
-	protected function deinit_environment()
+	protected function _deinit_environment()
 	{
 		// Exit if now environment is available
 		if ( ! $this->_previous_environment)
@@ -867,26 +873,51 @@ class Kohana_Request {
 	 * @param   string   The HTTP method to use
 	 * @return  $this
 	 */
-	protected function external_execute()
+	protected function _external_execute()
 	{
+		// Cached store of requests
 		static $external_executions;
 
 		// Start benchmarking if required
 		if (Kohana::$profiling === TRUE)
 			$benchmark = Profiler::start('Requests', $this->uri);
 
-		$request_hash = sha1($this->method.' '.$this->uri.'&'.implode('&', $this->headers));
+		// Encode the request components
+		$encoded_components = array(
+			'headers'  => ($this->headers) ? http_build_query($this->headers) : NULL,
+			'cookies'  => ($this->cookies) ? http_build_query($this->cookies, '', '; ') : NULL,
+			'get'      => ($this->get) ? http_build_query($this->get) : NULL,
+			'post'     => ($this->post) ? http_build_query($this->post) : NULL,
+		);
+
+		// If there are GET parameters, add them to the uri
+		if ($encoded_components['get'] !== NULL)
+			$this->uri .= '?'.$encoded_components['get'];
+
+		// Create a hash of the request
+		$request_hash = sha1($this->method.' '.$this->uri.'|HEADERS;'.$encoded_components['headers'].'|COOKIES;'.$encoded_components['cookies'].'|POST;'.$encoded_components['post']);
 
 		// If this request has been run
 		if (isset($external_executions[$request_hash]))
 			return $external_executions[$request_hash];
 
+		// Compile the base curl settings
+		$curl_options = array(
+			CURLOPT_HTTPHEADER    => $this->headers,
+			CURLOPT_CUSTOMREQUEST => $this->method,
+		);
+
+		// If there are cookies present, set the cookie string
+		if ($this->cookies)
+			$curl_options[CURLOPT_COOKIE] = $encoded_components['cookies'];
+
+		// If the method supports POST data, apply it
+		if (in_array($this->method, array('POST', 'PUT', 'DELETE')))
+			$curl_options[CURLOPT_POSTFIELDS] = $this->post;
+
 		$config = array(
 			'status'   => Remote::status($this->uri),
-			'body'     => Remote::get($this->uri, array(
-				CURLOPT_HTTPHEADER    => $this->headers,
-				CURLOPT_CUSTOMREQUEST => $this->method,
-			)),
+			'body'     => Remote::get($this->uri, $curl_options),
 			'headers'  => Remote::$headers,
 		);
 
@@ -902,4 +933,5 @@ class Kohana_Request {
 
 		return $this->response;
 	}
+
 } // End Request
