@@ -328,14 +328,14 @@ class Kohana_Route {
 			return $uri;
 
 		// If the localhost setting does not have a protocol
-		if ( ! preg_match('/w+:\/\//', $params['host']))
+		if (strpos($params['host'], '://') === FALSE)
 		{
 			// Use the default defined protocol
 			$params['host'] = Route::$default_protocol.$params['host'];
 		}
 
 		// Compile the final uri and return it
-		return sprintf('%s/%s', rtrim($params['host'], '/'), $uri);
+		return rtrim($params['host'], '/').$uri;
 	}
 
 	/**
