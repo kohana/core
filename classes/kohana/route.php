@@ -335,7 +335,7 @@ class Kohana_Route {
 		}
 
 		// Compile the final uri and return it
-		return rtrim($params['host'], '/').$uri;
+		return rtrim($params['host'], '/').'/'.$uri;
 	}
 
 	/**
