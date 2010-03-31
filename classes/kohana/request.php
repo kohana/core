@@ -557,6 +557,11 @@ class Kohana_Request {
 					// Store the action
 					$this->action = $params['action'];
 				}
+				else
+				{
+					// Use the default action
+					$this->action = Route::$default_action;
+				}
 
 				// These are accessible as public vars and can be overloaded
 				unset($params['controller'], $params['action'], $params['directory']);
