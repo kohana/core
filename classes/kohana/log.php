@@ -100,7 +100,6 @@ class Kohana_Log {
 			$time = date(self::$timestamp);
 		}
 
-		$timestamp = time();
 
 		// Create a new message and timestamp it
 		$this->_messages[] = array
