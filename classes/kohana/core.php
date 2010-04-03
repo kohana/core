@@ -23,6 +23,12 @@ class Kohana_Core {
 	const DEBUG = 'DEBUG';
 	const INFO  = 'INFO';
 
+	// Common environment types
+	const PRODUCTION  = 'production';
+	const STAGING     = 'staging';
+	const TESTING     = 'testing';
+	const DEVELOPMENT = 'development';
+
 	// Security check that is added to all generated PHP files
 	const FILE_SECURITY = '<?php defined(\'SYSPATH\') or die(\'No direct script access.\');';
 
@@ -46,7 +52,7 @@ class Kohana_Core {
 	/**
 	 * @var  string  current environment name
 	 */
-	public static $environment = 'development';
+	public static $environment = Kohana::DEVELOPMENT;
 
 	/**
 	 * @var  boolean  command line environment?
