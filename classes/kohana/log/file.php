@@ -38,13 +38,28 @@ class Kohana_Log_File extends Kohana_Log_Writer {
 	 */
 	public function write(array $messages)
 	{
-		// Set the monthly directory name
-		$directory = $this->_directory.date('Y/m').DIRECTORY_SEPARATOR;
+		// Set the yearly directory name
+		$directory = $this->_directory.date('Y').DIRECTORY_SEPARATOR;
 
 		if ( ! is_dir($directory))
 		{
-			// Create the monthly directory
-			mkdir($directory, 0777, TRUE);
+			// Create the yearly directory
+			mkdir($directory, 0777);
+
+			// Set permissions (must be manually set to fix umask issues)
+			chmod($directory, 0777);
+		}
+
+		// Add the month to the directory
+		$directory .= date('m').DIRECTORY_SEPARATOR;
+
+		if ( ! is_dir($directory))
+		{
+			// Create the yearly directory
+			mkdir($directory, 0777);
+
+			// Set permissions (must be manually set to fix umask issues)
+			chmod($directory, 0777);
 		}
 
 		// Set the name of the log file
