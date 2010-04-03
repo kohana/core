@@ -994,7 +994,7 @@ class Kohana_Validate extends ArrayObject {
 				foreach ($params as $key => $value)
 				{
 					// Add each parameter as a numbered value, starting from 1
-					$values[':param'.($key + 1)] = $value;
+					$values[':param'.($key + 1)] = is_array($value) ? implode(', ', $value) : $value;
 				}
 			}
 
