@@ -16,7 +16,7 @@ class Kohana_Core {
 
 	// Release version and codename
 	const VERSION  = '3.0.4';
-	const CODENAME = 'renaissance';
+	const CODENAME = 'wyau cwningen';
 
 	// Log message types
 	const ERROR = 'ERROR';
