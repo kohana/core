@@ -18,6 +18,11 @@ class Kohana_Fragment {
 	 */
 	public static $lifetime = 30;
 
+	/**
+	 * @var  boolean  default multilingual fragment support
+	 */
+	public static $i18n = FALSE;
+
 	// List of buffer => cache key
 	protected static $_caches = array();
 
@@ -33,6 +38,7 @@ class Kohana_Fragment {
 	public static function load($name, $lifetime = NULL, $i18n = NULL)
 	{
 		// Language prefix for cache key
+		$i18n = ($i18n === NULL) ? Fragment::$i18n : $i18n;
 		$i18n = ($i18n === TRUE) ? I18n::lang() : '';
 
 		// Set the cache key name
@@ -96,6 +102,7 @@ class Kohana_Fragment {
 	public static function delete($name, $i18n = NULL)
 	{
 		// Language prefix for cache key
+		$i18n = ($i18n === NULL) ? Fragment::$i18n : $i18n;
 		$i18n = ($i18n === TRUE) ? I18n::lang() : '';
 
 		// Set the cache key name
