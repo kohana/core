@@ -27,6 +27,28 @@ class Kohana_Fragment {
 	protected static $_caches = array();
 
 	/**
+	 * Generate the cache key name for a fragment.
+	 *
+	 * @param   string   fragment name
+	 * @param   boolean  multilingual fragment support
+	 * @return  string
+	 */
+	protected static function _cache_key($name, $i18n = NULL)
+	{
+		if ($i18n === NULL)
+		{
+			// Use the default setting
+			$i18n = Fragment::$i18n;
+		}
+
+		// Language prefix for cache key
+		$i18n = ($i18n === TRUE) ? I18n::lang() : '';
+
+		// Note: $i18n and $name need to be delimited to prevent naming collisions
+		return 'Fragment::cache('.$i18n.'+'.$name.')';
+	}
+
+	/**
 	 * Load a fragment from cache and display it. Multiple fragments can
 	 * be nested.
 	 *
@@ -37,15 +59,11 @@ class Kohana_Fragment {
 	 */
 	public static function load($name, $lifetime = NULL, $i18n = NULL)
 	{
-		// Language prefix for cache key
-		$i18n = ($i18n === NULL) ? Fragment::$i18n : $i18n;
-		$i18n = ($i18n === TRUE) ? I18n::lang() : '';
-
-		// Set the cache key name
-		$cache_key = 'Fragment::cache('.$i18n.'+'.$name.')';
-
 		// Set the cache lifetime
 		$lifetime = ($lifetime === NULL) ? Fragment::$lifetime : (int) $lifetime;
+
+		// Get the cache key name
+		$cache_key = Fragment::_cache_key($name, $i18n);
 
 		if ($fragment = Kohana::cache($cache_key, NULL, $lifetime))
 		{
@@ -101,15 +119,8 @@ class Kohana_Fragment {
 	 */
 	public static function delete($name, $i18n = NULL)
 	{
-		// Language prefix for cache key
-		$i18n = ($i18n === NULL) ? Fragment::$i18n : $i18n;
-		$i18n = ($i18n === TRUE) ? I18n::lang() : '';
-
-		// Set the cache key name
-		$cache_key = 'Fragment::cache('.$i18n.'+'.$name.')';
-
 		// Invalid the cache
-		Kohana::cache($cache_key, NULL, -3600);
+		Kohana::cache(Fragment::_cache_key($name, $i18n), NULL, -3600);
 	}
 
 } // End Fragment
