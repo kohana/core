@@ -291,7 +291,7 @@ class Kohana_Text {
 			foreach ($matches[0] as $match)
 			{
 				// Replace each email with an encoded mailto
-				$text = str_replace($match, HTML::mailto($match), $text);
+				$text = preg_replace('!\b'.preg_quote($match).'\b!', HTML::mailto($match), $text);
 			}
 		}
 
