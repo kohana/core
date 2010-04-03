@@ -984,9 +984,9 @@ class Kohana_Core {
 			Kohana::exception_handler($e);
 		}
 
-		if (Kohana::$errors AND $error = error_get_last() AND (error_reporting() & $error['type']))
+		if (Kohana::$errors AND $error = error_get_last() AND $error['type'] === E_ERROR)
 		{
-			// If an output buffer exists, clear it
+			// Clean the output buffer
 			ob_get_level() and ob_clean();
 
 			// Fake an exception for nice debugging
