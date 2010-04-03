@@ -54,34 +54,6 @@ class Kohana_Arr {
 				$key = (int) $key;
 			}
 
-			// Handle wildcards
-			if ($key == '*')
-			{
-				if (empty($keys))
-				{
-					return $array;
-				}
-				else
-				{
-					$results = array();
-					foreach ($array as $arr)
-					{
-						$result = Arr::path($arr, implode('.', $keys));
-						if ($result !== NULL)
-						{
-							$results[] = $result;
-						}
-					}
-
-					if (empty($results))
-					{
-						break;
-					}
-
-					return $results;
-				}
-			}
-
 			if (isset($array[$key]))
 			{
 				if ($keys)
@@ -101,6 +73,35 @@ class Kohana_Arr {
 				{
 					// Found the path requested
 					return $array[$key];
+				}
+			}
+			elseif ($key === '*')
+			{
+				// Handle wildcards
+
+				if (empty($keys))
+				{
+					return $array;
+				}
+
+				$values = array();
+				foreach ($array as $arr)
+				{
+					if ($value = Arr::path($arr, implode('.', $keys)))
+					{
+						$values[] = $value;
+					}
+				}
+
+				if ($values)
+				{
+					// Found the values requested
+					return $values;
+				}
+				else
+				{
+					// Unable to dig deeper
+					break;
 				}
 			}
 			else
