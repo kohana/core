@@ -517,11 +517,11 @@ class Kohana_Core {
 	 * @param   string   directory name (views, i18n, classes, extensions, etc.)
 	 * @param   string   filename with subdirectory
 	 * @param   string   extension to search for
-	 * @param   boolean  flag that determines the return type
-	 * @return  array    file list from the directory
+	 * @param   boolean  return an array of files?
+	 * @return  array    a list of files when $array is TRUE
 	 * @return  string   single file path
 	 */
-	public static function find_file($dir, $file, $ext = NULL, $aggregate_files = FALSE)
+	public static function find_file($dir, $file, $ext = NULL, $array = FALSE)
 	{
 		// Use the defined extension by default
 		$ext = ($ext === NULL) ? EXT : '.'.$ext;
@@ -541,7 +541,7 @@ class Kohana_Core {
 			$benchmark = Profiler::start('Kohana', __FUNCTION__);
 		}
 
-		if ($aggregate_files OR $dir === 'config' OR $dir === 'i18n' OR $dir === 'messages')
+		if ($array OR $dir === 'config' OR $dir === 'i18n' OR $dir === 'messages')
 		{
 			// Include paths must be searched in reverse
 			$paths = array_reverse(Kohana::$_paths);
