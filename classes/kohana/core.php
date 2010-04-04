@@ -23,7 +23,7 @@ class Kohana_Core {
 	const DEBUG = 'DEBUG';
 	const INFO  = 'INFO';
 
-	// Common environment types
+	// Common environment type constants for consistency and convenience
 	const PRODUCTION  = 'production';
 	const STAGING     = 'staging';
 	const TESTING     = 'testing';
@@ -34,12 +34,6 @@ class Kohana_Core {
 
 	// Format of cache files: header, cache name, and data
 	const FILE_CACHE = ":header \n\n// :name\n\n:data\n";
-
-	// Common environment type constants for consistency and convenience
-	const PRODUCTION  = 'production';
-	const STAGING     = 'staging';
-	const TESTING     = 'testing';
-	const DEVELOPMENT = 'development';
 
 	/**
 	 * @var  array  PHP error code => human readable name
