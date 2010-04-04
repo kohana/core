@@ -61,6 +61,9 @@ class Kohana_Security {
 			return $str;
 		}
 
+		// Remove all NULL bytes
+		$str = str_replace("\0", '', $str);
+
 		// Fix &entity\n;
 		$str = str_replace(array('&amp;','&lt;','&gt;'), array('&amp;amp;','&amp;lt;','&amp;gt;'), $str);
 		$str = preg_replace('/(&#*\w+)[\x00-\x20]+;/u', '$1;', $str);
