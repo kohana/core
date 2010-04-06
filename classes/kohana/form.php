@@ -188,6 +188,9 @@ class Kohana_Form {
 		// Set the input name
 		$attributes['name'] = $name;
 
+		// Add default rows and cols attributes (required)
+		$attributes += array('rows' => 50, 'cols' => 10);
+
 		// Make the textarea body HTML-safe
 		$body = htmlspecialchars($body, ENT_NOQUOTES, Kohana::$charset, $double_encode);
 
