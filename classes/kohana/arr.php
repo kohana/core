@@ -146,7 +146,7 @@ class Kohana_Arr {
 	 * @param   mixed   default value
 	 * @return  mixed
 	 */
-	public static function get(array $array, $key, $default = NULL)
+	public static function get($array, $key, $default = NULL)
 	{
 		return isset($array[$key]) ? $array[$key] : $default;
 	}
@@ -160,7 +160,7 @@ class Kohana_Arr {
 	 * @param   mixed   default value
 	 * @return  array
 	 */
-	public static function extract(array $array, array $keys, $default = NULL)
+	public static function extract($array, array $keys, $default = NULL)
 	{
 		$found = array();
 		foreach ($keys as $key)
