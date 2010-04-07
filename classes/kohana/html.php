@@ -2,7 +2,8 @@
 /**
  * HTML helper class.
  *
- * @package    HTML
+ * @package    Kohana
+ * @category   Helpers
  * @author     Kohana Team
  * @copyright  (c) 2007-2008 Kohana Team
  * @license    http://kohanaphp.com/license

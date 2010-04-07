@@ -2,7 +2,8 @@
 /**
  * Provides simple benchmarking and profiling.
  *
- * @package    Benchmarking
+ * @package    Kohana
+ * @category   Helpers
  * @author     Kohana Team
  * @copyright  (c) 2009 Kohana Team
  * @license    http://kohanaphp.com/license

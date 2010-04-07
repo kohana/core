@@ -2,7 +2,8 @@
 /**
  * Internationalization (i18n) class.
  *
- * @package    I18n
+ * @package    Kohana
+ * @category   Base
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license

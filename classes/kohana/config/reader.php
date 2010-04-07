@@ -2,7 +2,8 @@
 /**
  * Abstract configuration reader.
  *
- * @package    Configuration
+ * @package    Kohana
+ * @category   Configuration
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license

@@ -28,6 +28,7 @@
  * makes them an extremely powerful and flexible way to generate internal links.
  *
  * @package    Kohana
+ * @category   Base
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license

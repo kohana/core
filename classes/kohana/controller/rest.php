@@ -2,7 +2,8 @@
 /**
  * Abstract Controller class for RESTful controller mapping.
  *
- * @package    Controller
+ * @package    Kohana
+ * @category   Controller
  * @author     Kohana Team
  * @copyright  (c) 2009 Kohana Team
  * @license    http://kohanaphp.com/license

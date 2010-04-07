@@ -2,7 +2,8 @@
 /**
  * Base session class.
  *
- * @package    Session
+ * @package    Kohana
+ * @category   Session
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license
