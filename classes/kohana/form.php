@@ -218,6 +218,12 @@ class Kohana_Form {
 		}
 		else
 		{
+			if ($selected !== NULL)
+			{
+				// Cast to string only if something needs to be selected
+				$selected = (string) $selected;
+			}
+
 			foreach ($options as $value => $name)
 			{
 				if (is_array($name))
@@ -230,10 +236,13 @@ class Kohana_Form {
 
 					foreach ($name as $_value => $_name)
 					{
+						// Force value to be string
+						$_value = (string) $_value;
+
 						// Create a new attribute set for this option
 						$option = array('value' => $_value);
 
-						if ($_value == $selected)
+						if ($_value === $selected)
 						{
 							// This option is selected
 							$option['selected'] = 'selected';
@@ -253,10 +262,13 @@ class Kohana_Form {
 				}
 				else
 				{
+					// Force value to be string
+					$value = (string) $value;
+
 					// Create a new attribute set for this option
 					$option = array('value' => $value);
 
-					if ($value == $selected)
+					if ($value === $selected)
 					{
 						// This option is selected
 						$option['selected'] = 'selected';
