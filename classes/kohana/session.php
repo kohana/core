@@ -46,7 +46,7 @@ abstract class Kohana_Session {
 	protected $_name = 'session';
 
 	// Cookie lifetime
-	protected $_lifetime = 0;
+	protected $_lifetime  = 0;
 
 	// Encrypt session data?
 	protected $_encrypted = FALSE;
@@ -135,14 +135,8 @@ abstract class Kohana_Session {
 	 * @param   mixed    default value to return
 	 * @return  mixed
 	 */
-	public function get($key = NULL, $default = NULL)
+	public function get($key, $default = NULL)
 	{
-		if ($key === NULL)
-		{
-			// Return all session data
-			return $this->_data;
-		}
-
 		return array_key_exists($key, $this->_data) ? $this->_data[$key] : $default;
 	}
 
