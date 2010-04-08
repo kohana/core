@@ -9,6 +9,9 @@
  */
 abstract class Kohana_Session {
 
+	// Default session type
+	protected static $type = 'native';
+
 	// Session instances
 	protected static $instances = array();
 
@@ -21,8 +24,13 @@ abstract class Kohana_Session {
 	 * @param   string   session identifier
 	 * @return  Session
 	 */
-	public static function instance($type = 'native', $id = NULL)
+	public static function instance($type = NULL, $id = NULL)
 	{
+		if ($type === NULL)
+		{
+			$type = Session::$type;
+		}
+
 		if ( ! isset(Session::$instances[$type]))
 		{
 			// Load the configuration for this type
@@ -45,7 +53,7 @@ abstract class Kohana_Session {
 	protected $_name = 'session';
 
 	// Cookie lifetime
-	protected $_lifetime  = 0;
+	protected $_lifetime = 0;
 
 	// Encrypt session data?
 	protected $_encrypted = FALSE;
