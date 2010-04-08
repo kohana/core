@@ -2,7 +2,8 @@
 /**
  * File-based configuration loader.
  *
- * @package    Configuration
+ * @package    Kohana
+ * @category   Configuration
  * @author     Kohana Team
  * @copyright  (c) 2009 Kohana Team
  * @license    http://kohanaphp.com/license
@@ -33,7 +34,7 @@ class Kohana_Config_File extends Kohana_Config_Reader {
 	 */
 	public function load($group, array $config = NULL)
 	{
-		if ($files = Kohana::find_file($this->_directory, $group))
+		if ($files = Kohana::find_file($this->_directory, $group, NULL, TRUE))
 		{
 			// Initialize the config array
 			$config = array();

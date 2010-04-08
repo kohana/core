@@ -2,7 +2,8 @@
 /**
  * Internationalization (i18n) class.
  *
- * @package    I18n
+ * @package    Kohana
+ * @category   Base
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license
@@ -77,7 +78,7 @@ class Kohana_I18n {
 			// Create a path for this set of parts
 			$path = implode(DIRECTORY_SEPARATOR, $parts);
 
-			if ($files = Kohana::find_file('i18n', $path))
+			if ($files = Kohana::find_file('i18n', $path, NULL, TRUE))
 			{
 				$t = array();
 				foreach ($files as $file)

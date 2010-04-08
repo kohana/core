@@ -2,7 +2,8 @@
 /**
  * Kohana exception class. Converts exceptions into HTML messages.
  *
- * @package    Exception
+ * @package    Kohana
+ * @category   Exceptions
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license
@@ -14,6 +15,7 @@ class Kohana_Exception extends Exception {
 	 *
 	 * @param   string   error message
 	 * @param   array    translation variables
+	 * @param   integer  the exception code
 	 * @return  void
 	 */
 	public function __construct($message, array $variables = NULL, $code = 0)

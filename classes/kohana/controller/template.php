@@ -2,7 +2,8 @@
 /**
  * Abstract controller class for automatic templating.
  *
- * @package    Controller
+ * @package    Kohana
+ * @category   Controller
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license

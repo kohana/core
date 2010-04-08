@@ -2,7 +2,8 @@
 /**
  * Base session class.
  *
- * @package    Session
+ * @package    Kohana
+ * @category   Session
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license
@@ -45,7 +46,7 @@ abstract class Kohana_Session {
 	protected $_name = 'session';
 
 	// Cookie lifetime
-	protected $_lifetime  = 0;
+	protected $_lifetime = 0;
 
 	// Encrypt session data?
 	protected $_encrypted = FALSE;
@@ -134,8 +135,14 @@ abstract class Kohana_Session {
 	 * @param   mixed    default value to return
 	 * @return  mixed
 	 */
-	public function get($key, $default = NULL)
+	public function get($key = NULL, $default = NULL)
 	{
+		if ($key === NULL)
+		{
+			// Return all session data
+			return $this->_data;
+		}
+
 		return array_key_exists($key, $this->_data) ? $this->_data[$key] : $default;
 	}
 
@@ -232,7 +239,17 @@ abstract class Kohana_Session {
 		// Set the last active timestamp
 		$this->_data['last_active'] = time();
 
-		return $this->_write();
+		try
+		{
+			return $this->_write();
+		}
+		catch (Exception $e)
+		{
+			// Log & ignore all errors when a write fails
+			Kohana::$log->add(Kohana::ERROR, Kohana::exception_text($e))->write();
+
+			return FALSE;
+		}
 	}
 
 	/**

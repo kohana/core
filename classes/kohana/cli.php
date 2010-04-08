@@ -3,6 +3,7 @@
  * Helper functions for working in a command-line environment.
  *
  * @package    Kohana
+ * @category   Helpers
  * @author     Kohana Team
  * @copyright  (c) 2009 Kohana Team
  * @license    http://kohanaphp.com/license
@@ -51,7 +52,7 @@ class Kohana_CLI {
 			if (strpos($opt, '='))
 			{
 				// Separate the name and value
-				list ($opt, $value) = explode('=', $opt);
+				list ($opt, $value) = explode('=', $opt, 2);
 			}
 			else
 			{

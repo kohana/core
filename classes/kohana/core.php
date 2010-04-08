@@ -8,6 +8,7 @@
  * - Variable and path debugging
  *
  * @package    Kohana
+ * @category   Base
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license
@@ -15,13 +16,19 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.0.3';
-	const CODENAME = 'renaissance';
+	const VERSION  = '3.0.4';
+	const CODENAME = 'wyau cwningen';
 
 	// Log message types
 	const ERROR = 'ERROR';
 	const DEBUG = 'DEBUG';
 	const INFO  = 'INFO';
+
+	// Common environment type constants for consistency and convenience
+	const PRODUCTION  = 'production';
+	const STAGING     = 'staging';
+	const TESTING     = 'testing';
+	const DEVELOPMENT = 'development';
 
 	// Security check that is added to all generated PHP files
 	const FILE_SECURITY = '<?php defined(\'SYSPATH\') or die(\'No direct script access.\');';
@@ -46,7 +53,7 @@ class Kohana_Core {
 	/**
 	 * @var  string  current environment name
 	 */
-	public static $environment = 'development';
+	public static $environment = Kohana::DEVELOPMENT;
 
 	/**
 	 * @var  boolean  command line environment?
@@ -102,6 +109,11 @@ class Kohana_Core {
 	 * @var  boolean  enable error handling?
 	 */
 	public static $errors = TRUE;
+
+	/**
+	 * @var  array  types of errors to display at shutdown
+	 */
+	public static $shutdown_errors = array(E_PARSE, E_ERROR, E_USER_ERROR, E_COMPILE_ERROR);
 
 	/**
 	 * @var  object  logging object
@@ -494,7 +506,8 @@ class Kohana_Core {
 	 * Finds the path of a file by directory, filename, and extension.
 	 * If no extension is given, the default EXT extension will be used.
 	 *
-	 * When searching the "config" or "i18n" directory, an array of files
+	 * When searching the "config" or "i18n" directories, or when the
+	 * $aggregate_files flag is set to true, an array of files
 	 * will be returned. These files will return arrays which must be
 	 * merged together.
 	 *
@@ -510,10 +523,11 @@ class Kohana_Core {
 	 * @param   string   directory name (views, i18n, classes, extensions, etc.)
 	 * @param   string   filename with subdirectory
 	 * @param   string   extension to search for
-	 * @return  array    file list from the "config" or "i18n" directories
+	 * @param   boolean  return an array of files?
+	 * @return  array    a list of files when $array is TRUE
 	 * @return  string   single file path
 	 */
-	public static function find_file($dir, $file, $ext = NULL)
+	public static function find_file($dir, $file, $ext = NULL, $array = FALSE)
 	{
 		// Use the defined extension by default
 		$ext = ($ext === NULL) ? EXT : '.'.$ext;
@@ -533,7 +547,7 @@ class Kohana_Core {
 			$benchmark = Profiler::start('Kohana', __FUNCTION__);
 		}
 
-		if ($dir === 'config' OR $dir === 'i18n' OR $dir === 'messages')
+		if ($array OR $dir === 'config' OR $dir === 'i18n' OR $dir === 'messages')
 		{
 			// Include paths must be searched in reverse
 			$paths = array_reverse(Kohana::$_paths);
@@ -755,8 +769,16 @@ class Kohana_Core {
 					}
 					else
 					{
-						// Cache has expired
-						unlink($dir.$file);
+						try
+						{
+							// Cache has expired
+							unlink($dir.$file);
+						}
+						catch (Exception $e)
+						{
+							// Cache has already been deleted
+							return NULL;
+						}
 					}
 				}
 
@@ -876,6 +898,9 @@ class Kohana_Core {
 			{
 				// Add this exception to the log
 				Kohana::$log->add(Kohana::ERROR, $error);
+
+				// Make sure the logs are written
+				Kohana::$log->write();
 			}
 
 			if (Kohana::$is_cli)
@@ -973,9 +998,9 @@ class Kohana_Core {
 			Kohana::exception_handler($e);
 		}
 
-		if (Kohana::$errors AND $error = error_get_last() AND (error_reporting() & $error['type']))
+		if (Kohana::$errors AND $error = error_get_last() AND in_array($error['type'], Kohana::$shutdown_errors))
 		{
-			// If an output buffer exists, clear it
+			// Clean the output buffer
 			ob_get_level() and ob_clean();
 
 			// Fake an exception for nice debugging
@@ -1382,7 +1407,7 @@ class Kohana_Core {
 			}
 			elseif (isset($step['args']))
 			{
-				if ($step['function'] === '{closure}')
+				if (strpos($step['function'], '{closure}') !== FALSE)
 				{
 					// Introspection on closures in a stack trace is impossible
 					$params = NULL;

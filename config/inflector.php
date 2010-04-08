@@ -55,5 +55,7 @@ return array(
 		'leaf' => 'leaves',
 		'course' => 'courses',
 		'size' => 'sizes',
+		'was' => 'were',
+		'is' => 'are',
 	),
 );

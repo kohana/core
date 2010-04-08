@@ -28,6 +28,7 @@
  * makes them an extremely powerful and flexible way to generate internal links.
  *
  * @package    Kohana
+ * @category   Base
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license
@@ -35,7 +36,7 @@
 class Kohana_Route {
 
 	const REGEX_KEY     = '<([a-zA-Z0-9_]++)>';
-	const REGEX_SEGMENT = '[^/.,;?]++';
+	const REGEX_SEGMENT = '[^/.,;?\n]++';
 	const REGEX_ESCAPE  = '[.\\+*?[^\\]${}=!|]';
 
 	/**
@@ -373,7 +374,7 @@ class Kohana_Route {
 			$regex = str_replace($search, $replace, $regex);
 		}
 
-		return '#^'.$regex.'$#u';
+		return '#^'.$regex.'$#uD';
 	}
 
 } // End Route

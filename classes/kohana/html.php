@@ -2,7 +2,8 @@
 /**
  * HTML helper class.
  *
- * @package    HTML
+ * @package    Kohana
+ * @category   Helpers
  * @author     Kohana Team
  * @copyright  (c) 2007-2008 Kohana Team
  * @license    http://kohanaphp.com/license
@@ -59,6 +60,18 @@ class Kohana_HTML {
 	public static function chars($value, $double_encode = TRUE)
 	{
 		return htmlspecialchars((string) $value, ENT_QUOTES, Kohana::$charset, $double_encode);
+	}
+
+	/**
+	 * Convert all applicable characters to HTML entities.
+	 *
+	 * @param   string   string to convert
+	 * @param   boolean  encode existing entities
+	 * @return  string
+	 */
+	public static function entities($value, $double_encode = TRUE)
+	{
+		return htmlentities((string) $value, ENT_QUOTES, Kohana::$charset, $double_encode);
 	}
 
 	/**

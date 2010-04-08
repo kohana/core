@@ -2,7 +2,8 @@
 /**
  * Abstract Controller class for RESTful controller mapping.
  *
- * @package    Controller
+ * @package    Kohana
+ * @category   Controller
  * @author     Kohana Team
  * @copyright  (c) 2009 Kohana Team
  * @license    http://kohanaphp.com/license
@@ -12,8 +13,8 @@ abstract class Kohana_Controller_REST extends Controller {
 	protected $_action_map = array
 	(
 		'GET'    => 'index',
-		'PUT'    => 'create',
-		'POST'   => 'update',
+		'PUT'    => 'update',
+		'POST'   => 'create',
 		'DELETE' => 'delete',
 	);
 

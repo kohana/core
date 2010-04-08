@@ -2,7 +2,8 @@
 /**
  * Form helper class.
  *
- * @package    HTML
+ * @package    Kohana
+ * @category   Helpers
  * @author     Kohana Team
  * @copyright  (c) 2007-2008 Kohana Team
  * @license    http://kohanaphp.com/license
@@ -120,7 +121,6 @@ class Kohana_Form {
 	 * Creates a file upload form input.
 	 *
 	 * @param   string  input name
-	 * @param   string  input value
 	 * @param   array   html attributes
 	 * @return  string
 	 */
@@ -189,6 +189,9 @@ class Kohana_Form {
 		// Set the input name
 		$attributes['name'] = $name;
 
+		// Add default rows and cols attributes (required)
+		$attributes += array('rows' => 50, 'cols' => 10);
+
 		// Make the textarea body HTML-safe
 		$body = htmlspecialchars($body, ENT_NOQUOTES, Kohana::$charset, $double_encode);
 
@@ -216,6 +219,12 @@ class Kohana_Form {
 		}
 		else
 		{
+			if ($selected !== NULL)
+			{
+				// Cast to string only if something needs to be selected
+				$selected = (string) $selected;
+			}
+
 			foreach ($options as $value => $name)
 			{
 				if (is_array($name))
@@ -228,10 +237,13 @@ class Kohana_Form {
 
 					foreach ($name as $_value => $_name)
 					{
+						// Force value to be string
+						$_value = (string) $_value;
+
 						// Create a new attribute set for this option
 						$option = array('value' => $_value);
 
-						if ($_value == $selected)
+						if ($_value === $selected)
 						{
 							// This option is selected
 							$option['selected'] = 'selected';
@@ -251,10 +263,13 @@ class Kohana_Form {
 				}
 				else
 				{
+					// Force value to be string
+					$value = (string) $value;
+
 					// Create a new attribute set for this option
 					$option = array('value' => $value);
 
-					if ($value == $selected)
+					if ($value === $selected)
 					{
 						// This option is selected
 						$option['selected'] = 'selected';
@@ -286,6 +301,21 @@ class Kohana_Form {
 	public static function submit($name, $value, array $attributes = NULL)
 	{
 		$attributes['type'] = 'submit';
+
+		return Form::input($name, $value, $attributes);
+	}
+
+	/**
+	 * Creates a image form input.
+	 *
+	 * @param   string  input name
+	 * @param   string  input value
+	 * @param   array   html attributes
+	 * @return  string
+	 */	
+	public static function image($name, $value, array $attributes = NULL)
+	{
+		$attributes['type'] = 'image';
 
 		return Form::input($name, $value, $attributes);
 	}

@@ -3,6 +3,7 @@
  * Array helper.
  *
  * @package    Kohana
+ * @category   Helpers
  * @author     Kohana Team
  * @copyright  (c) 2007-2009 Kohana Team
  * @license    http://kohanaphp.com/license
@@ -10,7 +11,7 @@
 class Kohana_Arr {
 
 	/**
-	 * Tests if an array is associative or or not.
+	 * Tests if an array is associative or not.
 	 *
 	 * @param   array   array to check
 	 * @return  boolean
@@ -21,7 +22,7 @@ class Kohana_Arr {
 		$keys = array_keys($array);
 
 		// If the array keys of the keys match the keys, then the array must
-		// be associative.
+		// not be associative (e.g. the keys array looked like {0:0, 1:1...}).
 		return array_keys($keys) !== $keys;
 	}
 
@@ -38,6 +39,9 @@ class Kohana_Arr {
 	 */
 	public static function path($array, $path, $default = NULL)
 	{
+		// Remove outer dots, wildcards, or spaces
+		$path = trim($path, '.* ');		
+
 		// Split the keys by slashes
 		$keys = explode('.', $path);
 
@@ -70,6 +74,35 @@ class Kohana_Arr {
 				{
 					// Found the path requested
 					return $array[$key];
+				}
+			}
+			elseif ($key === '*')
+			{
+				// Handle wildcards
+
+				if (empty($keys))
+				{
+					return $array;
+				}
+
+				$values = array();
+				foreach ($array as $arr)
+				{
+					if ($value = Arr::path($arr, implode('.', $keys)))
+					{
+						$values[] = $value;
+					}
+				}
+
+				if ($values)
+				{
+					// Found the values requested
+					return $values;
+				}
+				else
+				{
+					// Unable to dig deeper
+					break;
 				}
 			}
 			else
@@ -114,7 +147,7 @@ class Kohana_Arr {
 	 * @param   mixed   default value
 	 * @return  mixed
 	 */
-	public static function get(array $array, $key, $default = NULL)
+	public static function get($array, $key, $default = NULL)
 	{
 		return isset($array[$key]) ? $array[$key] : $default;
 	}
@@ -128,7 +161,7 @@ class Kohana_Arr {
 	 * @param   mixed   default value
 	 * @return  array
 	 */
-	public static function extract(array $array, array $keys, $default = NULL)
+	public static function extract($array, array $keys, $default = NULL)
 	{
 		$found = array();
 		foreach ($keys as $key)

@@ -2,7 +2,8 @@
 /**
  * Array and variable validation.
  *
- * @package    Security
+ * @package    Kohana
+ * @category   Security
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license
@@ -963,8 +964,20 @@ class Kohana_Validate extends ArrayObject {
 			{
 				foreach ($params as $key => $value)
 				{
+					// Check if a label for this parameter exists
+					if (isset($this->_labels[$value]))
+					{
+						$value = $this->_labels[$value];
+
+						if ($translate)
+						{
+							// Translate the label
+							$value = __($value);
+						}
+					}
+
 					// Add each parameter as a numbered value, starting from 1
-					$values[':param'.($key + 1)] = $value;
+					$values[':param'.($key + 1)] = is_array($value) ? implode(', ', $value) : $value;
 				}
 			}
 

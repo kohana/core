@@ -3,6 +3,7 @@
  * Text helper class.
  *
  * @package    Kohana
+ * @category   Helpers
  * @author     Kohana Team
  * @copyright  (c) 2007-2008 Kohana Team
  * @license    http://kohanaphp.com/license
@@ -291,7 +292,7 @@ class Kohana_Text {
 			foreach ($matches[0] as $match)
 			{
 				// Replace each email with an encoded mailto
-				$text = str_replace($match, HTML::mailto($match), $text);
+				$text = preg_replace('!\b'.preg_quote($match).'\b!', HTML::mailto($match), $text);
 			}
 		}
 
