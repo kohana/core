@@ -31,6 +31,8 @@ abstract class Kohana_Controller_REST extends Controller {
 		{
 			$this->request->action = $this->_action_map[$this->request->method];
 		}
+
+		return parent::before();
 	}
 
 	public function action_invalid()
