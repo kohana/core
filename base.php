@@ -17,10 +17,12 @@ if ( ! defined('KOHANA_START_MEMORY'))
 }
 
 /**
- * Kohana translation/internationalization function.
+ * Kohana translation/internationalization function. The PHP function
+ * [strtr](http://php.net/strtr) is used for replacing parameters.
  *
  *    __('Welcome back, :user', array(':user' => $username));
  *
+ * @uses    I18n::get
  * @param   string  text to translate
  * @param   array   values to replace in the translated text
  * @param   string  target language
