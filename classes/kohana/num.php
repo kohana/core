@@ -1,6 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Number helper class.
+ * Number helper class. Provides additional formatting methods that for working
+ * with numbers.
  *
  * @package    Kohana
  * @category   Helpers
@@ -12,6 +13,10 @@ class Kohana_Num {
 
 	/**
 	 * Returns the English ordinal suffix (th, st, nd, etc) of a number.
+	 *
+	 *     echo 2, Num::ordinal(2);     // "2nd"
+	 *     echo 10, Num::ordinal(10);   // "10th"
+	 *     echo 613, Num::ordinal(202); // "613th"
 	 *
 	 * @param   integer  number
 	 * @return  string
@@ -37,12 +42,23 @@ class Kohana_Num {
 	}
 
 	/**
-	 * Locale-aware number formatting.
+	 * Locale-aware number and monetary formatting.
+	 *
+	 *     // In English, "1,200.05"
+	 *     // In Spanish, "1200,05"
+	 *     // In Portuguese, "1 200,05"
+	 *     echo Num::format(1200.05, 2);
+	 *
+	 *     // In English, "1,200.05"
+	 *     // In Spanish, "1.200,05"
+	 *     // In Portuguese, "1.200.05"
+	 *     echo Num::format(1200.05, 2, TRUE);
 	 *
 	 * @param   float    number to format
 	 * @param   integer  decimal places
 	 * @param   boolean  monetary formatting?
 	 * @return  string
+	 * @since   3.0.2
 	 */
 	public static function format($number, $places, $monetary = FALSE)
 	{
