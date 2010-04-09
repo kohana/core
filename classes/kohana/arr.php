@@ -175,6 +175,8 @@ class Kohana_Arr {
 	/**
 	 * Binary search algorithm.
 	 *
+	 * @deprecated  Use [array_search](http://php.net/array_search) instead
+	 *
 	 * @param   mixed    the value to search for
 	 * @param   array    an array of values to search in
 	 * @param   boolean  sort the array now
@@ -183,33 +185,7 @@ class Kohana_Arr {
 	 */
 	public static function binary_search($needle, $haystack, $sort = FALSE)
 	{
-		if ($sort)
-		{
-			sort($haystack);
-		}
-
-		$high = count($haystack) - 1;
-		$low = 0;
-
-		while ($low <= $high)
-		{
-			$mid = ($low + $high) >> 1;
-
-			if ($haystack[$mid] < $needle)
-			{
-				$low = $mid + 1;
-			}
-			elseif ($haystack[$mid] > $needle)
-			{
-				$high = $mid - 1;
-			}
-			else
-			{
-				return $mid;
-			}
-		}
-
-		return FALSE;
+		return array_search($needle, $haystack);
 	}
 
 	/**
