@@ -35,7 +35,14 @@ class Kohana_Encrypt {
 		if ( ! isset(Encrypt::$instances[$name]))
 		{
 			// Load the configuration data
-			$config = Kohana::config('encrypt')->{$name};
+			$config = Kohana::config('encrypt')->$name;
+
+			if ( ! isset($config['key']))
+			{
+				// No default encryption key is provided!
+				throw new Kohana_Exception('No encryption key is defined in the encryption configuration group: :group',
+					array(':group' => $name));
+			}
 
 			if ( ! isset($config['mode']))
 			{
