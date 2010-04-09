@@ -1,6 +1,9 @@
 <?php defined('SYSPATH') OR die('No direct access allowed.');
 /**
- * Inflector helper class.
+ * Inflector helper class. Inflection is changing the form of a word based on
+ * the context it is used in. For example, changing a word into a plural form.
+ *
+ * [!!] Inflection is only tested with English, and is will not work with other languages.
  *
  * @package    Kohana
  * @category   Helpers
@@ -18,7 +21,15 @@ class Kohana_Inflector {
 	protected static $irregular;
 
 	/**
-	 * Checks if a word is defined as uncountable.
+	 * Checks if a word is defined as uncountable. An uncountable word has a
+	 * single form. For instance, one "fish" and many "fish", not "fishes".
+	 *
+	 *     Inflector::uncountable('fish'); // TRUE
+	 *     Inflector::uncountable('cat');  // FALSE
+	 *
+	 * If you find a word is being pluralized improperly, it has probably not
+	 * been defined as uncountable in `config/inflector.php`. If this is the
+	 * case, please report [an issue](http://dev.kohanaphp.com/projects/kohana3/issues).
 	 *
 	 * @param   string   word to check
 	 * @return  boolean
@@ -40,9 +51,21 @@ class Kohana_Inflector {
 	/**
 	 * Makes a plural word singular.
 	 *
+	 *     echo Inflector::singular('cats'); // "cat"
+	 *     echo Inflector::singular('fish'); // "fish", uncountable
+	 *
+	 * You can also provide the count to make inflection more intelligent.
+	 * In this case, it will only return the singular value if the count is
+	 * greater than one and not zero.
+	 *
+	 *     echo Inflector::singular('cats', 2); // "cats"
+	 *
+	 * [!!] Special inflections are defined in `config/inflector.php`.
+	 *
 	 * @param   string   word to singularize
 	 * @param   integer  number of things
 	 * @return  string
+	 * @uses    Inflector::uncountable
 	 */
 	public static function singular($str, $count = NULL)
 	{
@@ -98,8 +121,20 @@ class Kohana_Inflector {
 	/**
 	 * Makes a singular word plural.
 	 *
+	 *     echo Inflector::plural('fish'); // "fish", uncountable
+	 *     echo Inflector::plural('cat');  // "cats"
+	 *
+	 * You can also provide the count to make inflection more intelligent.
+	 * In this case, it will only return the plural value if the count is
+	 * not one.
+	 *
+	 *     echo Inflector::singular('cats', 3); // "cats"
+	 *
+	 * [!!] Special inflections are defined in `config/inflector.php`.
+	 *
 	 * @param   string  word to pluralize
 	 * @return  string
+	 * @uses    Inflector::uncountable
 	 */
 	public static function plural($str, $count = NULL)
 	{
@@ -154,7 +189,10 @@ class Kohana_Inflector {
 	}
 
 	/**
-	 * Makes a phrase camel case.
+	 * Makes a phrase camel case. Spaces and underscores will be removed.
+	 *
+	 *     $str = Inflector::camelize('mother cat');     // "motherCat"
+	 *     $str = Inflector::camelize('kittens in bed'); // "kittensInBed"
 	 *
 	 * @param   string  phrase to camelize
 	 * @return  string
@@ -170,6 +208,8 @@ class Kohana_Inflector {
 	/**
 	 * Makes a phrase underscored instead of spaced.
 	 *
+	 *     $str = Inflector::underscore('five cats'); // "five_cats";
+	 *
 	 * @param   string  phrase to underscore
 	 * @return  string
 	 */
@@ -180,6 +220,9 @@ class Kohana_Inflector {
 
 	/**
 	 * Makes an underscored or dashed phrase human-readable.
+	 *
+	 *     $str = Inflector::humanize('kittens-are-cats'); // "kittens are cats"
+	 *     $str = Inflector::humanize('dogs_as_well');     // "dogs as well"
 	 *
 	 * @param   string  phrase to make human-readable
 	 * @return  string
@@ -194,4 +237,4 @@ class Kohana_Inflector {
 		// This is a static class
 	}
 
-} // End inflector
+} // End Inflector
