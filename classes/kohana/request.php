@@ -660,48 +660,6 @@ class Kohana_Request {
 	}
 
 	/**
-<<<<<<< HEAD
-=======
-	 * Sends the response status and all set headers.
-	 *
-	 * @return  $this
-	 */
-	public function send_headers()
-	{
-		if ( ! headers_sent())
-		{
-			if (isset($_SERVER['SERVER_PROTOCOL']))
-			{
-				// Use the default server protocol
-				$protocol = $_SERVER['SERVER_PROTOCOL'];
-			}
-			else
-			{
-				// Default to using newer protocol
-				$protocol = 'HTTP/1.1';
-			}
-
-			// HTTP status line
-			header($protocol.' '.$this->status.' '.Request::$messages[$this->status]);
-
-			foreach ($this->headers as $name => $value)
-			{
-				if (is_string($name))
-				{
-					// Combine the name and value to make a raw header
-					$value = "{$name}: {$value}";
-				}
-
-				// Send the raw header
-				header($value, TRUE);
-			}
-		}
-
-		return $this;
-	}
-
-	/**
->>>>>>> b2ebbab62e4acc1172274fd7d4fccf83882b2988
 	 * Redirects as the request response.
 	 *
 	 * @param   string   redirect location
@@ -724,105 +682,8 @@ class Kohana_Request {
 
 		$this->response = new Response($config);
 
-<<<<<<< HEAD
 		// Send headers
 		$this->response->send_headers();
-=======
-		if ($filename === TRUE)
-		{
-			if (empty($download))
-			{
-				throw new Kohana_Exception('Download name must be provided for streaming files');
-			}
-
-			if ( ! isset($mime))
-			{
-				// Guess the mime using the file extension
-				$mime = File::mime_by_ext(strtolower(pathinfo($download, PATHINFO_EXTENSION)));
-			}
-
-			// Get the content size
-			$size = strlen($this->response);
-
-			// Create a temporary file to hold the current response
-			$file = tmpfile();
-
-			// Write the current response into the file
-			fwrite($file, $this->response);
-
-			// Prepare the file for reading
-			fseek($file, 0);
-		}
-		else
-		{
-			// Get the complete file path
-			$filename = realpath($filename);
-
-			if (empty($download))
-			{
-				// Use the file name as the download file name
-				$download = pathinfo($filename, PATHINFO_BASENAME);
-			}
-
-			// Get the file size
-			$size = filesize($filename);
-
-			if ( ! isset($mime))
-			{
-				// Get the mime type
-				$mime = File::mime($filename);
-			}
-
-			// Open the file for reading
-			$file = fopen($filename, 'rb');
-		}
-
-		// Inline or download?
-		$disposition = empty($options['inline']) ? 'attachment' : 'inline';
-
-		// Set the headers for a download
-		$this->headers['Content-Disposition'] = $disposition.'; filename="'.$download.'"';
-		$this->headers['Content-Type']        = $mime;
-		$this->headers['Content-Length']      = $size;
-
-		if ( ! empty($options['resumable']))
-		{
-			// @todo: ranged download processing
-		}
-
-		// Send all headers now
-		$this->send_headers();
-
-		while (ob_get_level())
-		{
-			// Flush all output buffers
-			ob_end_flush();
-		}
-
-		// Manually stop execution
-		ignore_user_abort(TRUE);
-
-		// Keep the script running forever
-		set_time_limit(0);
-
-		// Send data in 16kb blocks
-		$block = 1024 * 16;
-
-		while ( ! feof($file))
-		{
-			if (connection_aborted())
-				break;
-
-			// Output a block of the file
-			echo fread($file, $block);
-
-			// Send the data now
-			flush();
-		}
-
-		// Close the file
-		fclose($file);
->>>>>>> b2ebbab62e4acc1172274fd7d4fccf83882b2988
 
 		// Stop execution
 		exit;
