@@ -12,7 +12,6 @@ return array(
 		'fish',
 		'fuel',
 		'furniture',
-		'food',
 		'heat',
 		'honey',
 		'homework',
