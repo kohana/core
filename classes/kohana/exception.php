@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct access');
 /**
- * Kohana exception class. Converts exceptions into HTML messages.
+ * Kohana exception class. Translates exceptions using the [I18n] class.
  *
  * @package    Kohana
  * @category   Exceptions
@@ -12,6 +12,9 @@ class Kohana_Exception extends Exception {
 
 	/**
 	 * Creates a new translated exception.
+	 *
+	 *     throw new Kohana_Exception('Something went terrible wrong, :user',
+	 *         array(':user' => $user));
 	 *
 	 * @param   string   error message
 	 * @param   array    translation variables
@@ -29,6 +32,8 @@ class Kohana_Exception extends Exception {
 
 	/**
 	 * Magic object-to-string method.
+	 *
+	 *     echo $exception;
 	 *
 	 * @uses    Kohana::exception_text
 	 * @return  string
