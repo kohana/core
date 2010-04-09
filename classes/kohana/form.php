@@ -222,6 +222,7 @@ class Kohana_Form {
 	 * @param   boolean  encode existing HTML characters
 	 * @return  string
 	 * @uses    HTML::attributes
+	 * @uses    HTML::chars
 	 */
 	public static function textarea($name, $body = '', array $attributes = NULL, $double_encode = TRUE)
 	{
@@ -231,10 +232,7 @@ class Kohana_Form {
 		// Add default rows and cols attributes (required)
 		$attributes += array('rows' => 50, 'cols' => 10);
 
-		// Make the textarea body HTML-safe
-		$body = htmlspecialchars($body, ENT_NOQUOTES, Kohana::$charset, $double_encode);
-
-		return '<textarea'.HTML::attributes($attributes).'>'.$body.'</textarea>';
+		return '<textarea'.HTML::attributes($attributes).'>'.HTML::chars($body, $double_encode).'</textarea>';
 	}
 
 	/**
@@ -291,11 +289,8 @@ class Kohana_Form {
 							$option['selected'] = 'selected';
 						}
 
-						// Sanitize the option title
-						$title = htmlspecialchars($_name, ENT_NOQUOTES, Kohana::$charset, FALSE);
-
 						// Change the option to the HTML string
-						$_options[] = '<option'.HTML::attributes($option).'>'.$title.'</option>';
+						$_options[] = '<option'.HTML::attributes($option).'>'.HTML::chars($_name, FALSE).'</option>';
 					}
 
 					// Compile the options into a string
@@ -317,11 +312,8 @@ class Kohana_Form {
 						$option['selected'] = 'selected';
 					}
 
-					// Sanitize the option title
-					$title = htmlspecialchars($name, ENT_NOQUOTES, Kohana::$charset, FALSE);
-
 					// Change the option to the HTML string
-					$options[$value] = '<option'.HTML::attributes($option).'>'.$title.'</option>';
+					$options[$value] = '<option'.HTML::attributes($option).'>'.HTML::chars($name, FALSE).'</option>';
 				}
 			}
 
@@ -404,7 +396,7 @@ class Kohana_Form {
 		if ($text === NULL)
 		{
 			// Use the input name as the text
-			$text = ucwords(str_replace('_', ' ', $input));
+			$text = ucwords(preg_replace('/\W+/', ' ', $input));
 		}
 
 		// Set the label target
