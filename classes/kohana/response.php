@@ -127,8 +127,19 @@ class Kohana_Response {
 	{
 		if ( ! headers_sent())
 		{
+			if (isset($_SERVER['SERVER_PROTOCOL']))
+			{
+				// Use the default server protocol
+				$protocol = $_SERVER['SERVER_PROTOCOL'];
+			}
+			else
+			{
+				// Default to using newer protocol
+				$protocol = 'HTTP/1.1';
+			}
+
 			// HTTP status line
-			header('HTTP/1.1 '.$this->status.' '.Response::$messages[$this->status]);
+			header($protocol.' '.$this->status.' '.Response::$messages[$this->status]);
 
 			foreach ($this->headers as $name => $value)
 			{
