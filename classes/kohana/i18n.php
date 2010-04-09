@@ -1,6 +1,18 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Internationalization (i18n) class.
+ * Internationalization (i18n) class. Provides language loading and translation
+ * methods without dependancies on [gettext](http://php.net/gettext).
+ *
+ * Typically this class would never be used directly, but used via the __()
+ * function, which loads the message and replaces parameters:
+ *
+ *     // Display a translated message
+ *     echo __('Hello, world');
+ *
+ *     // With parameter replacement
+ *     echo __('Hello, :user', array(':user' => $username));
+ *
+ * [!!] The __() function is declared in `SYSPATH/base.php`.
  *
  * @package    Kohana
  * @category   Base
@@ -21,6 +33,12 @@ class Kohana_I18n {
 	/**
 	 * Get and set the target language.
 	 *
+	 *     // Get the current language
+	 *     $lang = I18n::lang();
+	 *
+	 *     // Change the current language to Spanish
+	 *     I18n::lang('es-es');
+	 *
 	 * @param   string   new language setting
 	 * @return  string
 	 */
@@ -37,7 +55,9 @@ class Kohana_I18n {
 
 	/**
 	 * Returns translation of a string. If no translation exists, the original
-	 * string will be returned.
+	 * string will be returned. No parameters are replaced.
+	 *
+	 *     $hello = I18n::get('Hello friends, my name is :name');
 	 *
 	 * @param   string   text to translate
 	 * @return  string
@@ -56,6 +76,9 @@ class Kohana_I18n {
 
 	/**
 	 * Returns the translation table for a given language.
+	 *
+	 *     // Get all defined Spanish messages
+	 *     $messages = I18n::lang('es-es');
 	 *
 	 * @param   string   language to load
 	 * @return  array
