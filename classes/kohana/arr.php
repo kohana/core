@@ -214,24 +214,33 @@ class Kohana_Arr {
 	 * @param   array  ...
 	 * @return  array
 	 */
-	public static function merge(array $a1)
+	public static function merge(array $a1, array $a2)
 	{
 		$result = array();
 		for ($i = 0, $total = func_num_args(); $i < $total; $i++)
 		{
-			foreach (func_get_arg($i) as $key => $val)
+			// Get the next array
+			$arr = func_get_arg($i);
+
+			foreach ($arr as $key => $val)
 			{
 				if (isset($result[$key]))
 				{
 					if (is_array($val))
 					{
-						// Arrays are merged recursively
-						$result[$key] = Arr::merge($result[$key], $val);
-					}
-					elseif (is_int($key))
-					{
-						// Indexed arrays are appended
-						array_push($result, $val);
+						if (Arr::is_assoc($val))
+						{
+							// Associative arrays are merged recursively
+							$result[$key] = Arr::merge($result[$key], $val);
+						}
+						else
+						{
+							// Find the values that are not already present
+							$diff = array_diff($val, $result[$key]);
+
+							// Indexed arrays are merged to prevent duplicates
+							$result[$key] = array_merge($result[$key], $diff);
+						}
 					}
 					else
 					{
