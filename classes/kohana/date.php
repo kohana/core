@@ -263,10 +263,7 @@ class Kohana_Date {
 
 		$years = array();
 
-		// Add one, so that "less than" works
-		$end += 1;
-
-		for ($i = $start; $i < $end; $i++)
+		for ($i = $start; $i <= $end; $i++)
 		{
 			$years[$i] = (string) $i;
 		}
@@ -297,6 +294,9 @@ class Kohana_Date {
 		if (empty($output))
 			return FALSE;
 
+		// Convert the list of outputs to an associative array
+		$output = array_combine($output, array_fill(0, count($output), 0));
+
 		// Make the output values into keys
 		extract(array_flip($output), EXTR_SKIP);
 
@@ -309,69 +309,50 @@ class Kohana_Date {
 		// Calculate timespan (seconds)
 		$timespan = abs($remote - $local);
 
-		if (isset($years))
+		if (isset($output['years']))
 		{
-			$timespan -= Date::YEAR * ($years = (int) floor($timespan / Date::YEAR));
+			$timespan -= Date::YEAR * ($output['years'] = (int) floor($timespan / Date::YEAR));
 		}
 
-		if (isset($months))
+		if (isset($output['months']))
 		{
-			$timespan -= Date::MONTH * ($months = (int) floor($timespan / Date::MONTH));
+			$timespan -= Date::MONTH * ($output['months'] = (int) floor($timespan / Date::MONTH));
 		}
 
-		if (isset($weeks))
+		if (isset($output['weeks']))
 		{
-			$timespan -= Date::WEEK * ($weeks = (int) floor($timespan / Date::WEEK));
+			$timespan -= Date::WEEK * ($output['weeks'] = (int) floor($timespan / Date::WEEK));
 		}
 
-		if (isset($days))
+		if (isset($output['days']))
 		{
-			$timespan -= Date::DAY * ($days = (int) floor($timespan / Date::DAY));
+			$timespan -= Date::DAY * ($output['days'] = (int) floor($timespan / Date::DAY));
 		}
 
-		if (isset($hours))
+		if (isset($output['hours']))
 		{
-			$timespan -= Date::HOUR * ($hours = (int) floor($timespan / Date::HOUR));
+			$timespan -= Date::HOUR * ($output['hours'] = (int) floor($timespan / Date::HOUR));
 		}
 
-		if (isset($minutes))
+		if (isset($output['minutes']))
 		{
-			$timespan -= Date::MINUTE * ($minutes = (int) floor($timespan / Date::MINUTE));
+			$timespan -= Date::MINUTE * ($output['minutes'] = (int) floor($timespan / Date::MINUTE));
 		}
 
 		// Seconds ago, 1
-		if (isset($seconds))
+		if (isset($output['seconds']))
 		{
-			$seconds = $timespan;
+			$output['seconds'] = $timespan;
 		}
 
-		// Remove the variables that cannot be accessed
-		unset($timespan, $remote, $local);
-
-		// Deny access to these variables
-		$deny = array_flip(array('deny', 'key', 'difference', 'output'));
-
-		// Return the difference
-		$difference = array();
-		foreach ($output as $key)
+		if (count($output) === 1)
 		{
-			if (isset($$key) AND ! isset($deny[$key]))
-			{
-				// Add requested key to the output
-				$difference[$key] = $$key;
-			}
+			// Only a single output was requested, return it
+			return array_pop($output);
 		}
-
-		// Invalid output formats string
-		if (empty($difference))
-			return FALSE;
-
-		// If only one output format was asked, don't put it in an array
-		if (count($difference) === 1)
-			return current($difference);
 
 		// Return array
-		return $difference;
+		return $output;
 	}
 
 	/**
