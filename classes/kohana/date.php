@@ -265,9 +265,11 @@ class Kohana_Date {
 		// Make the output values into keys
 		extract(array_flip($output), EXTR_SKIP);
 
-		// Default values
-		$time1 = max(0, (int) $time1);
-		$time2 = empty($time2) ? time() : max(0, (int) $time2);
+		if ($time2 === NULL)
+		{
+			// Calculate the span from the current time
+			$time2 = time();
+		}
 
 		// Calculate timespan (seconds)
 		$timespan = abs($time1 - $time2);
