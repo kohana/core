@@ -21,9 +21,7 @@ abstract class Kohana_Controller_Template extends Controller {
 	public $auto_render = TRUE;
 
 	/**
-	 * Loads the template View object.
-	 *
-	 * @return  void
+	 * Loads the template [View] object.
 	 */
 	public function before()
 	{
@@ -37,10 +35,7 @@ abstract class Kohana_Controller_Template extends Controller {
 	}
 
 	/**
-	 * Assigns the template as the request response.
-	 *
-	 * @param   string   request method
-	 * @return  void
+	 * Assigns the template [View] as the request response.
 	 */
 	public function after()
 	{
