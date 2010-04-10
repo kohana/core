@@ -353,6 +353,8 @@ class Kohana_Text {
 	 *
 	 *     echo Text::auto_p($text);
 	 *
+	 * [!!] This method is not foolproof since it uses regex to parse HTML.
+	 *
 	 * @param   string   subject
 	 * @param   boolean  convert single linebreaks to <br />
 	 * @return  string
