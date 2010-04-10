@@ -48,17 +48,14 @@ abstract class Kohana_Config_Reader extends ArrayObject {
 			return FALSE;
 		}
 
-		// Set the group name
-		$this->_configuration_group = $group;
-
 		// Clone the current object
 		$object = clone $this;
 
+		// Set the group name
+		$object->_configuration_group = $group;
+
 		// Swap the array with the actual configuration
 		$object->exchangeArray($config);
-
-		// Empty the configuration group
-		$this->_configuration_group = NULL;
 
 		return $object;
 	}
