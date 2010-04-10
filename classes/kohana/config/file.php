@@ -34,6 +34,7 @@ class Kohana_Config_File extends Kohana_Config_Reader {
 	 * @param   string  configuration group name
 	 * @param   array   configuration array
 	 * @return  $this   clone of the current object
+	 * @uses    Kohana::load
 	 */
 	public function load($group, array $config = NULL)
 	{
@@ -45,7 +46,7 @@ class Kohana_Config_File extends Kohana_Config_Reader {
 			foreach ($files as $file)
 			{
 				// Merge each file to the configuration array
-				$config = Arr::merge($config, require $file);
+				$config = Arr::merge($config, Kohana::load($file));
 			}
 		}
 
