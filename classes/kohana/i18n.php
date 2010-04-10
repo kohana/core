@@ -78,7 +78,7 @@ class Kohana_I18n {
 	 * Returns the translation table for a given language.
 	 *
 	 *     // Get all defined Spanish messages
-	 *     $messages = I18n::lang('es-es');
+	 *     $messages = I18n::load('es-es');
 	 *
 	 * @param   string   language to load
 	 * @return  array
