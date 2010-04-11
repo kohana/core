@@ -85,9 +85,10 @@ class Kohana_Log {
 	 *
 	 * @param   string  type of message
 	 * @param   string  message body
+	 * @param   array   values to replace in the message
 	 * @return  $this
 	 */
-	public function add($type, $message)
+	public function add($type, $message, array $values = NULL)
 	{
 		if (self::$timezone)
 		{
@@ -101,6 +102,11 @@ class Kohana_Log {
 			$time = date(self::$timestamp);
 		}
 
+		if ($values)
+		{
+			// Insert the values into the message
+			$message = strtr($message, $values);
+		}
 
 		// Create a new message and timestamp it
 		$this->_messages[] = array
