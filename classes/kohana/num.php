@@ -14,9 +14,9 @@ class Kohana_Num {
 	/**
 	 * Returns the English ordinal suffix (th, st, nd, etc) of a number.
 	 *
-	 *     echo 2, Num::ordinal(2);     // "2nd"
-	 *     echo 10, Num::ordinal(10);   // "10th"
-	 *     echo 613, Num::ordinal(202); // "613th"
+	 *     echo 2, Num::ordinal(2);   // "2nd"
+	 *     echo 10, Num::ordinal(10); // "10th"
+	 *     echo 33, Num::ordinal(33); // "33rd"
 	 *
 	 * @param   integer  number
 	 * @return  string
