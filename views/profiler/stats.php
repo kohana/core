@@ -59,9 +59,9 @@ foreach (Profiler::groups() as $group => $benchmarks)
 			<td class="<?php echo $key ?>">
 				<div>
 					<div class="value"><?php echo number_format($stats[$key]['time'], 6) ?> <abbr title="seconds">s</abbr></div>
-					<?php if ($key === 'total') { ?>
+					<?php if ($key === 'total'): ?>
 						<div class="graph" style="left: <?php echo 100 - $stats[$key]['time'] / $groups[$group]['max']['time'] * 100 ?>%"></div>
-					<?php } ?>
+					<?php endif ?>
 				</div>
 			</td>
 			<?php endforeach ?>
@@ -71,9 +71,9 @@ foreach (Profiler::groups() as $group => $benchmarks)
 			<td class="<?php echo $key ?>">
 				<div>
 					<div class="value"><?php echo number_format($stats[$key]['memory'] / 1024, 4) ?> <abbr title="kilobyte">kB</abbr></div>
-					<?php if ($key === 'total') { ?>
+					<?php if ($key === 'total'): ?>
 						<div class="graph" style="left: <?php echo 100 - $stats[$key]['memory'] / $groups[$group]['max']['memory'] * 100 ?>%"></div>
-					<?php } ?>
+					<?php endif ?>
 				</div>
 			</td>
 			<?php endforeach ?>
