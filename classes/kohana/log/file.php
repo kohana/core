@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * File log writer.
+ * File log writer. Writes out messages and stores them in a YYYY/MM directory.
  *
  * @package    Kohana
  * @category   Logging
@@ -14,7 +14,10 @@ class Kohana_Log_File extends Kohana_Log_Writer {
 	protected $_directory;
 
 	/**
-	 * Creates a new file logger.
+	 * Creates a new file logger. Checks that the directory exists and
+	 * is writable.
+	 *
+	 *     $writer = new Kohana_Log_File($directory);
 	 *
 	 * @param   string  log directory
 	 * @return  void
@@ -32,7 +35,11 @@ class Kohana_Log_File extends Kohana_Log_Writer {
 	}
 
 	/**
-	 * Writes each of the messages into the log file.
+	 * Writes each of the messages into the log file. The log file will be
+	 * appended to the `YYYY/MM/DD.log.php` file, where YYYY is the current
+	 * year, MM is the current month, and DD is the current day.
+	 *
+	 *     $writer->write($messages);
 	 *
 	 * @param   array   messages
 	 * @return  void
