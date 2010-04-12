@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Log writer abstract class.
+ * Log writer abstract class. All [Kohana_Log] writers must extend this class.
  *
  * @package    Kohana
  * @category   Logging
@@ -13,13 +13,17 @@ abstract class Kohana_Log_Writer {
 	/**
 	 * Write an array of messages.
 	 *
+	 *     $writer->write($messages);
+	 *
 	 * @param   array  messages
 	 * @return  void
 	 */
 	abstract public function write(array $messages);
 
 	/**
-	 * Allows the object to have a unique key in associative arrays.
+	 * Allows the writer to have a unique key when stored.
+	 *
+	 *     echo $writer;
 	 *
 	 * @return  string
 	 */
