@@ -102,9 +102,8 @@ class Kohana_Profiler {
 	{
 		// Min and max are unknown by default
 		$min = $max = array(
-			'time'   => NULL,
-			'memory' => NULL,
-			);
+			'time' => NULL,
+			'memory' => NULL);
 
 		// Total values are always integers
 		$total = array(
@@ -160,6 +159,85 @@ class Kohana_Profiler {
 			'max' => $max,
 			'total' => $total,
 			'average' => $average);
+	}
+
+	/**
+	 * Gets the min, max, average and total of profiler groups as an array.
+	 *
+	 * @param   mixed  single group name string, or array with group names; all groups by default
+	 * @return  array  min, max, average, total
+	 */
+	public static function group_stats($groups = NULL)
+	{
+		// Which groups do we need to calculate stats for?
+		$groups = ($groups === NULL)
+			? Profiler::groups()
+			: array_intersect_key(Profiler::groups(), array_flip((array) $groups));
+
+		foreach ($groups as $group => $names)
+		{
+			foreach ($names as $name => $tokens)
+			{
+				// Store the stats for each subgroup.
+				// We only need the values for "total".
+				$_stats = Profiler::stats($tokens);
+				$stats[$group][$name] = $_stats['total'];
+			}
+		}
+
+		// Group stats
+		$groups = array();
+
+		foreach ($stats as $group => $names)
+		{
+			// Min and max are unknown by default
+			$groups[$group]['min'] = $groups[$group]['max'] = array(
+				'time' => NULL,
+				'memory' => NULL);
+
+			// Total values are always integers
+			$groups[$group]['total'] = array(
+				'time' => 0,
+				'memory' => 0);
+
+			foreach ($names as $total)
+			{
+				if ( ! isset($groups[$group]['min']['time']) OR $groups[$group]['min']['time'] > $total['time'])
+				{
+					// Set the minimum time
+					$groups[$group]['min']['time'] = $total['time'];
+				}
+				if ( ! isset($groups[$group]['min']['memory']) OR $groups[$group]['min']['memory'] > $total['memory'])
+				{
+					// Set the minimum memory
+					$groups[$group]['min']['memory'] = $total['memory'];
+				}
+
+				if ( ! isset($groups[$group]['max']['time']) OR $groups[$group]['max']['time'] < $total['time'])
+				{
+					// Set the maximum time
+					$groups[$group]['max']['time'] = $total['time'];
+				}
+				if ( ! isset($groups[$group]['max']['memory']) OR $groups[$group]['max']['memory'] < $total['memory'])
+				{
+					// Set the maximum memory
+					$groups[$group]['max']['memory'] = $total['memory'];
+				}
+
+				// Increase the total time and memory
+				$groups[$group]['total']['time']   += $total['time'];
+				$groups[$group]['total']['memory'] += $total['memory'];
+			}
+
+			// Determine the number of names (subgroups)
+			$count = count($names);
+
+			// Determine the averages
+			$groups[$group]['average']['time']   = $groups[$group]['total']['time'] / $count;
+			$groups[$group]['average']['memory'] = $groups[$group]['total']['memory'] / $count;
+		}
+
+		return $groups;
 	}
 
 	/**
