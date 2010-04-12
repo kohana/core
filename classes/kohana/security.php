@@ -13,11 +13,13 @@ class Kohana_Security {
 	/**
 	 * Remove XSS from user input.
 	 *
+	 *     $str = Security::xss_clean($str);
+	 *
 	 * @author     Christian Stocker <chregu@bitflux.ch>
 	 * @copyright  (c) 2001-2006 Bitflux GmbH
-	 *
-	 * @param   mixed    string or array to sanitize
+	 * @param   mixed  string or array to sanitize
 	 * @return  string
+	 * @deprecated  since v3.0.5
 	 */
 	public static function xss_clean($str)
 	{
@@ -101,6 +103,8 @@ class Kohana_Security {
 	/**
 	 * Remove image tags from a string.
 	 *
+	 *     $str = Security::strip_image_tags($str);
+	 *
 	 * @param   string  string to sanitize
 	 * @return  string
 	 */
@@ -110,7 +114,9 @@ class Kohana_Security {
 	}
 
 	/**
-	 * Remove PHP tags from a string.
+	 * Encodes PHP tags in a string.
+	 *
+	 *     $str = Security::encode_php_tags($str);
 	 *
 	 * @param   string  string to sanitize
 	 * @return  string
