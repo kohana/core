@@ -37,6 +37,9 @@ foreach (Profiler::groups() as $group => $benchmarks)
 		}
 	}
 }
+//could these be moved to Profiler aswell i.e Profiler::$group_cols
+$group_cols = array('min', 'max', 'average', 'total');
+$application_cols = array('min', 'max', 'average', 'current');
 ?>
 
 <div class="kohana">
@@ -47,7 +50,7 @@ foreach (Profiler::groups() as $group => $benchmarks)
 		</tr>
 		<tr class="headers">
 			<th class="name"><?php echo __('Benchmark') ?></th>
-			<?php foreach (array('min', 'max', 'average', 'total') as $key): ?>
+			<?php foreach ($group_cols as $key): ?>
 			<th class="<?php echo $key ?>"><?php echo __(ucfirst($key)) ?></th>
 			<?php endforeach ?>
 		</tr>
@@ -55,7 +58,7 @@ foreach (Profiler::groups() as $group => $benchmarks)
 		<tr class="mark time">
 			<?php $stats = Profiler::stats($tokens) ?>
 			<th class="name" rowspan="2" scope="rowgroup"><?php echo $name, ' (', count($tokens), ')' ?></th>
-			<?php foreach (array('min', 'max', 'average', 'total') as $key): ?>
+			<?php foreach ($group_cols as $key): ?>
 			<td class="<?php echo $key ?>">
 				<div>
 					<div class="value"><?php echo number_format($stats[$key]['time'], 6) ?> <abbr title="seconds">s</abbr></div>
@@ -67,7 +70,7 @@ foreach (Profiler::groups() as $group => $benchmarks)
 			<?php endforeach ?>
 		</tr>
 		<tr class="mark memory">
-			<?php foreach (array('min', 'max', 'average', 'total') as $key): ?>
+			<?php foreach ($group_cols as $key): ?>
 			<td class="<?php echo $key ?>">
 				<div>
 					<div class="value"><?php echo number_format($stats[$key]['memory'] / 1024, 4) ?> <abbr title="kilobyte">kB</abbr></div>
@@ -86,12 +89,12 @@ foreach (Profiler::groups() as $group => $benchmarks)
 		<?php $stats = Profiler::application() ?>
 		<tr class="final mark time">
 			<th class="name" rowspan="2" scope="rowgroup"><?php echo __('Application Execution').' ('.$stats['count'].')' ?></th>
-			<?php foreach (array('min', 'max', 'average', 'current') as $key): ?>
+			<?php foreach ($application_cols as $key): ?>
 			<td class="<?php echo $key ?>"><?php echo number_format($stats[$key]['time'], 6) ?> <abbr title="seconds">s</abbr></td>
 			<?php endforeach ?>
 		</tr>
 		<tr class="final mark memory">
-			<?php foreach (array('min', 'max', 'average', 'current') as $key): ?>
+			<?php foreach ($application_cols as $key): ?>
 			<td class="<?php echo $key ?>"><?php echo number_format($stats[$key]['memory'] / 1024, 4) ?> <abbr title="kilobyte">kB</abbr></td>
 			<?php endforeach ?>
 		</tr>
