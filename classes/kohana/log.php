@@ -2,6 +2,8 @@
 /**
  * Message logging with observer-based log writing.
  *
+ * [!!] This class does not support extensions, only additional writers.
+ *
  * @package    Kohana
  * @category   Logging
  * @author     Kohana Team
@@ -26,6 +28,8 @@ class Kohana_Log {
 	/**
 	 * Get the singleton instance of this class and enable writing at shutdown.
 	 *
+	 *     $log = Kohana_Log::instance();
+	 *
 	 * @return  Kohana_Log
 	 */
 	public static function instance()
@@ -49,7 +53,10 @@ class Kohana_Log {
 	private $_writers = array();
 
 	/**
-	 * Attaches a log writer.
+	 * Attaches a log writer, and optionally limits the types of messages that
+	 * will be written by the writer.
+	 *
+	 *     $log->attach($writer);
 	 *
 	 * @param   object  Kohana_Log_Writer instance
 	 * @param   array   messages types to write
@@ -67,7 +74,9 @@ class Kohana_Log {
 	}
 
 	/**
-	 * Detaches a log writer.
+	 * Detaches a log writer. The same writer object must be used.
+	 *
+	 *     $log->detach($writer);
 	 *
 	 * @param   object  Kohana_Log_Writer instance
 	 * @return  $this
@@ -81,13 +90,19 @@ class Kohana_Log {
 	}
 
 	/**
-	 * Adds a message to the log.
+	 * Adds a message to the log. Replacement values must be passed in to be
+	 * replaced using [strtr](http://php.net/strtr).
+	 *
+	 *     $log->add('error', 'Could not locate user: :user', array(
+	 *         ':user' => $username,
+	 *     ));
 	 *
 	 * @param   string  type of message
 	 * @param   string  message body
+	 * @param   array   values to replace in the message
 	 * @return  $this
 	 */
-	public function add($type, $message)
+	public function add($type, $message, array $values = NULL)
 	{
 		if (self::$timezone)
 		{
@@ -101,6 +116,11 @@ class Kohana_Log {
 			$time = date(self::$timestamp);
 		}
 
+		if ($values)
+		{
+			// Insert the values into the message
+			$message = strtr($message, $values);
+		}
 
 		// Create a new message and timestamp it
 		$this->_messages[] = array
@@ -115,6 +135,8 @@ class Kohana_Log {
 
 	/**
 	 * Write and clear all of the messages.
+	 *
+	 *     $log->write();
 	 *
 	 * @return  void
 	 */

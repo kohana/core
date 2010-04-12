@@ -1,11 +1,12 @@
-<?php defined('SYSPATH') OR die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * HTML helper class.
+ * HTML helper class. Provides generic methods for generating various HTML
+ * tags and making output HTML safe.
  *
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2008 Kohana Team
+ * @copyright  (c) 2007-2010 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 class Kohana_HTML {
@@ -46,12 +47,15 @@ class Kohana_HTML {
 	);
 
 	/**
-	 * @var  boolean  automatically target external URLs to a new window
+	 * @var  boolean  automatically target external URLs to a new window?
 	 */
 	public static $windowed_urls = FALSE;
 
 	/**
-	 * Convert special characters to HTML entities.
+	 * Convert special characters to HTML entities. All untrusted content
+	 * should be passed through this method to prevent XSS injections.
+	 *
+	 *     echo HTML::chars($username);
 	 *
 	 * @param   string   string to convert
 	 * @param   boolean  encode existing entities
@@ -63,7 +67,11 @@ class Kohana_HTML {
 	}
 
 	/**
-	 * Convert all applicable characters to HTML entities.
+	 * Convert all applicable characters to HTML entities. All characters
+	 * that cannot be represented in HTML with the current character set
+	 * will be converted to entities.
+	 *
+	 *     echo HTML::entities($username);
 	 *
 	 * @param   string   string to convert
 	 * @param   boolean  encode existing entities
@@ -78,11 +86,16 @@ class Kohana_HTML {
 	 * Create HTML link anchors. Note that the title is not escaped, to allow
 	 * HTML elements within links (images, etc).
 	 *
+	 *     echo HTML::anchor('/user/profile', 'My Profile');
+	 *
 	 * @param   string  URL or URI string
 	 * @param   string  link text
 	 * @param   array   HTML anchor attributes
 	 * @param   string  use a specific protocol
 	 * @return  string
+	 * @uses    URL::base
+	 * @uses    URL::site
+	 * @uses    HTML::attributes
 	 */
 	public static function anchor($uri, $title = NULL, array $attributes = NULL, $protocol = NULL)
 	{
@@ -124,11 +137,15 @@ class Kohana_HTML {
 	 * Creates an HTML anchor to a file. Note that the title is not escaped,
 	 * to allow HTML elements within links (images, etc).
 	 *
+	 *     echo HTML::file_anchor('media/doc/user_guide.pdf', 'User Guide');
+	 *
 	 * @param   string  name of file to link to
 	 * @param   string  link text
 	 * @param   array   HTML anchor attributes
 	 * @param   string  non-default protocol, eg: ftp
 	 * @return  string
+	 * @uses    URL::base
+	 * @uses    HTML::attributes
 	 */
 	public static function file_anchor($file, $title = NULL, array $attributes = NULL, $protocol = NULL)
 	{
@@ -145,10 +162,16 @@ class Kohana_HTML {
 	}
 
 	/**
-	 * Generates an obfuscated version of a string.
+	 * Generates an obfuscated version of a string. Text passed through this
+	 * method is less likely to be read by web crawlers and robots, which can
+	 * be helpful for spam prevention, but can prevent legitimate robots from
+	 * reading your content.
+	 *
+	 *     echo HTML::obfuscate($text);
 	 *
 	 * @param   string  string to obfuscate
 	 * @return  string
+	 * @since   3.0.3
 	 */
 	public static function obfuscate($string)
 	{
@@ -170,10 +193,14 @@ class Kohana_HTML {
 	}
 
 	/**
-	 * Generates an obfuscated version of an email address.
+	 * Generates an obfuscated version of an email address. Helps prevent spam
+	 * robots from finding email addresses.
+	 *
+	 *     echo HTML::email($address);
 	 *
 	 * @param   string  email address
 	 * @return  string
+	 * @uses    HTML::obfuscate
 	 */
 	public static function email($email)
 	{
@@ -182,13 +209,17 @@ class Kohana_HTML {
 	}
 
 	/**
-	 * Creates an email anchor. Note that the title is not escaped, to allow
-	 * HTML elements within links (images, etc).
+	 * Creates an email (mailto:) anchor. Note that the title is not escaped,
+	 * to allow HTML elements within links (images, etc).
+	 *
+	 *     echo HTML::mailto($address);
 	 *
 	 * @param   string  email address to send to
 	 * @param   string  link text
 	 * @param   array   HTML anchor attributes
 	 * @return  string
+	 * @uses    HTML::email
+	 * @uses    HTML::attributes
 	 */
 	public static function mailto($email, $title = NULL, array $attributes = NULL)
 	{
@@ -205,12 +236,16 @@ class Kohana_HTML {
 	}
 
 	/**
-	 * Creates a style sheet link.
+	 * Creates a style sheet link element.
+	 *
+	 *     echo HTML::style('media/css/screen.css');
 	 *
 	 * @param   string  file name
 	 * @param   array   default attributes
 	 * @param   boolean  include the index page
 	 * @return  string
+	 * @uses    URL::base
+	 * @uses    HTML::attributes
 	 */
 	public static function style($file, array $attributes = NULL, $index = FALSE)
 	{
@@ -235,10 +270,14 @@ class Kohana_HTML {
 	/**
 	 * Creates a script link.
 	 *
+	 *     echo HTML::script('media/js/jquery.min.js');
+	 *
 	 * @param   string   file name
 	 * @param   array    default attributes
 	 * @param   boolean  include the index page
 	 * @return  string
+	 * @uses    URL::base
+	 * @uses    HTML::attributes
 	 */
 	public static function script($file, array $attributes = NULL, $index = FALSE)
 	{
@@ -260,9 +299,13 @@ class Kohana_HTML {
 	/**
 	 * Creates a image link.
 	 *
+	 *     echo HTML::image('media/img/logo.png', array('alt' => 'My Company'));
+	 *
 	 * @param   string   file name
 	 * @param   array    default attributes
 	 * @return  string
+	 * @uses    URL::base
+	 * @uses    HTML::attributes
 	 */
 	public static function image($file, array $attributes = NULL, $index = FALSE)
 	{
@@ -280,6 +323,9 @@ class Kohana_HTML {
 
 	/**
 	 * Compiles an array of HTML attributes into an attribute string.
+	 * Attributes will be sorted using HTML::$attribute_order for consistency.
+	 *
+	 *     echo '<div'.HTML::attributes($attrs).'>'.$content.'</div>';
 	 *
 	 * @param   array   attribute list
 	 * @return  string

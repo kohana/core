@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Model base class.
+ * Model base class. All models should extend this class.
  *
  * @package    Kohana
  * @category   Models
@@ -11,7 +11,11 @@
 abstract class Kohana_Model {
 
 	/**
-	 * Create a new model instance.
+	 * Create a new model instance. A [Database] instance or configuration
+	 * group name can be passed to the model. If no database is defined, the
+	 * "default" database group will be used.
+	 *
+	 *     $model = Model::factory($name);
 	 *
 	 * @param   string   model name
 	 * @param   mixed    Database instance object or string
@@ -30,6 +34,8 @@ abstract class Kohana_Model {
 
 	/**
 	 * Loads the database.
+	 *
+	 *     $model = new Foo_Model($db);
 	 *
 	 * @param   mixed  Database instance object or string
 	 * @return  void

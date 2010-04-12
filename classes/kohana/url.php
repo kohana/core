@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct access allowed.');
 /**
  * URL helper class.
  *
@@ -13,10 +13,23 @@ class Kohana_URL {
 	/**
 	 * Gets the base URL to the application. To include the current protocol,
 	 * use TRUE. To specify a protocol, provide the protocol as a string.
+	 * If a protocol is used, a complete URL will be generated using the
+	 * `$_SERVER['HTTP_HOST']` variable.
 	 *
-	 * @param   boolean         add index file
-	 * @param   boolean|string  add protocol and domain
+	 *     // Absolute relative, no host or protocol
+	 *     echo URL::base();
+	 *
+	 *     // Complete relative, with host and protocol
+	 *     echo URL::base(TRUE, TRUE);
+	 *
+	 *     // Complete relative, with host and "https" protocol
+	 *     echo URL::base(TRUE, 'https');
+	 *
+	 * @param   boolean  add index file to URL?
+	 * @param   mixed    protocol string or boolean, add protocol and domain?
 	 * @return  string
+	 * @uses    Kohana::$index_file
+	 * @uses    Request::$protocol
 	 */
 	public static function base($index = FALSE, $protocol = FALSE)
 	{
@@ -53,9 +66,12 @@ class Kohana_URL {
 	/**
 	 * Fetches an absolute site URL based on a URI segment.
 	 *
-	 * @param   string          site URI to convert
-	 * @param   boolean|string  non-default protocol
+	 *     echo URL::site('foo/bar');
+	 *
+	 * @param   string  site URI to convert
+	 * @param   mixed   protocol string or boolean, add protocol and domain?
 	 * @return  string
+	 * @uses    URL::base
 	 */
 	public static function site($uri = '', $protocol = FALSE)
 	{
@@ -81,6 +97,12 @@ class Kohana_URL {
 	/**
 	 * Merges the current GET parameters with an array of new or overloaded
 	 * parameters and returns the resulting query string.
+	 *
+	 *     // Returns "?sort=title&limit=10" combined with any existing GET values
+	 *     $query = URL::query(array('sort' => 'title', 'limit' => 10));
+	 *
+	 * Typically you would use this when you are sorting query results,
+	 * or something similar.
 	 *
 	 * @param   array   array of GET parameters
 	 * @return  string
@@ -110,10 +132,13 @@ class Kohana_URL {
 	/**
 	 * Convert a phrase to a URL-safe title.
 	 *
+	 *     echo URL::title('My Blog Post'); // "my-blog-post"
+	 *
 	 * @param   string   phrase to convert
 	 * @param   string   word separator (any single character)
-	 * @param   boolean  transliterate to ASCII
+	 * @param   boolean  transliterate to ASCII?
 	 * @return  string
+	 * @uses    UTF8::transliterate_to_ascii
 	 */
 	public static function title($title, $separator = '-', $ascii_only = FALSE)
 	{

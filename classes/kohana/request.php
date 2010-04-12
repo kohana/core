@@ -2,8 +2,8 @@
 /**
  * Request and response wrapper.
  * 
- * @todo   Create a new Response object
- * @todo   Isolate request variables from each other
+ * Request and response wrapper. Uses the [Route] class to determine what
+ * [Controller] to send the request to.
  *
  * @package    Kohana
  * @category   Base
@@ -36,6 +36,8 @@ class Kohana_Request {
 	/**
 	 * Main request singleton instance. If no URI is provided, the URI will
 	 * be automatically detected using PATH_INFO, REQUEST_URI, or PHP_SELF.
+	 *
+	 *     $request = Request::instance();
 	 *
 	 * @param   string   URI of the request
 	 * @return  Request
@@ -204,7 +206,11 @@ class Kohana_Request {
 	}
 
 	/**
-	 * Creates a new request object for the given URI.
+	 * Creates a new request object for the given URI. This differs from
+	 * [Request::instance] in that it does not automatically detect the URI
+	 * and should only be used for creating HMVC requests.
+	 *
+	 *     $request = Request::factory($uri);
 	 *
 	 * @param   string  URI of the request
 	 * @return  Request
@@ -217,9 +223,14 @@ class Kohana_Request {
 	/**
 	 * Returns information about the client user agent.
 	 *
+	 *     // Returns "Chrome" when using Google Chrome
+	 *     $browser = Request::user_agent('browser');
+	 *
 	 * @param   string  value to return: browser, version, robot, mobile, platform
 	 * @return  string  requested information
 	 * @return  FALSE   no information found
+	 * @uses    Kohana::config
+	 * @uses    Request::$user_agent
 	 */
 	public static function user_agent($value)
 	{
@@ -281,9 +292,12 @@ class Kohana_Request {
 	 * Returns the accepted content types. If a specific type is defined,
 	 * the quality of that type will be returned.
 	 *
+	 *     $types = Request::accept_type();
+	 *
 	 * @param   string  content MIME type
 	 * @return  float   when checking a specific type
 	 * @return  array
+	 * @uses    Request::_parse_accept
 	 */
 	public static function accept_type($type = NULL)
 	{
@@ -309,9 +323,12 @@ class Kohana_Request {
 	 * the quality of that language will be returned. If the language is not
 	 * accepted, FALSE will be returned.
 	 *
+	 *     $langs = Request::accept_lang();
+	 *
 	 * @param   string  language code
 	 * @return  float   when checking a specific language
 	 * @return  array
+	 * @uses    Request::_parse_accept
 	 */
 	public static function accept_lang($lang = NULL)
 	{
@@ -337,9 +354,12 @@ class Kohana_Request {
 	 * the quality of that encoding will be returned. If the encoding is not
 	 * accepted, FALSE will be returned.
 	 *
+	 *     $encodings = Request::accept_encoding();
+	 *
 	 * @param   string  encoding type
 	 * @return  float   when checking a specific encoding
 	 * @return  array
+	 * @uses    Request::_parse_accept
 	 */
 	public static function accept_encoding($type = NULL)
 	{
@@ -364,6 +384,8 @@ class Kohana_Request {
 	/**
 	 * Parses an accept header and returns an array (type => quality) of the
 	 * accepted types, ordered by quality.
+	 *
+	 *     $accept = Request::_parse_accept($header, $defaults);
 	 *
 	 * @param   string   header to parse
 	 * @param   array    default values
@@ -521,13 +543,17 @@ class Kohana_Request {
 	protected $_params;
 
 	/**
-	 * Creates a new request object for the given URI.
-	 * Throws an exception when no route can be found for the URI.
+	 * Creates a new request object for the given URI. New requests should be
+	 * created using the [Request::instance] or [Request::factory] methods.
 	 *
-	 * @throws  Kohana_Request_Exception
+	 *     $request = new Request($uri);
+	 *
 	 * @param   string  URI of the request
 	 * @param   config  settings for this request object
 	 * @return  void
+	 * @throws  Kohana_Request_Exception
+	 * @uses    Route::all
+	 * @uses    Route::matches
 	 */
 	public function __construct($uri, array $config = array())
 	{
@@ -602,6 +628,8 @@ class Kohana_Request {
 	/**
 	 * Returns the response as the string representation of a request.
 	 *
+	 *     echo $request;
+	 *
 	 * @return  string
 	 */
 	public function __toString()
@@ -612,8 +640,11 @@ class Kohana_Request {
 	/**
 	 * Generates a relative URI for the current route.
 	 *
+	 *     $request->uri($params);
+	 *
 	 * @param   array   additional route parameters
 	 * @return  string
+	 * @uses    Route::uri
 	 */
 	public function uri(array $params = NULL)
 	{
@@ -644,6 +675,8 @@ class Kohana_Request {
 	/**
 	 * Retrieves a value from the route parameters.
 	 *
+	 *     $id = $request->param('id');
+	 *
 	 * @param   string   key of the value
 	 * @param   mixed    default value if the key is not set
 	 * @return  mixed
@@ -663,8 +696,10 @@ class Kohana_Request {
 	 * Redirects as the request response.
 	 *
 	 * @param   string   redirect location
-	 * @param   integer  status code
+	 * @param   integer  status code: 301, 302, etc
 	 * @return  void
+	 * @uses    URL::site
+	 * @uses    Request::send_headers
 	 */
 	public function redirect($url, $code = 302)
 	{
@@ -690,17 +725,24 @@ class Kohana_Request {
 	}
 
 	/**
-	 * Processes the request, executing the controller. Before the routed action
-	 * is run, the before() method will be called, which allows the controller
-	 * to overload the action based on the request parameters. After the action
-	 * is run, the after() method will be called, for post-processing.
+	 * Processes the request, executing the controller action that handles this
+	 * request, determined by the [Route].
+	 *
+	 * 1. Before the controller action is called, the [Controller::before] method
+	 * will be called.
+	 * 2. Next the controller action will be called.
+	 * 3. After the controller action is called, the [Controller::after] method
+	 * will be called.
 	 *
 	 * By default, the output from the controller is captured and returned, and
 	 * no headers are sent.
 	 *
-	 * @param   array    Additional headers to send with the request
-	 * @param   string   The HTTP method to use
+	 *     $request->execute();
+	 *
 	 * @return  $this
+	 * @throws  Kohana_Exception
+	 * @uses    [Kohana::$profiling]
+	 * @uses    [Profiler]
 	 */
 	public function execute()
 	{

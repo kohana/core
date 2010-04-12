@@ -19,11 +19,15 @@ class Kohana_Date {
 	const MINUTE = 60;
 
 	/**
-	 * Returns the offset (in seconds) between two time zones.
+	 * Returns the offset (in seconds) between two time zones. When you display
+	 * dates to users in different time zones, you will probably need this.
+	 *
+	 *     $seconds = Date::offset('America/Chicago', 'GMT');
 	 *
 	 * @see     http://php.net/timezones
-	 * @param   string  timezone that to find the offset of
-	 * @param   string  timezone used as the baseline
+	 * @see     http://php.net/datetime
+	 * @param   string   timezone that to find the offset of
+	 * @param   string   timezone used as the baseline
 	 * @return  integer
 	 */
 	public static function offset($remote, $local = NULL)
@@ -58,7 +62,10 @@ class Kohana_Date {
 	}
 
 	/**
-	 * Number of seconds in a minute, incrementing by a step.
+	 * Number of seconds in a minute, incrementing by a step. Typically used as
+	 * a shortcut for generating a list that can used in a form.
+	 *
+	 *     $seconds = Date::seconds(); // 01, 02, 03, ..., 58, 59, 60
 	 *
 	 * @param   integer  amount to increment each step by, 1 to 30
 	 * @param   integer  start value
@@ -81,8 +88,12 @@ class Kohana_Date {
 	}
 
 	/**
-	 * Number of minutes in an hour, incrementing by a step.
+	 * Number of minutes in an hour, incrementing by a step. Typically used as
+	 * a shortcut for generating a list that can be used in a form.
 	 *
+	 *     $minutes = Date::minutes(); // 05, 10, 15, ..., 50, 55, 60
+	 *
+	 * @uses    Date::seconds
 	 * @param   integer  amount to increment each step by, 1 to 30
 	 * @return  array    A mirrored (foo => foo) array from 1-60.
 	 */
@@ -96,7 +107,10 @@ class Kohana_Date {
 	}
 
 	/**
-	 * Number of hours in a day.
+	 * Number of hours in a day. Typically used as a shortcut for generating a
+	 * list that can be used in a form.
+	 *
+	 *     $hours = Date::hours(); // 01, 02, 03, ..., 10, 11, 12
 	 *
 	 * @param   integer  amount to increment each step by
 	 * @param   boolean  use 24-hour time
@@ -130,7 +144,10 @@ class Kohana_Date {
 	}
 
 	/**
-	 * Returns AM or PM, based on a given hour.
+	 * Returns AM or PM, based on a given hour (in 24 hour format).
+	 *
+	 *     $type = Date::ampm(12); // PM
+	 *     $type = Date::ampm(1);  // AM
 	 *
 	 * @param   integer  number of the hour
 	 * @return  string
@@ -145,6 +162,8 @@ class Kohana_Date {
 
 	/**
 	 * Adjusts a non-24-hour number into a 24-hour number.
+	 *
+	 *     $hour = Date::adjust(3, 'pm'); // 15
 	 *
 	 * @param   integer  hour to adjust
 	 * @param   string   AM or PM
@@ -171,7 +190,10 @@ class Kohana_Date {
 	}
 
 	/**
-	 * Number of days in month.
+	 * Number of days in a given month and year. Typically used as a shortcut
+	 * for generating a list that can be used in a form.
+	 *
+	 *     Date::days(4, 2010); // 1, 2, 3, ..., 28, 29, 30
 	 *
 	 * @param   integer  number of month
 	 * @param   integer  number of year to check month, defaults to the current year
@@ -209,8 +231,12 @@ class Kohana_Date {
 	}
 
 	/**
-	 * Number of months in a year
+	 * Number of months in a year. Typically used as a shortcut for generating
+	 * a list that can be used in a form.
 	 *
+	 *     Date::months(); // 01, 02, 03, ..., 10, 11, 12
+	 *
+	 * @uses    Date::hours
 	 * @return  array  A mirrored (foo => foo) array from 1-12.
 	 */
 	public static function months()
@@ -219,11 +245,14 @@ class Kohana_Date {
 	}
 
 	/**
-	 * Returns an array of years between a starting and ending year.
-	 * Uses the current year +/- 5 as the max/min.
+	 * Returns an array of years between a starting and ending year. By default,
+	 * the the current year - 5 and current year + 5 will be used. Typically used
+	 * as a shortcut for generating a list that can be used in a form.
 	 *
-	 * @param   integer  starting year
-	 * @param   integer  ending year
+	 *     $years = Date::years(2000, 2010); // 2000, 2001, ..., 2009, 2010
+	 *
+	 * @param   integer  starting year (default is current year - 5)
+	 * @param   integer  ending year (default is current year + 5)
 	 * @return  array
 	 */
 	public static function years($start = FALSE, $end = FALSE)
@@ -234,10 +263,7 @@ class Kohana_Date {
 
 		$years = array();
 
-		// Add one, so that "less than" works
-		$end += 1;
-
-		for ($i = $start; $i < $end; $i++)
+		for ($i = $start; $i <= $end; $i++)
 		{
 			$years[$i] = (string) $i;
 		}
@@ -247,13 +273,19 @@ class Kohana_Date {
 
 	/**
 	 * Returns time difference between two timestamps, in human readable format.
+	 * If the second timestamp is not given, the current time will be used.
+	 * Also consider using [Date::fuzzy_span] when displaying a span.
 	 *
-	 * @param   integer       timestamp
-	 * @param   integer       timestamp, defaults to the current time
-	 * @param   string        formatting string
-	 * @return  string|array
+	 *     $span = Date::span(60, 182, 'minutes,seconds'); // array('minutes' => 2, 'seconds' => 2)
+	 *     $span = Date::span(60, 182, 'minutes'); // 2
+	 *
+	 * @param   integer  timestamp to find the span of
+	 * @param   integer  timestamp to use as the baseline
+	 * @param   string   formatting string
+	 * @return  string   when only a single output is requested
+	 * @return  array    associative list of all outputs requested
 	 */
-	public static function span($time1, $time2 = NULL, $output = 'years,months,weeks,days,hours,minutes,seconds')
+	public static function span($remote, $local = NULL, $output = 'years,months,weeks,days,hours,minutes,seconds')
 	{
 		// Array with the output formats
 		$output = preg_split('/[^a-z]+/', strtolower((string) $output));
@@ -262,85 +294,77 @@ class Kohana_Date {
 		if (empty($output))
 			return FALSE;
 
+		// Convert the list of outputs to an associative array
+		$output = array_combine($output, array_fill(0, count($output), 0));
+
 		// Make the output values into keys
 		extract(array_flip($output), EXTR_SKIP);
 
-		// Default values
-		$time1 = max(0, (int) $time1);
-		$time2 = empty($time2) ? time() : max(0, (int) $time2);
+		if ($local === NULL)
+		{
+			// Calculate the span from the current time
+			$local = time();
+		}
 
 		// Calculate timespan (seconds)
-		$timespan = abs($time1 - $time2);
+		$timespan = abs($remote - $local);
 
-		if (isset($years))
+		if (isset($output['years']))
 		{
-			$timespan -= Date::YEAR * ($years = (int) floor($timespan / Date::YEAR));
+			$timespan -= Date::YEAR * ($output['years'] = (int) floor($timespan / Date::YEAR));
 		}
 
-		if (isset($months))
+		if (isset($output['months']))
 		{
-			$timespan -= Date::MONTH * ($months = (int) floor($timespan / Date::MONTH));
+			$timespan -= Date::MONTH * ($output['months'] = (int) floor($timespan / Date::MONTH));
 		}
 
-		if (isset($weeks))
+		if (isset($output['weeks']))
 		{
-			$timespan -= Date::WEEK * ($weeks = (int) floor($timespan / Date::WEEK));
+			$timespan -= Date::WEEK * ($output['weeks'] = (int) floor($timespan / Date::WEEK));
 		}
 
-		if (isset($days))
+		if (isset($output['days']))
 		{
-			$timespan -= Date::DAY * ($days = (int) floor($timespan / Date::DAY));
+			$timespan -= Date::DAY * ($output['days'] = (int) floor($timespan / Date::DAY));
 		}
 
-		if (isset($hours))
+		if (isset($output['hours']))
 		{
-			$timespan -= Date::HOUR * ($hours = (int) floor($timespan / Date::HOUR));
+			$timespan -= Date::HOUR * ($output['hours'] = (int) floor($timespan / Date::HOUR));
 		}
 
-		if (isset($minutes))
+		if (isset($output['minutes']))
 		{
-			$timespan -= Date::MINUTE * ($minutes = (int) floor($timespan / Date::MINUTE));
+			$timespan -= Date::MINUTE * ($output['minutes'] = (int) floor($timespan / Date::MINUTE));
 		}
 
 		// Seconds ago, 1
-		if (isset($seconds))
+		if (isset($output['seconds']))
 		{
-			$seconds = $timespan;
+			$output['seconds'] = $timespan;
 		}
 
-		// Remove the variables that cannot be accessed
-		unset($timespan, $time1, $time2);
-
-		// Deny access to these variables
-		$deny = array_flip(array('deny', 'key', 'difference', 'output'));
-
-		// Return the difference
-		$difference = array();
-		foreach ($output as $key)
+		if (count($output) === 1)
 		{
-			if (isset($$key) AND ! isset($deny[$key]))
-			{
-				// Add requested key to the output
-				$difference[$key] = $$key;
-			}
+			// Only a single output was requested, return it
+			return array_pop($output);
 		}
-
-		// Invalid output formats string
-		if (empty($difference))
-			return FALSE;
-
-		// If only one output format was asked, don't put it in an array
-		if (count($difference) === 1)
-			return current($difference);
 
 		// Return array
-		return $difference;
+		return $output;
 	}
 
 	/**
 	 * Returns the difference between a time and now in a "fuzzy" way.
+	 * Note that unlike [Date::span], the "local" timestamp will always be the
+	 * current time. Displaying a fuzzy time instead of a date is usually
+	 * faster to read and understand.
 	 *
-	 * @param   integer  UNIX timestamp
+	 *     $span = Date::fuzzy_span(time() - 10); // "moments ago"
+	 *     $span = Date::fuzzy_span(time() + 20); // "in moments"
+	 *
+	 * @param   integer  "remote" timestamp
 	 * @return  string
 	 */
 	public static function fuzzy_span($timestamp)
@@ -442,7 +466,11 @@ class Kohana_Date {
 	}
 
 	/**
-	 * Converts a UNIX timestamp to DOS format.
+	 * Converts a UNIX timestamp to DOS format. There are very few cases where
+	 * this is needed, but some binary formats use it (eg: zip files.)
+	 * Converting the other direction is done using {@link Date::dos2unix}.
+	 *
+	 *     $dos = Date::unix2dos($unix);
 	 *
 	 * @param   integer  UNIX timestamp
 	 * @return  integer
@@ -466,7 +494,11 @@ class Kohana_Date {
 	}
 
 	/**
-	 * Converts a DOS timestamp to UNIX format.
+	 * Converts a DOS timestamp to UNIX format.There are very few cases where
+	 * this is needed, but some binary formats use it (eg: zip files.)
+	 * Converting the other direction is done using {@link Date::unix2dos}.
+	 *
+	 *     $unix = Date::dos2unix($dos);
 	 *
 	 * @param   integer  DOS timestamp
 	 * @return  integer

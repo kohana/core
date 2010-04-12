@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct access allowed.');
 
 return array(
 
@@ -12,7 +12,6 @@ return array(
 		'fish',
 		'fuel',
 		'furniture',
-		'food',
 		'heat',
 		'honey',
 		'homework',

@@ -1,6 +1,18 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Abstract controller class.
+ * Abstract controller class. Controllers should only be created using a [Request].
+ *
+ * Controllers methods will be automatically called in the following order by
+ * the request:
+ *
+ *     $controller = new Controller_Foo($request);
+ *     $controller->before();
+ *     $controller->action_bar();
+ *     $controller->after();
+ *
+ * The controller action should add the output it creates to
+ * `$this->request->response`, typically in the form of a [View], during the
+ * "action" part of execution.
  *
  * @package    Kohana
  * @category   Controller
@@ -37,7 +49,8 @@ abstract class Kohana_Controller {
 	}
 
 	/**
-	 * Automatically executed before the controller action.
+	 * Automatically executed before the controller action. Can be used to set
+	 * class properties, do authorization checks, and execute other custom code.
 	 *
 	 * @return  void
 	 */
@@ -47,7 +60,9 @@ abstract class Kohana_Controller {
 	}
 
 	/**
-	 * Automatically executed after the controller action.
+	 * Automatically executed after the controller action. Can be used to apply
+	 * transformation to the request response, add extra output, and execute
+	 * other custom code.
 	 *
 	 * @return  void
 	 */

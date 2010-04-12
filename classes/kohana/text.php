@@ -1,6 +1,6 @@
-<?php defined('SYSPATH') OR die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Text helper class.
+ * Text helper class. Provides simple methods for working with text.
  *
  * @package    Kohana
  * @category   Helpers
@@ -12,6 +12,8 @@ class Kohana_Text {
 
 	/**
 	 * Limits a phrase to a given number of words.
+	 *
+	 *     $text = Text::limit_words($text);
 	 *
 	 * @param   string   phrase to limit words of
 	 * @param   integer  number of words to limit to
@@ -39,11 +41,14 @@ class Kohana_Text {
 	/**
 	 * Limits a phrase to a given number of characters.
 	 *
+	 *     $text = Text::limit_chars($text);
+	 *
 	 * @param   string   phrase to limit characters of
 	 * @param   integer  number of characters to limit to
 	 * @param   string   end character or entity
 	 * @param   boolean  enable or disable the preservation of words while limiting
 	 * @return  string
+	 * @uses    UTF8::strlen
 	 */
 	public static function limit_chars($str, $limit = 100, $end_char = NULL, $preserve_words = FALSE)
 	{
@@ -70,6 +75,13 @@ class Kohana_Text {
 	/**
 	 * Alternates between two or more strings.
 	 *
+	 *     echo Text::alternate('one', 'two'); // "one"
+	 *     echo Text::alternate('one', 'two'); // "two"
+	 *     echo Text::alternate('one', 'two'); // "one"
+	 *
+	 * Note that using multiple iterations of different strings may produce
+	 * unexpected results.
+	 *
 	 * @param   string  strings to alternate between
 	 * @return  string
 	 */
@@ -90,16 +102,30 @@ class Kohana_Text {
 	/**
 	 * Generates a random string of a given type and length.
 	 *
+	 *
+	 *     $str = Text::random(); // 8 character random string
+	 *
+	 * The following types are supported:
+	 *
+	 * alnum
+	 * :  Upper and lower case a-z, 0-9
+	 *
+	 * alpha
+	 * :  Upper and lower case a-z
+	 *
+	 * hexdec
+	 * :  Hexadecimal characters a-f, 0-9
+	 *
+	 * distinct
+	 * :  Uppercase characters and numbers that cannot be confused
+	 *
+	 * You can also create a custom type by providing the "pool" of characters
+	 * as the type.
+	 *
 	 * @param   string   a type of pool, or a string of characters to use as the pool
 	 * @param   integer  length of string to return
 	 * @return  string
-	 *
-	 * @tutorial  alnum     alpha-numeric characters
-	 * @tutorial  alpha     alphabetical characters
-	 * @tutorial  hexdec    hexadecimal characters, 0-9 plus a-f
-	 * @tutorial  numeric   digit characters, 0-9
-	 * @tutorial  nozero    digit characters, 1-9
-	 * @tutorial  distinct  clearly distinct alpha-numeric characters
+	 * @uses    UTF8::split
 	 */
 	public static function random($type = 'alnum', $length = 8)
 	{
@@ -165,6 +191,8 @@ class Kohana_Text {
 	/**
 	 * Reduces multiple slashes in a string to single slashes.
 	 *
+	 *     $str = Text::reduce_slashes('foo//bar/baz'); // "foo/bar/baz"
+	 *
 	 * @param   string  string to reduce slashes of
 	 * @return  string
 	 */
@@ -176,11 +204,17 @@ class Kohana_Text {
 	/**
 	 * Replaces the given words with a string.
 	 *
+	 *     // Displays "What the #####, man!"
+	 *     echo Text::censor('What the frick, man!', array(
+	 *         'frick' => '#####',
+	 *     ));
+	 *
 	 * @param   string   phrase to replace words in
 	 * @param   array    words to replace
 	 * @param   string   replacement string
 	 * @param   boolean  replace words across word boundries (space, period, etc)
 	 * @return  string
+	 * @uses    UTF8::strlen
 	 */
 	public static function censor($str, $badwords, $replacement = '#', $replace_partial_words = TRUE)
 	{
@@ -211,6 +245,8 @@ class Kohana_Text {
 	/**
 	 * Finds the text that is similar between a set of words.
 	 *
+	 *     $match = Text::similar(array('fred', 'fran', 'free'); // "fr"
+	 *
 	 * @param   array   words to find similar text of
 	 * @return  string
 	 */
@@ -234,10 +270,15 @@ class Kohana_Text {
 	}
 
 	/**
-	 * Converts text email addresses and anchors into links.
+	 * Converts text email addresses and anchors into links. Existing links
+	 * will not be altered.
+	 *
+	 *     echo Text::auto_link($text);
 	 *
 	 * @param   string   text to auto link
 	 * @return  string
+	 * @uses    Text::auto_link_urls
+	 * @uses    Text::auto_link_emails
 	 */
 	public static function auto_link($text)
 	{
@@ -246,10 +287,13 @@ class Kohana_Text {
 	}
 
 	/**
-	 * Converts text anchors into links.
+	 * Converts text anchors into links. Existing links will not be altered.
+	 *
+	 *     echo Text::auto_link_urls($text);
 	 *
 	 * @param   string   text to auto link
 	 * @return  string
+	 * @uses    HTML::anchor
 	 */
 	public static function auto_link_urls($text)
 	{
@@ -277,10 +321,14 @@ class Kohana_Text {
 	}
 
 	/**
-	 * Converts text email addresses into links.
+	 * Converts text email addresses into links. Existing links will not
+	 * be altered.
+	 *
+	 *     echo Text::auto_link_emails($text);
 	 *
 	 * @param   string   text to auto link
 	 * @return  string
+	 * @uses    HTML::mailto
 	 */
 	public static function auto_link_emails($text)
 	{
@@ -300,7 +348,12 @@ class Kohana_Text {
 	}
 
 	/**
-	 * Automatically applies <p> and <br /> markup to text. Basically nl2br() on steroids.
+	 * Automatically applies "p" and "br" markup to text.
+	 * Basically [nl2br](http://php.net/nl2br) on steroids.
+	 *
+	 *     echo Text::auto_p($text);
+	 *
+	 * [!!] This method is not foolproof since it uses regex to parse HTML.
 	 *
 	 * @param   string   subject
 	 * @param   boolean  convert single linebreaks to <br />
@@ -352,10 +405,11 @@ class Kohana_Text {
 	}
 
 	/**
-	 * Returns human readable sizes.
-	 * @see  Based on original functions written by:
-	 * @see  Aidan Lister: http://aidanlister.com/repos/v/function.size_readable.php
-	 * @see  Quentin Zervaas: http://www.phpriot.com/d/code/strings/filesize-format/
+	 * Returns human readable sizes. Based on original functions written by
+	 * [Aidan Lister](http://aidanlister.com/repos/v/function.size_readable.php)
+	 * and [Quentin Zervaas](http://www.phpriot.com/d/code/strings/filesize-format/).
+	 *
+	 *     echo Text::bytes(filesize($file));
 	 *
 	 * @param   integer  size in bytes
 	 * @param   string   a definitive unit
@@ -391,10 +445,12 @@ class Kohana_Text {
 	}
 
 	/**
-	 * Prevents widow words by inserting a non-breaking space between the last two words.
-	 * @see  http://www.shauninman.com/archive/2006/08/22/widont_wordpress_plugin
+	 * Prevents [widow words](http://www.shauninman.com/archive/2006/08/22/widont_wordpress_plugin)
+	 * by inserting a non-breaking space between the last two words.
 	 *
-	 * @param   string  string to remove widows from
+	 *     echo Text::widont($text);
+	 *
+	 * @param   string  text to remove widows from
 	 * @return  string
 	 */
 	public static function widont($str)

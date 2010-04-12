@@ -1,8 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Provides remote server communications options using [curl][ref-curl].
- *
- * [ref-curl]: http://php.net/curl
+ * Provides remote server communications options using [curl](http://php.net/curl).
  *
  * @package    Kohana
  * @category   Helpers
@@ -39,11 +37,21 @@ class Kohana_Remote {
 
 	/**
 	 * Returns the output of a remote URL.
+	 * Any [curl option](http://php.net/curl_setopt) may be used.
 	 *
-	 * @throws  Kohana_Exception
+	 *     // Do a simple GET request
+	 *     $data = Remote::get($url);
+	 *
+	 *     // Do a POST request
+	 *     $data = Remote::get($url, array(
+	 *         CURLOPT_POST       => TRUE,
+	 *         CURLOPT_POSTFIELDS => http_build_query($array),
+	 *     ));
+	 *
 	 * @param   string   remote URL
 	 * @param   array    curl options
-	 * @return  array
+	 * @return  string
+	 * @throws  Kohana_Exception
 	 */
 	public static function get($url, array $options = NULL)
 	{
@@ -98,7 +106,9 @@ class Kohana_Remote {
 	}
 
 	/**
-	 * Returns the status code for a URL.
+	 * Returns the status code (200, 500, etc) for a URL.
+	 *
+	 *     $status = Remote::status($url);
 	 *
 	 * @param   string  URL to check
 	 * @param   array   HTTP Headers to include
