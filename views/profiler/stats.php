@@ -47,10 +47,9 @@ foreach (Profiler::groups() as $group => $benchmarks)
 		</tr>
 		<tr class="headers">
 			<th class="name"><?php echo __('Benchmark') ?></th>
-			<th class="min"><?php echo __('Min') ?></th>
-			<th class="max"><?php echo __('Max') ?></th>
-			<th class="average"><?php echo __('Average') ?></th>
-			<th class="total"><?php echo __('Total') ?></th>
+			<?php foreach (array('min', 'max', 'average', 'total') as $key): ?>
+			<th class="<?php echo $key ?>"><?php echo __(ucfirst($key)) ?></th>
+			<?php endforeach ?>
 		</tr>
 		<?php foreach ($benchmarks as $name => $tokens): ?>
 		<tr class="mark time">
