@@ -458,6 +458,26 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
+	 * Copies the current filter/rule/callback to a new array.
+	 *
+	 *     $copy = $array->copy($new_data);
+	 *
+	 * @param   array   new data set
+	 * @return  Validation
+	 * @since   3.0.5
+	 */
+	public function copy(array $array)
+	{
+		// Create a copy of the current validation set
+		$copy = clone $this;
+
+		// Replace the data set
+		$copy->exchangeArray($array);
+
+		return $copy;
+	}
+
+	/**
 	 * Returns the array representation of the current object.
 	 *
 	 * @return  array
