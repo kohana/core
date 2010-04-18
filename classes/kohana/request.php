@@ -693,6 +693,39 @@ class Kohana_Request {
 	}
 
 	/**
+	 * Get/Set value(s) to/from the request header
+	 *
+	 * @param   string|array key of the header to get or set
+	 * @param   string   value to set to the key
+	 * @return  mixed
+	 */
+	public function header($key = NULL, $value = NULL)
+	{
+		if ($key === NULL)
+		{
+			// Return the full array
+			return $this->headers;
+		}
+
+		if ($key !== NULL and $value === NULL)
+		{
+			// Return just the header value if present
+			return isset($this->headers[$key]) ? $this->headers[$key] : NULL;
+		}
+
+		if (is_array($key))
+		{
+			// Set the headers array to the request and return this
+			$this->headers = $key;
+			return $this;
+		}
+
+		// Set the value to the header key and return this
+		$this->headers[$key] = $value;
+		return $this;
+	}
+
+	/**
 	 * Redirects as the request response.
 	 *
 	 * @param   string   redirect location
@@ -739,7 +772,7 @@ class Kohana_Request {
 	 *
 	 *     $request->execute();
 	 *
-	 * @return  $this
+	 * @return  Kohana_Response
 	 * @throws  Kohana_Exception
 	 * @uses    [Kohana::$profiling]
 	 * @uses    [Profiler]
@@ -901,7 +934,7 @@ class Kohana_Request {
 	 */
 	protected function _deinit_environment()
 	{
-		// Exit if now environment is available
+		// Exit now if environment is initialised already
 		if ( ! $this->_previous_environment)
 			return;
 
@@ -927,8 +960,7 @@ class Kohana_Request {
 		static $external_executions;
 
 		// Start benchmarking if required
-		if (Kohana::$profiling === TRUE)
-			$benchmark = Profiler::start('Requests', $this->uri);
+		$benchmark = (Kohana::$profiling === TRUE) ? Profiler::start('Requests', $this->uri) : NULL;
 
 		// Encode the request components
 		$encoded_components = array(
@@ -955,16 +987,20 @@ class Kohana_Request {
 			CURLOPT_CUSTOMREQUEST => $this->method,
 		);
 
-		// If there are cookies present, set the cookie string
 		if ($this->cookies)
+		{
+			// If there are cookies present, set the cookie string
 			$curl_options[CURLOPT_COOKIE] = $encoded_components['cookies'];
+		}
 
-		// If the method supports POST data, apply it
 		if (in_array($this->method, array('POST', 'PUT', 'DELETE')))
+		{
+			// If the method supports POST data, apply it
 			$curl_options[CURLOPT_POSTFIELDS] = $this->post;
+		}
 
 		$config = array(
-			'status'   => Remote::status($this->uri),
+			'status'   => array_pop(Remote::$headers),
 			'body'     => Remote::get($this->uri, $curl_options),
 			'headers'  => Remote::$headers,
 		);
@@ -975,10 +1011,13 @@ class Kohana_Request {
 		// Cache the response
 		$external_executions[$request_hash] = $this->response;
 
-		// Stop benchmarking if required
-		if (isset($benchmark))
+		if ($benchmark !== NULL)
+		{
+			// Stop benchmarking if running
 			Profiler::stop($benchmark);
+		}
 
+		// Return the response
 		return $this->response;
 	}
 

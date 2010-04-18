@@ -56,7 +56,7 @@ class Kohana_Remote {
 	public static function get($url, array $options = NULL)
 	{
 		// Reset the headers
-		self::$headers = array();
+		Remote::$headers = array();
 
 		if ($options === NULL)
 		{
@@ -102,6 +102,8 @@ class Kohana_Remote {
 				array(':url' => $url, ':code' => $code, ':error' => $error));
 		}
 
+		// Include the status code
+		Remote::$headers['status'] = $code;
 		return $response;
 	}
 
