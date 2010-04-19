@@ -1118,10 +1118,10 @@ class Kohana_Core {
 		}
 		elseif (is_string($var))
 		{
-			if (strlen($var) > $length)
+			if (UTF8::strlen($var) > $length)
 			{
 				// Encode the truncated string
-				$str = htmlspecialchars(substr($var, 0, $length), ENT_NOQUOTES, Kohana::$charset).'&nbsp;&hellip;';
+				$str = htmlspecialchars(UTF8::substr($var, 0, $length), ENT_NOQUOTES, Kohana::$charset).'&nbsp;&hellip;';
 			}
 			else
 			{
