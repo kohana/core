@@ -10,8 +10,10 @@
  */
 abstract class Kohana_Session {
 
-	// Default session type
-	protected static $type = 'native';
+	/**
+	 * @var  string  default session type
+	 */
+	public static $type = 'native';
 
 	// Session instances
 	protected static $instances = array();
