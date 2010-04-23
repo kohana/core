@@ -531,8 +531,6 @@ class Kohana_Text {
 	}
 
 	/**
-	 * Prevents widow words by inserting a non-breaking space between the last two words.
-	 * @see  http://www.shauninman.com/archive/2006/08/22/widont_wordpress_plugin
 	 * Prevents [widow words](http://www.shauninman.com/archive/2006/08/22/widont_wordpress_plugin)
 	 * by inserting a non-breaking space between the last two words.
 	 *
