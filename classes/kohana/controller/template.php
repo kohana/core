@@ -2,10 +2,11 @@
 /**
  * Abstract controller class for automatic templating.
  *
- * @package    Controller
+ * @package    Kohana
+ * @category   Controller
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license.html
+ * @license    http://kohanaphp.com/license
  */
 abstract class Kohana_Controller_Template extends Controller {
 
@@ -20,9 +21,7 @@ abstract class Kohana_Controller_Template extends Controller {
 	public $auto_render = TRUE;
 
 	/**
-	 * Loads the template View object.
-	 *
-	 * @return  void
+	 * Loads the template [View] object.
 	 */
 	public function before()
 	{
@@ -31,21 +30,21 @@ abstract class Kohana_Controller_Template extends Controller {
 			// Load the template
 			$this->template = View::factory($this->template);
 		}
+
+		return parent::before();
 	}
 
 	/**
-	 * Assigns the template as the request response.
-	 *
-	 * @param   string   request method
-	 * @return  void
+	 * Assigns the template [View] as the request response.
 	 */
 	public function after()
 	{
 		if ($this->auto_render === TRUE)
 		{
-			// Assign the template as the request response and render it
 			$this->request->response = $this->template;
 		}
+
+		return parent::after();
 	}
 
 } // End Controller_Template

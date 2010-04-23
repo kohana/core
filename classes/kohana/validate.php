@@ -3,9 +3,10 @@
  * Array and variable validation.
  *
  * @package    Kohana
+ * @category   Security
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license.html
+ * @license    http://kohanaphp.com/license
  */
 class Kohana_Validate extends ArrayObject {
 
@@ -132,7 +133,7 @@ class Kohana_Validate extends ArrayObject {
 	public static function email_domain($email)
 	{
 		// Check if the email domain has a valid MX record
-		return (bool) checkdnsrr(preg_replace('/^[^@]+@/', '', $email), 'MX');
+		return (bool) checkdnsrr(preg_replace('/^[^@]++@/', '', $email), 'MX');
 	}
 
 	/**
@@ -410,7 +411,7 @@ class Kohana_Validate extends ArrayObject {
 		// Get the decimal point for the current locale
 		list($decimal) = array_values(localeconv());
 
-		return (bool) preg_match('/^[0-9]'.$digits.preg_quote($decimal).'[0-9]{'.(int) $places.'}$/', $str);
+		return (bool) preg_match('/^[0-9]'.$digits.preg_quote($decimal).'[0-9]{'.(int) $places.'}$/D', $str);
 	}
 
 	/**
@@ -454,6 +455,26 @@ class Kohana_Validate extends ArrayObject {
 	public function __construct(array $array)
 	{
 		parent::__construct($array, ArrayObject::STD_PROP_LIST);
+	}
+
+	/**
+	 * Copies the current filter/rule/callback to a new array.
+	 *
+	 *     $copy = $array->copy($new_data);
+	 *
+	 * @param   array   new data set
+	 * @return  Validation
+	 * @since   3.0.5
+	 */
+	public function copy(array $array)
+	{
+		// Create a copy of the current validation set
+		$copy = clone $this;
+
+		// Replace the data set
+		$copy->exchangeArray($array);
+
+		return $copy;
 	}
 
 	/**
@@ -637,7 +658,7 @@ class Kohana_Validate extends ArrayObject {
 
 	/**
 	 * Executes all validation filters, rules, and callbacks. This should
-	 * typically be called within an in/else block.
+	 * typically be called within an if/else block.
 	 *
 	 *     if ($validation->check())
 	 *     {
@@ -947,15 +968,36 @@ class Kohana_Validate extends ArrayObject {
 		{
 			list($error, $params) = $set;
 
-			// Start the translation values list
-			$values = array(':field' => $this->_labels[$field]);
+			// Get the label for this field
+			$label = $this->_labels[$field];
 
-			if ( ! empty($params))
+			if ($translate)
+			{
+				// Translate the label
+				$label = __($label);
+			}
+
+			// Start the translation values list
+			$values = array(':field' => $label);
+
+			if ($params)
 			{
 				foreach ($params as $key => $value)
 				{
+					// Check if a label for this parameter exists
+					if (isset($this->_labels[$value]))
+					{
+						$value = $this->_labels[$value];
+
+						if ($translate)
+						{
+							// Translate the label
+							$value = __($value);
+						}
+					}
+
 					// Add each parameter as a numbered value, starting from 1
-					$values[':param'.($key + 1)] = $value;
+					$values[':param'.($key + 1)] = is_array($value) ? implode(', ', $value) : $value;
 				}
 			}
 

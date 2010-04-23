@@ -1,11 +1,13 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Abstract configuration reader.
+ * Abstract configuration reader. All configuration readers must extend
+ * this class.
  *
  * @package    Kohana
+ * @category   Configuration
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license.html
+ * @license    http://kohanaphp.com/license
  */
 abstract class Kohana_Config_Reader extends ArrayObject {
 
@@ -26,6 +28,8 @@ abstract class Kohana_Config_Reader extends ArrayObject {
 	/**
 	 * Return the current group in serialized form.
 	 *
+	 *     echo $config;
+	 *
 	 * @return  string
 	 */
 	public function __toString()
@@ -36,9 +40,14 @@ abstract class Kohana_Config_Reader extends ArrayObject {
 	/**
 	 * Loads a configuration group.
 	 *
-	 * @param   string  group name
+	 *     $config->load($name, $array);
+	 *
+	 * This method must be extended by all readers. After the group has been
+	 * loaded, call `parent::load($group, $config)` for final preparation.
+	 *
+	 * @param   string  configuration group name
 	 * @param   array   configuration array
-	 * @return  $this   clone of the current object
+	 * @return  $this   a clone of this object
 	 */
 	public function load($group, array $config = NULL)
 	{
@@ -47,23 +56,22 @@ abstract class Kohana_Config_Reader extends ArrayObject {
 			return FALSE;
 		}
 
-		// Set the group name
-		$this->_configuration_group = $group;
-
 		// Clone the current object
 		$object = clone $this;
 
+		// Set the group name
+		$object->_configuration_group = $group;
+
 		// Swap the array with the actual configuration
 		$object->exchangeArray($config);
-
-		// Empty the configuration group
-		$this->_configuration_group = NULL;
 
 		return $object;
 	}
 
 	/**
 	 * Return the raw array that is being used for this object.
+	 *
+	 *     $array = $config->as_array();
 	 *
 	 * @return  array
 	 */
@@ -74,6 +82,8 @@ abstract class Kohana_Config_Reader extends ArrayObject {
 
 	/**
 	 * Get a variable from the configuration or return the default value.
+	 *
+	 *     $value = $config->get($key);
 	 *
 	 * @param   string   array key
 	 * @param   mixed    default value
@@ -86,6 +96,8 @@ abstract class Kohana_Config_Reader extends ArrayObject {
 
 	/**
 	 * Sets a value in the configuration array.
+	 *
+	 *     $config->set($key, $new_value);
 	 *
 	 * @param   string   array key
 	 * @param   mixed    array value

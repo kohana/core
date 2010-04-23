@@ -1,11 +1,13 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * File-based configuration loader.
+ * File-based configuration reader. Multiple configuration directories can be
+ * used by attaching multiple instances of this class to [Kohana_Config].
  *
  * @package    Kohana
+ * @category   Configuration
  * @author     Kohana Team
  * @copyright  (c) 2009 Kohana Team
- * @license    http://kohanaphp.com/license.html
+ * @license    http://kohanaphp.com/license
  */
 class Kohana_Config_File extends Kohana_Config_Reader {
 
@@ -25,15 +27,18 @@ class Kohana_Config_File extends Kohana_Config_Reader {
 	}
 
 	/**
-	 * Merge all of the configuration files in this group.
+	 * Load and merge all of the configuration files in this group.
 	 *
-	 * @param   string  group name
+	 *     $config->load($name);
+	 *
+	 * @param   string  configuration group name
 	 * @param   array   configuration array
 	 * @return  $this   clone of the current object
+	 * @uses    Kohana::load
 	 */
 	public function load($group, array $config = NULL)
 	{
-		if ($files = Kohana::find_file($this->_directory, $group))
+		if ($files = Kohana::find_file($this->_directory, $group, NULL, TRUE))
 		{
 			// Initialize the config array
 			$config = array();
@@ -41,7 +46,7 @@ class Kohana_Config_File extends Kohana_Config_Reader {
 			foreach ($files as $file)
 			{
 				// Merge each file to the configuration array
-				$config = Arr::merge($config, require $file);
+				$config = Arr::merge($config, Kohana::load($file));
 			}
 		}
 

@@ -1,11 +1,17 @@
-<?php defined('SYSPATH') OR die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Upload helper class for working with the uploaded files and the Validate class.
+ * Upload helper class for working with uploaded files and [Validate].
+ *
+ *     $array = Validate::factory($_FILES);
+ *
+ * [!!] Remember to define your form with "enctype=multipart/form-data" or file
+ * uploading will not work!
  *
  * @package    Kohana
+ * @category   Helpers
  * @author     Kohana Team
  * @copyright  (c) 2007-2009 Kohana Team
- * @license    http://kohanaphp.com/license.html
+ * @license    http://kohanaphp.com/license
  */
 class Kohana_Upload {
 
@@ -25,7 +31,7 @@ class Kohana_Upload {
 	 *
 	 * This method should be used after validating the $_FILES array:
 	 *
-	 *     if ($validate->check())
+	 *     if ($array->check())
 	 *     {
 	 *         // Upload is valid, save it
 	 *         Upload::save($_FILES['file']);
@@ -89,9 +95,11 @@ class Kohana_Upload {
 	}
 
 	/**
-	 * Tests if upload data is valid, even if no file was uploaded.
+	 * Tests if upload data is valid, even if no file was uploaded. If you
+	 * _do_ require a file to be uploaded, add the [Upload::not_empty] rule
+	 * before this rule.
 	 *
-	 *     $validate->add_rule('file', 'Upload::valid')
+	 *     $array->rule('file', 'Upload::valid')
 	 *
 	 * @param   array  $_FILES item
 	 * @return  bool
@@ -108,7 +116,7 @@ class Kohana_Upload {
 	/**
 	 * Tests if a successful upload has been made.
 	 *
-	 *     $validate->add_rule('file', 'Upload::not_empty');
+	 *     $array->rule('file', 'Upload::not_empty');
 	 *
 	 * @param   array    $_FILES item
 	 * @return  bool
@@ -125,7 +133,7 @@ class Kohana_Upload {
 	/**
 	 * Test if an uploaded file is an allowed file type, by extension.
 	 *
-	 *     $validate->add_rule('file', 'Upload::type', array(array('jpg', 'png', 'gif')));
+	 *     $array->rule('file', 'Upload::type', array(array('jpg', 'png', 'gif')));
 	 *
 	 * @param   array    $_FILES item
 	 * @param   array    allowed file extensions
@@ -136,10 +144,8 @@ class Kohana_Upload {
 		if ($file['error'] !== UPLOAD_ERR_OK)
 			return TRUE;
 
-		// Extension of the filename
-		$ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+		$ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 
-		// Make sure there is an extension, that the extension is allowed, and that mime types exist
 		return in_array($ext, $allowed);
 	}
 
@@ -148,8 +154,7 @@ class Kohana_Upload {
 	 * File sizes are defined as: SB, where S is the size (1, 15, 300, etc) and
 	 * B is the byte modifier: (B)ytes, (K)ilobytes, (M)egabytes, (G)igabytes.
 	 *
-	 *     // Uploaded file must be 1MB or less
-	 *     $validate->add_rule('file', 'Upload::size', array('1M'))
+	 *     $array->rule('file', 'Upload::size', array('1M'))
 	 *
 	 * @param   array    $_FILES item
 	 * @param   string   maximum file size

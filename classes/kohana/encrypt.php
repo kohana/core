@@ -1,13 +1,27 @@
-<?php defined('SYSPATH') OR die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct access allowed.');
 /**
  * The Encrypt library provides two-way encryption of text and binary strings
- * using the MCrypt extension.
- * @see http://php.net/mcrypt
+ * using the [Mcrypt](http://php.net/mcrypt) extension, which consists of three
+ * parts: the key, the cipher, and the mode.
  *
- * @package    Security
+ * The Key
+ * :  A secret passphrase that is used for encoding and decoding
+ *
+ * The Cipher
+ * :  A [cipher](http://php.net/mcrypt.ciphers) determines how the encryption
+ *    is mathematically calculated. By default, the "rijndael-128" cipher
+ *    is used. This is commonly known as "AES-128" and is an industry standard.
+ *
+ * The Mode
+ * :  The [mode](http://php.net/mcrypt.constants) determines how the encrypted
+ *    data is written in binary form. By default, the "nofb" mode is used,
+ *    which produces short output with high entropy.
+ *
+ * @package    Kohana
+ * @category   Security
  * @author     Kohana Team
- * @copyright  (c) 2007-2009 Kohana Team
- * @license    http://kohanaphp.com/license.html
+ * @copyright  (c) 2007-2010 Kohana Team
+ * @license    http://kohanaphp.com/license
  */
 class Kohana_Encrypt {
 
@@ -20,11 +34,10 @@ class Kohana_Encrypt {
 	protected static $_rand;
 
 	/**
-	 * Returns a singleton instance of Encrypt. An encryption key must be provided,
-	 * but default configuration settings will be applied:
+	 * Returns a singleton instance of Encrypt. An encryption key must be
+	 * provided in your "encrypt" configuration file.
 	 *
-	 * "nofb" mode, produces short output with high entropy and supports IV
-	 * "rijndael-128" (128-bit AES) cipher, the industry standard
+	 *     $encrypt = Encrypt::instance();
 	 *
 	 * @param   string  configuration group name
 	 * @return  object
@@ -34,7 +47,14 @@ class Kohana_Encrypt {
 		if ( ! isset(Encrypt::$instances[$name]))
 		{
 			// Load the configuration data
-			$config = Kohana::config('encrypt')->{$name};
+			$config = Kohana::config('encrypt')->$name;
+
+			if ( ! isset($config['key']))
+			{
+				// No default encryption key is provided!
+				throw new Kohana_Exception('No encryption key is defined in the encryption configuration group: :group',
+					array(':group' => $name));
+			}
 
 			if ( ! isset($config['mode']))
 			{
@@ -57,12 +77,10 @@ class Kohana_Encrypt {
 
 	/**
 	 * Creates a new mcrypt wrapper.
-	 * @see  http://php.net/mcrypt
 	 *
 	 * @param   string   encryption key
 	 * @param   string   mcrypt mode
 	 * @param   string   mcrypt cipher
-	 * @throws  Kohana_Exception
 	 */
 	public function __construct($key, $mode, $cipher)
 	{
@@ -87,8 +105,14 @@ class Kohana_Encrypt {
 	/**
 	 * Encrypts a string and returns an encrypted string that can be decoded.
 	 *
+	 *     $data = $encrypt->encode($data);
+	 *
+	 * The encrypted binary data is encoded using [base64](http://php.net/base64_encode)
+	 * to convert it to a string. This string can be stored in a database,
+	 * displayed, and passed using most other means without corruption.
+	 *
 	 * @param   string  data to be encrypted
-	 * @return  string  encrypted data
+	 * @return  string
 	 */
 	public function encode($data)
 	{
@@ -140,16 +164,31 @@ class Kohana_Encrypt {
 	/**
 	 * Decrypts an encoded string back to its original value.
 	 *
+	 *     $data = $encrypt->decode($data);
+	 *
 	 * @param   string  encoded string to be decrypted
-	 * @return  string  decrypted data
+	 * @return  FALSE   if decryption fails
+	 * @return  string
 	 */
 	public function decode($data)
 	{
 		// Convert the data back to binary
-		$data = base64_decode($data);
+		$data = base64_decode($data, TRUE);
+
+		if ( ! $data)
+		{
+			// Invalid base64 data
+			return FALSE;
+		}
 
 		// Extract the initialization vector from the data
 		$iv = substr($data, 0, $this->_iv_size);
+
+		if ($this->_iv_size !== strlen($iv))
+		{
+			// The iv is not the expected size
+			return FALSE;
+		}
 
 		// Remove the iv from the data
 		$data = substr($data, $this->_iv_size);

@@ -1,11 +1,13 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Wrapper for configuration arrays.
+ * Wrapper for configuration arrays. Multiple configuration readers can be
+ * attached to allow loading configuration from files, database, etc.
  *
  * @package    Kohana
+ * @category   Configuration
  * @author     Kohana Team
  * @copyright  (c) 2009 Kohana Team
- * @license    http://kohanaphp.com/license.html
+ * @license    http://kohanaphp.com/license
  */
 class Kohana_Config {
 
@@ -14,6 +16,8 @@ class Kohana_Config {
 
 	/**
 	 * Get the singleton instance of Kohana_Config.
+	 *
+	 *     $config = Kohana_Config::instance();
 	 *
 	 * @return  Kohana_Config
 	 */
@@ -32,7 +36,12 @@ class Kohana_Config {
 	protected $_readers = array();
 
 	/**
-	 * Attach a configuration reader.
+	 * Attach a configuration reader. By default, the reader will be added as
+	 * the first used reader. However, if the reader should be used only when
+	 * all other readers fail, use `FALSE` for the second parameter.
+	 *
+	 *     $config->attach($reader);        // Try first
+	 *     $config->attach($reader, FALSE); // Try last
 	 *
 	 * @param   object   Kohana_Config_Reader instance
 	 * @param   boolean  add the reader as the first used object
@@ -55,7 +64,9 @@ class Kohana_Config {
 	}
 
 	/**
-	 * Detaches a configuration reader.
+	 * Detach a configuration reader.
+	 *
+	 *     $config->detach($reader);
 	 *
 	 * @param   object  Kohana_Config_Reader instance
 	 * @return  $this
@@ -76,8 +87,11 @@ class Kohana_Config {
 	 * group is found. If the group does not exist, an empty configuration
 	 * array will be loaded using the first reader.
 	 *
-	 * @param   string  configuration group
+	 *     $array = $config->load($name);
+	 *
+	 * @param   string  configuration group name
 	 * @return  object  Kohana_Config_Reader
+	 * @throws  Kohana_Exception
 	 */
 	public function load($group)
 	{
@@ -104,8 +118,10 @@ class Kohana_Config {
 
 	/**
 	 * Copy one configuration group to all of the other readers.
+	 * 
+	 *     $config->copy($name);
 	 *
-	 * @param   string   group name
+	 * @param   string   configuration group name
 	 * @return  $this
 	 */
 	public function copy($group)

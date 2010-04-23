@@ -3,9 +3,10 @@
  * Cookie helper.
  *
  * @package    Kohana
+ * @category   Helpers
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license.html
+ * @license    http://kohanaphp.com/license
  */
 class Kohana_Cookie {
 
@@ -43,6 +44,9 @@ class Kohana_Cookie {
 	 * Gets the value of a signed cookie. Cookies without signatures will not
 	 * be returned. If the cookie signature is present, but invalid, the cookie
 	 * will be deleted.
+	 *
+	 *     // Get the "theme" cookie, or use "blue" if the cookie does not exist
+	 *     $theme = Cookie::get('theme', 'blue');
 	 *
 	 * @param   string  cookie name
 	 * @param   mixed   default value to return
@@ -84,10 +88,14 @@ class Kohana_Cookie {
 	 * Sets a signed cookie. Note that all cookie values must be strings and no
 	 * automatic serialization will be performed!
 	 *
+	 *     // Set the "theme" cookie
+	 *     Cookie::set('theme', 'red');
+	 *
 	 * @param   string   name of cookie
 	 * @param   string   value of cookie
 	 * @param   integer  lifetime in seconds
 	 * @return  boolean
+	 * @uses    Cookie::salt
 	 */
 	public static function set($name, $value, $expiration = NULL)
 	{
@@ -112,8 +120,11 @@ class Kohana_Cookie {
 	/**
 	 * Deletes a cookie by making the value NULL and expiring it.
 	 *
+	 *     Cookie::delete('theme');
+	 *
 	 * @param   string   cookie name
 	 * @return  boolean
+	 * @uses    Cookie::set
 	 */
 	public static function delete($name)
 	{
@@ -126,6 +137,8 @@ class Kohana_Cookie {
 
 	/**
 	 * Generates a salt string for a cookie based on the name and value.
+	 *
+	 *     $salt = Cookie::salt('theme', 'red');
 	 *
 	 * @param   string   name of cookie
 	 * @param   string   value of cookie
