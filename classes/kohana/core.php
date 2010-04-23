@@ -251,7 +251,7 @@ class Kohana_Core {
 
 		if (isset($settings['expose']))
 		{
-			self::$expose = (bool) $settings['expose'];
+			Kohana::$expose = (bool) $settings['expose'];
 		}
 
 		// Determine if we are running in a command line environment
