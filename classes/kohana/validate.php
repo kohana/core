@@ -440,7 +440,7 @@ class Kohana_Validate extends ArrayObject {
 	protected $_labels = array();
 
 	// Rules that are executed even when the value is empty
-	protected $_empty_rules = array('not_empty', 'matches', 'min_length', 'exact_length');
+	protected $_empty_rules = array('not_empty', 'matches');
 
 	// Error list, field => rule
 	protected $_errors = array();
