@@ -781,7 +781,9 @@ class Kohana_Request {
 	{
 		// If this is an external request, process it as such
 		if ($this->external)
+		{
 			return $this->_external_execute();
+		}
 
 		// Create the class prefix
 		$prefix = 'controller_';

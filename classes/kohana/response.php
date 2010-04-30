@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Kohana_Response {
+class Kohana_Response implements Serializable {
 
 	/**
 	 * Factory method
@@ -84,6 +84,11 @@ class Kohana_Response {
 	public $body = NULL;
 
 	/**
+	 * @var  array       cookies to be returned in the response
+	 */
+	protected $_cookies = array();
+
+	/**
 	 * Sets up the response object
 	 *
 	 * @param   array $config 
@@ -94,7 +99,9 @@ class Kohana_Response {
 		foreach ($config as $key => $value)
 		{
 			if (property_exists($this, $key))
+			{
 				$this->$key = $value;
+			}
 		}
 	}
 
@@ -116,6 +123,82 @@ class Kohana_Response {
 	public function body()
 	{
 		return (string) $this->body;
+	}
+
+	/**
+	 * Sets a cookie to the response
+	 *
+	 * @param   string   name 
+	 * @param   string   value 
+	 * @param   int      expiration 
+	 * @return  self
+	 */
+	public function set_cookie($name, $value, $expiration = NULL)
+	{
+		if ($expiration === NULL)
+		{
+			$expiration = Cookie::$expiration;
+		}
+		else if ($expiration !== 0)
+		{
+			$expiration += time();
+		}
+
+		$this->_cookies[$name] = array(
+			'value'      => $value,
+			'expiration' => $expiration
+		);
+
+		return $this;
+	}
+
+	/**
+	 * Returns a cookie by name
+	 *
+	 * @param   string $name 
+	 * @param   string $default 
+	 * @return  mixed
+	 */
+	public function get_cookie($name, $default = NULL)
+	{
+		return isset($this->_cookies[$name]) ? $this->_cookies[$name]['value'] : $default;
+	}
+
+	/**
+	 * Get all the cookies
+	 *
+	 * @return  array
+	 */
+	public function get_cookies()
+	{
+		return $this->_cookies;
+	}
+
+	/**
+	 * Deletes a cookie set to the response
+	 *
+	 * @param   string   name 
+	 * @return  self
+	 */
+	public function delete_cookie($name)
+	{
+		if (isset($this->_cookies[$name]))
+		{
+			unset($this->_cookies[$name]);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Deletes all cookies from this response
+	 *
+	 * @return  self
+	 */
+	public function delete_cookies()
+	{
+		$this->_cookies = array();
+		return $this;
 	}
 
 	/**
@@ -151,6 +234,12 @@ class Kohana_Response {
 
 				// Send the raw header
 				header($value, TRUE);
+			}
+
+			// Send cookies
+			foreach ($this->_cookies as $name => $value)
+			{
+				Cookie::set($name, $value['value'], $value['expiration']);
 			}
 		}
 
@@ -295,7 +384,7 @@ class Kohana_Response {
 		}
 
 		// Generate a unique hash for the response
-		return '"'.sha1($this->response).'"';
+		return '"'.sha1($this->body).'"';
 	}
 
 	/**
@@ -333,5 +422,70 @@ class Kohana_Response {
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Serializes the object to json - handy if you
+	 * need to pass the response data to other
+	 * systems
+	 *
+	 * @param   array    array of data to serialize
+	 * @return  string
+	 * @throws  Kohana_Exception
+	 */
+	public function serialize(array $toSerialize = array())
+	{
+		// Serialize the class properties
+		$toSerialize += array
+		(
+			'status'  => $this->status,
+			'headers' => $this->headers,
+			'cookies' => $this->_cookies,
+			'body'    => $this->body
+		);
+
+		$string = json_encode($toSerialize);
+
+		if (is_string($string))
+		{
+			return $string;
+		}
+		else
+		{
+			throw new Kohana_Exception('Unable to correctly encode object to json');
+		}
+	}
+
+	/**
+	 * JSON encoded object
+	 *
+	 * @param   string   json encoded object
+	 * @return  bool
+	 * @throws  Kohana_Exception
+	 */
+	public function unserialize($string)
+	{
+		// Unserialise object
+		$unserialized = json_decode($string);
+
+		// If failed
+		if ($unserialized === NULL)
+		{
+			// Throw exception
+			throw new Kohana_Exception('Unable to correctly decode object from json');
+		}
+
+		// Foreach key/value pair
+		foreach ($unserialized as $key => $value)
+		{
+			// If it belongs here
+			if (property_exists($this, $key))
+			{
+				// Apply it
+				$this->$key = $value;
+			}
+		}
+
+		return TRUE;
 	}
 }
