@@ -4,7 +4,7 @@
  *
  * @package    Logging
  * @author     Jeremy Bush
- * @copyright  (c) 2010 Jeremy Bush
+ * @copyright  (c) 2010 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 class Kohana_Log_Syslog extends Kohana_Log_Writer {
@@ -20,11 +20,12 @@ class Kohana_Log_Syslog extends Kohana_Log_Writer {
 	                                  'DEBUG'    => LOG_DEBUG);
 
 	/**
-	 * Creates a new file logger.
+	 * Creates a new syslog logger.
 	 *
 	 * @see http://us2.php.net/openlog
 	 *
-	 * @param   string  log directory
+	 * @param   string  syslog identifier
+	 * @param   int     facility to log to
 	 * @return  void
 	 */
 	public function __construct($ident = 'KohanaPHP', $facility = LOG_USER)
@@ -36,7 +37,7 @@ class Kohana_Log_Syslog extends Kohana_Log_Writer {
 	}
 
 	/**
-	 * Writes each of the messages into the log file.
+	 * Writes each of the messages into the syslog.
 	 *
 	 * @param   array   messages
 	 * @return  void
@@ -49,6 +50,11 @@ class Kohana_Log_Syslog extends Kohana_Log_Writer {
 		}
 	}
 
+	/**
+	 * Closes the syslog connection
+	 *
+	 * @return  void
+	 */
 	public function __destruct()
 	{
 		// Close connection to syslog
