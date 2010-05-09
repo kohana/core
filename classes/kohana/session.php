@@ -195,11 +195,17 @@ abstract class Kohana_Session {
 	 *     $session->delete('foo');
 	 *
 	 * @param   string  variable name
+	 * @param   ...
 	 * @return  $this
 	 */
 	public function delete($key)
 	{
-		unset($this->_data[$key]);
+		$args = func_get_args();
+
+		foreach ($args as $key)
+		{
+			unset($this->_data[$key]);
+		}
 
 		return $this;
 	}
