@@ -917,13 +917,13 @@ class Kohana_Request {
 		// Create the class prefix
 		$prefix = 'controller_';
 
-		if ( ! empty($this->directory))
+		if ($this->directory)
 		{
 			// Add the directory name to the class prefix
 			$prefix .= str_replace(array('\\', '/'), '_', trim($this->directory, '/')).'_';
 		}
 
-		if (Kohana::$profiling === TRUE)
+		if (Kohana::$profiling)
 		{
 			// Start benchmarking
 			$benchmark = Profiler::start('Requests', $this->uri);
