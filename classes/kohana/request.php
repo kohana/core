@@ -102,6 +102,11 @@ class Kohana_Request {
 	public static $instance;
 
 	/**
+	 * @var  object  currently executing request instance
+	 */
+	public static $current;
+
+	/**
 	 * Main request singleton instance. If no URI is provided, the URI will
 	 * be automatically detected using PATH_INFO, REQUEST_URI, or PHP_SELF.
 	 *
@@ -259,13 +264,28 @@ class Kohana_Request {
 			$uri = preg_replace('#\.[\s./]*/#', '', $uri);
 
 			// Create the instance singleton
-			Request::$instance = new Request($uri);
+			Request::$instance = Request::$current = new Request($uri);
 
 			// Add the default Content-Type header
 			Request::$instance->headers['Content-Type'] = 'text/html; charset='.Kohana::$charset;
 		}
 
 		return Request::$instance;
+	}
+
+	/**
+	 * Return the currently executing request. This is changed to the current
+	 * request when [Request::execute] is called and restored when the request
+	 * is completed.
+	 *
+	 *     $request = Request::current();
+	 *
+	 * @return  Request
+	 * @since   3.0.5
+	 */
+	public static function current()
+	{
+		return Request::$current;
 	}
 
 	/**
@@ -928,9 +948,24 @@ class Kohana_Request {
 
 		if (Kohana::$profiling)
 		{
+			// Set the benchmark name
+			$benchmark = '"'.$this->uri.'"';
+
+			if ($this !== Request::$instance)
+			{
+				// Add the parent request uri
+				$benchmark .= ' « "'.Request::$current->uri.'"';
+			}
+
 			// Start benchmarking
-			$benchmark = Profiler::start('Requests', $this->uri);
+			$benchmark = Profiler::start('Requests', $benchmark);
 		}
+
+		// Store the currently active request
+		$previous = Request::$current;
+
+		// Change the current request to this request
+		Request::$current = $this;
 
 		try
 		{
@@ -960,6 +995,9 @@ class Kohana_Request {
 		}
 		catch (Exception $e)
 		{
+			// Restore the previous request
+			Request::$current = $previous;
+
 			if (isset($benchmark))
 			{
 				// Delete the benchmark, it is invalid
@@ -980,6 +1018,9 @@ class Kohana_Request {
 			// Re-throw the exception
 			throw $e;
 		}
+
+		// Restore the previous request
+		Request::$current = $previous;
 
 		if (isset($benchmark))
 		{
