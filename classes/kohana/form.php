@@ -37,7 +37,7 @@ class Kohana_Form {
 		if ($action === NULL)
 		{
 			// Use the current URI
-			$action = Request::instance()->uri;
+			$action = Request::current()->uri;
 		}
 
 		if ($action === '')
