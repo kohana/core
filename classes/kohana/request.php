@@ -97,6 +97,11 @@ class Kohana_Request {
 	public static $is_ajax = FALSE;
 
 	/**
+	 * @var  object  main request instance
+	 */
+	public static $instance;
+
+	/**
 	 * Main request singleton instance. If no URI is provided, the URI will
 	 * be automatically detected using PATH_INFO, REQUEST_URI, or PHP_SELF.
 	 *
@@ -107,9 +112,7 @@ class Kohana_Request {
 	 */
 	public static function instance( & $uri = TRUE)
 	{
-		static $instance;
-
-		if ($instance === NULL)
+		if ( ! Request::$instance)
 		{
 			if (Kohana::$is_cli)
 			{
@@ -256,13 +259,13 @@ class Kohana_Request {
 			$uri = preg_replace('#\.[\s./]*/#', '', $uri);
 
 			// Create the instance singleton
-			$instance = new Request($uri);
+			Request::$instance = new Request($uri);
 
-			// Add the Content-Type header
-			$instance->headers['Content-Type'] = 'text/html; charset='.Kohana::$charset;
+			// Add the default Content-Type header
+			Request::$instance->headers['Content-Type'] = 'text/html; charset='.Kohana::$charset;
 		}
 
-		return $instance;
+		return Request::$instance;
 	}
 
 	/**
