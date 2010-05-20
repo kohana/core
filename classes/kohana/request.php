@@ -25,6 +25,7 @@ class Kohana_Request {
 		204 => 'No Content',
 		205 => 'Reset Content',
 		206 => 'Partial Content',
+		207 => 'Multi-Status',
 
 		// Redirection 3xx
 		300 => 'Multiple Choices',
@@ -55,6 +56,9 @@ class Kohana_Request {
 		415 => 'Unsupported Media Type',
 		416 => 'Requested Range Not Satisfiable',
 		417 => 'Expectation Failed',
+		422 => 'Unprocessable Entity',
+		423 => 'Locked',
+		424 => 'Failed Dependency',
 
 		// Server Error 5xx
 		500 => 'Internal Server Error',
@@ -63,6 +67,7 @@ class Kohana_Request {
 		503 => 'Service Unavailable',
 		504 => 'Gateway Timeout',
 		505 => 'HTTP Version Not Supported',
+		507 => 'Insufficient Storage',
 		509 => 'Bandwidth Limit Exceeded'
 	);
 
