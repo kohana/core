@@ -147,10 +147,10 @@ abstract class Kohana_Session {
 	 * assigned by reference.
 	 *
 	 *     // Get a copy of the current session data
-	 *     $data = Session::as_array();
+	 *     $data = $session->as_array();
 	 *
 	 *     // Assign by reference for modification
-	 *     $data =& Session::as_array();
+	 *     $data =& $session->as_array();
 	 *
 	 * @return  array
 	 */
