@@ -453,7 +453,7 @@ class Kohana_Core {
 			if (is_dir($path))
 			{
 				// Add the module to include paths
-				$paths[] = realpath($path).DIRECTORY_SEPARATOR;
+				$paths[] = $modules[$name] = realpath($path).DIRECTORY_SEPARATOR;
 			}
 			else
 			{
@@ -473,7 +473,7 @@ class Kohana_Core {
 
 		foreach (Kohana::$_modules as $path)
 		{
-			$init = $path.DIRECTORY_SEPARATOR.'init'.EXT;
+			$init = $path.'init'.EXT;
 
 			if (is_file($init))
 			{
