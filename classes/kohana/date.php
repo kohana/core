@@ -297,7 +297,7 @@ class Kohana_Date {
 		}
 
 		// Array with the output formats
-		$output = preg_split('/[^a-z]+/', strtolower((string) $output));
+		$output = preg_split('/[^a-z]+/', $output);
 
 		// Convert the list of outputs to an associative array
 		$output = array_combine($output, array_fill(0, count($output), 0));
