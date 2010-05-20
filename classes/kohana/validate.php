@@ -1009,6 +1009,10 @@ class Kohana_Validate extends ArrayObject {
 			{
 				// Found a default message for this field
 			}
+			elseif ($message = Kohana::message($file, $error))
+			{
+				// Found a default message for this error
+			}
 			elseif ($message = Kohana::message('validate', $error))
 			{
 				// Found a default message for this error
