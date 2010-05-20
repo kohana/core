@@ -287,12 +287,17 @@ class Kohana_Date {
 	 */
 	public static function span($remote, $local = NULL, $output = 'years,months,weeks,days,hours,minutes,seconds')
 	{
+		// Normalize output
+		$output = trim(strtolower((string) $output));
+
+		if ( ! $output)
+		{
+			// Invalid output
+			return FALSE;
+		}
+
 		// Array with the output formats
 		$output = preg_split('/[^a-z]+/', strtolower((string) $output));
-
-		// Invalid output
-		if (empty($output))
-			return FALSE;
 
 		// Convert the list of outputs to an associative array
 		$output = array_combine($output, array_fill(0, count($output), 0));
