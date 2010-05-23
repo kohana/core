@@ -11,9 +11,9 @@
 abstract class Kohana_Session {
 
 	/**
-	 * @var  string  default session type
+	 * @var  string  default session adapter
 	 */
-	public static $type = 'native';
+	public static $default = 'native';
 
 	// Session instances
 	protected static $instances = array();
@@ -37,7 +37,7 @@ abstract class Kohana_Session {
 		if ($type === NULL)
 		{
 			// Use the default type
-			$type = Session::$type;
+			$type = Session::$default;
 		}
 
 		if ( ! isset(Session::$instances[$type]))
