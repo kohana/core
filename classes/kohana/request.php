@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Request and response wrapper. Uses the [Route] class to determine what
  * [Controller] to send the request to.
@@ -717,6 +717,7 @@ class Kohana_Request {
 	{
 		if ( ! headers_sent())
 		{
+<<<<<<< HEAD
 			if (isset($_SERVER['SERVER_PROTOCOL']))
 			{
 				// Use the default server protocol
@@ -731,6 +732,8 @@ class Kohana_Request {
 			// HTTP status line
 			header($protocol.' '.$this->status.' '.Request::$messages[$this->status]);
 
+=======
+>>>>>>> joelpittet/master
 			foreach ($this->headers as $name => $value)
 			{
 				if (is_string($name))
@@ -740,7 +743,7 @@ class Kohana_Request {
 				}
 
 				// Send the raw header
-				header($value, TRUE);
+				header($value, TRUE, $this->status);
 			}
 		}
 

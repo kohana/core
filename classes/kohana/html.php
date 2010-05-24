@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <?php defined('SYSPATH') or die('No direct access allowed.');
+=======
+<?php defined('SYSPATH') OR die('No direct script access.');
+>>>>>>> joelpittet/master
 /**
  * HTML helper class. Provides generic methods for generating various HTML
  * tags and making output HTML safe.
@@ -67,11 +71,15 @@ class Kohana_HTML {
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Convert all applicable characters to HTML entities. All characters
 	 * that cannot be represented in HTML with the current character set
 	 * will be converted to entities.
 	 *
 	 *     echo HTML::entities($username);
+=======
+	 * Convert all applicable characters to HTML entities.
+>>>>>>> joelpittet/master
 	 *
 	 * @param   string   string to convert
 	 * @param   boolean  encode existing entities

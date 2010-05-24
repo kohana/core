@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <?php defined('SYSPATH') or die('No direct access allowed.');
+=======
+<?php defined('SYSPATH') OR die('No direct script access.');
+>>>>>>> joelpittet/master
 /**
  * A list of mime types. Our list is generally more complete and accurate than
  * the operating system MIME list.

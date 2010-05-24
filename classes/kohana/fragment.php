@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * View fragment caching. This is primarily used to cache small parts of a view
  * that rarely change. For instance, you may want to cache the footer of your
@@ -25,7 +25,11 @@ class Kohana_Fragment {
 	public static $lifetime = 30;
 
 	/**
+<<<<<<< HEAD
 	 * @var  boolean  use multilingual fragment support?
+=======
+	 * @var  boolean  default multilingual fragment support
+>>>>>>> joelpittet/master
 	 */
 	public static $i18n = FALSE;
 
@@ -35,6 +39,7 @@ class Kohana_Fragment {
 	/**
 	 * Generate the cache key name for a fragment.
 	 *
+<<<<<<< HEAD
 	 *     $key = Fragment::_cache_key('footer', TRUE);
 	 *
 	 * @param   string   fragment name
@@ -42,6 +47,11 @@ class Kohana_Fragment {
 	 * @return  string
 	 * @uses    I18n::lang
 	 * @since   3.0.4
+=======
+	 * @param   string   fragment name
+	 * @param   boolean  multilingual fragment support
+	 * @return  string
+>>>>>>> joelpittet/master
 	 */
 	protected static function _cache_key($name, $i18n = NULL)
 	{

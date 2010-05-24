@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <?php defined('SYSPATH') or die('No direct access allowed.');
+=======
+<?php defined('SYSPATH') OR die('No direct script access.');
+>>>>>>> joelpittet/master
 /**
  * Array helper.
  *
@@ -12,12 +16,15 @@ class Kohana_Arr {
 
 	/**
 	 * Tests if an array is associative or not.
+<<<<<<< HEAD
 	 *
 	 *     // Returns TRUE
 	 *     Arr::is_assoc(array('username' => 'john.doe'));
 	 *
 	 *     // Returns FALSE
 	 *     Arr::is_assoc('foo', 'bar');
+=======
+>>>>>>> joelpittet/master
 	 *
 	 * @param   array   array to check
 	 * @return  boolean
@@ -51,7 +58,11 @@ class Kohana_Arr {
 	public static function path($array, $path, $default = NULL)
 	{
 		// Remove outer dots, wildcards, or spaces
+<<<<<<< HEAD
 		$path = trim($path, '.* ');
+=======
+		$path = trim($path, '.* ');		
+>>>>>>> joelpittet/master
 
 		// Split the keys by slashes
 		$keys = explode('.', $path);

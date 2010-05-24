@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Abstract controller class for automatic templating.
  *
@@ -25,6 +25,8 @@ abstract class Kohana_Controller_Template extends Controller {
 	 */
 	public function before()
 	{
+		parent::before();
+		
 		if ($this->auto_render === TRUE)
 		{
 			// Load the template
@@ -39,6 +41,8 @@ abstract class Kohana_Controller_Template extends Controller {
 	 */
 	public function after()
 	{
+		parent::after();
+		
 		if ($this->auto_render === TRUE)
 		{
 			$this->request->response = $this->template;

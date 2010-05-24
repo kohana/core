@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Contains the most low-level helpers methods in Kohana:
  *
@@ -16,8 +16,13 @@
 class Kohana_Core {
 
 	// Release version and codename
+<<<<<<< HEAD
 	const VERSION  = '3.0.4';
 	const CODENAME = 'wyau cwningen';
+=======
+	const VERSION  = '3.0.2';
+	const CODENAME = 'renaissance';
+>>>>>>> joelpittet/master
 
 	// Log message types
 	const ERROR = 'ERROR';
@@ -31,10 +36,16 @@ class Kohana_Core {
 	const DEVELOPMENT = 'development';
 
 	// Security check that is added to all generated PHP files
-	const FILE_SECURITY = '<?php defined(\'SYSPATH\') or die(\'No direct script access.\');';
+	const FILE_SECURITY = '<?php defined(\'SYSPATH\') OR die(\'No direct script access.\');';
 
 	// Format of cache files: header, cache name, and data
 	const FILE_CACHE = ":header \n\n// :name\n\n:data\n";
+
+	// Common environment type constants for consistency and convenience
+	const PRODUCTION  = 'production';
+	const STAGING     = 'staging';
+	const TESTING     = 'testing';
+	const DEVELOPMENT = 'development';
 
 	/**
 	 * @var  array  PHP error code => human readable name
@@ -205,15 +216,15 @@ class Kohana_Core {
 
 		if (Kohana::$errors === TRUE)
 		{
+			// Enable the Kohana shutdown handler, which catches E_FATAL errors.
+			register_shutdown_function(array('Kohana', 'shutdown_handler'));
+
 			// Enable Kohana exception handling, adds stack traces and error source.
 			set_exception_handler(array('Kohana', 'exception_handler'));
 
 			// Enable Kohana error handling, converts all PHP errors to exceptions.
 			set_error_handler(array('Kohana', 'error_handler'));
 		}
-
-		// Enable the Kohana shutdown handler, which catches E_FATAL errors.
-		register_shutdown_function(array('Kohana', 'shutdown_handler'));
 
 		if (ini_get('register_globals'))
 		{
@@ -306,7 +317,7 @@ class Kohana_Core {
 		$_COOKIE = Kohana::sanitize($_COOKIE);
 
 		// Load the logger
-		Kohana::$log = Kohana_Log::instance();
+		Kohana::$log = Log::instance();
 
 		// Load the config
 		Kohana::$config = Kohana_Config::instance();
@@ -801,6 +812,8 @@ class Kohana_Core {
 		catch (Exception $e)
 		{
 			throw $e;
+			// throw new Kohana_Exception('Cache directory :dir is corrupt, unable to write :file',
+				// array(':dir' => Kohana::debug_path(Kohana::$cache_dir), ':file' => Kohana::debug_path($dir.$file)));
 		}
 	}
 
@@ -998,7 +1011,11 @@ class Kohana_Core {
 			Kohana::exception_handler($e);
 		}
 
+<<<<<<< HEAD
 		if (Kohana::$errors AND $error = error_get_last() AND in_array($error['type'], Kohana::$shutdown_errors))
+=======
+		if ($error = error_get_last() AND (error_reporting() & $error['type']))
+>>>>>>> joelpittet/master
 		{
 			// Clean the output buffer
 			ob_get_level() and ob_clean();
