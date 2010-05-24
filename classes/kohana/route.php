@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Routes are used to determine the controller and action for a requested URI.
  * Every route generates a regular expression which is used to match a URI
@@ -37,15 +37,11 @@ class Kohana_Route {
 
 	// Defines the pattern of a <segment>
 	const REGEX_KEY     = '<([a-zA-Z0-9_]++)>';
-<<<<<<< HEAD
 
 	// What can be part of a <segment> value
 	const REGEX_SEGMENT = '[^/.,;?\n]++';
 
 	// What must be escaped in the route regex
-=======
-	const REGEX_SEGMENT = '[^/.,;?\n]++';
->>>>>>> joelpittet/master
 	const REGEX_ESCAPE  = '[.\\+*?[^\\]${}=!|]';
 
 	/**
@@ -121,7 +117,6 @@ class Kohana_Route {
 	}
 
 	/**
-<<<<<<< HEAD
 	 * Saves or loads the route cache. If you routes will remain the same for
 	 * an long period of time, use this to reload the routes from the cache
 	 * rather than redefining them on every page load.
@@ -131,19 +126,6 @@ class Kohana_Route {
 	 *         // Set routes here
 	 *         Route::cache(TRUE);
 	 *     }
-=======
-	 * Get the name of a route.
-	 *
-	 * @return  string
-	 */
-	public static function name(Route $route)
-	{
-		return array_search($route, Route::$_routes);
-	}
-
-	/**
-	 * Saves or loads the route cache.
->>>>>>> joelpittet/master
 	 *
 	 * @param   boolean   cache the current routes
 	 * @return  void      when saving routes

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 <?php defined('SYSPATH') or die('No direct access allowed.');
-=======
-<?php defined('SYSPATH') OR die('No direct script access.');
->>>>>>> joelpittet/master
 /**
  * Text helper class. Provides simple methods for working with text.
  *
@@ -153,7 +149,7 @@ class Kohana_Text {
 				$pool = '123456789';
 			break;
 			case 'distinct':
-				$pool = '34679ACDEFHJKLMNPRTUVWXY';
+				$pool = '2345679ACDEFHJKLMNPRSTUVWXYZ';
 			break;
 			default:
 				$pool = (string) $type;

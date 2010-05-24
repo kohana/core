@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Acts as an object wrapper for HTML pages with embedded PHP, called "views".
  * Variables can be assigned with the view object and referenced locally within
@@ -71,15 +71,10 @@ class Kohana_View {
 	 * Sets a global variable, similar to [View::set], except that the
 	 * variable will be accessible to all views.
 	 *
-<<<<<<< HEAD
 	 *     View::set_global($name, $value);
 	 *
 	 * @param   string  variable name or an array of variables
 	 * @param   mixed   value
-=======
-	 * @param   string   variable name or an array of variables
-	 * @param   mixed    value
->>>>>>> joelpittet/master
 	 * @return  void
 	 */
 	public static function set_global($key, $value = NULL)
@@ -101,15 +96,10 @@ class Kohana_View {
 	 * Assigns a global variable by reference, similar to [View::bind], except
 	 * that the variable will be accessible to all views.
 	 *
-<<<<<<< HEAD
 	 *     View::bind_global($key, $value);
 	 *
 	 * @param   string  variable name
 	 * @param   mixed   referenced variable
-=======
-	 * @param   string   variable name
-	 * @param   mixed    referenced variable
->>>>>>> joelpittet/master
 	 * @return  void
 	 */
 	public static function bind_global($key, & $value)

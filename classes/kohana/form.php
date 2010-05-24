@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 <?php defined('SYSPATH') or die('No direct access allowed.');
-=======
-<?php defined('SYSPATH') OR die('No direct script access.');
->>>>>>> joelpittet/master
 /**
  * Form helper class. Unless otherwise noted, all generated HTML will be made
  * safe using the [HTML::chars] method. This prevents against simple XSS
@@ -234,14 +230,7 @@ class Kohana_Form {
 		$attributes['name'] = $name;
 
 		// Add default rows and cols attributes (required)
-<<<<<<< HEAD
 		$attributes += array('rows' => 10, 'cols' => 50);
-=======
-		$attributes += array('rows' => 50, 'cols' => 10);
-
-		// Make the textarea body HTML-safe
-		$body = htmlspecialchars($body, ENT_NOQUOTES, Kohana::$charset, $double_encode);
->>>>>>> joelpittet/master
 
 		return '<textarea'.HTML::attributes($attributes).'>'.HTML::chars($body, $double_encode).'</textarea>';
 	}
@@ -356,35 +345,14 @@ class Kohana_Form {
 	/**
 	 * Creates a image form input.
 	 *
-<<<<<<< HEAD
 	 *     echo Form::image(NULL, HTML::image('media/img/login.png'));
-=======
-	 * @param   string  input name
-	 * @param   string  input value
-	 * @param   array   html attributes
-	 * @return  string
-	 */	
-	public static function image($name, $value, array $attributes = NULL)
-	{
-		$attributes['type'] = 'image';
-
-		return Form::input($name, $value, $attributes);
-	}
-
-	/**
-	 * Creates a image form input.
->>>>>>> joelpittet/master
 	 *
 	 * @param   string  input name
 	 * @param   string  input value
 	 * @param   array   html attributes
 	 * @return  string
-<<<<<<< HEAD
 	 * @uses    Form::input
 	 */
-=======
-	 */	
->>>>>>> joelpittet/master
 	public static function image($name, $value, array $attributes = NULL)
 	{
 		$attributes['type'] = 'image';

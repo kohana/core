@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Base session class.
  *
@@ -10,15 +10,10 @@
  */
 abstract class Kohana_Session {
 
-<<<<<<< HEAD
 	/**
 	 * @var  string  default session adapter
 	 */
 	public static $default = 'native';
-=======
-	// Default session type
-	protected static $type = 'native';
->>>>>>> joelpittet/master
 
 	// Session instances
 	protected static $instances = array();
@@ -41,12 +36,8 @@ abstract class Kohana_Session {
 	{
 		if ($type === NULL)
 		{
-<<<<<<< HEAD
 			// Use the default type
-			$type = Session::$default;
-=======
 			$type = Session::$type;
->>>>>>> joelpittet/master
 		}
 
 		if ( ! isset(Session::$instances[$type]))

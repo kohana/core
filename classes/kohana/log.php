@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Message logging with observer-based log writing.
  *
@@ -116,14 +116,11 @@ class Kohana_Log {
 			$time = date(self::$timestamp);
 		}
 
-<<<<<<< HEAD
 		if ($values)
 		{
 			// Insert the values into the message
 			$message = strtr($message, $values);
 		}
-=======
->>>>>>> joelpittet/master
 
 		// Create a new message and timestamp it
 		$this->_messages[] = array

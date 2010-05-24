@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Array and variable validation.
  *
@@ -516,36 +516,6 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
-	 * Add labels using an array.
-	 *
-	 * @param   array   field names, and labels
-	 * @return  $this;
-	 */
-	public function labels(array $array)
-	{
-		foreach($array AS $field => $label)
-		{
-			$this->label($field, $label);
-		}
-		return $this;
-	}
-
-	/**
-	 * Add labels using an array.
-	 *
-	 * @param   array   field names, and labels
-	 * @return  $this;
-	 */
-	public function labels(array $array)
-	{
-		foreach($array AS $field => $label)
-		{
-			$this->label($field, $label);
-		}
-		return $this;
-	}
-
-	/**
 	 * Overwrites or appends filters to a field. Each filter will be executed once.
 	 * All rules must be valid callbacks.
 	 *
@@ -562,7 +532,7 @@ class Kohana_Validate extends ArrayObject {
 		if ($field !== TRUE AND ! isset($this->_labels[$field]))
 		{
 			// Set the field label to the field name
-			$this->_labels[$field] = ucfirst(preg_replace('/[^\pL]+/u', ' ', $field));
+			$this->_labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
 		}
 
 		// Store the filter and params for this rule
@@ -606,7 +576,7 @@ class Kohana_Validate extends ArrayObject {
 		if ($field !== TRUE AND ! isset($this->_labels[$field]))
 		{
 			// Set the field label to the field name
-			$this->_labels[$field] = ucfirst(preg_replace('/[^\pL]+/u', ' ', $field));
+			$this->_labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
 		}
 
 		// Store the rule and params for this rule
