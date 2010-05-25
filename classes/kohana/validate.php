@@ -766,24 +766,36 @@ class Kohana_Validate extends ArrayObject {
 				// Add the field value to the parameters
 				array_unshift($params, $value);
 
-				if (strpos($filter, '::') === FALSE)
+				if (is_string($filter) AND strpos($filter, '::') !== FALSE)
+				{
+					// Make the static filter into an array
+					$filter = explode('::', $filter, 2);
+				}
+
+				if (is_array($filter))
+				{
+					// Separate the object and method
+					list($object, $method) = $filter;
+
+					// Use a method in the given object
+					$method = new ReflectionMethod($object, $method);
+
+					if ( ! is_object($object))
+					{
+						// The object must be NULL for static calls
+						$object = NULL;
+					}
+
+					// Call $object->$method($this[$field], $param, ...) with Reflection
+					$value = $method->invokeArgs($object, $params);	
+				}
+				else
 				{
 					// Use a function call
 					$function = new ReflectionFunction($filter);
 
 					// Call $function($this[$field], $param, ...) with Reflection
 					$value = $function->invokeArgs($params);
-				}
-				else
-				{
-					// Split the class and method of the rule
-					list($class, $method) = explode('::', $filter, 2);
-
-					// Use a static method call
-					$method = new ReflectionMethod($class, $method);
-
-					// Call $Class::$method($this[$field], $param, ...) with Reflection
-					$value = $method->invokeArgs(NULL, $params);
 				}
 			}
 
