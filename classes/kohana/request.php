@@ -13,6 +13,16 @@
  */
 class Kohana_Request {
 
+	// Request types
+	const CONNECT = 'CONNECT';
+	const DELETE  = 'DELETE';
+	const GET     = 'GET';
+	const HEAD    = 'HEAD';
+	const POST    = 'POST';
+	const PUT     = 'PUT';
+	const OPTIONS = 'OPTIONS';
+	const TRACE   = 'TRACE';
+
 	/**
 	 * @var  string  protocol: http, https, ftp, cli, etc
 	 */
@@ -475,11 +485,6 @@ class Kohana_Request {
 	public $route;
 
 	/**
-	 * @var  boolean  true if external request
-	 */
-	public $external = FALSE;
-
-	/**
 	 * @var  integer  HTTP response code: 200, 404, 500, etc
 	 */
 	public $status = 200;
@@ -541,6 +546,11 @@ class Kohana_Request {
 
 	// Parameters extracted from the route
 	protected $_params;
+
+	/**
+	 * @var  boolean  true if external request
+	 */
+	protected $_external = FALSE;
 
 	/**
 	 * Creates a new request object for the given URI. New requests should be
@@ -619,7 +629,7 @@ class Kohana_Request {
 		}
 
 		// No matching route for this URI
-		$this->status = 404;
+		$this->response = new Response(array('status' => 404));
 
 		throw new Kohana_Request_Exception('Unable to find a route to match the URI: :uri',
 			array(':uri' => $uri));
@@ -758,6 +768,55 @@ class Kohana_Request {
 	}
 
 	/**
+	 * Sets and gets the method this [Request] will use when executed.
+	 * 
+	 * - When no argument is supplied the current HTTP method will be returned.
+	 * - HTTP methods supplied will be set to this request
+	 * 
+	 *      // Make the request type GET (default)
+	 *      $request->method(Request::GET);
+	 * 
+	 *      // Make the request type POST
+	 *      $request->method(Request::POST);
+	 * 
+	 *      // Make the request type PUT
+	 *      $request->method(Request::PUT);
+	 *
+	 * @param   string   method to set to the [Request]
+	 * @return  mixed
+	 * @throws  Kohana_Request_Exception
+	 */
+	public function method($method = NULL)
+	{
+		// If there is no method supplied
+		if ($method === NULL)
+		{
+			// Return the current method
+			return $this->method;
+		}
+
+		// Transform the method to uppercase
+		$method = strtoupper($method);
+
+		// Create a reflection of this class
+		// NOTE: Reflection may be too slow, might need to refactor!
+		$reflection = new ReflectionClass($this);
+
+		// If the method does not match one of the HTTP methods defined (as a constant)
+		if ( ! in_array($method, $reflection->getConstants()))
+		{
+			// Throw an exception
+			throw new Kohana_Request_Exception(__METHOD__.' HTTP method supplied is not supported : :method', array(':method' => $method));
+		}
+
+		// Set the method to this request
+		$this->method = $method;
+
+		// Return this
+		return $this;
+	}
+
+	/**
 	 * Processes the request, executing the controller action that handles this
 	 * request, determined by the [Route].
 	 *
@@ -780,8 +839,10 @@ class Kohana_Request {
 	public function execute()
 	{
 		// If this is an external request, process it as such
-		if ($this->external)
+		if ($this->_external)
+		{
 			return $this->_external_execute();
+		}
 
 		// Create the class prefix
 		$prefix = 'controller_';
@@ -844,12 +905,12 @@ class Kohana_Request {
 			if ($e instanceof ReflectionException)
 			{
 				// Reflection will throw exceptions for missing classes or actions
-				$this->status = 404;
+				$this->response->status = 404;
 			}
 			else
 			{
 				// All other exceptions are PHP/server errors
-				$this->status = 500;
+				$this->response->status = 500;
 			}
 
 			// Re-throw the exception
@@ -999,14 +1060,15 @@ class Kohana_Request {
 			$curl_options[CURLOPT_POSTFIELDS] = $this->post;
 		}
 
-		$config = array(
-			'status'   => array_pop(Remote::$headers),
+		$config = array
+		(
 			'body'     => Remote::get($this->uri, $curl_options),
+			'status'   => array_pop(Remote::$headers),
 			'headers'  => Remote::$headers,
 		);
 
 		// Create a response
-		$this->response = Response::factory($config);
+		$this->response = new Response($config);
 
 		// Cache the response
 		$external_executions[$request_hash] = $this->response;
