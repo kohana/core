@@ -1,11 +1,14 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Provides simple benchmarking and profiling.
+ * Provides simple benchmarking and profiling. To display the statistics that
+ * have been collected, load the `profiler/stats` [View]:
+ *
+ *     echo View::factory('profiler/stats');
  *
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2009 Kohana Team
+ * @copyright  (c) 2009-2010 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 class Kohana_Profiler {
@@ -19,7 +22,10 @@ class Kohana_Profiler {
 	protected static $_marks = array();
 
 	/**
-	 * Starts a new benchmark and returns a unique token.
+	 * Starts a new benchmark and returns a unique token. The returned token
+	 * _must_ be used when stopping the benchmark.
+	 *
+	 *     $token = Profiler::start('test', 'profiler');
 	 *
 	 * @param   string  group name
 	 * @param   string  benchmark name
@@ -52,6 +58,8 @@ class Kohana_Profiler {
 	/**
 	 * Stops a benchmark.
 	 *
+	 *     Profiler::stop($token);
+	 *
 	 * @param   string  token
 	 * @return  void
 	 */
@@ -63,7 +71,11 @@ class Kohana_Profiler {
 	}
 
 	/**
-	 * Deletes a benchmark.
+	 * Deletes a benchmark. If an error occurs during the benchmark, it is
+	 * recommended to delete the benchmark to prevent statistics from being
+	 * adversely affected.
+	 *
+	 *     Profiler::delete($token);
 	 *
 	 * @param   string  token
 	 * @return  void
@@ -76,6 +88,8 @@ class Kohana_Profiler {
 
 	/**
 	 * Returns all the benchmark tokens by group and name as an array.
+	 *
+	 *     $groups = Profiler::groups();
 	 *
 	 * @return  array
 	 */
@@ -95,8 +109,11 @@ class Kohana_Profiler {
 	/**
 	 * Gets the min, max, average and total of a set of tokens as an array.
 	 *
+	 *     $stats = Profiler::stats($tokens);
+	 *
 	 * @param   array  profiler tokens
 	 * @return  array  min, max, average, total
+	 * @uses    Profiler::total
 	 */
 	public static function stats(array $tokens)
 	{
@@ -164,8 +181,12 @@ class Kohana_Profiler {
 	/**
 	 * Gets the min, max, average and total of profiler groups as an array.
 	 *
+	 *     $stats = Profiler::group_stats('test');
+	 *
 	 * @param   mixed  single group name string, or array with group names; all groups by default
 	 * @return  array  min, max, average, total
+	 * @uses    Profiler::groups
+	 * @uses    Profiler::stats
 	 */
 	public static function group_stats($groups = NULL)
 	{
@@ -243,6 +264,8 @@ class Kohana_Profiler {
 	/**
 	 * Gets the total execution time and memory usage of a benchmark as a list.
 	 *
+	 *     list($time, $memory) = Profiler::total($token);
+	 *
 	 * @param   string  token
 	 * @return  array   execution time, memory
 	 */
@@ -269,9 +292,13 @@ class Kohana_Profiler {
 	}
 
 	/**
-	 * Gets the total application run time and memory usage.
+	 * Gets the total application run time and memory usage. Caches the result
+	 * so that it can be compared between requests.
+	 *
+	 *     list($time, $memory) = Profiler::application();
 	 *
 	 * @return  array  execution time, memory
+	 * @uses    Kohana::cache
 	 */
 	public static function application()
 	{

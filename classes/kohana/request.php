@@ -44,6 +44,16 @@ class Kohana_Request {
 	public static $client_ip = '0.0.0.0';
 
 	/**
+	 * @var  object  main request instance
+	 */
+	public static $instance;
+
+	/**
+	 * @var  object  currently executing request instance
+	 */
+	public static $current;
+
+	/**
 	 * Main request singleton instance. If no URI is provided, the URI will
 	 * be automatically detected using PATH_INFO, REQUEST_URI, or PHP_SELF.
 	 *
@@ -54,9 +64,7 @@ class Kohana_Request {
 	 */
 	public static function instance( & $uri = TRUE)
 	{
-		static $instance;
-
-		if ($instance === NULL)
+		if ( ! Request::$instance)
 		{
 			if (Kohana::$is_cli)
 			{
@@ -205,14 +213,33 @@ class Kohana_Request {
 			$config['get'] = $_GET;
 			$config['post'] = $_POST;
 
-			// Create the instance singleton
-			$instance = new Request($uri, $config);
 
-			// Add the Content-Type header
-//			$instance->headers['Content-Type'] = 'text/html; charset='.Kohana::$charset;
+			// Reduce multiple slashes to a single slash
+			$uri = preg_replace('#//+#', '/', $uri);
+
+			// Remove all dot-paths from the URI, they are not valid
+			$uri = preg_replace('#\.[\s./]*/#', '', $uri);
+
+			// Create the instance singleton
+			Request::$instance = Request::$current = new Request($uri, $config);
 		}
 
-		return $instance;
+		return Request::$instance;
+	}
+
+	/**
+	 * Return the currently executing request. This is changed to the current
+	 * request when [Request::execute] is called and restored when the request
+	 * is completed.
+	 *
+	 *     $request = Request::current();
+	 *
+	 * @return  Request
+	 * @since   3.0.5
+	 */
+	public static function current()
+	{
+		return Request::$current;
 	}
 
 	/**
@@ -544,7 +571,9 @@ class Kohana_Request {
 	 */
 	protected $_previous_environment = FALSE;
 
-	// Parameters extracted from the route
+	/**
+	 * @var  array    parameters extracted from the route
+	 */
 	protected $_params;
 
 	/**
@@ -817,6 +846,120 @@ class Kohana_Request {
 	}
 
 	/**
+	 * Gets and sets the HTTP `GET` parameters to the [Request].
+	 * All `GET` parameters will be returned as an array if no arguments are passed.
+	 * 
+	 *      $get_parameters = $request->get();
+	 * 
+	 * A single GET parameter can be returned when passing the corresponding key.
+	 * 
+	 *      $bar = $request->get('foo');
+	 * 
+	 * Key/value pairs can be set passing an associative array.
+	 * 
+	 *      $request = Request::factory('foo/bar')
+	 *           ->get(array('foo' => 'bar', 'important' => FALSE));
+	 * 
+	 * A single GET parameter can be set if passing a key value pair as arguments.
+	 * 
+	 *      $request = Request::factory('foo/bar')
+	 *           ->get('foo', 'bar');
+	 *
+	 * @param   array|string  array of key value pairs or key as string
+	 * @param   mixed    value to set to key
+	 * @return  mixed
+	 */
+	public function get($key = NULL, $value = NULL)
+	{
+		return $this->_access_property('get', $key, $value);
+	}
+
+	/**
+	 * Gets and sets the HTTP `POST` parameters to the [Request].
+	 * All `POST` parameters will be returned as an array if no arguments are passed.
+	 * 
+	 *      $post_parameters = $request->post();
+	 * 
+	 * A single POST parameter can be returned when passing the corresponding key.
+	 * 
+	 *      $bar = $request->post('foo');
+	 * 
+	 * Key/value pairs can be set passing an associative array.
+	 * 
+	 *      $request = Request::factory('foo/bar')
+	 *           ->post(array('foo' => 'bar', 'important' => FALSE));
+	 * 
+	 * A single POST parameter can be set if passing a key value pair as arguments.
+	 * 
+	 *      $request = Request::factory('foo/bar')
+	 *           ->post('foo', 'bar');
+	 *
+	 * @param   array|string  array of key value pairs or key as string
+	 * @param   mixed    value to set to key
+	 * @return  mixed
+	 */
+	public function post($key = NULL, $value = NULL)
+	{
+		return $this->_access_property('get', $key, $value);
+	}
+
+	/**
+	 * Gets and sets the HTTP [Request] Headers. All headers will be returned as an array if no arguments are passed.
+	 * 
+	 *      $headers = $request->headers();
+	 * 
+	 * A single header can be returned when passing the corresponding key.
+	 * 
+	 *      $bar = $request->headers('X-Request-Foo');
+	 * 
+	 * Key/value pairs can be set passing an associative array.
+	 * 
+	 *      $request = Request::factory('foo/bar')
+	 *           ->headers(array('X-Request-Foo' => 'bar', 'X-Kohana-Version' => 3.1));
+	 * 
+	 * A single header can be set if passing a key value pair as arguments.
+	 * 
+	 *      $request = Request::factory('foo/bar')
+	 *           ->headers('X-Request-Foo', 'bar');
+	 *
+	 * @param   array|string  array of key value pairs or key as string
+	 * @param   mixed    value to set to key
+	 * @return  mixed
+	 */
+	public function headers($key = NULL, $value = NULL)
+	{
+		return $this->_access_property('headers', $key, $value);
+	}
+
+	/**
+	 * Gets and sets the HTTP [Request] Cookies. All cookies will be returned as an array if no arguments are passed.
+	 * 
+	 *      $headers = $request->cookies();
+	 * 
+	 * A single cookie can be returned when passing the corresponding key.
+	 * 
+	 *      $bar = $request->cookies('Request-Foo');
+	 * 
+	 * Key/value pairs can be set passing an associative array.
+	 * 
+	 *      $request = Request::factory('foo/bar')
+	 *           ->cookies(array('Request-Foo' => 'bar', 'Kohana-Version' => 3.1));
+	 * 
+	 * A single cookie can be set if passing a key value pair as arguments.
+	 * 
+	 *      $request = Request::factory('foo/bar')
+	 *           ->cookies('Request-Foo', 'bar');
+	 *
+	 * @param   array|string  array of key value pairs or key as string
+	 * @param   mixed    value to set to key
+	 * @return  mixed
+	 */
+	public function cookies($key = NULL, $value = NULL)
+	{
+		return $this->_access_property('cookies', $key, $value);
+	}
+
+	/**
 	 * Processes the request, executing the controller action that handles this
 	 * request, determined by the [Route].
 	 *
@@ -847,17 +990,32 @@ class Kohana_Request {
 		// Create the class prefix
 		$prefix = 'controller_';
 
-		if ( ! empty($this->directory))
+		if ($this->directory)
 		{
 			// Add the directory name to the class prefix
 			$prefix .= str_replace(array('\\', '/'), '_', trim($this->directory, '/')).'_';
 		}
 
-		if (Kohana::$profiling === TRUE)
+		if (Kohana::$profiling)
 		{
+			// Set the benchmark name
+			$benchmark = '"'.$this->uri.'"';
+
+			if ($this !== Request::$instance)
+			{
+				// Add the parent request uri
+				$benchmark .= ' « "'.Request::$current->uri.'"';
+			}
+
 			// Start benchmarking
-			$benchmark = Profiler::start('Requests', $this->uri);
+			$benchmark = Profiler::start('Requests', $benchmark);
 		}
+
+		// Store the currently active request
+		$previous = Request::$current;
+
+		// Change the current request to this request
+		Request::$current = $this;
 
 		try
 		{
@@ -896,6 +1054,9 @@ class Kohana_Request {
 		}
 		catch (Exception $e)
 		{
+			// Restore the previous request
+			Request::$current = $previous;
+
 			if (isset($benchmark))
 			{
 				// Delete the benchmark, it is invalid
@@ -916,6 +1077,9 @@ class Kohana_Request {
 			// Re-throw the exception
 			throw $e;
 		}
+
+		// Restore the previous request
+		Request::$current = $previous;
 
 		if (isset($benchmark))
 		{
@@ -1013,34 +1177,35 @@ class Kohana_Request {
 	 *
 	 * @param   array    Additional headers to send with the request
 	 * @param   string   The HTTP method to use
-	 * @return  $this
+	 * @return  [Kohana_Response]
+	 * @throws  [Kohana_Request_Exception]
 	 */
 	protected function _external_execute()
 	{
-		// Cached store of requests
-		static $external_executions;
-
 		// Start benchmarking if required
-		$benchmark = (Kohana::$profiling === TRUE) ? Profiler::start('Requests', $this->uri) : NULL;
+		if (Kohana::$profiling)
+		{
+			// Start benchmarking
+			$benchmark = Profiler::start('Requests', '"'.$this->uri.'" « "'.Request::$current->uri.'"');
+		}
 
 		// Encode the request components
 		$encoded_components = array(
-			'headers'  => ($this->headers) ? http_build_query($this->headers) : NULL,
 			'cookies'  => ($this->cookies) ? http_build_query($this->cookies, '', '; ') : NULL,
 			'get'      => ($this->get) ? http_build_query($this->get) : NULL,
-			'post'     => ($this->post) ? http_build_query($this->post) : NULL,
 		);
 
 		// If there are GET parameters, add them to the uri
 		if ($encoded_components['get'] !== NULL)
+		{
 			$this->uri .= '?'.$encoded_components['get'];
+		}
 
-		// Create a hash of the request
-		$request_hash = sha1($this->method.' '.$this->uri.'|HEADERS;'.$encoded_components['headers'].'|COOKIES;'.$encoded_components['cookies'].'|POST;'.$encoded_components['post']);
+		// Store the currently active request
+		$previous = Request::$current;
 
-		// If this request has been run
-		if (isset($external_executions[$request_hash]))
-			return $external_executions[$request_hash];
+		// Change the current request to this request
+		Request::$current = $this;
 
 		// Compile the base curl settings
 		$curl_options = array(
@@ -1060,22 +1225,28 @@ class Kohana_Request {
 			$curl_options[CURLOPT_POSTFIELDS] = $this->post;
 		}
 
-		$config = array
-		(
-			'body'     => Remote::get($this->uri, $curl_options),
-			'status'   => array_pop(Remote::$headers),
-			'headers'  => Remote::$headers,
-		);
+		try
+		{
+			// Create a response
+			$this->response = Remote::get($this->uri, $curl_options);
+		}
+		catch (Kohana_Exception $e)
+		{
+			// Convert Remote exceptions to Kohana_Request_Exception
+			throw new Kohana_Request_Exception(__METHOD__.' unable to complete external request with message : :message', array(':message' => $e->getMessage()));
+		}
+		catch (Exception $e)
+		{
+			// Rethrow unexpected exceptions
+			throw $e;
+		}
 
-		// Create a response
-		$this->response = new Response($config);
-
-		// Cache the response
-		$external_executions[$request_hash] = $this->response;
+		// Restore the previous request
+		Request::$current = $previous;
 
 		if ($benchmark !== NULL)
 		{
-			// Stop benchmarking if running
+			// Stop the benchmark
 			Profiler::stop($benchmark);
 		}
 
@@ -1083,4 +1254,37 @@ class Kohana_Request {
 		return $this->response;
 	}
 
+	/**
+	 * Provides access to the GET/POST variables
+	 * within this object.
+	 * 
+	 *     // Set a value to POST
+	 *     $this->_get_post_variables('post', 'age', 25);
+	 *
+	 * @param   string   either `get` or `post`
+	 * @param   string   the key to set
+	 * @param   string   the value to set to the key
+	 * @return  mixed
+	 */
+	protected function _get_set_property($property, $key = NULL, $value = NULL)
+	{
+		if ($key === NULL)
+		{
+			return $this->$property;
+		}
+		else if (is_array($key))
+		{
+			$this->$property = $key;
+			return $this;
+		}
+		else if ($value === NULL)
+		{
+			return isset($this->$property[$key]) ? $this->$property[$key] : NULL;
+		}
+		else
+		{
+			$this->$property[$key] = $value;
+			return $this;
+		}
+	}
 } // End Request

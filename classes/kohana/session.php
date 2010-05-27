@@ -10,8 +10,10 @@
  */
 abstract class Kohana_Session {
 
-	// Default session type
-	protected static $type = 'native';
+	/**
+	 * @var  string  default session adapter
+	 */
+	public static $default = 'native';
 
 	// Session instances
 	protected static $instances = array();
@@ -35,7 +37,7 @@ abstract class Kohana_Session {
 		if ($type === NULL)
 		{
 			// Use the default type
-			$type = Session::$type;
+			$type = Session::$default;
 		}
 
 		if ( ! isset(Session::$instances[$type]))
@@ -145,10 +147,10 @@ abstract class Kohana_Session {
 	 * assigned by reference.
 	 *
 	 *     // Get a copy of the current session data
-	 *     $data = Session::as_array();
+	 *     $data = $session->as_array();
 	 *
 	 *     // Assign by reference for modification
-	 *     $data =& Session::as_array();
+	 *     $data =& $session->as_array();
 	 *
 	 * @return  array
 	 */
@@ -193,11 +195,17 @@ abstract class Kohana_Session {
 	 *     $session->delete('foo');
 	 *
 	 * @param   string  variable name
+	 * @param   ...
 	 * @return  $this
 	 */
 	public function delete($key)
 	{
-		unset($this->_data[$key]);
+		$args = func_get_args();
+
+		foreach ($args as $key)
+		{
+			unset($this->_data[$key]);
+		}
 
 		return $this;
 	}

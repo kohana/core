@@ -10,16 +10,6 @@
  */
 class Kohana_Remote {
 
-	// Request types
-	const CONNECT = 'CONNECT';
-	const DELETE  = 'DELETE';
-	const GET     = 'GET';
-	const HEAD    = 'HEAD';
-	const POST    = 'POST';
-	const PUT     = 'PUT';
-	const OPTIONS = 'OPTIONS';
-	const TRACE   = 'TRACE';
-
 	// Default curl options
 	public static $default_options = array
 	(
@@ -33,7 +23,34 @@ class Kohana_Remote {
 	/**
 	 * @var     array  Headers from the request
 	 */
-	public static $headers = array();
+	protected static $_headers = array();
+
+	/**
+	 * Parses the returned headers from the remote
+	 * request
+	 *
+	 * @param   resource the curl resource
+	 * @param   string   the full header string
+	 * @return  int
+	 */
+	protected static function _parse_headers($remote, $header)
+	{
+		$headers = array();
+
+		if (preg_match_all('/(\w[^\s:]*):[ ]*([^\r\n]*(?:\r\n[ \t][^\r\n]*)*)/', $header, $matches))
+		{
+			foreach ($matches[0] as $key => $value)
+				$headers[$matches[1][$key]] = $matches[2][$key];
+		}
+
+		// If there are headers to apply
+		if ($headers)
+		{
+			Response::$_headers += $headers;
+		}
+
+		return strlen($header);
+	}
 
 	/**
 	 * Returns the output of a remote URL.
@@ -50,13 +67,13 @@ class Kohana_Remote {
 	 *
 	 * @param   string   remote URL
 	 * @param   array    curl options
-	 * @return  string
-	 * @throws  Kohana_Exception
+	 * @return  [Kohana_Response]
+	 * @throws  [Kohana_Exception]
 	 */
 	public static function get($url, array $options = NULL)
 	{
 		// Reset the headers
-		Remote::$headers = array();
+		Remote::$_headers = array();
 
 		if ($options === NULL)
 		{
@@ -102,9 +119,11 @@ class Kohana_Remote {
 				array(':url' => $url, ':code' => $code, ':error' => $error));
 		}
 
-		// Include the status code
-		Remote::$headers['status'] = $code;
-		return $response;
+		return new Response(array(
+			'status'     => $code,
+			'headers'    => Remote::$_headers,
+			'body'       => $response,
+		));
 	}
 
 	/**
@@ -169,31 +188,6 @@ class Kohana_Remote {
 		fclose($remote);
 
 		return $response;
-	}
-
-	/**
-	 * Parses the returned headers from the remote
-	 * request
-	 *
-	 * @param   resource the curl resource
-	 * @param   string   the full header string
-	 * @return  int
-	 */
-	protected static function _parse_headers($remote, $header)
-	{
-		$headers = array();
-
-		if (preg_match_all('/(\w[^\s:]*):[ ]*([^\r\n]*(?:\r\n[ \t][^\r\n]*)*)/', $header, $matches))
-		{
-			foreach ($matches[0] as $key => $value)
-				$headers[$matches[1][$key]] = $matches[2][$key];
-		}
-
-		// If there are headers to apply
-		if ($headers)
-			self::$headers += $headers;
-
-		return strlen($header);
 	}
 
 	final private function __construct()

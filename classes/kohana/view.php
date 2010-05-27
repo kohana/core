@@ -325,7 +325,7 @@ class Kohana_View {
 	 * Renders the view object to a string. Global and local data are merged
 	 * and extracted to create local variables within the view file.
 	 *
-	 *     $output = View::render();
+	 *     $output = $view->render();
 	 *
 	 * [!!] Global variables with the same key name as local variables will be
 	 * overwritten by the local variable.

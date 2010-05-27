@@ -26,6 +26,11 @@
 class Kohana_Encrypt {
 
 	/**
+	 * @var  string  default instance name
+	 */
+	public static $default = 'default';
+
+	/**
 	 * @var  array  Encrypt class instances
 	 */
 	public static $instances = array();
@@ -42,8 +47,14 @@ class Kohana_Encrypt {
 	 * @param   string  configuration group name
 	 * @return  object
 	 */
-	public static function instance($name = 'default')
+	public static function instance($name = NULL)
 	{
+		if ($name === NULL)
+		{
+			// Use the default instance name
+			$name = Encrypt::$default;
+		}
+
 		if ( ! isset(Encrypt::$instances[$name]))
 		{
 			// Load the configuration data

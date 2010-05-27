@@ -440,7 +440,7 @@ class Kohana_Validate extends ArrayObject {
 	protected $_labels = array();
 
 	// Rules that are executed even when the value is empty
-	protected $_empty_rules = array('not_empty', 'matches', 'min_length', 'exact_length');
+	protected $_empty_rules = array('not_empty', 'matches');
 
 	// Error list, field => rule
 	protected $_errors = array();
@@ -455,6 +455,26 @@ class Kohana_Validate extends ArrayObject {
 	public function __construct(array $array)
 	{
 		parent::__construct($array, ArrayObject::STD_PROP_LIST);
+	}
+
+	/**
+	 * Copies the current filter/rule/callback to a new array.
+	 *
+	 *     $copy = $array->copy($new_data);
+	 *
+	 * @param   array   new data set
+	 * @return  Validation
+	 * @since   3.0.5
+	 */
+	public function copy(array $array)
+	{
+		// Create a copy of the current validation set
+		$copy = clone $this;
+
+		// Replace the data set
+		$copy->exchangeArray($array);
+
+		return $copy;
 	}
 
 	/**
@@ -988,6 +1008,10 @@ class Kohana_Validate extends ArrayObject {
 			elseif ($message = Kohana::message($file, "{$field}.default"))
 			{
 				// Found a default message for this field
+			}
+			elseif ($message = Kohana::message($file, $error))
+			{
+				// Found a default message for this error
 			}
 			elseif ($message = Kohana::message('validate', $error))
 			{

@@ -3,10 +3,17 @@
 class Kohana_Response {
 
 	/**
-	 * Factory method
+	 * Factory method to create a new [Response]. Pass properties
+	 * in using an associative array.
+	 * 
+	 *      // Create a new response
+	 *      $response = Response::factory();
+	 * 
+	 *      // Create a new response with headers
+	 *      $response = Response::factory(array('status' => 200));
 	 *
 	 * @param   array    setup the response object
-	 * @return  object
+	 * @return  [Kohana_Response]
 	 */
 	public static function factory(array $config = array())
 	{
@@ -94,8 +101,13 @@ class Kohana_Response {
 		foreach ($config as $key => $value)
 		{
 			if (property_exists($this, $key))
+			{
 				$this->$key = $value;
+			}
 		}
+
+		// Add the default Content-Type header if required
+		$this->headers['Content-Type'] += array('Content-Type' => 'text/html; charset='.Kohana::$charset);
 	}
 
 	/**

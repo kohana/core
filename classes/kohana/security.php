@@ -11,6 +11,11 @@
 class Kohana_Security {
 
 	/**
+	 * @var  string  key name used for token storage
+	 */
+	public static $token_name = 'security_token';
+
+	/**
 	 * Remove XSS from user input.
 	 *
 	 *     $str = Security::xss_clean($str);
@@ -98,6 +103,65 @@ class Kohana_Security {
 		while ($old !== $str);
 
 		return $str;
+	}
+
+	/**
+	 * Generate and store a unique token which can be used to help prevent
+	 * [CSRF](http://wikipedia.org/wiki/Cross_Site_Request_Forgery) attacks.
+	 *
+	 *     $token = Security::token();
+	 *
+	 * You can insert this token into your forms as a hidden field:
+	 *
+	 *     echo Form::hidden('csrf', Security::token());
+	 *
+	 * And then check it when using [Validate]:
+	 *
+	 *     $array->rules('csrf', array(
+	 *         'not_empty'       => NULL,
+	 *         'Security::check' => NULL,
+	 *     ));
+	 *
+	 * This provides a basic, but effective, method of preventing CSRF attacks.
+	 *
+	 * @param   boolean  force a new token to be generated?
+	 * @return  string
+	 * @uses    Session::instance
+	 */
+	public static function token($new = FALSE)
+	{
+		$session = Session::instance();
+
+		// Get the current token
+		$token = $session->get(Security::$token_name);
+
+		if ($new === TRUE OR ! $token)
+		{
+			// Generate a new unique token
+			$token = uniqid('security');
+
+			// Store the new token
+			$session->set(Security::$token_name, $token);
+		}
+
+		return $token;
+	}
+
+	/**
+	 * Check that the given token matches the currently stored security token.
+	 *
+	 *     if (Security::check($token))
+	 *     {
+	 *         // Pass
+	 *     }
+	 *
+	 * @param   string   token to check
+	 * @return  boolean
+	 * @uses    Security::token
+	 */
+	public static function check($token)
+	{
+		return Security::token() === $token;
 	}
 
 	/**

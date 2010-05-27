@@ -41,6 +41,7 @@ class Kohana_I18n {
 	 *
 	 * @param   string   new language setting
 	 * @return  string
+	 * @since   3.0.2
 	 */
 	public static function lang($lang = NULL)
 	{

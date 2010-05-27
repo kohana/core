@@ -37,7 +37,7 @@ class Kohana_Form {
 		if ($action === NULL)
 		{
 			// Use the current URI
-			$action = Request::instance()->uri;
+			$action = Request::current()->uri;
 		}
 
 		if ($action === '')
@@ -230,7 +230,7 @@ class Kohana_Form {
 		$attributes['name'] = $name;
 
 		// Add default rows and cols attributes (required)
-		$attributes += array('rows' => 50, 'cols' => 10);
+		$attributes += array('rows' => 10, 'cols' => 50);
 
 		return '<textarea'.HTML::attributes($attributes).'>'.HTML::chars($body, $double_encode).'</textarea>';
 	}
