@@ -485,20 +485,27 @@ class Kohana_Request {
 	 */
 	protected static function _request_external($uri)
 	{
-		// If there is no protocal, request is internal
+		// If there is no protocol
 		if (FALSE === strpos($uri, '://'))
+		{
+			// request is internal
 			return FALSE;
+		}
 
-		// Discover in uri is statistics
+		// Grab the basepath and match against URI
 		$base_path = URL::base(TRUE, TRUE);
 		$base_path_position = strpos($uri, $base_path);
 
 		// If the base_path did not match at all, or it was located beyond the start
 		// of the URI
 		if (FALSE === $base_path_position or 0 < $base_path_position)
+		{
 			return TRUE;
-
-		return FALSE;
+		}
+		else
+		{
+			return FALSE;
+		}
 	}
 
 	/**
@@ -606,7 +613,7 @@ class Kohana_Request {
 		// Test if request is internal or external
 		if (Request::_request_external($uri))
 		{
-			$this->external = TRUE;
+			$this->_external = TRUE;
 			$this->uri = $uri;
 			return;
 		}
@@ -1031,11 +1038,11 @@ class Kohana_Request {
 					array(':controller' => $prefix.$this->controller));
 			}
 
-			// Create a response
-			$this->response = new Response;
-
 			// Create a new instance of the controller
 			$controller = $class->newInstance($this);
+
+			// Link the controllers response object to the request
+			$this->response = $controller->response;
 
 			// Execute the "before action" method
 			$class->getMethod('before')->invoke($controller);

@@ -136,6 +136,79 @@ class Kohana_Response implements Serializable {
 	}
 
 	/**
+	 * Sets or gets the HTTP status from this response.
+	 * 
+	 *      // Set the HTTP status to 404 Not Found
+	 *      $response = Response::factory()
+	 *              ->status(404);
+	 * 
+	 *      // Get the current status
+	 *      $status = $response->status();
+	 *
+	 * @param   integer  status to set to this response
+	 * @return  integer|self
+	 */
+	public function status($status = NULL)
+	{
+		if ($status === NULL)
+		{
+			return $this->status;
+		}
+		else if (array_key_exists($status, Response::$messages))
+		{
+			$this->status = (int) $status;
+			return $this;
+		}
+		else
+		{
+			throw new Kohana_Exception(__METHOD__.' unknown status value : :value', array(':value' => $status));
+		}
+	}
+
+	/**
+	 * Gets and sets headers to the [Response], allowing chaining
+	 * of response methods. If chaining isn't required, direct
+	 * access to the property should be used instead.
+	 * 
+	 *       // Get a header
+	 *       $accept = $response->headers('Content-Type');
+	 * 
+	 *       // Set a header
+	 *       $response->headers('Content-Type', 'text/html');
+	 * 
+	 *       // Get all headers
+	 *       $headers = $response->headers();
+	 * 
+	 *       // Set multiple headers
+	 *       $response->headers(array('Content-Type' => 'text/html', 'Cache-Control' => 'no-cache'));
+	 *
+	 * @param string $key 
+	 * @param string $value 
+	 * @return void
+	 */
+	public function headers($key = NULL, $value = NULL)
+	{
+		if ($key === NULL)
+		{
+			return $this->headers;
+		}
+		else if (is_array($key))
+		{
+			$this->headers = $key;
+			return $this;
+		}
+		else if ($value === NULL)
+		{
+			return $this->headers[$key];
+		}
+		else
+		{
+			$this->headers[$key] = $value;
+			return $this;
+		}
+	}
+
+	/**
 	 * Sets a cookie to the response
 	 *
 	 * @param   string   name 

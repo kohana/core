@@ -44,8 +44,8 @@ abstract class Kohana_Controller {
 		// Assign the request to the controller
 		$this->request = $request;
 		
-		// Assign the response to the controller
-		$this->response = $request->response;
+		// Assign a response to the controller
+		$this->response = new Response;
 	}
 
 	/**

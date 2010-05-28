@@ -67,8 +67,8 @@ abstract class Kohana_Controller_REST extends Controller {
 	public function action_invalid()
 	{
 		// Send the "Method Not Allowed" response
-		$this->response->status = 405;
-		$this->response->headers['Allow'] = implode(', ', array_keys($this->_action_map));
+		$this->response->status(405)
+			->headers('Allow', implode(', ', array_keys($this->_action_map)));
 	}
 
 } // End REST
