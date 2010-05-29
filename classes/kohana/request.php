@@ -945,7 +945,7 @@ class Kohana_Request {
 	 */
 	public function post($key = NULL, $value = NULL)
 	{
-		return $this->_access_property('get', $key, $value);
+		return $this->_access_property('post', $key, $value);
 	}
 
 	/**
@@ -1311,7 +1311,7 @@ class Kohana_Request {
 	 * @param   string   the value to set to the key
 	 * @return  mixed
 	 */
-	protected function _get_set_property($property, $key = NULL, $value = NULL)
+	protected function _access_property($property, $key = NULL, $value = NULL)
 	{
 		if ($key === NULL)
 		{
