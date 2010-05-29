@@ -777,6 +777,18 @@ class Kohana_Request {
 	}
 
 	/**
+	 * Get/Set value(s) to/from the request header
+	 *
+	 * @param   string|array key of the header to get or set
+	 * @param   string   value to set to the key
+	 * @return  mixed
+	 */
+	public function header($key = NULL, $value = NULL)
+	{
+		return $this->_access_property($key, $value);
+	}
+
+	/**
 	 * Redirects as the request response.
 	 *
 	 * @param   string   redirect location
@@ -915,33 +927,6 @@ class Kohana_Request {
 		return $this->_access_property('post', $key, $value);
 	}
 
-	/**
-	 * Gets and sets the HTTP [Request] Headers. All headers will be returned as an array if no arguments are passed.
-	 * 
-	 *      $headers = $request->headers();
-	 * 
-	 * A single header can be returned when passing the corresponding key.
-	 * 
-	 *      $bar = $request->headers('X-Request-Foo');
-	 * 
-	 * Key/value pairs can be set passing an associative array.
-	 * 
-	 *      $request = Request::factory('foo/bar')
-	 *           ->headers(array('X-Request-Foo' => 'bar', 'X-Kohana-Version' => 3.1));
-	 * 
-	 * A single header can be set if passing a key value pair as arguments.
-	 * 
-	 *      $request = Request::factory('foo/bar')
-	 *           ->headers('X-Request-Foo', 'bar');
-	 *
-	 * @param   array|string  array of key value pairs or key as string
-	 * @param   mixed    value to set to key
-	 * @return  mixed
-	 */
-	public function headers($key = NULL, $value = NULL)
-	{
-		return $this->_access_property('headers', $key, $value);
-	}
 
 	/**
 	 * Gets and sets the HTTP [Request] Cookies. All cookies will be returned as an array if no arguments are passed.
