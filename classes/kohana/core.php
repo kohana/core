@@ -285,6 +285,12 @@ class Kohana_Core {
 			Kohana::$charset = strtolower($settings['charset']);
 		}
 
+		if (function_exists('mb_internal_encoding'))
+		{
+			// Set the MB extension encoding to the same character set
+			mb_internal_encoding(Kohana::$charset);
+		}
+
 		if (isset($settings['base_url']))
 		{
 			// Set the base URL
