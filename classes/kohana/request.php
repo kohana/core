@@ -777,39 +777,6 @@ class Kohana_Request {
 	}
 
 	/**
-	 * Get/Set value(s) to/from the request header
-	 *
-	 * @param   string|array key of the header to get or set
-	 * @param   string   value to set to the key
-	 * @return  mixed
-	 */
-	public function header($key = NULL, $value = NULL)
-	{
-		if ($key === NULL)
-		{
-			// Return the full array
-			return $this->headers;
-		}
-
-		if ($key !== NULL and $value === NULL)
-		{
-			// Return just the header value if present
-			return isset($this->headers[$key]) ? $this->headers[$key] : NULL;
-		}
-
-		if (is_array($key))
-		{
-			// Set the headers array to the request and return this
-			$this->headers = $key;
-			return $this;
-		}
-
-		// Set the value to the header key and return this
-		$this->headers[$key] = $value;
-		return $this;
-	}
-
-	/**
 	 * Redirects as the request response.
 	 *
 	 * @param   string   redirect location
