@@ -417,6 +417,44 @@ class Kohana_Request {
 		return $accepts;
 	}
 
+	/**
+	 * Parses the Cache-Control header and returning an array representation of the Cache-Control
+	 * header.
+	 *
+	 *     // Create the cache control header
+	 *     $response->headers['Cache-Control'] = 'max-age=3600, must-revalidate, public';
+	 *     
+	 *     // Parse the cache control header
+	 *     if($cache_control = Request::parse_cache_control($response->headers))
+	 *     {
+	 *          // Cache-Control header was found
+	 *          $maxage = $cache_control['max-age'];
+	 *     }
+	 *
+	 * @param   array    headers 
+	 * @return  boolean|array
+	 */
+	public static function parse_cache_control(array $headers)
+	{
+		// If there is no Cache-Control header
+		if ( ! isset($headers['Cache-Control']))
+		{
+			// return
+			return FALSE;
+		}
+
+		// If no Cache-Control parts are detected
+		if ( (bool) preg_match_all('/(?<key>[a-z\-]+)=?(?<value>\w+)?/', $headers['Cache-Control'], $matches))
+		{
+			// Return combined cache-control key/value pairs
+			return array_combine($matches['key'], $matches['value']);
+		}
+		else
+		{
+			// Return
+			return FALSE;
+		}
+	}
 
 	/**
 	 * Parses an accept header and returns an array (type => quality) of the

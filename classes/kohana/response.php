@@ -20,6 +20,39 @@ class Kohana_Response implements Serializable {
 		return new Response($config);
 	}
 
+	/**
+	 * Generates a [Cache-Control HTTP](http://en.wikipedia.org/wiki/List_of_HTTP_headers)
+	 * header based on the supplied array.
+	 * 
+	 *     // Set the cache control headers you want to use
+	 *     $cache_control = array(
+	 *         'max-age'          => 3600,
+	 *         'must-revalidate'  => NULL,
+	 *         'public'           => NULL
+	 *     );
+	 *     
+	 *     // Create the cache control header, creates :
+	 *     // Cache-Control: max-age=3600, must-revalidate, public
+	 *     $response->headers['Cache-Control'] = Response::create_cache_control($cache_control);
+	 *
+	 * @param   array    cache_control parts to render
+	 * @return  string
+	 */
+	public static function create_cache_control(array $cache_control)
+	{
+		// Create a buffer
+		$parts = array();
+
+		// Foreach cache control entry
+		foreach ($cache_control as $key => $value)
+		{
+			// Create a cache control fragment
+			$parts[] = empty($value) ? $key : $key.'='.$value;
+		}
+		// Return the rendered parts
+		return implode(', ', $parts);
+	}
+
 	// HTTP status codes and messages
 	public static $messages = array(
 		// Informational 1xx
