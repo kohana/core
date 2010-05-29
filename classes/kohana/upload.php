@@ -7,6 +7,11 @@
  * [!!] Remember to define your form with "enctype=multipart/form-data" or file
  * uploading will not work!
  *
+ * The following configuration properties can be set:
+ *
+ * - [Upload::$remove_spaces]
+ * - [Upload::$default_directory]
+ *
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
