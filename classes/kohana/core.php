@@ -818,14 +818,13 @@ class Kohana_Core {
 	 *     // Get "username" from messages/text.php
 	 *     $username = Kohana::message('text', 'username');
 	 *
-	 * @uses  Arr::merge
-	 * @uses  Arr::path
-	 *
 	 * @param   string  file name
 	 * @param   string  key path to get
 	 * @param   mixed   default value if the path does not exist
 	 * @return  string  message string for the given path
 	 * @return  array   complete message list, when no path is specified
+	 * @uses    Arr::merge
+	 * @uses    Arr::path
 	 */
 	public static function message($file, $path = NULL, $default = NULL)
 	{
