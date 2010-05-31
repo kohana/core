@@ -54,6 +54,11 @@ class Kohana_Request {
 	public static $current;
 
 	/**
+	 * @var  boolean controls whether all HTTP headers are parsed
+	 */
+	public static $parse_http_headers = FALSE;
+
+	/**
 	 * Main request singleton instance. If no URI is provided, the URI will
 	 * be automatically detected using PATH_INFO, REQUEST_URI, or PHP_SELF.
 	 *
@@ -148,11 +153,18 @@ class Kohana_Request {
 					Request::$client_ip = $_SERVER['REMOTE_ADDR'];
 				}
 
-				if ($config['method'] !== 'GET' AND $config['method'] !== 'POST')
+				if ($config['method'] !== 'GET')
 				{
-					// Methods besides GET and POST do not properly parse the form-encoded
-					// query string into the $_POST array, so we overload it manually.
-					parse_str(file_get_contents('php://input'), $_POST);
+					// Get the request body
+					$config['body'] = file_get_contents('php://input');
+
+					// If the request method isn't POST and the content type is URL encoded
+					if ($config['method'] !== 'POST' AND $_SERVER['HTTP_CONTENT_TYPE'] === 'application/x-www-form-urlencoded')
+					{
+						// Methods besides GET and POST do not properly parse the form-encoded
+						// query string into the $_POST array, so we overload it manually.
+						parse_str($config['body'], $_POST);
+					}
 				}
 
 				if ($uri === TRUE)
@@ -210,9 +222,9 @@ class Kohana_Request {
 			// Remove all dot-paths from the URI, they are not valid
 			$uri = preg_replace('#\.[\s./]*/#', '', $uri);
 
+			// Apply the global GET and POST properties to the request
 			$config['get'] = $_GET;
 			$config['post'] = $_POST;
-
 
 			// Reduce multiple slashes to a single slash
 			$uri = preg_replace('#//+#', '/', $uri);
@@ -418,6 +430,49 @@ class Kohana_Request {
 	}
 
 	/**
+	 * Parses the the HTTP request headers and returns an array containing
+	 * key value pairs. This method is slow, but provides an accurate
+	 * representation of the HTTP request.
+	 * 
+	 *      // Get http headers into the request
+	 *      $request->headers += Request::http_request_headers();
+	 *
+	 * @return  array
+	 * @since   3.1.0
+	 */
+	public static function http_request_headers()
+	{
+		// Setup the output
+		$headers = array();
+
+		// Parse the content type
+		if(isset($_SERVER['CONTENT_TYPE']))
+		{
+			$headers['Content-Type'] = $_SERVER['CONTENT_TYPE'];
+		}
+
+		// Parse the content length
+		if (isset($_SERVER['CONTENT_LENGTH']))
+		{
+			$headers['Content-Length'] = $_SERVER['CONTENT_LENGTH'];
+		}
+
+		foreach ($_SERVER as $key => $value)
+		{
+			// If there is no HTTP header here, skip
+			if (strpos($key, 'HTTP_') !== 0)
+			{
+				continue;
+			}
+
+			// This is a dirty hack to ensure HTTP_X_FOO_BAR becomes X-Foo-Bar
+			$headers[str_replace(' ', '-', ucwords(strtolower(str_replace(array('HTTP_', '_'), array('', ' '), $key))))] = $value;
+		}
+
+		return $headers;
+	}
+
+	/**
 	 * Parses the Cache-Control header and returning an array representation of the Cache-Control
 	 * header.
 	 *
@@ -433,6 +488,7 @@ class Kohana_Request {
 	 *
 	 * @param   array    headers 
 	 * @return  boolean|array
+	 * @since   3.1.0
 	 */
 	public static function parse_cache_control(array $headers)
 	{
@@ -570,6 +626,11 @@ class Kohana_Request {
 	 * @var  array  headers to send with the request
 	 */
 	public $headers = array();
+
+	/**
+	 * @var  string contents of the request body
+	 */
+	public $body = NULL;
 
 	/**
 	 * @var  array  cookies to be sent with the request
@@ -782,6 +843,7 @@ class Kohana_Request {
 	 * @param   string|array key of the header to get or set
 	 * @param   string   value to set to the key
 	 * @return  mixed
+	 * @since   3.1.0
 	 */
 	public function header($key = NULL, $value = NULL)
 	{
@@ -838,6 +900,7 @@ class Kohana_Request {
 	 * @param   string   method to set to the [Request]
 	 * @return  mixed
 	 * @throws  Kohana_Request_Exception
+	 * @since   3.1.0
 	 */
 	public function method($method = NULL)
 	{
@@ -892,6 +955,7 @@ class Kohana_Request {
 	 * @param   array|string  array of key value pairs or key as string
 	 * @param   mixed    value to set to key
 	 * @return  mixed
+	 * @since   3.1.0
 	 */
 	public function get($key = NULL, $value = NULL)
 	{
@@ -921,6 +985,7 @@ class Kohana_Request {
 	 * @param   array|string  array of key value pairs or key as string
 	 * @param   mixed    value to set to key
 	 * @return  mixed
+	 * @since   3.1.0
 	 */
 	public function post($key = NULL, $value = NULL)
 	{
@@ -950,6 +1015,7 @@ class Kohana_Request {
 	 * @param   array|string  array of key value pairs or key as string
 	 * @param   mixed    value to set to key
 	 * @return  mixed
+	 * @since   3.1.0
 	 */
 	public function cookies($key = NULL, $value = NULL)
 	{
@@ -1095,6 +1161,7 @@ class Kohana_Request {
 	 * - Replaces _GET, _POST and select _SERVER vars
 	 *
 	 * @return void
+	 * @since   3.1.0
 	 */
 	protected function _init_environment()
 	{
@@ -1111,7 +1178,9 @@ class Kohana_Request {
 
 		$query_strings = array();
 		foreach ($_GET as $key => $val)
+		{
 			$query_strings[] = $key.'='.urlencode($val);
+		}
 
 		// Get argc number
 		$_argc = $query_strings ? 1 : 0;
@@ -1153,12 +1222,15 @@ class Kohana_Request {
 	 * to their initial state
 	 *
 	 * @return void
+	 * @since   3.1.0
 	 */
 	protected function _deinit_environment()
 	{
 		// Exit now if environment is initialised already
 		if ( ! $this->_previous_environment)
+		{
 			return;
+		}
 
 		// Restore globals
 		$_GET = $this->_previous_environment['_GET'];
@@ -1176,6 +1248,7 @@ class Kohana_Request {
 	 * @param   string   The HTTP method to use
 	 * @return  [Kohana_Response]
 	 * @throws  [Kohana_Request_Exception]
+	 * @since   3.1.0
 	 */
 	protected function _external_execute()
 	{
@@ -1262,6 +1335,7 @@ class Kohana_Request {
 	 * @param   string   the key to set
 	 * @param   string   the value to set to the key
 	 * @return  mixed
+	 * @since   3.1.0
 	 */
 	protected function _access_property($property, $key = NULL, $value = NULL)
 	{

@@ -253,12 +253,14 @@ class Kohana_View {
 		}
 		// Otherwise set the extension to the standard
 		else
+		{
 			$ext = ltrim(EXT, '.');
+		}
 
 		if (($path = Kohana::find_file('views', $file, $ext)) === FALSE)
 		{
 			throw new Kohana_View_Exception('The requested view :file could not be found', array(
-				':file' => $file,
+				':file' => $file.'.'.$ext,
 			));
 		}
 
