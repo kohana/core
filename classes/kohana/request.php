@@ -159,7 +159,7 @@ class Kohana_Request {
 					$config['body'] = file_get_contents('php://input');
 
 					// If the request method isn't POST and the content type is URL encoded
-					if ($config['method'] !== 'POST' AND $_SERVER['HTTP_CONTENT_TYPE'] === 'application/x-www-form-urlencoded')
+					if ($config['method'] !== 'POST' AND $_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded')
 					{
 						// Methods besides GET and POST do not properly parse the form-encoded
 						// query string into the $_POST array, so we overload it manually.
@@ -446,13 +446,13 @@ class Kohana_Request {
 		$headers = array();
 
 		// Parse the content type
-		if(isset($_SERVER['CONTENT_TYPE']))
+		if( ! empty($_SERVER['CONTENT_TYPE']))
 		{
 			$headers['Content-Type'] = $_SERVER['CONTENT_TYPE'];
 		}
 
 		// Parse the content length
-		if (isset($_SERVER['CONTENT_LENGTH']))
+		if ( ! empty($_SERVER['CONTENT_LENGTH']))
 		{
 			$headers['Content-Length'] = $_SERVER['CONTENT_LENGTH'];
 		}
