@@ -145,7 +145,7 @@ class Kohana_Response implements Serializable {
 		}
 
 		// Add the default Content-Type header if required
-		$this->headers['Content-Type'] += array('Content-Type' => 'text/html; charset='.Kohana::$charset);
+		$this->headers += array('Content-Type' => 'text/html; charset='.Kohana::$charset);
 	}
 
 	/**
