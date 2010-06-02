@@ -46,7 +46,7 @@ class Kohana_Remote {
 		// If there are headers to apply
 		if ($headers)
 		{
-			Response::$_headers += $headers;
+			Remote::$_headers += $headers;
 		}
 
 		return strlen($header);
