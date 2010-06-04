@@ -164,6 +164,10 @@ class Kohana_Core {
 	 * @throws  Kohana_Exception
 	 * @param   array   global settings
 	 * @return  void
+	 * @uses    Kohana::globals
+	 * @uses    Kohana::sanitize
+	 * @uses    Kohana::cache
+	 * @uses    Profiler
 	 */
 	public static function init(array $settings = NULL)
 	{
@@ -217,31 +221,8 @@ class Kohana_Core {
 
 		if (ini_get('register_globals'))
 		{
-			if (isset($_REQUEST['GLOBALS']) OR isset($_FILES['GLOBALS']))
-			{
-				// Prevent malicious GLOBALS overload attack
-				echo "Global variable overload attack detected! Request aborted.\n";
-
-				// Exit with an error status
-				exit(1);
-			}
-
-			// Get the variable names of all globals
-			$global_variables = array_keys($GLOBALS);
-
-			// Remove the standard global variables from the list
-			$global_variables = array_diff($global_variables,
-				array('GLOBALS', '_REQUEST', '_GET', '_POST', '_FILES', '_COOKIE', '_SERVER', '_ENV', '_SESSION'));
-
-			foreach ($global_variables as $name)
-			{
-				// Retrieve the global variable and make it null
-				global $$name;
-				$$name = NULL;
-
-				// Unset the global variable, effectively disabling register_globals
-				unset($GLOBALS[$name], $$name);
-			}
+			// Reverse the effects of register_globals
+			Kohana::globals();
 		}
 
 		// Determine if we are running in a command line environment
@@ -360,6 +341,46 @@ class Kohana_Core {
 
 			// Kohana is no longer initialized
 			Kohana::$_init = FALSE;
+		}
+	}
+
+	/**
+	 * Reverts the effects of the `register_globals` PHP setting by unsetting
+	 * all global varibles except for the default super globals (GPCS, etc).
+	 *
+	 *     if (ini_get('register_globals'))
+	 *     {
+	 *         Kohana::globals();
+	 *     }
+	 *
+	 * @return  void
+	 */
+	public static function globals()
+	{
+		if (isset($_REQUEST['GLOBALS']) OR isset($_FILES['GLOBALS']))
+		{
+			// Prevent malicious GLOBALS overload attack
+			echo "Global variable overload attack detected! Request aborted.\n";
+
+			// Exit with an error status
+			exit(1);
+		}
+
+		// Get the variable names of all globals
+		$global_variables = array_keys($GLOBALS);
+
+		// Remove the standard global variables from the list
+		$global_variables = array_diff($global_variables,
+			array('GLOBALS', '_REQUEST', '_GET', '_POST', '_FILES', '_COOKIE', '_SERVER', '_ENV', '_SESSION'));
+
+		foreach ($global_variables as $name)
+		{
+			// Retrieve the global variable and make it null
+			global $$name;
+			$$name = NULL;
+
+			// Unset the global variable, effectively disabling register_globals
+			unset($GLOBALS[$name], $$name);
 		}
 	}
 
