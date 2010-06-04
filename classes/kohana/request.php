@@ -792,6 +792,7 @@ class Kohana_Request {
 	 * ----------|-----------|------------------------------------|--------------
 	 * `boolean` | inline    | Display inline instead of download | `FALSE`
 	 * `string`  | mime_type | Manual mime type                   | Automatic
+	 * `boolean` | delete    | Delete the file after sending      | `FALSE`
 	 *
 	 * Download a file that already exists:
 	 *
@@ -827,6 +828,9 @@ class Kohana_Request {
 			{
 				throw new Kohana_Exception('Download name must be provided for streaming files');
 			}
+
+			// Temporary files will automatically be deleted
+			$options['delete'] = FALSE;
 
 			if ( ! isset($mime))
 			{
@@ -915,6 +919,31 @@ class Kohana_Request {
 
 		// Close the file
 		fclose($file);
+
+		if ( ! empty($options['delete']))
+		{
+			try
+			{
+				// Attempt to remove the file
+				unlink($filename);
+			}
+			catch (Exception $e)
+			{
+				// Create a text version of the exception
+				$error = Kohana::exception_text($e);
+
+				if (is_object(Kohana::$log))
+				{
+					// Add this exception to the log
+					Kohana::$log->add(Kohana::ERROR, $error);
+
+					// Make sure the logs are written
+					Kohana::$log->write();
+				}
+
+				// Do NOT display the exception, it will corrupt the output!
+			}
+		}
 
 		// Stop execution
 		exit;
