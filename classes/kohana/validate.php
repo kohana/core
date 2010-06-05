@@ -984,6 +984,11 @@ class Kohana_Validate extends ArrayObject {
 			{
 				foreach ($params as $key => $value)
 				{
+					if (is_array($value))
+					{
+						$value = implode(', ', $value);
+					}
+
 					// Check if a label for this parameter exists
 					if (isset($this->_labels[$value]))
 					{
@@ -997,7 +1002,7 @@ class Kohana_Validate extends ArrayObject {
 					}
 
 					// Add each parameter as a numbered value, starting from 1
-					$values[':param'.($key + 1)] = is_array($value) ? implode(', ', $value) : $value;
+					$values[':param'.($key + 1)] = $value;
 				}
 			}
 
