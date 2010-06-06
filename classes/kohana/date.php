@@ -30,7 +30,7 @@ class Kohana_Date {
 	 * @param   string   timezone used as the baseline
 	 * @return  integer
 	 */
-	public static function offset($remote, $local = NULL)
+	public static function offset($remote, $local = NULL, $now = NULL)
 	{
 		if ($local === NULL)
 		{
@@ -38,25 +38,22 @@ class Kohana_Date {
 			$local = date_default_timezone_get();
 		}
 
-		// Set the cache key, matches the method name
-		$cache_key = "Date::offset({$remote},{$local})";
-
-		if (($offset = Kohana::cache($cache_key)) === NULL)
+		if (is_int($now))
 		{
-			// Create timezone objects
-			$zone_remote = new DateTimeZone($remote);
-			$zone_local  = new DateTimeZone($local);
-
-			// Create date objects from timezones
-			$time_remote = new DateTime('now', $zone_remote);
-			$time_local  = new DateTime('now', $zone_local);
-
-			// Find the offset
-			$offset = $zone_remote->getOffset($time_remote) - $zone_local->getOffset($time_local);
-
-			// Cache the offset
-			Kohana::cache($cache_key, $offset);
+			// Convert the timestamp into a string
+			$now = date(DateTime::RFC2822, $now);
 		}
+
+		// Create timezone objects
+		$zone_remote = new DateTimeZone($remote);
+		$zone_local  = new DateTimeZone($local);
+
+		// Create date objects from timezones
+		$time_remote = new DateTime($now, $zone_remote);
+		$time_local  = new DateTime($now, $zone_local);
+
+		// Find the offset
+		$offset = $zone_remote->getOffset($time_remote) - $zone_local->getOffset($time_local);
 
 		return $offset;
 	}
