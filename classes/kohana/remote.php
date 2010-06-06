@@ -19,8 +19,8 @@ class Kohana_Remote {
 	);
 
 	/**
-	 * Returns the output of a remote URL.
-	 * Any [curl option](http://php.net/curl_setopt) may be used.
+	 * Returns the output of a remote URL. Any [curl option](http://php.net/curl_setopt)
+	 * may be used.
 	 *
 	 *     // Do a simple GET request
 	 *     $data = Remote::get($url);
@@ -56,7 +56,11 @@ class Kohana_Remote {
 		$remote = curl_init($url);
 
 		// Set connection options
-		curl_setopt_array($remote, $options);
+		if ( ! curl_setopt_array($remote, $options))
+		{
+			throw new Kohana_Exception('Failed to set CURL options, check CURL documentation: :url',
+				array(':url' => 'http://php.net/curl_setopt_array'))
+		}
 
 		// Get the response
 		$response = curl_exec($remote);
