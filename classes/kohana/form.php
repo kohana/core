@@ -345,7 +345,7 @@ class Kohana_Form {
 	/**
 	 * Creates a image form input.
 	 *
-	 *     echo Form::image(NULL, HTML::image('media/img/login.png'));
+	 *     echo Form::image(NULL, NULL, array('src' => 'media/img/login.png'));
 	 *
 	 * @param   string  input name
 	 * @param   string  input value
@@ -355,6 +355,15 @@ class Kohana_Form {
 	 */
 	public static function image($name, $value, array $attributes = NULL)
 	{
+		if ( ! empty($attributes['src']))
+		{
+			if (strpos($attributes['src'], '://') === FALSE)
+			{
+				// Add the base URL
+				$attributes['src'] = URL::base($index).$attributes['src'];
+			}
+		}
+
 		$attributes['type'] = 'image';
 
 		return Form::input($name, $value, $attributes);
