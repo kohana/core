@@ -19,15 +19,17 @@ class Kohana_Date {
 	const MINUTE = 60;
 
 	/**
-	 * Returns the offset (in seconds) between two time zones. When you display
-	 * dates to users in different time zones, you will probably need this.
+	 * Returns the offset (in seconds) between two time zones. Use this to
+	 * display dates to users in different time zones.
 	 *
 	 *     $seconds = Date::offset('America/Chicago', 'GMT');
 	 *
-	 * @see     http://php.net/timezones
-	 * @see     http://php.net/datetime
+	 * [!!] A list of time zones that PHP supports can be found at
+	 * <http://php.net/timezones>.
+	 *
 	 * @param   string   timezone that to find the offset of
 	 * @param   string   timezone used as the baseline
+	 * @param   mixed    UNIX timestamp or date string
 	 * @return  integer
 	 */
 	public static function offset($remote, $local = NULL, $now = NULL)
