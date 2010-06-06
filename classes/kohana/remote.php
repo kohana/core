@@ -59,7 +59,7 @@ class Kohana_Remote {
 		if ( ! curl_setopt_array($remote, $options))
 		{
 			throw new Kohana_Exception('Failed to set CURL options, check CURL documentation: :url',
-				array(':url' => 'http://php.net/curl_setopt_array'))
+				array(':url' => 'http://php.net/curl_setopt_array'));
 		}
 
 		// Get the response
