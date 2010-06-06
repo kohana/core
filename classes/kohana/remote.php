@@ -13,7 +13,7 @@ class Kohana_Remote {
 	// Default curl options
 	public static $default_options = array
 	(
-		CURLOPT_USERAGENT      => 'Mozilla/5.0 (compatible; Kohana v3.0 +http://kohanaphp.com/)',
+		CURLOPT_USERAGENT      => 'Mozilla/5.0 (compatible; Kohana v'.Kohana::$version.' +http://kohanaphp.com/)',
 		CURLOPT_CONNECTTIMEOUT => 5,
 		CURLOPT_TIMEOUT        => 5,
 		CURLOPT_HEADERFUNCTION => array('Remote', '_parse_headers'),
