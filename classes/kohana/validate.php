@@ -980,12 +980,22 @@ class Kohana_Validate extends ArrayObject {
 			// Start the translation values list
 			$values = array(':field' => $label);
 
+			// Value passed to the callback
+			$values[':value'] = array_shift($params);
+
+			if (is_array($values[':value']))
+			{
+				// All values must be strings
+				$values[':value'] = implode(', ', $values[':values']);
+			}
+
 			if ($params)
 			{
 				foreach ($params as $key => $value)
 				{
 					if (is_array($value))
 					{
+						// All values must be strings
 						$value = implode(', ', $value);
 					}
 
