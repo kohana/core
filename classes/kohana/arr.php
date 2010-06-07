@@ -378,6 +378,39 @@ class Kohana_Arr {
 		return array($command, $params);
 	}
 
+	/**
+	 * Convert a multi-dimensional array into a single-dimensional array.
+	 *
+	 *     $array = array('set' => array('one' => 'something'), 'two' => 'other');
+	 *
+	 *     // Flatten the array
+	 *     $array = Arr::flatten($array);
+	 *
+	 *     // The array will now be
+	 *     array('one' => 'something', 'two' => 'other');
+	 *
+	 * [!!] The keys of array values will be discarded.
+	 *
+	 * @param   array   array to flatten
+	 * @return  array
+	 */
+	public static function flatten($array)
+	{
+		$flat = array();
+		foreach ($array as $key => $value)
+		{
+			if (is_array($value))
+			{
+				$flat += Arr::flatten($value);
+			}
+			else
+			{
+				$flat[$key] = $value;
+			}
+		}
+		return $flat;
+	}
+
 	final private function __construct()
 	{
 		// This is a static class
