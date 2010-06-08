@@ -1,5 +1,16 @@
 <?php defined('SYSPATH') or die('No direct script access.');
-
+/**
+ * Response wrapper. Created as the result of any [Request] execution
+ * or utility method (i.e. Redirect). Implements standard HTTP
+ * response format.
+ *
+ * @package    Kohana
+ * @category   Base
+ * @author     Kohana Team
+ * @copyright  (c) 2008-2009 Kohana Team
+ * @license    http://kohanaphp.com/license
+ * @since      3.1.0
+ */
 class Kohana_Response implements Serializable {
 
 	/**

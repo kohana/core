@@ -1,8 +1,8 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Request and response wrapper.
+ * Request wrapper.
  * 
- * Request and response wrapper. Uses the [Route] class to determine what
+ * Request wrapper. Uses the [Route] class to determine what
  * [Controller] to send the request to.
  *
  * @package    Kohana
@@ -1297,7 +1297,7 @@ class Kohana_Request {
 	 * within this object.
 	 * 
 	 *     // Set a value to POST
-	 *     $this->_get_post_variables('post', 'age', 25);
+	 *     $this->_access_property('post', 'age', 25);
 	 *
 	 * @param   string   either `get` or `post`
 	 * @param   string   the key to set
