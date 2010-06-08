@@ -985,7 +985,7 @@ class Kohana_Request {
 			// Set the benchmark name
 			$benchmark = '"'.$this->uri.'"';
 
-			if ($this !== Request::$instance)
+			if ($this !== Request::$instance AND Request::$current)
 			{
 				// Add the parent request uri
 				$benchmark .= ' « "'.Request::$current->uri.'"';
