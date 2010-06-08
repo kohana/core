@@ -87,7 +87,7 @@ class Kohana_Remote {
 
 		// The transfer must always be returned
 		$options[CURLOPT_RETURNTRANSFER] = TRUE;
-		$options[CURLOPT_USERAGENT]      = 'Mozilla/5.0 (compatible; Kohana v'.Kohana::$version.' +http://kohanaphp.com/)';
+		$options[CURLOPT_USERAGENT]      = 'Mozilla/5.0 (compatible; Kohana v'.Kohana::VERSION.' +http://kohanaphp.com/)';
 
 		// Open a new remote connection
 		$remote = curl_init($url);
