@@ -986,7 +986,7 @@ class Kohana_Validate extends ArrayObject {
 			if (is_array($values[':value']))
 			{
 				// All values must be strings
-				$values[':value'] = implode(', ', $values[':values']);
+				$values[':value'] = implode(', ', Arr::flatten($values[':values']));
 			}
 
 			if ($params)
@@ -996,7 +996,7 @@ class Kohana_Validate extends ArrayObject {
 					if (is_array($value))
 					{
 						// All values must be strings
-						$value = implode(', ', $value);
+						$value = implode(', ', Arr::flatten($value));
 					}
 
 					// Check if a label for this parameter exists
