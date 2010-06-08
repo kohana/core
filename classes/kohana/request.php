@@ -1042,8 +1042,12 @@ class Kohana_Request {
 
 		try
 		{
-			// Initialise the Request environment
-			$this->_init_environment();
+			// If this is not the originating request
+			if ($this !== Request::instance())
+			{
+				// Initialise the Request environment
+				$this->_init_environment();
+			}
 
 			// Load the controller using reflection
 			$class = new ReflectionClass($prefix.$this->controller);
@@ -1072,8 +1076,12 @@ class Kohana_Request {
 			// Execute the "after action" method
 			$class->getMethod('after')->invoke($controller);
 
-			// De-initialise the Request environment
-			$this->_deinit_environment();
+			// If this is not the originating request
+			if ($this !== Request::instance())
+			{
+				// De-initialise the Request environment
+				$this->_deinit_environment();
+			}
 		}
 		catch (Exception $e)
 		{
