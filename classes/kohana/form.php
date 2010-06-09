@@ -347,13 +347,14 @@ class Kohana_Form {
 	 *
 	 *     echo Form::image(NULL, NULL, array('src' => 'media/img/login.png'));
 	 *
-	 * @param   string  input name
-	 * @param   string  input value
-	 * @param   array   html attributes
+	 * @param   string   input name
+	 * @param   string   input value
+	 * @param   array    html attributes
+	 * @param   boolean  add index file to URL?
 	 * @return  string
 	 * @uses    Form::input
 	 */
-	public static function image($name, $value, array $attributes = NULL)
+	public static function image($name, $value, array $attributes = NULL, $index = FALSE)
 	{
 		if ( ! empty($attributes['src']))
 		{
