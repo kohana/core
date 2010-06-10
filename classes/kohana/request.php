@@ -1043,7 +1043,7 @@ class Kohana_Request {
 		try
 		{
 			// If this is not the originating request
-			if ($this !== Request::instance())
+			if ($this !== Request::$instance)
 			{
 				// Initialise the Request environment
 				$this->_init_environment();
@@ -1077,7 +1077,7 @@ class Kohana_Request {
 			$class->getMethod('after')->invoke($controller);
 
 			// If this is not the originating request
-			if ($this !== Request::instance())
+			if ($this !== Request::$instance)
 			{
 				// De-initialise the Request environment
 				$this->_deinit_environment();
