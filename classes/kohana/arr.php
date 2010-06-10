@@ -287,6 +287,7 @@ class Kohana_Arr {
 		{
 			// Get the next array
 			$arr = func_get_arg($i);
+			$assoc = Arr::is_assoc($arr);
 
 			foreach ($arr as $key => $val)
 			{
@@ -310,8 +311,17 @@ class Kohana_Arr {
 					}
 					else
 					{
-						// Associative arrays are replaced
-						$result[$key] = $val;
+						if ($assoc)
+						{
+							// Associative array keys are replaced
+							$result[$key] = $val;
+						}
+						else if (!in_array($val, $result, true))
+						{
+							// Non associative entries are appended,
+							// only if they don't already exist.
+							$result[] = $val;
+						}
 					}
 				}
 				else
