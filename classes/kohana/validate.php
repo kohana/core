@@ -352,7 +352,7 @@ class Kohana_Validate extends ArrayObject {
 		}
 		else
 		{
-			return is_int($str) OR ctype_digit($str);
+			return (is_int($str) AND $str >= 0) OR ctype_digit($str);
 		}
 	}
 
