@@ -1285,19 +1285,19 @@ class Kohana_Core {
 	{
 		if (strpos($file, APPPATH) === 0)
 		{
-			$file = 'APPPATH/'.substr($file, strlen(APPPATH));
+			$file = 'APPPATH'.DIRECTORY_SEPARATOR.substr($file, strlen(APPPATH));
 		}
 		elseif (strpos($file, SYSPATH) === 0)
 		{
-			$file = 'SYSPATH/'.substr($file, strlen(SYSPATH));
+			$file = 'SYSPATH'.DIRECTORY_SEPARATOR.substr($file, strlen(SYSPATH));
 		}
 		elseif (strpos($file, MODPATH) === 0)
 		{
-			$file = 'MODPATH/'.substr($file, strlen(MODPATH));
+			$file = 'MODPATH'.DIRECTORY_SEPARATOR.substr($file, strlen(MODPATH));
 		}
 		elseif (strpos($file, DOCROOT) === 0)
 		{
-			$file = 'DOCROOT/'.substr($file, strlen(DOCROOT));
+			$file = 'DOCROOT'.DIRECTORY_SEPARATOR.substr($file, strlen(DOCROOT));
 		}
 
 		return $file;
