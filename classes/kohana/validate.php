@@ -352,7 +352,7 @@ class Kohana_Validate extends ArrayObject {
 		}
 		else
 		{
-			return is_int($str) OR ctype_digit($str);
+			return (is_int($str) AND $str >= 0) OR ctype_digit($str);
 		}
 	}
 
@@ -982,8 +982,23 @@ class Kohana_Validate extends ArrayObject {
 
 			if ($params)
 			{
+				// Value passed to the callback
+				$values[':value'] = array_shift($params);
+
+				if (is_array($values[':value']))
+				{
+					// All values must be strings
+					$values[':value'] = implode(', ', Arr::flatten($values[':value']));
+				}
+
 				foreach ($params as $key => $value)
 				{
+					if (is_array($value))
+					{
+						// All values must be strings
+						$value = implode(', ', Arr::flatten($value));
+					}
+
 					// Check if a label for this parameter exists
 					if (isset($this->_labels[$value]))
 					{
@@ -997,8 +1012,13 @@ class Kohana_Validate extends ArrayObject {
 					}
 
 					// Add each parameter as a numbered value, starting from 1
-					$values[':param'.($key + 1)] = is_array($value) ? implode(', ', $value) : $value;
+					$values[':param'.($key + 1)] = $value;
 				}
+			}
+			else
+			{
+				// No value is present
+				$values[':value'] = NULL;
 			}
 
 			if ($message = Kohana::message($file, "{$field}.{$error}"))

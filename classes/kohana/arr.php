@@ -232,6 +232,37 @@ class Kohana_Arr {
 	}
 
 	/**
+	 * Recursive version of [array_map](http://php.net/array_map), applies the
+	 * same callback to all elements in an array, including sub-arrays.
+	 *
+	 *     // Apply "strip_tags" to every element in the array
+	 *     $array = Arr::map('strip_tags', $array);
+	 *
+	 * [!!] Unlike `array_map`, this method requires a callback and will only map
+	 * a single array.
+	 *
+	 * @param   mixed   callback applied to every element in the array
+	 * @param   array   array to map
+	 * @return  array
+	 */
+	public static function map($callback, $array)
+	{
+		foreach ($array as $key => $val)
+		{
+			if (is_array($val))
+			{
+				$array[$key] = Arr::map($callback, $val);
+			}
+			else
+			{
+				$array[$key] = call_user_func($callback, $val);
+			}
+		}
+
+		return $array;
+	}
+
+	/**
 	 * Merges one or more arrays recursively and preserves all keys.
 	 * Note that this does not work the same as [array_merge_recursive](http://php.net/array_merge_recursive)!
 	 *
@@ -376,6 +407,39 @@ class Kohana_Arr {
 		}
 
 		return array($command, $params);
+	}
+
+	/**
+	 * Convert a multi-dimensional array into a single-dimensional array.
+	 *
+	 *     $array = array('set' => array('one' => 'something'), 'two' => 'other');
+	 *
+	 *     // Flatten the array
+	 *     $array = Arr::flatten($array);
+	 *
+	 *     // The array will now be
+	 *     array('one' => 'something', 'two' => 'other');
+	 *
+	 * [!!] The keys of array values will be discarded.
+	 *
+	 * @param   array   array to flatten
+	 * @return  array
+	 */
+	public static function flatten($array)
+	{
+		$flat = array();
+		foreach ($array as $key => $value)
+		{
+			if (is_array($value))
+			{
+				$flat += Arr::flatten($value);
+			}
+			else
+			{
+				$flat[$key] = $value;
+			}
+		}
+		return $flat;
 	}
 
 	final private function __construct()

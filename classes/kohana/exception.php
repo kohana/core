@@ -19,10 +19,17 @@ class Kohana_Exception extends Exception {
 	 * @param   string   error message
 	 * @param   array    translation variables
 	 * @param   integer  the exception code
+	 * @param   boolean  escape variables?
 	 * @return  void
 	 */
-	public function __construct($message, array $variables = NULL, $code = 0)
+	public function __construct($message, array $variables = NULL, $code = 0, $escape = TRUE)
 	{
+		if ($escape AND $variables)
+		{
+			// Prevent XSS by escaping all of the variables, some of which may be user-generated
+			$variables = array_map(array('HTML', 'chars'), $variables);
+		}
+
 		// Set the message
 		$message = __($message, $variables);
 

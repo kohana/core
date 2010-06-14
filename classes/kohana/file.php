@@ -40,12 +40,10 @@ class Kohana_File {
 
 		if (class_exists('finfo', FALSE))
 		{
-			if ($info = new finfo(FILEINFO_MIME))
+			if ($info = new finfo(FILEINFO_MIME_TYPE))
 			{
 				return $info->file($filename);
 			}
-
-			return $mime;
 		}
 
 		if (ini_get('mime_magic.magicfile') AND function_exists('mime_content_type'))

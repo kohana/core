@@ -345,16 +345,26 @@ class Kohana_Form {
 	/**
 	 * Creates a image form input.
 	 *
-	 *     echo Form::image(NULL, HTML::image('media/img/login.png'));
+	 *     echo Form::image(NULL, NULL, array('src' => 'media/img/login.png'));
 	 *
-	 * @param   string  input name
-	 * @param   string  input value
-	 * @param   array   html attributes
+	 * @param   string   input name
+	 * @param   string   input value
+	 * @param   array    html attributes
+	 * @param   boolean  add index file to URL?
 	 * @return  string
 	 * @uses    Form::input
 	 */
-	public static function image($name, $value, array $attributes = NULL)
+	public static function image($name, $value, array $attributes = NULL, $index = FALSE)
 	{
+		if ( ! empty($attributes['src']))
+		{
+			if (strpos($attributes['src'], '://') === FALSE)
+			{
+				// Add the base URL
+				$attributes['src'] = URL::base($index).$attributes['src'];
+			}
+		}
+
 		$attributes['type'] = 'image';
 
 		return Form::input($name, $value, $attributes);

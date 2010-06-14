@@ -56,5 +56,6 @@ return array(
 		'size' => 'sizes',
 		'was' => 'were',
 		'is' => 'are',
+		'verse' => 'verses',
 	),
 );

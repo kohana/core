@@ -87,7 +87,7 @@ class Kohana_URL {
 		if ($fragment = parse_url($uri, PHP_URL_FRAGMENT))
 		{
 			// #fragment
-			$fragment =  '#'.$fragment;
+			$fragment = '#'.$fragment;
 		}
 
 		// Concat the URL
@@ -103,6 +103,8 @@ class Kohana_URL {
 	 *
 	 * Typically you would use this when you are sorting query results,
 	 * or something similar.
+	 *
+	 * [!!] Parameters with a NULL value are left out.
 	 *
 	 * @param   array   array of GET parameters
 	 * @return  string
@@ -126,7 +128,10 @@ class Kohana_URL {
 			return '';
 		}
 
-		return '?'.http_build_query($params, '', '&');
+		$query = http_build_query($params, '', '&');
+
+		// Don't prepend '?' to an empty string
+		return ($query === '') ? '' : '?'.$query;
 	}
 
 	/**
