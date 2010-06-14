@@ -983,6 +983,23 @@ class Kohana_Request {
 	}
 
 	/**
+	 * Provides __read only__ access to the `_external` property
+	 * enabling testing of the request for external state.
+	 * 
+	 *      // If request is external
+	 *      if ($request->external())
+	 *      {
+	 *           // Do something
+	 *      }
+	 *
+	 * @return  boolean
+	 */
+	public function external()
+	{
+		return $this->_external;
+	}
+
+	/**
 	 * Processes the request, executing the controller action that handles this
 	 * request, determined by the [Route].
 	 *
@@ -1105,6 +1122,9 @@ class Kohana_Request {
 				$this->response->status = 500;
 			}
 
+			// Send the response headers
+			$this->response->send_headers();
+
 			// Re-throw the exception
 			throw $e;
 		}
@@ -1128,7 +1148,7 @@ class Kohana_Request {
 	 * - Stores _GET, _POST and select _SERVER vars
 	 * - Replaces _GET, _POST and select _SERVER vars
 	 *
-	 * @return void
+	 * @return  void
 	 * @since   3.1.0
 	 */
 	protected function _init_environment()
@@ -1309,20 +1329,20 @@ class Kohana_Request {
 	{
 		if ($key === NULL)
 		{
-			return $this->$property;
+			return $this->{$property};
 		}
 		else if (is_array($key))
 		{
-			$this->$property = $key;
+			$this->{$property} = $key;
 			return $this;
 		}
 		else if ($value === NULL)
 		{
-			return isset($this->$property[$key]) ? $this->$property[$key] : NULL;
+			return isset($this->{$property}[$key]) ? $this->{$property}[$key] : NULL;
 		}
 		else
 		{
-			$this->$property[$key] = $value;
+			$this->{$property}[$key] = $value;
 			return $this;
 		}
 	}
