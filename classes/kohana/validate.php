@@ -427,27 +427,35 @@ class Kohana_Validate extends ArrayObject {
 		return (bool) preg_match('/^#?+[0-9a-f]{3}(?:[0-9a-f]{3})?$/iD', $str);
 	}
 
-	// Field filters
-	protected $_filters = array();
-
-	// Field rules
-	protected $_rules = array();
-
-	// Field callbacks
-	protected $_callbacks = array();
-
-	// Field labels
+	/**
+	 * @var  array  Validators added to the array
+	 */
+	protected $_validate = array(
+		// Filters which modify a value
+		'filter'   => array(),
+		// Rules which verify a value
+		'rule'     => array(),
+		// Custom callbacks
+		'callback' => array(),
+	);
+	
+	/**
+	 * @var  array  Current context
+	 */
+	protected $_context = array();
+	
+	/**
+	 * @var  array  Field labels
+	 */
 	protected $_labels = array();
-
-	// Rules that are executed even when the value is empty
-	protected $_empty_rules = array('not_empty', 'matches');
-
-	// Error list, field => rule
+	
+	/**
+	 * @var  array  Error list
+	 */
 	protected $_errors = array();
 
 	/**
-	 * Sets the unique "any field" key and creates an ArrayObject from the
-	 * passed array.
+	 * Creates an ArrayObject from the passed array.
 	 *
 	 * @param   array   array to validate
 	 * @return  void
@@ -514,145 +522,120 @@ class Kohana_Validate extends ArrayObject {
 
 		return $this;
 	}
-
+	
 	/**
-	 * Overwrites or appends filters to a field. Each filter will be executed once.
-	 * All rules must be valid callbacks.
-	 *
-	 *     // Run trim() on all fields
-	 *     $validation->filter(TRUE, 'trim');
+	 * Add a filter to a field. Each filter will be executed once.
 	 *
 	 * @param   string  field name
 	 * @param   mixed   valid PHP callback
 	 * @param   array   extra parameters for the callback
 	 * @return  $this
 	 */
-	public function filter($field, $filter, array $params = NULL)
+	public function filter($field, $callback, array $params = NULL)
 	{
-		if ($field !== TRUE AND ! isset($this->_labels[$field]))
-		{
-			// Set the field label to the field name
-			$this->_labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
-		}
-
-		// Store the filter and params for this rule
-		$this->_filters[$field][$filter] = (array) $params;
-
-		return $this;
+		return $this->_add('filter', $field, array(array($callback, $params)));
 	}
 
 	/**
-	 * Add filters using an array.
+	 * Adds multiple filters to a field.
 	 *
 	 * @param   string  field name
-	 * @param   array   list of functions or static method name
+	 * @param   array   array of filters
 	 * @return  $this
 	 */
-	public function filters($field, array $filters)
+	public function filters($field, $filters)
 	{
-		foreach ($filters as $filter => $params)
-		{
-			$this->filter($field, $filter, $params);
-		}
-
-		return $this;
+		return $this->_add('filter', $field, $filters);
 	}
-
+	
 	/**
-	 * Overwrites or appends rules to a field. Each rule will be executed once.
-	 * All rules must be string names of functions method names.
-	 *
-	 *     // The "username" must not be empty and have a minimum length of 4
-	 *     $validation->rule('username', 'not_empty')
-	 *                ->rule('username', 'min_length', array(4));
+	 * Add a rule to a field. Each rule will be executed once.
 	 *
 	 * @param   string  field name
-	 * @param   string  function or static method name
+	 * @param   mixed   valid PHP callback
 	 * @param   array   extra parameters for the callback
 	 * @return  $this
 	 */
-	public function rule($field, $rule, array $params = NULL)
+	public function rule($field, $callback, array $params = NULL)
 	{
-		if ($field !== TRUE AND ! isset($this->_labels[$field]))
-		{
-			// Set the field label to the field name
-			$this->_labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
-		}
-
-		// Store the rule and params for this rule
-		$this->_rules[$field][$rule] = (array) $params;
-
-		return $this;
+		return $this->_add('rule', $field, array(array($callback, $params)));
 	}
 
 	/**
-	 * Add rules using an array.
+	 * Adds multiple rules to a field.
 	 *
 	 * @param   string  field name
-	 * @param   array   list of functions or static method name
+	 * @param   array   array of rules
 	 * @return  $this
 	 */
-	public function rules($field, array $rules)
+	public function rules($field, $rules)
 	{
-		foreach ($rules as $rule => $params)
-		{
-			$this->rule($field, $rule, $params);
-		}
-
-		return $this;
+		return $this->_add('rule', $field, $rules);
+	}
+	
+	/**
+	 * Add a callback to a field. Each callback will be executed once.
+	 *
+	 * @param   string  field name
+	 * @param   mixed   valid PHP callback
+	 * @param   array   extra parameters for the callback
+	 * @return  $this
+	 */
+	public function callback($field, $callback, array $params = NULL)
+	{
+		return $this->_add('callback', $field, array(array($callback, $params)));
 	}
 
 	/**
-	 * Adds a callback to a field. Each callback will be executed only once.
-	 * No extra parameters can be passed as the format for callbacks is
-	 * predefined as (Validate $array, $field, array $errors).
-	 *
-	 *     // The "username" must be checked with a custom method
-	 *     $validation->callback('username', array($this, 'check_username'));
-	 *
-	 * To add a callback to every field already set, use TRUE for the field name.
+	 * Adds multiple callbacks to a field.
 	 *
 	 * @param   string  field name
-	 * @param   mixed   callback to add
+	 * @param   array   array of callbacks
 	 * @return  $this
 	 */
-	public function callback($field, $callback)
+	public function callbacks($field, $callbacks)
 	{
-		if ( ! isset($this->_callbacks[$field]))
+		return $this->_add('callback', $field, $callbacks);
+	}
+	
+	/**
+	 * Add a context to the validation object. 
+	 * 
+	 * The context key should not have a ':' on the front of it.
+	 * 
+	 * Omit passing a value to return the value for the context.
+	 *
+	 * @param   string  context name
+	 * @param   mixed   context value
+	 * @return  $this
+	 */
+	public function context($key, $value = NULL)
+	{
+		// Return a value for the context, since nothing was passed for $value
+		if (func_num_args() === 1)
 		{
-			// Create the list for this field
-			$this->_callbacks[$field] = array();
+			return isset($this->_context[$key]) ? $this->_context[$key] : NULL;
 		}
-
-		if ($field !== TRUE AND ! isset($this->_labels[$field]))
-		{
-			// Set the field label to the field name
-			$this->_labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
-		}
-
-		if ( ! in_array($callback, $this->_callbacks[$field], TRUE))
-		{
-			// Store the callback
-			$this->_callbacks[$field][] = $callback;
-		}
-
-		return $this;
+		
+		return $this->contexts(array($key => $value));
 	}
 
 	/**
-	 * Add callbacks using an array.
+	 * Adds multiple contexts to the validation object. 
+	 * 
+	 * The context keys should not have a ':' on the front.
 	 *
 	 * @param   string  field name
-	 * @param   array   list of callbacks
+	 * @param   array   array of callbacks
 	 * @return  $this
 	 */
-	public function callbacks($field, array $callbacks)
+	public function contexts(array $array)
 	{
-		foreach ($callbacks as $callback)
+		foreach ($array as $key => $value)
 		{
-			$this->callback($field, $callback);
+			$this->_context[$key] = $value;
 		}
-
+		
 		return $this;
 	}
 
@@ -683,11 +666,9 @@ class Kohana_Validate extends ArrayObject {
 
 		// Get a list of the expected fields
 		$expected = array_keys($this->_labels);
-
-		// Import the filters, rules, and callbacks locally
-		$filters   = $this->_filters;
-		$rules     = $this->_rules;
-		$callbacks = $this->_callbacks;
+		
+		// Import the validators locally
+		$validate = $this->_validate;
 
 		foreach ($expected as $field)
 		{
@@ -704,41 +685,21 @@ class Kohana_Validate extends ArrayObject {
 				// No data exists for this field
 				$data[$field] = NULL;
 			}
-
-			if (isset($filters[TRUE]))
+			
+			// Add global validators
+			foreach ($validate as $key => $callbacks)
 			{
-				if ( ! isset($filters[$field]))
+				if (isset($callbacks[TRUE]))
 				{
-					// Initialize the filters for this field
-					$filters[$field] = array();
+					if ( ! isset($validate[$key][$field]))
+					{
+						// Initialize the filters for this field
+						$validate[$key][$field] = array();
+					}
+
+					// Append the filters
+					$validate[$key][$field] += $callbacks[TRUE];
 				}
-
-				// Append the filters
-				$filters[$field] += $filters[TRUE];
-			}
-
-			if (isset($rules[TRUE]))
-			{
-				if ( ! isset($rules[$field]))
-				{
-					// Initialize the rules for this field
-					$rules[$field] = array();
-				}
-
-				// Append the rules
-				$rules[$field] += $rules[TRUE];
-			}
-
-			if (isset($callbacks[TRUE]))
-			{
-				if ( ! isset($callbacks[$field]))
-				{
-					// Initialize the callbacks for this field
-					$callbacks[$field] = array();
-				}
-
-				// Append the callbacks
-				$callbacks[$field] += $callbacks[TRUE];
 			}
 		}
 
@@ -750,167 +711,38 @@ class Kohana_Validate extends ArrayObject {
 			// Because no data was submitted, validation will not be forced
 			return FALSE;
 		}
-
-		// Remove the filters, rules, and callbacks that apply to every field
-		unset($filters[TRUE], $rules[TRUE], $callbacks[TRUE]);
-
-		// Execute the filters
-
-		foreach ($filters as $field => $set)
+		
+		// Execute all callbacks
+		foreach ($validate as $type => $fields)
 		{
-			// Get the field value
-			$value = $this[$field];
-
-			foreach ($set as $filter => $params)
+			foreach ($fields as $field => $set)
 			{
-				// Add the field value to the parameters
-				array_unshift($params, $value);
-
-				if (strpos($filter, '::') === FALSE)
+				// Skip TRUE callbacks and errored out fields
+				if ($field === TRUE OR isset($this->_errors[$field])) continue;
+				
+				// Process each callback
+				foreach ($set as $callback)
 				{
-					// Use a function call
-					$function = new ReflectionFunction($filter);
-
-					// Call $function($this[$field], $param, ...) with Reflection
-					$value = $function->invokeArgs($params);
-				}
-				else
-				{
-					// Split the class and method of the rule
-					list($class, $method) = explode('::', $filter, 2);
-
-					// Use a static method call
-					$method = new ReflectionMethod($class, $method);
-
-					// Call $Class::$method($this[$field], $param, ...) with Reflection
-					$value = $method->invokeArgs(NULL, $params);
-				}
-			}
-
-			// Set the filtered value
-			$this[$field] = $value;
-		}
-
-		// Execute the rules
-
-		foreach ($rules as $field => $set)
-		{
-			// Get the field value
-			$value = $this[$field];
-
-			foreach ($set as $rule => $params)
-			{
-				if ( ! in_array($rule, $this->_empty_rules) AND ! Validate::not_empty($value))
-				{
-					// Skip this rule for empty fields
-					continue;
-				}
-
-				// Add the field value to the parameters
-				array_unshift($params, $value);
-
-				if (method_exists($this, $rule))
-				{
-					// Use a method in this object
-					$method = new ReflectionMethod($this, $rule);
-
-					if ($method->isStatic())
+					// Set the current context
+					$this->contexts(array(
+						'field'    => $field,
+						'callback' => $callback,
+						'value'    => $this[$field],
+						'validate' => $this,
+					));
+					
+					// Call
+					$callback->call($this);
+					
+					// Any new errors? Then we're done for this field
+					if (isset($this->_errors[$field]))
 					{
-						// Call static::$rule($this[$field], $param, ...) with Reflection
-						$passed = $method->invokeArgs(NULL, $params);
+						break;
 					}
-					else
-					{
-						// Do not use Reflection here, the method may be protected
-						$passed = call_user_func_array(array($this, $rule), $params);
-					}
-				}
-				elseif (strpos($rule, '::') === FALSE)
-				{
-					// Use a function call
-					$function = new ReflectionFunction($rule);
-
-					// Call $function($this[$field], $param, ...) with Reflection
-					$passed = $function->invokeArgs($params);
-				}
-				else
-				{
-					// Split the class and method of the rule
-					list($class, $method) = explode('::', $rule, 2);
-
-					// Use a static method call
-					$method = new ReflectionMethod($class, $method);
-
-					// Call $Class::$method($this[$field], $param, ...) with Reflection
-					$passed = $method->invokeArgs(NULL, $params);
-				}
-
-				if ($passed === FALSE)
-				{
-					// Remove the field name from the parameters
-					array_shift($params);
-
-					// Add the rule to the errors
-					$this->error($field, $rule, $params);
-
-					// This field has an error, stop executing rules
-					break;
 				}
 			}
 		}
-
-		// Execute the callbacks
-
-		foreach ($callbacks as $field => $set)
-		{
-			if (isset($this->_errors[$field]))
-			{
-				// Skip any field that already has an error
-				continue;
-			}
-
-			foreach ($set as $callback)
-			{
-				if (is_string($callback) AND strpos($callback, '::') !== FALSE)
-				{
-					// Make the static callback into an array
-					$callback = explode('::', $callback, 2);
-				}
-
-				if (is_array($callback))
-				{
-					// Separate the object and method
-					list ($object, $method) = $callback;
-
-					// Use a method in the given object
-					$method = new ReflectionMethod($object, $method);
-
-					if ( ! is_object($object))
-					{
-						// The object must be NULL for static calls
-						$object = NULL;
-					}
-
-					// Call $object->$method($this, $field, $errors) with Reflection
-					$method->invoke($object, $this, $field);
-				}
-				else
-				{
-					// Use a function call
-					$function = new ReflectionFunction($callback);
-
-					// Call $function($this, $field, $errors) with Reflection
-					$function->invoke($this, $field);
-				}
-
-				if (isset($this->_errors[$field]))
-				{
-					// An error was added, stop processing callbacks
-					break;
-				}
-			}
-		}
-
+		
 		if (isset($benchmark))
 		{
 			// Stop benchmarking
@@ -977,49 +809,8 @@ class Kohana_Validate extends ArrayObject {
 				$label = __($label);
 			}
 
-			// Start the translation values list
-			$values = array(':field' => $label);
-
-			if ($params)
-			{
-				// Value passed to the callback
-				$values[':value'] = array_shift($params);
-
-				if (is_array($values[':value']))
-				{
-					// All values must be strings
-					$values[':value'] = implode(', ', Arr::flatten($values[':value']));
-				}
-
-				foreach ($params as $key => $value)
-				{
-					if (is_array($value))
-					{
-						// All values must be strings
-						$value = implode(', ', Arr::flatten($value));
-					}
-
-					// Check if a label for this parameter exists
-					if (isset($this->_labels[$value]))
-					{
-						$value = $this->_labels[$value];
-
-						if ($translate)
-						{
-							// Translate the label
-							$value = __($value);
-						}
-					}
-
-					// Add each parameter as a numbered value, starting from 1
-					$values[':param'.($key + 1)] = $value;
-				}
-			}
-			else
-			{
-				// No value is present
-				$values[':value'] = NULL;
-			}
+			// Add the field name to the params, everything else should be set in place by the callback
+			$values = array(':field' => $label) + (array) $params;
 
 			if ($message = Kohana::message($file, "{$field}.{$error}"))
 			{
@@ -1068,6 +859,7 @@ class Kohana_Validate extends ArrayObject {
 
 		return $messages;
 	}
+	
 
 	/**
 	 * Checks if a field matches the value of another field.
@@ -1076,9 +868,75 @@ class Kohana_Validate extends ArrayObject {
 	 * @param   string   field name to match
 	 * @return  boolean
 	 */
-	protected function matches($value, $match)
+	public function matches($value, $match)
 	{
 		return ($value === $this[$match]);
+	}
+	
+	/**
+	 * Generic method for adding a new validator.
+	 *
+	 * @param   string  the validator type
+	 * @param   string  field name
+	 * @param   array   an array of callbacks and params
+	 * @return  $this
+	 */
+	protected function _add($type, $field, $callbacks)
+	{
+		// Ensure the validator type exists
+		if ( ! isset($this->_validate[$type]))
+		{
+			$this->_validate[$type] = array();
+			
+			// Ensure the validator field exists
+			if ( ! isset($this->_validate[$type][$field]))
+			{
+				$this->_validate[$type][$field] = array();
+			}
+		}
+		
+		// Set the field label to the field name if it doesn't exist
+		if ($field !== TRUE AND ! isset($this->_labels[$field]))
+		{
+			$this->_labels[$field] = inflector::humanize($field);
+		}
+		
+		// The class we'll be converting all callbacks to
+		$class = 'Validate_'.$type;
+		
+		// Loop through each, adding them all
+		foreach ($callbacks as $set)
+		{
+			$callback = $set[0];
+			$params   = isset($set[1]) ? $set[1] : NULL;
+			
+			// Are we supposed to convert this to a callback of this class?
+			if (is_string($callback) AND is_callable(array('Validate', $callback)))
+			{
+				// Test to see if the method is static or not
+				$method = new ReflectionMethod('Validate', $callback);
+				
+				if ($method->isStatic())
+				{
+					$callback = array('Validate', $callback);
+				}
+				else
+				{
+					$callback = array(':validate', $callback);
+				}
+			}
+			
+			// Create an object out of the callback if it isn't already one
+			if ( ! $callback instanceof $class)
+			{
+				$callback = new $class($callback, $params);
+			}
+
+			// Append to the list
+			$this->_validate[$type][$field][] = $callback;
+		}
+		
+		return $this;
 	}
 
 } // End Validation
