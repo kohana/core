@@ -685,22 +685,6 @@ class Kohana_Validate extends ArrayObject {
 				// No data exists for this field
 				$data[$field] = NULL;
 			}
-			
-			// Add global validators
-			foreach ($validate as $key => $callbacks)
-			{
-				if (isset($callbacks[TRUE]))
-				{
-					if ( ! isset($validate[$key][$field]))
-					{
-						// Initialize the filters for this field
-						$validate[$key][$field] = array();
-					}
-
-					// Append the filters
-					$validate[$key][$field] += $callbacks[TRUE];
-				}
-			}
 		}
 
 		// Overload the current array with the new one
@@ -718,13 +702,19 @@ class Kohana_Validate extends ArrayObject {
 			foreach ($fields as $field => $set)
 			{
 				// Skip TRUE callbacks and errored out fields
-				if ($field === TRUE OR isset($this->_errors[$field])) continue;
+				if ($field === 1 OR isset($this->_errors[$field])) continue;
+				
+				// Add the TRUE callbacks to the array
+				if (isset($validate[$type][TRUE]))
+				{
+					$set = array_merge($validate[$type][TRUE], $set);
+				}
 				
 				// Process each callback
 				foreach ($set as $callback)
 				{
 					// Set the current context
-					$this->contexts(array(
+					$this->_current_context(array(
 						'field'    => $field,
 						'callback' => $callback,
 						'value'    => $this[$field],
@@ -887,12 +877,12 @@ class Kohana_Validate extends ArrayObject {
 		if ( ! isset($this->_validate[$type]))
 		{
 			$this->_validate[$type] = array();
-			
-			// Ensure the validator field exists
-			if ( ! isset($this->_validate[$type][$field]))
-			{
-				$this->_validate[$type][$field] = array();
-			}
+		}
+		
+		// Ensure the validator field exists
+		if ( ! isset($this->_validate[$type][$field]))
+		{
+			$this->_validate[$type][$field] = array();
 		}
 		
 		// Set the field label to the field name if it doesn't exist
@@ -905,8 +895,14 @@ class Kohana_Validate extends ArrayObject {
 		$class = 'Validate_'.$type;
 		
 		// Loop through each, adding them all
-		foreach ($callbacks as $set)
+		foreach ($callbacks as $key => $set)
 		{
+			// Allow old style callbacks 'callback' => $params
+			if (is_string($key))
+			{
+				$set = array($key, $set ? $set : NULL);
+			}
+			
 			$callback = $set[0];
 			$params   = isset($set[1]) ? $set[1] : NULL;
 			
@@ -937,6 +933,21 @@ class Kohana_Validate extends ArrayObject {
 		}
 		
 		return $this;
+	}
+	
+	/**
+	 * Sets the default context using the values provided.
+	 * 
+	 * This is a simple method to override to provide default 
+	 * contexts. It is re-called every time a new callback is called
+	 * on each field when check()ing.
+	 *
+	 * @param   array  $array 
+	 * @return  NULL
+	 */
+	protected function _current_context($array)
+	{
+		$this->contexts($array);
 	}
 
 } // End Validation

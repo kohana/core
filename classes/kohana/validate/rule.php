@@ -9,14 +9,34 @@
 class Kohana_Validate_Rule extends Kohana_Validate_Callback {
 	
 	/**
+	 * @var  array  Original parameters, used for generating error params
+	 */
+	protected $_original_params = array();
+	
+	/**
 	 * Creates a new rule.
+	 * 
+	 * If $params is empty or doesn't contain the :value context, the
+	 * :value context is added to the front of the array as was the 
+	 * behavior for the old validate class.
 	 *
 	 * @param  callback  $callback 
 	 * @param  array     $params 
 	 */
 	public function __construct($callback, array $params = NULL)
 	{
-		parent::__construct($callback, $params !== NULL ? $params : array(':value'));
+		$params = $params ? $params : array();
+		
+		// Save the original parameters for the potential error messe
+		$this->_original_params = $params;
+		
+		// Check the parameters to see if we need to add ':value'
+		if ( ! in_array(':value', $params))
+		{
+			array_unshift($params, ':value');
+		}
+		
+		parent::__construct($callback, $params);
 	}
 	
 	/**
@@ -38,7 +58,7 @@ class Kohana_Validate_Rule extends Kohana_Validate_Callback {
 			$i = 1;
 			
 			// Create the error context
-			foreach ($this->_params as $key => $param)
+			foreach ($this->_original_params as $key => $param)
 			{
 				// Each error, with contexts, has the potential for multiple keys
 				$keys = array(':param'.$i);
@@ -72,6 +92,12 @@ class Kohana_Validate_Rule extends Kohana_Validate_Callback {
 				
 				// Increment parameter count
 				$i++;
+			}
+			
+			// Ensure :value is passed to the params
+			if ( ! isset($params[':value']))
+			{
+				$params[':value'] = $validate->context('value');
 			}
 			
 			// Add it to the list

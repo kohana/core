@@ -10,13 +10,25 @@ class Kohana_Validate_Filter extends Kohana_Validate_Callback {
 	
 	/**
 	 * Creates a new filter.
+	 * 
+	 * If $params is empty or doesn't contain the :value context, the
+	 * :value context is added to the front of the array as was the 
+	 * behavior for the old validate class.
 	 *
 	 * @param  callback  $callback 
 	 * @param  array     $params 
 	 */
 	public function __construct($callback, array $params = NULL)
 	{
-		parent::__construct($callback, $params !== NULL ? $params : array(':value'));
+		$params = $params ? $params : array();
+		
+		// Check the parameters to see if we need to add ':value'
+		if ( ! in_array(':value', $params))
+		{
+			array_unshift($params, ':value');
+		}
+		
+		parent::__construct($callback, $params);
 	}
 	
 	/**

@@ -20,6 +20,9 @@ class Kohana_Validate_Callback {
 	
 	/**
 	 * Creates a new callback.
+	 * 
+	 * If $params is empty it is set to array(':validate', ':field'), 
+	 * which mimics the old validation class. 
 	 *
 	 * @param  callback  $callback 
 	 * @param  array     $params 
@@ -27,7 +30,7 @@ class Kohana_Validate_Callback {
 	public function __construct($callback, array $params = NULL)
 	{
 		$this->_callback = $callback;
-		$this->_params   = $params !== NULL ? $params : array(':validate', ':field');
+		$this->_params   = $params ? $params : array(':validate', ':field');
 	}
 	
 	/**
