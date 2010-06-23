@@ -125,9 +125,4 @@ class Kohana_I18n {
 		return I18n::$_cache[$lang] = $table;
 	}
 
-	final private function __construct()
-	{
-		// This is a static class
-	}
-
 } // End I18n

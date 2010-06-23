@@ -1497,9 +1497,4 @@ class Kohana_Core {
 		return $output;
 	}
 
-	private function __construct()
-	{
-		// This is a static class
-	}
-
 } // End Kohana

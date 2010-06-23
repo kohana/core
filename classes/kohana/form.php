@@ -415,9 +415,4 @@ class Kohana_Form {
 		return '<label'.HTML::attributes($attributes).'>'.$text.'</label>';
 	}
 
-	final private function __construct()
-	{
-		// This is a static class
-	}
-
 } // End form

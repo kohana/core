@@ -152,9 +152,4 @@ class Kohana_Cookie {
 		return sha1($agent.$name.$value.Cookie::$salt);
 	}
 
-	final private function __construct()
-	{
-		// This is a static class
-	}
-
 } // End cookie

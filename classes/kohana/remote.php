@@ -149,9 +149,4 @@ class Kohana_Remote {
 		return $response;
 	}
 
-	final private function __construct()
-	{
-		// This is a static class
-	}
-
 } // End remote
