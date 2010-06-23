@@ -167,6 +167,12 @@ class Kohana_Upload {
 	 */
 	public static function size(array $file, $size)
 	{
+		if ($file['error'] === UPLOAD_ERR_INI_SIZE)
+		{
+			// Upload is larger than PHP allowed size
+			return FALSE;
+		}
+
 		if ($file['error'] !== UPLOAD_ERR_OK)
 			return TRUE;
 
