@@ -44,7 +44,7 @@ class Kohana_Request {
 	public static $client_ip = '0.0.0.0';
 
 	/**
-	 * @var  object  main request instance
+	 * @var  object  originating request instance
 	 */
 	public static $instance;
 
@@ -54,15 +54,10 @@ class Kohana_Request {
 	public static $current;
 
 	/**
-	 * @var  boolean controls whether all HTTP headers are parsed
-	 */
-	public static $parse_http_headers = FALSE;
-
-	/**
-	 * Main request singleton instance. If no URI is provided, the URI will
+	 * Originating request instance. If no URI is provided, the URI will
 	 * be automatically detected using PATH_INFO, REQUEST_URI, or PHP_SELF.
 	 *
-	 *     $request = Request::instance();
+	 *     $request = Request::origin();
 	 *
 	 * @param   string   URI of the request
 	 * @return  Request
@@ -833,10 +828,9 @@ class Kohana_Request {
 		// Set the location header
 		$config['headers']['Location'] = $url;
 
-		$this->response = new Response($config);
-
-		// Send headers
-		$this->response->send_headers();
+		// Create response and send headers
+		$this->response = Response::factory($config)
+			->send_headers();
 
 		// Stop execution
 		exit;
@@ -1114,12 +1108,12 @@ class Kohana_Request {
 			if ($e instanceof ReflectionException)
 			{
 				// Reflection will throw exceptions for missing classes or actions
-				$this->response->status = 404;
+				$this->response->status = new Response(array('status' => 404));
 			}
 			else
 			{
 				// All other exceptions are PHP/server errors
-				$this->response->status = 500;
+				$this->response->status = new Response(array('status' => 500));
 			}
 
 			// Send the response headers
