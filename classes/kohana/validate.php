@@ -144,7 +144,8 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public static function url($url)
 	{
-		return (bool) filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED);
+		// Regex taken from http://fightingforalostcause.net/misc/2006/compare-email-regex.php
+		return (bool) preg_match('/^[a-z0-9+-.]+:\/\/(((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?$/i', $url);
 	}
 
 	/**
