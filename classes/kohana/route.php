@@ -165,6 +165,7 @@ class Kohana_Route {
 	 * @param   array    URI parameters
 	 * @param   mixed   protocol string or boolean, adds protocol and domain
 	 * @return  string
+	 * @since   3.0.7
 	 * @uses    URL::site
 	 */
 	public static function url($name, array $params = NULL, $protocol = NULL)
