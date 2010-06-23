@@ -174,13 +174,20 @@ class Kohana_Upload {
 		}
 
 		if ($file['error'] !== UPLOAD_ERR_OK)
+		{
+			// The upload failed, no size to check
 			return TRUE;
+		}
 
 		// Only one size is allowed
-		$size = strtoupper($size);
+		$size = strtoupper(trim($size));
 
-		if ( ! preg_match('/[0-9]++[BKMG]/', $size))
-			return FALSE;
+		if ( ! preg_match('/^[0-9]++[BKMG]$/', $size))
+		{
+			throw new Kohana_Exception('Size does not contain a digit and a byte value: :size', array(
+				':size' => $size,
+			));
+		}
 
 		// Make the size into a power of 1024
 		switch (substr($size, -1))
