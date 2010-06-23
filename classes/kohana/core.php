@@ -16,8 +16,8 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.0.6';
-	const CODENAME = 'sumar hiti';
+	const VERSION  = '3.0.7';
+	const CODENAME = 'hattrick';
 
 	// Log message types
 	const ERROR = 'ERROR';
