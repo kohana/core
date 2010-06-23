@@ -978,19 +978,19 @@ class Kohana_Validate extends ArrayObject {
 			}
 
 			// Start the translation values list
-			$values = array(':field' => $label);
+			$values = array(
+				':field' => $label,
+				':value' => $this[$field],
+			);
+
+			if (is_array($values[':value']))
+			{
+				// All values must be strings
+				$values[':value'] = implode(', ', Arr::flatten($values[':value']));
+			}
 
 			if ($params)
 			{
-				// Value passed to the callback
-				$values[':value'] = array_shift($params);
-
-				if (is_array($values[':value']))
-				{
-					// All values must be strings
-					$values[':value'] = implode(', ', Arr::flatten($values[':value']));
-				}
-
 				foreach ($params as $key => $value)
 				{
 					if (is_array($value))
@@ -1015,11 +1015,6 @@ class Kohana_Validate extends ArrayObject {
 					$values[':param'.($key + 1)] = $value;
 				}
 			}
-			else
-			{
-				// No value is present
-				$values[':value'] = NULL;
-			}
 
 			if ($message = Kohana::message($file, "{$field}.{$error}"))
 			{
@@ -1043,7 +1038,7 @@ class Kohana_Validate extends ArrayObject {
 				$message = "{$file}.{$field}.{$error}";
 			}
 
-			if ($translate == TRUE)
+			if ($translate)
 			{
 				if (is_string($translate))
 				{
