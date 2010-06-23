@@ -145,7 +145,17 @@ class Kohana_Validate extends ArrayObject {
 	public static function url($url)
 	{
 		// Regex taken from http://fightingforalostcause.net/misc/2006/compare-email-regex.php
-		return (bool) preg_match('/^[a-z0-9+-.]+:\/\/(((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?$/i', $url);
+		// Added the scheme and path parts to test URLs
+
+		$scheme = '[a-z0-9+-.]+';
+		$host   = '(([a-z0-9]{1}[a-z0-9-]+[a-z0-9]{1}|[a-z])\.?)+([a-z]{2,6})?';
+		$ipaddr = '(\d{1,3}.){3}\d{1,3}';
+		$port   = '(\:\d{1,5})?';
+		$path   = '(/.+)?';
+
+		$regex  = "!^{$scheme}://({$host}|{$ipaddr}){$port}{$path}$!i";
+
+		return (bool) preg_match($regex, $url);
 	}
 
 	/**
