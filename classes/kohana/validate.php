@@ -453,6 +453,16 @@ class Kohana_Validate extends ArrayObject {
 	 * @var  array  Error list
 	 */
 	protected $_errors = array();
+	
+	/**
+	 * @var  array  Fields that have empty_rules set on them
+	 */
+	protected $_required = array();
+	
+	/**
+	 * @var  array  Rules that are executed even when the value is empty
+	 */
+	protected $_empty_rules = array('not_empty', 'matches');
 
 	/**
 	 * Creates an ArrayObject from the passed array.
@@ -701,8 +711,20 @@ class Kohana_Validate extends ArrayObject {
 		{
 			foreach ($fields as $field => $set)
 			{
-				// Skip TRUE callbacks and errored out fields
-				if ($field === 1 OR isset($this->_errors[$field])) continue;
+				// Skip TRUE callbacks
+				if ($field === 1) continue;
+				
+				// Field is empty and not required; skip rules
+				if ($type === 'rule' 
+				    AND ! isset($this->_required[TRUE]) 
+				    AND ! isset($this->_required[$field])
+				    AND ! Validate::not_empty($this[$field]))
+				{
+					continue;
+				}
+				
+				// Skip errored out fields
+				if (isset($this->_errors[$field])) continue;
 				
 				// Add the TRUE callbacks to the array
 				if (isset($validate[$type][TRUE]))
@@ -909,6 +931,12 @@ class Kohana_Validate extends ArrayObject {
 			// Are we supposed to convert this to a callback of this class?
 			if (is_string($callback) AND is_callable(array('Validate', $callback)))
 			{
+				// Is the method one that marks the field as required?
+				if (in_array($callback, $this->_empty_rules))
+				{
+					$this->_required[$field] = TRUE;
+				}
+				
 				// Test to see if the method is static or not
 				$method = new ReflectionMethod('Validate', $callback);
 				
