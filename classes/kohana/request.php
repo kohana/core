@@ -228,6 +228,9 @@ class Kohana_Request {
 						{
 							// REQUEST_URI includes the query string, remove it
 							$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+							// Decode the request URI
+							$uri = rawurldecode($uri);
 						}
 						elseif (isset($_SERVER['PHP_SELF']))
 						{
