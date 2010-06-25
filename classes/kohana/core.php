@@ -1433,9 +1433,9 @@ class Kohana_Core {
 			}
 			elseif (isset($step['args']))
 			{
-				if (strpos($step['function'], '{closure}') !== FALSE)
+				if ( ! function_exists($step['function']) OR strpos($step['function'], '{closure}') !== FALSE)
 				{
-					// Introspection on closures in a stack trace is impossible
+					// Introspection on closures or language constructs in a stack trace is impossible
 					$params = NULL;
 				}
 				else
