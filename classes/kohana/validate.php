@@ -148,12 +148,12 @@ class Kohana_Validate extends ArrayObject {
 		// Added the scheme and path parts to test URLs
 
 		$scheme = '[a-z0-9+-.]+';
-		$host   = '(([a-z0-9]{1}[a-z0-9-]+[a-z0-9]{1}|[a-z])\.?)+([a-z]{2,6})?';
-		$ipaddr = '(\d{1,3}.){3}\d{1,3}';
-		$port   = '(\:\d{1,5})?';
-		$path   = '(/.+)?';
+		$host   = '(([a-z0-9][a-z0-9-]+[a-z0-9]|[a-z])\.?)+([a-z]{2,6})?';
+		$ipaddr = '(\d{1,3}\.){3}\d{1,3}';
+		$port   = '(:\d{1,5})?';
+		$path   = '(/.*)?';
 
-		$regex  = "!^{$scheme}://({$host}|{$ipaddr}){$port}{$path}$!i";
+		$regex  = "!^{$scheme}://({$host}|{$ipaddr}){$port}{$path}$!iD";
 
 		return (bool) preg_match($regex, $url);
 	}
