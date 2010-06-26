@@ -85,7 +85,7 @@ class Kohana_Feed {
 			elseif (($name === 'link' OR $name === 'docs') AND strpos($value, '://') === FALSE)
 			{
 				// Convert URIs to URLs
-				$value = url::site($value, 'http');
+				$value = URL::site($value, 'http');
 			}
 
 			// Add the info to the channel
@@ -107,7 +107,7 @@ class Kohana_Feed {
 				elseif (($name === 'link' OR $name === 'guid') AND strpos($value, '://') === FALSE)
 				{
 					// Convert URIs to URLs
-					$value = url::site($value, 'http');
+					$value = URL::site($value, 'http');
 				}
 
 				// Add the info to the row
