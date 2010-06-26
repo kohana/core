@@ -145,7 +145,24 @@ class Kohana_Feed {
 			}
 		}
 
-		return $feed->asXML();
+		if (function_exists('dom_import_simplexml'))
+		{
+			// Convert the feed object to a DOM object
+			$feed = dom_import_simplexml($feed)->ownerDocument;
+
+			// DOM generates more readable XML
+			$feed->formatOutput = TRUE;
+
+			// Export the document as XML
+			$feed = $feed->saveXML();
+		}
+		else
+		{
+			// Export the document as XML
+			$feed = $feed->asXML();
+		}
+
+		return $feed;
 	}
 
 } // End Feed
