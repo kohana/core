@@ -858,7 +858,7 @@ class Kohana_Validate extends ArrayObject {
 
 				if ($passed === FALSE)
 				{
-					// Remove the field name from the parameters
+					// Remove the field value from the parameters
 					array_shift($params);
 
 					// Add the rule to the errors
