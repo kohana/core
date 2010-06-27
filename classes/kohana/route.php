@@ -297,17 +297,6 @@ class Kohana_Route {
 	 */
 	public function uri(array $params = NULL)
 	{
-		if ($params === NULL)
-		{
-			// Use the default parameters
-			$params = $this->_defaults;
-		}
-		else
-		{
-			// Add the default parameters
-			$params += $this->_defaults;
-		}
-
 		// Start with the routed URI
 		$uri = $this->_uri;
 
@@ -356,8 +345,9 @@ class Kohana_Route {
 			if ( ! isset($params[$param]))
 			{
 				// Ungrouped parameters are required
-				throw new Kohana_Exception('Required route parameter not passed: :param',
-					array(':param' => $param));
+				throw new Kohana_Exception('Required route parameter not passed: :param', array(
+					':param' => $param,
+				));
 			}
 
 			$uri = str_replace($key, $params[$param], $uri);
