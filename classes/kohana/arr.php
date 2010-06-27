@@ -435,6 +435,7 @@ class Kohana_Arr {
 	 *
 	 * @param   array   array to flatten
 	 * @return  array
+	 * @since   3.0.6
 	 */
 	public static function flatten($array)
 	{
