@@ -252,6 +252,26 @@ class Kohana_Form {
 		// Set the input name
 		$attributes['name'] = $name;
 
+		if (is_array($selected))
+		{
+			// This is a multi-select, god save us!
+			$attributes['multiple'] = 'multiple';
+		}
+
+		if ( ! is_array($selected))
+		{
+			if ($selected === NULL)
+			{
+				// Use an empty array
+				$selected = array();
+			}
+			else
+			{
+				// Convert the selected options to an array
+				$selected = array((string) $selected);
+			}
+		}
+
 		if (empty($options))
 		{
 			// There are no options
@@ -259,12 +279,6 @@ class Kohana_Form {
 		}
 		else
 		{
-			if ($selected !== NULL)
-			{
-				// Cast to string only if something needs to be selected
-				$selected = (string) $selected;
-			}
-
 			foreach ($options as $value => $name)
 			{
 				if (is_array($name))
@@ -283,7 +297,7 @@ class Kohana_Form {
 						// Create a new attribute set for this option
 						$option = array('value' => $_value);
 
-						if ($_value === $selected)
+						if (in_array($_value, $selected))
 						{
 							// This option is selected
 							$option['selected'] = 'selected';
@@ -306,7 +320,7 @@ class Kohana_Form {
 					// Create a new attribute set for this option
 					$option = array('value' => $value);
 
-					if ($value === $selected)
+					if (in_array($value, $selected))
 					{
 						// This option is selected
 						$option['selected'] = 'selected';
