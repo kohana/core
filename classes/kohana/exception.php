@@ -24,14 +24,14 @@ class Kohana_Exception extends Exception {
 	 */
 	public function __construct($message, array $variables = NULL, $code = 0, $escape = TRUE)
 	{
-		if ($escape AND $variables)
-		{
-			// Prevent XSS by escaping all of the variables, some of which may be user-generated
-			$variables = array_map(array('HTML', 'chars'), $variables);
-		}
-
 		// Set the message
 		$message = __($message, $variables);
+
+		if ($escape)
+		{
+			// Prevent XSS by escaping the message, which may contain user-generated content
+			$message = HTML::chars($message);
+		}
 
 		// Pass the message to the parent
 		parent::__construct($message, $code);
