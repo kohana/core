@@ -687,6 +687,24 @@ class Kohana_Request {
 	}
 
 	/**
+	 * Create a URL from the current request. This is a shortcut for:
+	 *
+	 *     echo URL::site($this->request->uri($params), $protocol);
+	 *
+	 * @param   string   route name
+	 * @param   array    URI parameters
+	 * @param   mixed    protocol string or boolean, adds protocol and domain
+	 * @return  string
+	 * @since   3.0.7
+	 * @uses    URL::site
+	 */
+	public function url(array $params = NULL, $protocol = NULL)
+	{
+		// Create a URI with the current route and convert it to a URL
+		return URL::site($this->request->uri($params), $protocol);
+	}
+
+	/**
 	 * Retrieves a value from the route parameters.
 	 *
 	 *     $id = $request->param('id');
