@@ -240,9 +240,11 @@ class Kohana_Form {
 	 *
 	 *     echo Form::select('country', $countries, $country);
 	 *
+	 * [!!] Support for multiple selected options was added in v3.0.7.
+	 * 
 	 * @param   string   input name
 	 * @param   array    available options
-	 * @param   string   selected option
+	 * @param   mixed    selected option string, or an array of selected options
 	 * @param   array    html attributes
 	 * @return  string
 	 * @uses    HTML::attributes
