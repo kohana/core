@@ -701,7 +701,7 @@ class Kohana_Request {
 	public function url(array $params = NULL, $protocol = NULL)
 	{
 		// Create a URI with the current route and convert it to a URL
-		return URL::site($this->request->uri($params), $protocol);
+		return URL::site($this->uri($params), $protocol);
 	}
 
 	/**
