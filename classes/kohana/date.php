@@ -17,6 +17,16 @@ class Kohana_Date {
 	const DAY    = 86400;
 	const HOUR   = 3600;
 	const MINUTE = 60;
+	
+	/**
+	 * @var  string  timestamp format
+	 */
+	public static $timestamp_format = 'Y-m-d H:i:s';
+
+	/**
+	 * @var  string  timezone for dates logged
+	 */
+	public static $timezone;
 
 	/**
 	 * Returns the offset (in seconds) between two time zones. Use this to
@@ -517,6 +527,26 @@ class Kohana_Date {
 		$year = ($timestamp >> 25) & 0x7f;
 
 		return mktime($hrs, $min, $sec, $mon, $day, $year + 1980);
+	}
+	
+	/**
+	 * Returns a date/time string with the specified timestamp format
+	 *
+	 *     $time = Date::formatted_time('5 minutes ago');
+	 *
+	 * @see     http://php.net/manual/en/datetime.construct.php
+	 * @param   integer  DOS timestamp
+	 * @return  integer
+	 */
+	public static function formatted_time($datetime_str = 'now', $timestamp_format = NULL)
+	{
+		$timestamp_format = $timestamp_format == NULL ? self::$timestamp_format : $timestamp_format;
+		
+		$time = new DateTime($datetime_str, new DateTimeZone(
+			Date::$timezone ? Date::$timezone : date_default_timezone_get()
+		));
+		
+		return $time->format(Date::$timestamp_format);
 	}
 
 } // End date
