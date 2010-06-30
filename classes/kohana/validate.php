@@ -144,7 +144,55 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public static function url($url)
 	{
-		return (bool) filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED);
+		// Based on http://www.apps.ietf.org/rfc/rfc1738.html#sec-5
+		if ( ! preg_match(
+			'~^
+
+			# scheme
+			[-a-z0-9+.]++://
+
+			# username:password (optional)
+			(?:
+				    [-a-z0-9$_.+!*\'(),;?&=%]++   # username
+				(?::[-a-z0-9$_.+!*\'(),;?&=%]++)? # password (optional)
+				@
+			)?
+
+			(?:
+				# ip address
+				\d{1,3}+(?:\.\d{1,3}+){3}+
+
+				| # or
+
+				# hostname (captured)
+				(
+					     (?!-)[-a-z0-9]{1,63}+(?<!-)
+					(?:\.(?!-)[-a-z0-9]{1,63}+(?<!-)){0,126}+
+				)
+			)
+
+			# port (optional)
+			(?::\d{1,5}+)?
+
+			# path (optional)
+			(?:/.*)?
+
+			$~iDx', $url, $matches))
+			return FALSE;
+
+		// We matched an IP address
+		if ( ! isset($matches[1]))
+			return TRUE;
+
+		// Check maximum length of the whole hostname
+		// http://en.wikipedia.org/wiki/Domain_name#cite_note-0
+		if (strlen($matches[1]) > 253)
+			return FALSE;
+
+		// An extra check for the top level domain
+		// It must start with a letter
+		$tld = ltrim(substr($matches[1], (int) strrpos($matches[1], '.')), '.');
+		return ctype_alpha($tld[0]);
 	}
 
 	/**
@@ -352,7 +400,7 @@ class Kohana_Validate extends ArrayObject {
 		}
 		else
 		{
-			return is_int($str) OR ctype_digit($str);
+			return (is_int($str) AND $str >= 0) OR ctype_digit($str);
 		}
 	}
 
@@ -859,7 +907,7 @@ class Kohana_Validate extends ArrayObject {
 
 				if ($passed === FALSE)
 				{
-					// Remove the field name from the parameters
+					// Remove the field value from the parameters
 					array_shift($params);
 
 					// Add the rule to the errors
@@ -990,12 +1038,27 @@ class Kohana_Validate extends ArrayObject {
 			}
 
 			// Start the translation values list
-			$values = array(':field' => $label);
+			$values = array(
+				':field' => $label,
+				':value' => $this[$field],
+			);
+
+			if (is_array($values[':value']))
+			{
+				// All values must be strings
+				$values[':value'] = implode(', ', Arr::flatten($values[':value']));
+			}
 
 			if ($params)
 			{
 				foreach ($params as $key => $value)
 				{
+					if (is_array($value))
+					{
+						// All values must be strings
+						$value = implode(', ', Arr::flatten($value));
+					}
+
 					// Check if a label for this parameter exists
 					if (isset($this->_labels[$value]))
 					{
@@ -1009,7 +1072,7 @@ class Kohana_Validate extends ArrayObject {
 					}
 
 					// Add each parameter as a numbered value, starting from 1
-					$values[':param'.($key + 1)] = is_array($value) ? implode(', ', $value) : $value;
+					$values[':param'.($key + 1)] = $value;
 				}
 			}
 
@@ -1035,7 +1098,7 @@ class Kohana_Validate extends ArrayObject {
 				$message = "{$file}.{$field}.{$error}";
 			}
 
-			if ($translate == TRUE)
+			if ($translate)
 			{
 				if (is_string($translate))
 				{

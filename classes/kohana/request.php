@@ -228,6 +228,9 @@ class Kohana_Request {
 						{
 							// REQUEST_URI includes the query string, remove it
 							$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+							// Decode the request URI
+							$uri = rawurldecode($uri);
 						}
 						elseif (isset($_SERVER['PHP_SELF']))
 						{
@@ -239,8 +242,8 @@ class Kohana_Request {
 						}
 						else
 						{
-							// If you ever see this error, please report an issue at and include a dump of $_SERVER
-							// http://dev.kohanaphp.com/projects/kohana3/issues
+							// If you ever see this error, please report an issue at http://dev.kohanaphp.com/projects/kohana3/issues
+							// along with any relevant information about your web server setup. Thanks!
 							throw new Kohana_Exception('Unable to detect the URI using PATH_INFO, REQUEST_URI, or PHP_SELF');
 						}
 
@@ -684,6 +687,24 @@ class Kohana_Request {
 	}
 
 	/**
+	 * Create a URL from the current request. This is a shortcut for:
+	 *
+	 *     echo URL::site($this->request->uri($params), $protocol);
+	 *
+	 * @param   string   route name
+	 * @param   array    URI parameters
+	 * @param   mixed    protocol string or boolean, adds protocol and domain
+	 * @return  string
+	 * @since   3.0.7
+	 * @uses    URL::site
+	 */
+	public function url(array $params = NULL, $protocol = NULL)
+	{
+		// Create a URI with the current route and convert it to a URL
+		return URL::site($this->request->uri($params), $protocol);
+	}
+
+	/**
 	 * Retrieves a value from the route parameters.
 	 *
 	 *     $id = $request->param('id');
@@ -792,6 +813,7 @@ class Kohana_Request {
 	 * ----------|-----------|------------------------------------|--------------
 	 * `boolean` | inline    | Display inline instead of download | `FALSE`
 	 * `string`  | mime_type | Manual mime type                   | Automatic
+	 * `boolean` | delete    | Delete the file after sending      | `FALSE`
 	 *
 	 * Download a file that already exists:
 	 *
@@ -827,6 +849,9 @@ class Kohana_Request {
 			{
 				throw new Kohana_Exception('Download name must be provided for streaming files');
 			}
+
+			// Temporary files will automatically be deleted
+			$options['delete'] = FALSE;
 
 			if ( ! isset($mime))
 			{
@@ -916,6 +941,31 @@ class Kohana_Request {
 		// Close the file
 		fclose($file);
 
+		if ( ! empty($options['delete']))
+		{
+			try
+			{
+				// Attempt to remove the file
+				unlink($filename);
+			}
+			catch (Exception $e)
+			{
+				// Create a text version of the exception
+				$error = Kohana::exception_text($e);
+
+				if (is_object(Kohana::$log))
+				{
+					// Add this exception to the log
+					Kohana::$log->add(Kohana::ERROR, $error);
+
+					// Make sure the logs are written
+					Kohana::$log->write();
+				}
+
+				// Do NOT display the exception, it will corrupt the output!
+			}
+		}
+
 		// Stop execution
 		exit;
 	}
@@ -956,7 +1006,7 @@ class Kohana_Request {
 			// Set the benchmark name
 			$benchmark = '"'.$this->uri.'"';
 
-			if ($this !== Request::$instance)
+			if ($this !== Request::$instance AND Request::$current)
 			{
 				// Add the parent request uri
 				$benchmark .= ' « "'.Request::$current->uri.'"';

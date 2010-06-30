@@ -83,7 +83,7 @@ abstract class Kohana_Session {
 	 * @return  void
 	 * @uses    Session::read
 	 */
-	protected function __construct(array $config = NULL, $id = NULL)
+	public function __construct(array $config = NULL, $id = NULL)
 	{
 		if (isset($config['name']))
 		{

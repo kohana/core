@@ -78,9 +78,4 @@ class Kohana_Num {
 		return number_format($number, $places, $decimal, $thousands);
 	}
 
-	final private function __construct()
-	{
-		// This is a static class
-	}
-
 } // End num

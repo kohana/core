@@ -73,7 +73,7 @@ class Kohana_Config {
 	 */
 	public function detach(Kohana_Config_Reader $reader)
 	{
-		if (($key = array_search($reader, $this->_readers)))
+		if (($key = array_search($reader, $this->_readers)) !== FALSE)
 		{
 			// Remove the writer
 			unset($this->_readers[$key]);
@@ -148,16 +148,6 @@ class Kohana_Config {
 		}
 
 		return $this;
-	}
-
-	final private function __construct()
-	{
-		// Enforce singleton behavior
-	}
-
-	final private function __clone()
-	{
-		// Enforce singleton behavior
 	}
 
 } // End Kohana_Config

@@ -232,6 +232,37 @@ class Kohana_Arr {
 	}
 
 	/**
+	 * Recursive version of [array_map](http://php.net/array_map), applies the
+	 * same callback to all elements in an array, including sub-arrays.
+	 *
+	 *     // Apply "strip_tags" to every element in the array
+	 *     $array = Arr::map('strip_tags', $array);
+	 *
+	 * [!!] Unlike `array_map`, this method requires a callback and will only map
+	 * a single array.
+	 *
+	 * @param   mixed   callback applied to every element in the array
+	 * @param   array   array to map
+	 * @return  array
+	 */
+	public static function map($callback, $array)
+	{
+		foreach ($array as $key => $val)
+		{
+			if (is_array($val))
+			{
+				$array[$key] = Arr::map($callback, $val);
+			}
+			else
+			{
+				$array[$key] = call_user_func($callback, $val);
+			}
+		}
+
+		return $array;
+	}
+
+	/**
 	 * Merges one or more arrays recursively and preserves all keys.
 	 * Note that this does not work the same as [array_merge_recursive](http://php.net/array_merge_recursive)!
 	 *
@@ -257,6 +288,9 @@ class Kohana_Arr {
 			// Get the next array
 			$arr = func_get_arg($i);
 
+			// Is the array associative?
+			$assoc = Arr::is_assoc($arr);
+
 			foreach ($arr as $key => $val)
 			{
 				if (isset($result[$key]))
@@ -279,8 +313,16 @@ class Kohana_Arr {
 					}
 					else
 					{
-						// Associative arrays are replaced
-						$result[$key] = $val;
+						if ($assoc)
+						{
+							// Associative values are replaced
+							$result[$key] = $val;
+						}
+						elseif ( ! in_array($val, $result, TRUE))
+						{
+							// Indexed values are added only if they do not yet exist
+							$result[] = $val;
+						}
 					}
 				}
 				else
@@ -378,9 +420,38 @@ class Kohana_Arr {
 		return array($command, $params);
 	}
 
-	final private function __construct()
+	/**
+	 * Convert a multi-dimensional array into a single-dimensional array.
+	 *
+	 *     $array = array('set' => array('one' => 'something'), 'two' => 'other');
+	 *
+	 *     // Flatten the array
+	 *     $array = Arr::flatten($array);
+	 *
+	 *     // The array will now be
+	 *     array('one' => 'something', 'two' => 'other');
+	 *
+	 * [!!] The keys of array values will be discarded.
+	 *
+	 * @param   array   array to flatten
+	 * @return  array
+	 * @since   3.0.6
+	 */
+	public static function flatten($array)
 	{
-		// This is a static class
+		$flat = array();
+		foreach ($array as $key => $value)
+		{
+			if (is_array($value))
+			{
+				$flat += Arr::flatten($value);
+			}
+			else
+			{
+				$flat[$key] = $value;
+			}
+		}
+		return $flat;
 	}
 
 } // End arr

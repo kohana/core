@@ -240,9 +240,11 @@ class Kohana_Form {
 	 *
 	 *     echo Form::select('country', $countries, $country);
 	 *
+	 * [!!] Support for multiple selected options was added in v3.0.7.
+	 * 
 	 * @param   string   input name
 	 * @param   array    available options
-	 * @param   string   selected option
+	 * @param   mixed    selected option string, or an array of selected options
 	 * @param   array    html attributes
 	 * @return  string
 	 * @uses    HTML::attributes
@@ -252,6 +254,26 @@ class Kohana_Form {
 		// Set the input name
 		$attributes['name'] = $name;
 
+		if (is_array($selected))
+		{
+			// This is a multi-select, god save us!
+			$attributes['multiple'] = 'multiple';
+		}
+
+		if ( ! is_array($selected))
+		{
+			if ($selected === NULL)
+			{
+				// Use an empty array
+				$selected = array();
+			}
+			else
+			{
+				// Convert the selected options to an array
+				$selected = array((string) $selected);
+			}
+		}
+
 		if (empty($options))
 		{
 			// There are no options
@@ -259,12 +281,6 @@ class Kohana_Form {
 		}
 		else
 		{
-			if ($selected !== NULL)
-			{
-				// Cast to string only if something needs to be selected
-				$selected = (string) $selected;
-			}
-
 			foreach ($options as $value => $name)
 			{
 				if (is_array($name))
@@ -283,7 +299,7 @@ class Kohana_Form {
 						// Create a new attribute set for this option
 						$option = array('value' => $_value);
 
-						if ($_value === $selected)
+						if (in_array($_value, $selected))
 						{
 							// This option is selected
 							$option['selected'] = 'selected';
@@ -306,7 +322,7 @@ class Kohana_Form {
 					// Create a new attribute set for this option
 					$option = array('value' => $value);
 
-					if ($value === $selected)
+					if (in_array($value, $selected))
 					{
 						// This option is selected
 						$option['selected'] = 'selected';
@@ -345,16 +361,26 @@ class Kohana_Form {
 	/**
 	 * Creates a image form input.
 	 *
-	 *     echo Form::image(NULL, HTML::image('media/img/login.png'));
+	 *     echo Form::image(NULL, NULL, array('src' => 'media/img/login.png'));
 	 *
-	 * @param   string  input name
-	 * @param   string  input value
-	 * @param   array   html attributes
+	 * @param   string   input name
+	 * @param   string   input value
+	 * @param   array    html attributes
+	 * @param   boolean  add index file to URL?
 	 * @return  string
 	 * @uses    Form::input
 	 */
-	public static function image($name, $value, array $attributes = NULL)
+	public static function image($name, $value, array $attributes = NULL, $index = FALSE)
 	{
+		if ( ! empty($attributes['src']))
+		{
+			if (strpos($attributes['src'], '://') === FALSE)
+			{
+				// Add the base URL
+				$attributes['src'] = URL::base($index).$attributes['src'];
+			}
+		}
+
 		$attributes['type'] = 'image';
 
 		return Form::input($name, $value, $attributes);
@@ -403,11 +429,6 @@ class Kohana_Form {
 		$attributes['for'] = $input;
 
 		return '<label'.HTML::attributes($attributes).'>'.$text.'</label>';
-	}
-
-	final private function __construct()
-	{
-		// This is a static class
 	}
 
 } // End form

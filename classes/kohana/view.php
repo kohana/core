@@ -46,6 +46,12 @@ class Kohana_View {
 		// Import the view variables to local namespace
 		extract($kohana_view_data, EXTR_SKIP);
 
+		if (View::$_global_data)
+		{
+			// Import the global view variables to local namespace and maintain references
+			extract(View::$_global_data, EXTR_REFS);
+		}
+
 		// Capture the view output
 		ob_start();
 
@@ -334,7 +340,7 @@ class Kohana_View {
 		}
 
 		// Combine local and global data and capture the output
-		return View::capture($this->_file, $this->_data + View::$_global_data);
+		return View::capture($this->_file, $this->_data);
 	}
 
 } // End View

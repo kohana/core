@@ -156,6 +156,24 @@ class Kohana_Route {
 		}
 	}
 
+	/**
+	 * Create a URL from a route name. This is a shortcut for:
+	 *
+	 *     echo URL::site(Route::get($name)->uri($params), $protocol);
+	 *
+	 * @param   string   route name
+	 * @param   array    URI parameters
+	 * @param   mixed   protocol string or boolean, adds protocol and domain
+	 * @return  string
+	 * @since   3.0.7
+	 * @uses    URL::site
+	 */
+	public static function url($name, array $params = NULL, $protocol = NULL)
+	{
+		// Create a URI with the route and convert it to a URL
+		return URL::site(Route::get($name)->uri($params), $protocol);
+	}
+
 	// Route URI string
 	protected $_uri = '';
 

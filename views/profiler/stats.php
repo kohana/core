@@ -29,7 +29,7 @@ $application_cols = array('min', 'max', 'average', 'current');
 		<?php foreach ($benchmarks as $name => $tokens): ?>
 		<tr class="mark time">
 			<?php $stats = Profiler::stats($tokens) ?>
-			<th class="name" rowspan="2" scope="rowgroup"><?php echo $name, ' (', count($tokens), ')' ?></th>
+			<th class="name" rowspan="2" scope="rowgroup"><?php echo HTML::chars($name), ' (', count($tokens), ')' ?></th>
 			<?php foreach ($group_cols as $key): ?>
 			<td class="<?php echo $key ?>">
 				<div>

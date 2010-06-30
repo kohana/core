@@ -16,8 +16,8 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.0.4';
-	const CODENAME = 'wyau cwningen';
+	const VERSION  = '3.0.7';
+	const CODENAME = 'hattrick';
 
 	// Log message types
 	const ERROR = 'ERROR';
@@ -164,6 +164,10 @@ class Kohana_Core {
 	 * @throws  Kohana_Exception
 	 * @param   array   global settings
 	 * @return  void
+	 * @uses    Kohana::globals
+	 * @uses    Kohana::sanitize
+	 * @uses    Kohana::cache
+	 * @uses    Profiler
 	 */
 	public static function init(array $settings = NULL)
 	{
@@ -217,31 +221,8 @@ class Kohana_Core {
 
 		if (ini_get('register_globals'))
 		{
-			if (isset($_REQUEST['GLOBALS']) OR isset($_FILES['GLOBALS']))
-			{
-				// Prevent malicious GLOBALS overload attack
-				echo "Global variable overload attack detected! Request aborted.\n";
-
-				// Exit with an error status
-				exit(1);
-			}
-
-			// Get the variable names of all globals
-			$global_variables = array_keys($GLOBALS);
-
-			// Remove the standard global variables from the list
-			$global_variables = array_diff($global_variables,
-				array('GLOBALS', '_REQUEST', '_GET', '_POST', '_FILES', '_COOKIE', '_SERVER', '_ENV', '_SESSION'));
-
-			foreach ($global_variables as $name)
-			{
-				// Retrieve the global variable and make it null
-				global $$name;
-				$$name = NULL;
-
-				// Unset the global variable, effectively disabling register_globals
-				unset($GLOBALS[$name], $$name);
-			}
+			// Reverse the effects of register_globals
+			Kohana::globals();
 		}
 
 		// Determine if we are running in a command line environment
@@ -283,6 +264,12 @@ class Kohana_Core {
 		{
 			// Set the system character set
 			Kohana::$charset = strtolower($settings['charset']);
+		}
+
+		if (function_exists('mb_internal_encoding'))
+		{
+			// Set the MB extension encoding to the same character set
+			mb_internal_encoding(Kohana::$charset);
 		}
 
 		if (isset($settings['base_url']))
@@ -354,6 +341,46 @@ class Kohana_Core {
 
 			// Kohana is no longer initialized
 			Kohana::$_init = FALSE;
+		}
+	}
+
+	/**
+	 * Reverts the effects of the `register_globals` PHP setting by unsetting
+	 * all global varibles except for the default super globals (GPCS, etc).
+	 *
+	 *     if (ini_get('register_globals'))
+	 *     {
+	 *         Kohana::globals();
+	 *     }
+	 *
+	 * @return  void
+	 */
+	public static function globals()
+	{
+		if (isset($_REQUEST['GLOBALS']) OR isset($_FILES['GLOBALS']))
+		{
+			// Prevent malicious GLOBALS overload attack
+			echo "Global variable overload attack detected! Request aborted.\n";
+
+			// Exit with an error status
+			exit(1);
+		}
+
+		// Get the variable names of all globals
+		$global_variables = array_keys($GLOBALS);
+
+		// Remove the standard global variables from the list
+		$global_variables = array_diff($global_variables,
+			array('GLOBALS', '_REQUEST', '_GET', '_POST', '_FILES', '_COOKIE', '_SERVER', '_ENV', '_SESSION'));
+
+		foreach ($global_variables as $name)
+		{
+			// Retrieve the global variable and make it null
+			global $$name;
+			$$name = NULL;
+
+			// Unset the global variable, effectively disabling register_globals
+			unset($GLOBALS[$name], $$name);
 		}
 	}
 
@@ -812,14 +839,13 @@ class Kohana_Core {
 	 *     // Get "username" from messages/text.php
 	 *     $username = Kohana::message('text', 'username');
 	 *
-	 * @uses  Arr::merge
-	 * @uses  Arr::path
-	 *
 	 * @param   string  file name
 	 * @param   string  key path to get
 	 * @param   mixed   default value if the path does not exist
 	 * @return  string  message string for the given path
 	 * @return  array   complete message list, when no path is specified
+	 * @uses    Arr::merge
+	 * @uses    Arr::path
 	 */
 	public static function message($file, $path = NULL, $default = NULL)
 	{
@@ -1259,19 +1285,19 @@ class Kohana_Core {
 	{
 		if (strpos($file, APPPATH) === 0)
 		{
-			$file = 'APPPATH/'.substr($file, strlen(APPPATH));
+			$file = 'APPPATH'.DIRECTORY_SEPARATOR.substr($file, strlen(APPPATH));
 		}
 		elseif (strpos($file, SYSPATH) === 0)
 		{
-			$file = 'SYSPATH/'.substr($file, strlen(SYSPATH));
+			$file = 'SYSPATH'.DIRECTORY_SEPARATOR.substr($file, strlen(SYSPATH));
 		}
 		elseif (strpos($file, MODPATH) === 0)
 		{
-			$file = 'MODPATH/'.substr($file, strlen(MODPATH));
+			$file = 'MODPATH'.DIRECTORY_SEPARATOR.substr($file, strlen(MODPATH));
 		}
 		elseif (strpos($file, DOCROOT) === 0)
 		{
-			$file = 'DOCROOT/'.substr($file, strlen(DOCROOT));
+			$file = 'DOCROOT'.DIRECTORY_SEPARATOR.substr($file, strlen(DOCROOT));
 		}
 
 		return $file;
@@ -1407,9 +1433,9 @@ class Kohana_Core {
 			}
 			elseif (isset($step['args']))
 			{
-				if (strpos($step['function'], '{closure}') !== FALSE)
+				if ( ! function_exists($step['function']) OR strpos($step['function'], '{closure}') !== FALSE)
 				{
-					// Introspection on closures in a stack trace is impossible
+					// Introspection on closures or language constructs in a stack trace is impossible
 					$params = NULL;
 				}
 				else
@@ -1469,11 +1495,6 @@ class Kohana_Core {
 		}
 
 		return $output;
-	}
-
-	private function __construct()
-	{
-		// This is a static class
 	}
 
 } // End Kohana
