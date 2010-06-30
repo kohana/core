@@ -535,8 +535,9 @@ class Kohana_Date {
 	 *     $time = Date::formatted_time('5 minutes ago');
 	 *
 	 * @see     http://php.net/manual/en/datetime.construct.php
-	 * @param   integer  DOS timestamp
-	 * @return  integer
+	 * @param   string  datetime_str     datetime string
+	 * @param   string  timestamp_format timestamp format
+	 * @return  string
 	 */
 	public static function formatted_time($datetime_str = 'now', $timestamp_format = NULL)
 	{
