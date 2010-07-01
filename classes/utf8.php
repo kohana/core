@@ -376,9 +376,6 @@ final class UTF8 {
 	 */
 	public static function ucwords($str)
 	{
-		if (UTF8::$server_utf8)
-			return mb_convert_case($str, MB_CASE_TITLE, Kohana::$charset);
-
 		if ( ! isset(self::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8/'.__FUNCTION__.EXT;
