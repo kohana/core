@@ -47,7 +47,7 @@ class Kohana_UTF8 {
 	 * @param   mixed   variable to clean
 	 * @param   string  character set, defaults to UTF-8
 	 * @return  mixed
-	 * @uses    UTF8::strip_ascci_ctrl
+	 * @uses    UTF8::strip_ascii_ctrl
 	 * @uses    UTF8::is_ascii
 	 */
 	public static function clean($var, $charset = 'UTF-8')
