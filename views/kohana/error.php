@@ -117,7 +117,7 @@ function koggle(elem)
 			<table cellspacing="0">
 				<?php foreach ($GLOBALS[$var] as $key => $value): ?>
 				<tr>
-					<td><code><?php echo $key ?></code></td>
+					<td><code><?php echo HTML::chars($key) ?></code></td>
 					<td><pre><?php echo Kohana::dump($value) ?></pre></td>
 				</tr>
 				<?php endforeach ?>
