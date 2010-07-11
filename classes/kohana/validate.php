@@ -713,9 +713,10 @@ class Kohana_Validate extends ArrayObject {
 	 *          // The data is valid, do something here
 	 *     }
 	 *
+	 * @param   boolean   allow empty array?
 	 * @return  boolean
 	 */
-	public function check()
+	public function check($allow_empty = FALSE)
 	{
 		if (Kohana::$profiling === TRUE)
 		{
@@ -796,7 +797,7 @@ class Kohana_Validate extends ArrayObject {
 		if ($submitted === FALSE)
 		{
 			// Because no data was submitted, validation will not be forced
-			return FALSE;
+			return (boolean) $allow_empty;
 		}
 
 		// Remove the filters, rules, and callbacks that apply to every field
