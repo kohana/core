@@ -14,7 +14,7 @@ class Kohana_Validate extends ArrayObject {
 	 * Creates a new Validation instance.
 	 *
 	 * @param   array   array to use for validation
-	 * @return  object
+	 * @return  Validate
 	 */
 	public static function factory(array $array)
 	{
@@ -664,7 +664,7 @@ class Kohana_Validate extends ArrayObject {
 	 * @param   mixed   callback to add
 	 * @return  $this
 	 */
-	public function callback($field, $callback)
+	public function callback($field, $callback, array $params = array())
 	{
 		if ( ! isset($this->_callbacks[$field]))
 		{
@@ -681,7 +681,7 @@ class Kohana_Validate extends ArrayObject {
 		if ( ! in_array($callback, $this->_callbacks[$field], TRUE))
 		{
 			// Store the callback
-			$this->_callbacks[$field][] = $callback;
+			$this->_callbacks[$field][] = array($callback, $params);
 		}
 
 		return $this;
@@ -918,8 +918,10 @@ class Kohana_Validate extends ArrayObject {
 				continue;
 			}
 
-			foreach ($set as $callback)
+			foreach ($set as $callback_array)
 			{
+				list($callback, $params) = $callback_array;
+
 				if (is_string($callback) AND strpos($callback, '::') !== FALSE)
 				{
 					// Make the static callback into an array
@@ -941,7 +943,7 @@ class Kohana_Validate extends ArrayObject {
 					}
 
 					// Call $object->$method($this, $field, $errors) with Reflection
-					$method->invoke($object, $this, $field);
+					$method->invoke($object, $this, $field, $params);
 				}
 				else
 				{
@@ -949,7 +951,7 @@ class Kohana_Validate extends ArrayObject {
 					$function = new ReflectionFunction($callback);
 
 					// Call $function($this, $field, $errors) with Reflection
-					$function->invoke($this, $field);
+					$function->invoke($this, $field, $params);
 				}
 
 				if (isset($this->_errors[$field]))
