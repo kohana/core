@@ -382,20 +382,10 @@ class Kohana_Core {
 			'GLOBALS',
 		));
 
-		if (in_array('name', $global_variables))
-		{
-			global $name;
-
-			// We must remove the iterator variable before any others
-			unset($GLOBALS['name'], $name);
-		}
-
 		foreach ($global_variables as $name)
 		{
-			global $$name;
-
 			// Unset the global variable, effectively disabling register_globals
-			unset($GLOBALS[$name], $$name);
+			unset($GLOBALS[$name]);
 		}
 	}
 
