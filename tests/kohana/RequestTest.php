@@ -168,6 +168,7 @@ class Kohana_RequestTest extends Kohana_Unittest_TestCase
 	{
 		$this->setEnvironment(array(
 			'_SERVER'            => array('HTTP_HOST' => 'localhost', 'argc' => $_SERVER['argc']),
+			'Kohana::$index_file' => FALSE,
 			'Kohana::$is_cli'    => $is_cli,
 		));
 
