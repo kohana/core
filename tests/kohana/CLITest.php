@@ -34,6 +34,7 @@ Class Kohana_CLITest extends Kohana_Unittest_TestCase
 							'invalid option',
 							'--version' => '2.23',
 							'--important' => 'something=true',
+							'--name' => 'Jeremy Taylor',
 						);
 
 	/**
@@ -147,5 +148,18 @@ Class Kohana_CLITest extends Kohana_Unittest_TestCase
 
 		$this->assertSame(1, count($options));
 		$this->assertSame('something=true', reset($options));
+	}
+
+	/**
+	 * Arguments enclosed with quote marks should be allowed to contain
+	 * spaces
+	 *
+	 * @test
+	 */
+	public function test_value_includes_spaces_when_enclosed_with_quotes()
+	{
+		$options = CLI::options('name');
+
+		$this->assertSame(array('name' => 'Jeremy Taylor'), $options);
 	}
 }
