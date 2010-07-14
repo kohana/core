@@ -48,7 +48,7 @@ function koggle(elem)
 }
 </script>
 <div id="kohana_error">
-	<h1><span class="type"><?php echo $type ?> [ <?php echo $code ?> ]:</span> <span class="message"><?php echo $message ?></span></h1>
+	<h1><span class="type"><?php echo $type ?> [ <?php echo $code ?> ]:</span> <span class="message"><?php echo html::chars($message) ?></span></h1>
 	<div id="<?php echo $error_id ?>" class="content">
 		<p><span class="file"><?php echo Kohana::debug_path($file) ?> [ <?php echo $line ?> ]</span></p>
 		<?php echo Kohana::debug_source($file, $line) ?>
@@ -117,7 +117,7 @@ function koggle(elem)
 			<table cellspacing="0">
 				<?php foreach ($GLOBALS[$var] as $key => $value): ?>
 				<tr>
-					<td><code><?php echo $key ?></code></td>
+					<td><code><?php echo HTML::chars($key) ?></code></td>
 					<td><pre><?php echo Kohana::dump($value) ?></pre></td>
 				</tr>
 				<?php endforeach ?>

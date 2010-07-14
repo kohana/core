@@ -364,9 +364,4 @@ class Kohana_HTML {
 		return $compiled;
 	}
 
-	final private function __construct()
-	{
-		// This is a static class
-	}
-
 } // End html

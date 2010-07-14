@@ -14,7 +14,7 @@ class Kohana_Validate extends ArrayObject {
 	 * Creates a new Validation instance.
 	 *
 	 * @param   array   array to use for validation
-	 * @return  object
+	 * @return  Validate
 	 */
 	public static function factory(array $array)
 	{
@@ -144,7 +144,55 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public static function url($url)
 	{
-		return (bool) filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED);
+		// Based on http://www.apps.ietf.org/rfc/rfc1738.html#sec-5
+		if ( ! preg_match(
+			'~^
+
+			# scheme
+			[-a-z0-9+.]++://
+
+			# username:password (optional)
+			(?:
+				    [-a-z0-9$_.+!*\'(),;?&=%]++   # username
+				(?::[-a-z0-9$_.+!*\'(),;?&=%]++)? # password (optional)
+				@
+			)?
+
+			(?:
+				# ip address
+				\d{1,3}+(?:\.\d{1,3}+){3}+
+
+				| # or
+
+				# hostname (captured)
+				(
+					     (?!-)[-a-z0-9]{1,63}+(?<!-)
+					(?:\.(?!-)[-a-z0-9]{1,63}+(?<!-)){0,126}+
+				)
+			)
+
+			# port (optional)
+			(?::\d{1,5}+)?
+
+			# path (optional)
+			(?:/.*)?
+
+			$~iDx', $url, $matches))
+			return FALSE;
+
+		// We matched an IP address
+		if ( ! isset($matches[1]))
+			return TRUE;
+
+		// Check maximum length of the whole hostname
+		// http://en.wikipedia.org/wiki/Domain_name#cite_note-0
+		if (strlen($matches[1]) > 253)
+			return FALSE;
+
+		// An extra check for the top level domain
+		// It must start with a letter
+		$tld = ltrim(substr($matches[1], (int) strrpos($matches[1], '.')), '.');
+		return ctype_alpha($tld[0]);
 	}
 
 	/**
@@ -616,7 +664,7 @@ class Kohana_Validate extends ArrayObject {
 	 * @param   mixed   callback to add
 	 * @return  $this
 	 */
-	public function callback($field, $callback)
+	public function callback($field, $callback, array $params = array())
 	{
 		if ( ! isset($this->_callbacks[$field]))
 		{
@@ -633,7 +681,7 @@ class Kohana_Validate extends ArrayObject {
 		if ( ! in_array($callback, $this->_callbacks[$field], TRUE))
 		{
 			// Store the callback
-			$this->_callbacks[$field][] = $callback;
+			$this->_callbacks[$field][] = array($callback, $params);
 		}
 
 		return $this;
@@ -665,9 +713,10 @@ class Kohana_Validate extends ArrayObject {
 	 *          // The data is valid, do something here
 	 *     }
 	 *
+	 * @param   boolean   allow empty array?
 	 * @return  boolean
 	 */
-	public function check()
+	public function check($allow_empty = FALSE)
 	{
 		if (Kohana::$profiling === TRUE)
 		{
@@ -748,7 +797,7 @@ class Kohana_Validate extends ArrayObject {
 		if ($submitted === FALSE)
 		{
 			// Because no data was submitted, validation will not be forced
-			return FALSE;
+			return (boolean) $allow_empty;
 		}
 
 		// Remove the filters, rules, and callbacks that apply to every field
@@ -847,7 +896,7 @@ class Kohana_Validate extends ArrayObject {
 
 				if ($passed === FALSE)
 				{
-					// Remove the field name from the parameters
+					// Remove the field value from the parameters
 					array_shift($params);
 
 					// Add the rule to the errors
@@ -869,8 +918,10 @@ class Kohana_Validate extends ArrayObject {
 				continue;
 			}
 
-			foreach ($set as $callback)
+			foreach ($set as $callback_array)
 			{
+				list($callback, $params) = $callback_array;
+
 				if (is_string($callback) AND strpos($callback, '::') !== FALSE)
 				{
 					// Make the static callback into an array
@@ -892,7 +943,7 @@ class Kohana_Validate extends ArrayObject {
 					}
 
 					// Call $object->$method($this, $field, $errors) with Reflection
-					$method->invoke($object, $this, $field);
+					$method->invoke($object, $this, $field, $params);
 				}
 				else
 				{
@@ -900,7 +951,7 @@ class Kohana_Validate extends ArrayObject {
 					$function = new ReflectionFunction($callback);
 
 					// Call $function($this, $field, $errors) with Reflection
-					$function->invoke($this, $field);
+					$function->invoke($this, $field, $params);
 				}
 
 				if (isset($this->_errors[$field]))
@@ -978,19 +1029,19 @@ class Kohana_Validate extends ArrayObject {
 			}
 
 			// Start the translation values list
-			$values = array(':field' => $label);
+			$values = array(
+				':field' => $label,
+				':value' => $this[$field],
+			);
+
+			if (is_array($values[':value']))
+			{
+				// All values must be strings
+				$values[':value'] = implode(', ', Arr::flatten($values[':value']));
+			}
 
 			if ($params)
 			{
-				// Value passed to the callback
-				$values[':value'] = array_shift($params);
-
-				if (is_array($values[':value']))
-				{
-					// All values must be strings
-					$values[':value'] = implode(', ', Arr::flatten($values[':value']));
-				}
-
 				foreach ($params as $key => $value)
 				{
 					if (is_array($value))
@@ -1015,11 +1066,6 @@ class Kohana_Validate extends ArrayObject {
 					$values[':param'.($key + 1)] = $value;
 				}
 			}
-			else
-			{
-				// No value is present
-				$values[':value'] = NULL;
-			}
 
 			if ($message = Kohana::message($file, "{$field}.{$error}"))
 			{
@@ -1043,7 +1089,7 @@ class Kohana_Validate extends ArrayObject {
 				$message = "{$file}.{$field}.{$error}";
 			}
 
-			if ($translate == TRUE)
+			if ($translate)
 			{
 				if (is_string($translate))
 				{

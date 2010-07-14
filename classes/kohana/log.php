@@ -181,14 +181,4 @@ class Kohana_Log {
 		}
 	}
 
-	final private function __construct()
-	{
-		// Enforce singleton behavior
-	}
-
-	private function __clone()
-	{
-		// Enforce singleton behavior
-	}
-
 } // End Kohana_Log

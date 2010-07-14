@@ -519,9 +519,4 @@ class Kohana_Date {
 		return mktime($hrs, $min, $sec, $mon, $day, $year + 1980);
 	}
 
-	final private function __construct()
-	{
-		// This is a static class
-	}
-
 } // End date

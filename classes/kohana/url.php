@@ -168,9 +168,4 @@ class Kohana_URL {
 		return trim($title, $separator);
 	}
 
-	final private function __construct()
-	{
-		// This is a static class
-	}
-
 } // End url

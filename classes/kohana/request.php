@@ -177,6 +177,9 @@ class Kohana_Request {
 						{
 							// REQUEST_URI includes the query string, remove it
 							$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+							// Decode the request URI
+							$uri = rawurldecode($uri);
 						}
 						elseif (isset($_SERVER['PHP_SELF']))
 						{
@@ -188,8 +191,8 @@ class Kohana_Request {
 						}
 						else
 						{
-							// If you ever see this error, please report an issue at and include a dump of $_SERVER
-							// http://dev.kohanaphp.com/projects/kohana3/issues
+							// If you ever see this error, please report an issue at http://dev.kohanaphp.com/projects/kohana3/issues
+							// along with any relevant information about your web server setup. Thanks!
 							throw new Kohana_Exception('Unable to detect the URI using PATH_INFO, REQUEST_URI, or PHP_SELF');
 						}
 
@@ -770,6 +773,24 @@ class Kohana_Request {
 		$params += $this->_params;
 
 		return $this->route->uri($params);
+	}
+
+	/**
+	 * Create a URL from the current request. This is a shortcut for:
+	 *
+	 *     echo URL::site($this->request->uri($params), $protocol);
+	 *
+	 * @param   string   route name
+	 * @param   array    URI parameters
+	 * @param   mixed    protocol string or boolean, adds protocol and domain
+	 * @return  string
+	 * @since   3.0.7
+	 * @uses    URL::site
+	 */
+	public function url(array $params = NULL, $protocol = NULL)
+	{
+		// Create a URI with the current route and convert it to a URL
+		return URL::site($this->uri($params), $protocol);
 	}
 
 	/**
