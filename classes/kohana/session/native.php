@@ -10,6 +10,11 @@
  */
 class Kohana_Session_Native extends Session {
 
+	public function id()
+	{
+		return session_id();
+	}
+
 	protected function _read($id = NULL)
 	{
 		// Set the cookie lifetime

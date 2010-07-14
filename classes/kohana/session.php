@@ -160,6 +160,21 @@ abstract class Kohana_Session {
 	}
 
 	/**
+	 * Get the current session id, if the session supports it.
+	 *
+	 *     $id = $session->id();
+	 *
+	 * [!!] Not all session types have ids.
+	 *
+	 * @return  string
+	 * @since   3.0.8
+	 */
+	public function id()
+	{
+		return NULL;
+	}
+
+	/**
 	 * Get a variable from the session array.
 	 *
 	 *     $foo = $session->get('foo');
