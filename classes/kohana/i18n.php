@@ -63,16 +63,18 @@ class Kohana_I18n {
 	 * @param   string   text to translate
 	 * @return  string
 	 */
-	public static function get($string)
+	public static function get($string, $lang = NULL)
 	{
-		if ( ! isset(I18n::$_cache[I18n::$lang]))
+		($lang === NULL) AND $lang = I18n::$lang;
+
+		if ( ! isset(I18n::$_cache[$lang]))
 		{
 			// Load the translation table
-			I18n::load(I18n::$lang);
+			I18n::load($lang);
 		}
 
 		// Return the translated string if it exists
-		return isset(I18n::$_cache[I18n::$lang][$string]) ? I18n::$_cache[I18n::$lang][$string] : $string;
+		return isset(I18n::$_cache[$lang][$string]) ? I18n::$_cache[$lang][$string] : $string;
 	}
 
 	/**
