@@ -582,7 +582,7 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 		$ao1 = new ArrayObject;
 		$ao1['test'] = 'value';
 		
-   	return array(
+		return array(
 			array(array(),		FALSE),
 			array(Null,			FALSE),
 			array('',			FALSE),
@@ -806,6 +806,221 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 		$this->assertSame(
 			$expected,
 			Validate::url($url)
+		);
+	}
+
+	/**
+	 * When we copy() a validate object, we should have a new validate object
+	 * with the exact same attributes, apart from the data, which should be the 
+	 * same as the array we pass to copy()
+	 *
+	 * @test
+	 * @covers Validate::copy
+	 */
+	public function test_copy_copies_all_attributes_except_data()
+	{
+		$validate = new Validate(array('foo' => 'bar', 'fud' => 'fear, uncertainty, doubt', 'num' => 9));
+
+		$validate->rule('num', 'is_int')->rule('foo', 'is_string');
+
+		$validate->callback('foo', 'heh', array('ding'));
+
+		$copy_data = array('foo' => 'no', 'fud' => 'maybe', 'num' => 42);
+
+		$copy = $validate->copy($copy_data);
+
+		$this->assertNotSame($validate, $copy);
+		
+		foreach(array('_filters', '_rules', '_callbacks', '_labels', '_empty_rules', '_errors') as $attribute)
+		{
+			// This is just an easy way to check that the attributes are identical
+			// Without hardcoding the expected values
+			$this->assertAttributeSame(
+				self::readAttribute($validate, $attribute),
+				$attribute,
+				$copy
+			);
+		}
+
+		$this->assertSame($copy_data, $copy->as_array());
+	}
+
+	/**
+	 * By default there should be no callbacks registered with validate
+	 *
+	 * @test
+	 */
+	public function test_initially_there_are_no_callbacks()
+	{
+		$validate = new Validate(array());
+
+		$this->assertAttributeSame(array(), '_callbacks', $validate);
+	}
+
+	/**
+	 * This is just a quick check that callback() returns a reference to $this
+	 *
+	 * @test
+	 * @covers Validate::callback
+	 */
+	public function test_callback_returns_chainable_this()
+	{
+		$validate = new Validate(array());
+
+		$this->assertSame($validate, $validate->callback('field', 'something'));
+	}
+
+	/**
+	 * Check that callback() is storign callbacks in the correct manner
+	 *
+	 * @test
+	 * @covers Validate::callback
+	 */
+	public function test_callback_stores_callback()
+	{
+		$validate = new Validate(array('id' => 355));
+
+		$validate->callback('id', 'misc_callback');
+
+		$this->assertAttributeSame(
+			array(
+				'id' => array(array('misc_callback', array())),
+			), 
+			'_callbacks',
+			$validate
+		);
+	}
+
+	/**
+	 * Calling Validate::callbacks() should store multiple callbacks for the specified field
+	 *
+	 * @test
+	 * @covers Validate::callbacks
+	 * @covers Validate::callback
+	 */
+	public function test_callbacks_stores_multiple_callbacks()
+	{
+		$this->markTestSkipped('Callbacks() needs to accept parameters');
+
+		$validate = new Validate(array('year' => 1999));
+
+		// Just some misc. callbacks, not actually relevant
+		$callbacks = array(
+			array('misc_callback', array()),
+			array('another_callback', array('foo', 'bar'))
+		);
+
+		$validate->callbacks('year', $callbacks);
+
+		$this->assertAttributeSame(array('year' => $callbacks), '_callbacks', $validate);
+	}
+
+	/**
+	 * When the validate object is initially created there should be no labels
+	 * specified
+	 *
+	 * @test
+	 */
+	public function test_initially_there_are_no_labels()
+	{
+		$validate = new Validate(array());
+
+		$this->assertAttributeSame(array(), '_labels', $validate);
+	}
+
+	/**
+	 * Adding a label to a field should set it in the labels array
+	 * If the label already exists it should overwrite it
+	 *
+	 * In both cases thefunction should return a reference to $this
+	 *
+	 * @test
+	 * @covers Validate::label
+	 */
+	public function test_label_adds_and_overwrites_label_and_returns_this()
+	{
+		$validate = new Validate(array());
+
+		$this->assertSame($validate, $validate->label('email', 'Email Address'));
+
+		$this->assertAttributeSame(array('email' => 'Email Address'), '_labels', $validate);
+
+		$this->assertSame($validate, $validate->label('email', 'Your Email'));
+
+		$validate->label('name', 'Your Name');
+
+		$this->assertAttributeSame(
+			array('email' => 'Your Email', 'name' => 'Your Name'),
+			'_labels',
+			$validate
+		);
+	}
+
+	/**
+	 * Using labels() we should be able to add / overwrite multiple labels
+	 *
+	 * The function should also return $this for chaining purposes
+	 *
+	 * @test
+	 * @covers Validate::labels
+	 */
+	public function test_labels_adds_and_overwrites_multiple_labels_and_returns_this()
+	{
+		$validate = new Validate(array());
+		$initial_data = array('kung fu' => 'fighting', 'fast' => 'cheetah');
+
+		$this->assertSame($validate, $validate->labels($initial_data));
+
+		$this->assertAttributeSame($initial_data, '_labels', $validate);
+
+		$this->assertSame($validate, $validate->labels(array('fast' => 'lightning')));
+
+		$this->assertAttributeSame(
+			array('fast' => 'lightning', 'kung fu' => 'fighting'),
+			'_labels',
+			$validate
+		);
+	}
+
+	/**
+	 * We should be able to add a filter to the queue by calling filter()
+	 *
+	 * @test
+	 * @covers Validate::filter
+	 */
+	public function test_filter_adds_a_filter_and_returns_this()
+	{
+		$validate = new Validate(array());
+
+		$this->assertSame($validate, $validate->filter('name', 'trim'));
+
+		$this->assertAttributeSame(
+			array('name' => array('trim' => array())),
+			'_filters',
+			$validate
+		);
+	}
+
+	/**
+	 * filters() should be able to add multiple filters for a field and return
+	 * $this when done
+	 *
+	 * @test
+	 * @covers Validate::filters
+	 */
+	public function test_filters_adds_multiple_filters_and_returns_this()
+	{
+		$validate = new Validate(array());
+
+		$this->assertSame(
+			$validate,
+			$validate->filters('id', array('trim' => NULL, 'some_func' => array('yes', 'no')))
+		);
+
+		$this->assertAttributeSame(
+			array('id' => array('trim' => array(), 'some_func' => array('yes', 'no'))),
+			'_filters',
+			$validate
 		);
 	}
 
