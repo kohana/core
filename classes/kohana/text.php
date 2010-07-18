@@ -487,6 +487,9 @@ class Kohana_Text {
 	 *     // Display: one thousand and twenty-four
 	 *     echo Text::number(1024);
 	 *
+	 *     // Display: five million, six hundred and thirty-two
+	 *     echo Text::number(5000632);
+	 *
 	 * @param   integer   number to format
 	 * @return  string
 	 * @since   3.0.8
@@ -496,39 +499,67 @@ class Kohana_Text {
 		// The number must always be an integer
 		$number = (int) $number;
 
-		// Text version of number
-		$text = '';
+		// Uncompiled text version
+		$text = array();
 
 		// Last matched unit within the loop
 		$last_unit = NULL;
+
+		// The last matched item within the loop
+		$last_item = '';
 
 		foreach (Text::$units as $unit => $name)
 		{
 			if ($number / $unit >= 1)
 			{
+				// $value = the number of times the number is divisble by unit
 				$number -= $unit * ($value = (int) floor($number / $unit));
+				// Temporary var for textifying the current unit
+				$item = '';
 
 				if ($unit < 100)
 				{
 					if ($last_unit < 100 AND $last_unit >= 20)
 					{
-						$text .= '-'.$name;
+						$last_item .= '-'.$name;
 					}
 					else
 					{
-						$text .= ' '.$name;
+						$item = $name;
 					}
 				}
 				else
 				{
-					$text .= ' '.Text::number($value).' '.$name;
+					$item = Text::number($value).' '.$name;
 				}
 
+				// In the situation that we need to make a composite number (i.e. twenty-three)
+				// then we need to modify the previous entry
+				if(empty($item))
+				{
+					array_pop($text);
+
+					$item = $last_item;
+				}
+
+				$last_item = $text[] = $item;
 				$last_unit = $unit;
 			}
 		}
 
-		return trim($text, ' ,');
+		if(count($text) > 1)
+		{
+			$and = array_pop($text);
+		}
+
+		$text = implode(', ', $text);
+
+		if(isset($and))
+		{
+			$text .= ' and '.$and;
+		}
+
+		return $text;
 	}
 
 	/**
