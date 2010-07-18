@@ -22,10 +22,12 @@ if ( ! defined('KOHANA_START_MEMORY'))
  *
  *    __('Welcome back, :user', array(':user' => $username));
  *
+ * [!!] The target language is defined by [I18n::$lang].
+ * 
  * @uses    I18n::get
  * @param   string  text to translate
  * @param   array   values to replace in the translated text
- * @param   string  target language
+ * @param   string  source language
  * @return  string
  */
 function __($string, array $values = NULL, $lang = 'en-us')

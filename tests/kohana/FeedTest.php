@@ -27,10 +27,11 @@ class Kohana_FeedTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
+	 * Tests that Feed::parse gets the correct number of elements
+	 *
 	 * @test
-	 *
 	 * @dataProvider provider_parse
-	 *
+	 * @group requires.internet
 	 * @covers feed::parse
 	 * @param string  $source   URL to test
 	 * @param integer $expected Count of items

@@ -160,6 +160,21 @@ abstract class Kohana_Session {
 	}
 
 	/**
+	 * Get the current session id, if the session supports it.
+	 *
+	 *     $id = $session->id();
+	 *
+	 * [!!] Not all session types have ids.
+	 *
+	 * @return  string
+	 * @since   3.0.8
+	 */
+	public function id()
+	{
+		return NULL;
+	}
+
+	/**
 	 * Get a variable from the session array.
 	 *
 	 *     $foo = $session->get('foo');
@@ -171,6 +186,24 @@ abstract class Kohana_Session {
 	public function get($key, $default = NULL)
 	{
 		return array_key_exists($key, $this->_data) ? $this->_data[$key] : $default;
+	}
+
+	/**
+	 * Get and delete a variable from the session array.
+	 *
+	 *     $bar = $session->get_once('bar');
+	 *
+	 * @param   string  variable name
+	 * @param   mixed   default value to return
+	 * @return  mixed
+	 */
+	public function get_once($key, $default = NULL)
+	{
+		$value = $this->get($key, $default);
+
+		unset($this->_data[$key]);
+
+		return $value;
 	}
 
 	/**

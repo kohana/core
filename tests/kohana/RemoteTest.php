@@ -5,6 +5,7 @@
  *
  * @group kohana
  * @group kohana.remote
+ * @group requires.internet
  *
  * @package    Unittest
  * @author     Kohana Team
