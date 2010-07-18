@@ -380,6 +380,7 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 * @group kohana.validation.helpers
+	 * @group requires.internet
 	 * @dataProvider provider_email_domain
 	 * @param string  $email   Email domain to check
 	 * @param boolean $correct Is it correct?
