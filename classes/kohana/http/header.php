@@ -103,8 +103,7 @@ class Kohana_Http_Header extends ArrayObject {
 		$input = array_change_key_case($input, CASE_LOWER);
 
 		// Parse the values into [Http_Header_Values]
-		$input = Http_Header::parse_header_values($input);
-		parent::__construct($input, $flags, $iterator_class);
+		parent::__construct(Http_Header::parse_header_values($input), $flags, $iterator_class);
 
 		// If sort by quality is set, sort the fields by q=0.0 value
 		if (Http_Header::$sort_by_quality)
@@ -178,7 +177,7 @@ class Kohana_Http_Header extends ArrayObject {
 		if ($current instanceof Kohana_Http_Header_Value)
 		{
 			// Sort them by comparisom
-			uksort($value, array($this, '_compare'));
+			uasort($value, array($this, '_compare'));
 		}
 		// If the values is an array
 		else if (is_array($current))
