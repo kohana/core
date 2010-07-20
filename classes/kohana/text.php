@@ -11,6 +11,43 @@
 class Kohana_Text {
 
 	/**
+	 * @var  array   number units and text equivilents
+	 */
+	public static $units = array(
+		1000000000 => 'billion',
+		1000000    => 'million',
+		1000       => 'thousand',
+		100        => 'hundred',
+		90 => 'ninety',
+		80 => 'eighty',
+		70 => 'seventy',
+		60 => 'sixty',
+		50 => 'fifty',
+		40 => 'fourty',
+		30 => 'thirty',
+		20 => 'twenty',
+		19 => 'nineteen',
+		18 => 'eighteen',
+		17 => 'seventeen',
+		16 => 'sixteen',
+		15 => 'fifteen',
+		14 => 'fourteen',
+		13 => 'thirteen',
+		12 => 'tweleve',
+		11 => 'eleven',
+		10 => 'ten',
+		9  => 'nine',
+		8  => 'eight',
+		7  => 'seven',
+		6  => 'six',
+		5  => 'five',
+		4  => 'four',
+		3  => 'three',
+		2  => 'two',
+		1  => 'one',
+	);
+
+	/**
 	 * Limits a phrase to a given number of words.
 	 *
 	 *     $text = Text::limit_words($text);
@@ -442,6 +479,87 @@ class Kohana_Text {
 		}
 
 		return sprintf($format, $bytes / pow($mod, $power), $units[$power]);
+	}
+
+	/**
+	 * Format a number to human-readable text.
+	 *
+	 *     // Display: one thousand and twenty-four
+	 *     echo Text::number(1024);
+	 *
+	 *     // Display: five million, six hundred and thirty-two
+	 *     echo Text::number(5000632);
+	 *
+	 * @param   integer   number to format
+	 * @return  string
+	 * @since   3.0.8
+	 */
+	public static function number($number)
+	{
+		// The number must always be an integer
+		$number = (int) $number;
+
+		// Uncompiled text version
+		$text = array();
+
+		// Last matched unit within the loop
+		$last_unit = NULL;
+
+		// The last matched item within the loop
+		$last_item = '';
+
+		foreach (Text::$units as $unit => $name)
+		{
+			if ($number / $unit >= 1)
+			{
+				// $value = the number of times the number is divisble by unit
+				$number -= $unit * ($value = (int) floor($number / $unit));
+				// Temporary var for textifying the current unit
+				$item = '';
+
+				if ($unit < 100)
+				{
+					if ($last_unit < 100 AND $last_unit >= 20)
+					{
+						$last_item .= '-'.$name;
+					}
+					else
+					{
+						$item = $name;
+					}
+				}
+				else
+				{
+					$item = Text::number($value).' '.$name;
+				}
+
+				// In the situation that we need to make a composite number (i.e. twenty-three)
+				// then we need to modify the previous entry
+				if(empty($item))
+				{
+					array_pop($text);
+
+					$item = $last_item;
+				}
+
+				$last_item = $text[] = $item;
+				$last_unit = $unit;
+			}
+		}
+
+		if(count($text) > 1)
+		{
+			$and = array_pop($text);
+		}
+
+		$text = implode(', ', $text);
+
+		if(isset($and))
+		{
+			$text .= ' and '.$and;
+		}
+
+		return $text;
 	}
 
 	/**

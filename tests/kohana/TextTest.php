@@ -384,4 +384,34 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 		$this->assertFalse(strpos('vice', Text::auto_link_emails($original)));
 	}
 
+	/**
+	 * Provides some test data for test_number()
+	 *
+	 * @return array
+	 */
+	public function provider_number()
+	{
+		return array(
+			array('one', 1),
+			array('twenty-three', 23),
+			array('fourty-two', 42),
+			array('five million, six hundred and thirty-two', 5000632),
+			array('five million, six hundred and thirty', 5000630),
+			array('nine hundred million', 900000000),
+			array('thirty-seven thousand', 37000),
+			array('one thousand and twenty-four', 1024),
+		);
+	}
+
+	/**
+	 * Checks that Text::number formats a number into english text
+	 *
+	 * @test
+	 * @dataProvider provider_number
+	 */
+	public function test_number($expected, $number)
+	{
+		$this->assertSame($expected, Text::number($number));
+	}
+
 }
