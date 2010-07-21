@@ -16,6 +16,11 @@
 abstract class Kohana_Http {
 
 	/**
+	 * @var  The default protocol to use if it cannot be detected
+	 */
+	public static $protocal = 'HTTP/1.1';
+
+	/**
 	 * Parses a HTTP header string into an associative array
 	 *
 	 * @param   string   header string to parse

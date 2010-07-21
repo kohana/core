@@ -42,4 +42,14 @@ interface Kohana_Http_Interaction {
 	 */
 	public function body($content = NULL);
 
+	/**
+	 * Renders the Http_Interaction to a string, producing
+	 * 
+	 *  - Protocol
+	 *  - Headers
+	 *  - Body
+	 *
+	 * @return  string
+	 */
+	public function render();
 }
