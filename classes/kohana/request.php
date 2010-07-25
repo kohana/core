@@ -859,18 +859,23 @@ class Kohana_Request {
 				$mime = File::mime_by_ext(strtolower(pathinfo($download, PATHINFO_EXTENSION)));
 			}
 
-			$raw_data = (string)$this->response;
+			// Force the data to be rendered if 
+			$file_data = (string) $this->response;
+
 			// Get the content size
-			$size = strlen($raw_data);
+			$size = strlen($file_data);
 
 			// Create a temporary file to hold the current response
 			$file = tmpfile();
 
 			// Write the current response into the file
-			fwrite($file, $raw_data);
+			fwrite($file, $file_data);
 
 			// Prepare the file for reading
 			fseek($file, 0);
+
+			// File data is no longer needed
+			unset($file_data);
 		}
 		else
 		{
