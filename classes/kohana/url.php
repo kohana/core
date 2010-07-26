@@ -75,23 +75,11 @@ class Kohana_URL {
 	 */
 	public static function site($uri = '', $protocol = FALSE)
 	{
-		// Get the path from the URI
-		$path = trim(parse_url($uri, PHP_URL_PATH), '/');
-
-		if ($query = parse_url($uri, PHP_URL_QUERY))
-		{
-			// ?query=string
-			$query = '?'.$query;
-		}
-
-		if ($fragment = parse_url($uri, PHP_URL_FRAGMENT))
-		{
-			// #fragment
-			$fragment = '#'.$fragment;
-		}
+		// Chop off possible scheme, host, port, user and pass parts
+		$path = preg_replace('~^[-a-z0-9+.]++://[^/]++/?~', '', trim($uri, '/'));
 
 		// Concat the URL
-		return URL::base(TRUE, $protocol).$path.$query.$fragment;
+		return URL::base(TRUE, $protocol).$path;
 	}
 
 	/**

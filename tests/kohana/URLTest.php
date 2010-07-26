@@ -90,6 +90,10 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 			array('my/site', FALSE, '/kohana/index.php/my/site'),
 			array('my/site', TRUE,  'http://example.com/kohana/index.php/my/site'),
 
+			// @ticket #3110
+			array('my/site/page:5', FALSE, '/kohana/index.php/my/site/page:5'),
+			array('my/site/page:5', TRUE, 'http://example.com/kohana/index.php/my/site/page:5'),
+
 			array('my/site?var=asd&kohana=awesome', FALSE,  '/kohana/index.php/my/site?var=asd&kohana=awesome'),
 			array('my/site?var=asd&kohana=awesome', TRUE,  'http://example.com/kohana/index.php/my/site?var=asd&kohana=awesome'),
 
