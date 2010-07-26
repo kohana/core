@@ -678,47 +678,43 @@ class Kohana_Request {
 		// Remove trailing slashes from the URI
 		$uri = trim($uri, '/');
 
-		// Load routes
-		$routes = Route::all();
+		$params = self::process_uri($uri);
 
-		foreach ($routes as $name => $route)
+		if ($params)
 		{
-			if ($params = $route->matches($uri))
+			// Store the URI
+			$this->uri = $params['uri'];
+
+			// Store the matching route
+			$this->route = $params['route'];
+
+			if (isset($params['directory']))
 			{
-				// Store the URI
-				$this->uri = $uri;
-
-				// Store the matching route
-				$this->route = $route;
-
-				if (isset($params['directory']))
-				{
-					// Controllers are in a sub-directory
-					$this->directory = $params['directory'];
-				}
-
-				// Store the controller
-				$this->controller = $params['controller'];
-
-				if (isset($params['action']))
-				{
-					// Store the action
-					$this->action = $params['action'];
-				}
-				else
-				{
-					// Use the default action
-					$this->action = Route::$default_action;
-				}
-
-				// These are accessible as public vars and can be overloaded
-				unset($params['controller'], $params['action'], $params['directory']);
-
-				// Params cannot be changed once matched
-				$this->_params = $params;
-
-				return;
+				// Controllers are in a sub-directory
+				$this->directory = $params['directory'];
 			}
+
+			// Store the controller
+			$this->controller = $params['controller'];
+
+			if (isset($params['action']))
+			{
+				// Store the action
+				$this->action = $params['action'];
+			}
+			else
+			{
+				// Use the default action
+				$this->action = Route::$default_action;
+			}
+
+			// These are accessible as public vars and can be overloaded
+			unset($params['controller'], $params['action'], $params['directory']);
+
+			// Params cannot be changed once matched
+			$this->_params = $params;
+
+			return;
 		}
 
 		// No matching route for this URI
@@ -1360,5 +1356,41 @@ class Kohana_Request {
 			$this->{$property}[$key] = $value;
 			return $this;
 		}
+	}
+
+	public static function process_uri($uri)
+	{
+		// Load routes
+		$routes = Route::all();
+		$params = NULL;
+
+		foreach ($routes as $name => $route)
+		{
+			// See if the route can match on it's own
+			if ($route->has_callback())
+			{
+				// We found something suitable
+				if ($params = $route->process_callback($uri))
+				{
+					if ( ! isset($params['uri']))
+					{
+						$params['uri'] = $uri;
+					}
+
+					if ( ! isset($params['route']))
+					{
+						$params['route'] = $route;
+					}
+
+					break;
+				}
+			}
+			elseif ($params = $route->matches($uri))
+			{
+				break;
+			}
+		}
+
+		return $params;
 	}
 } // End Request

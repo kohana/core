@@ -64,6 +64,9 @@ class Kohana_Route {
 	// List of route objects
 	protected static $_routes = array();
 
+	// The callback that will modify this route
+	protected $_callback;
+
 	/**
 	 * Stores a named route and returns it. The "action" will always be set to
 	 * "index" if it is not defined.
@@ -78,9 +81,9 @@ class Kohana_Route {
 	 * @param   array    regex patterns for route keys
 	 * @return  Route
 	 */
-	public static function set($name, $uri, array $regex = NULL)
+	public static function set($name, $uri_callback_regex = NULL)
 	{
-		return Route::$_routes[$name] = new Route($uri, $regex);
+		return Route::$_routes[$name] = new Route($uri_callback_regex);
 	}
 
 	/**
@@ -210,24 +213,37 @@ class Kohana_Route {
 	 * @return  void
 	 * @uses    Route::_compile
 	 */
-	public function __construct($uri = NULL, array $regex = NULL)
+	public function __construct($uri_callback_regex = NULL)
 	{
-		if ($uri === NULL)
+		if ($uri_callback_regex === NULL)
 		{
 			// Assume the route is from cache
 			return;
 		}
 
-		if ( ! empty($regex))
+		if (is_callable($uri_callback_regex))
 		{
-			$this->_regex = $regex;
+			$this->_callback = $uri_callback_regex;
 		}
-
-		// Store the URI that this route will match
-		$this->_uri = $uri;
+		// assume it's a string uri, how do we detect a regex?
+		elseif ( ! empty($uri_callback_regex))
+		{
+			$this->_uri = $uri_callback_regex;
+		}
 
 		// Store the compiled regex locally
 		$this->_route_regex = $this->_compile();
+	}
+
+	public function has_callback()
+	{
+		return isset($this->_callback);
+	}
+
+	public function process_callback($uri)
+	{
+		$closure = $this->_callback;
+		return $closure($uri);
 	}
 
 	/**
@@ -268,7 +284,7 @@ class Kohana_Route {
 	 * @return  array   on success
 	 * @return  FALSE   on failure
 	 */
-	public function matches($uri)
+ 	public function matches($uri)
 	{
 		if ( ! preg_match($this->_route_regex, $uri, $matches))
 			return FALSE;
@@ -294,6 +310,9 @@ class Kohana_Route {
 				$params[$key] = $value;
 			}
 		}
+
+		$params['uri'] = $uri;
+		$params['route'] = $this;
 
 		return $params;
 	}
@@ -401,6 +420,9 @@ class Kohana_Route {
 	 */
 	protected function _compile()
 	{
+		if ( ! $this->_uri)
+			return;
+
 		// The URI should be considered literal except for keys and optional parts
 		// Escape everything preg_quote would escape except for : ( ) < >
 		$regex = preg_replace('#'.Route::REGEX_ESCAPE.'#', '\\\\$0', $this->_uri);
