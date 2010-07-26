@@ -88,8 +88,8 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 		return array
 		(
 			array('', '', 100, NULL),
-			array('&#8230;', 'The rain in spain', -10, NULL),
-			array('The rain&#8230;', 'The rain in spain', 2, NULL),
+			array('…', 'The rain in spain', -10, NULL),
+			array('The rain…', 'The rain in spain', 2, NULL),
 			array('The rain...', 'The rain in spain', 2, '...'),
 		);
 	}
@@ -115,11 +115,11 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 			(
 				// Some basic tests
 				array('', '', 100, NULL, FALSE),
-				array('&#8230;', 'BOO!', -42, NULL, FALSE),
+				array('…', 'BOO!', -42, NULL, FALSE),
 
 				// 
-				array('making php bet&#8230;', 'making php better for the sane', 14, NULL, FALSE),
-				array('making php better&#8230;', 'making php better for the sane', 14, NULL, TRUE),
+				array('making php bet…', 'making php better for the sane', 14, NULL, FALSE),
+				array('making php better…', 'making php better for the sane', 14, NULL, TRUE),
 			);
 	}
 
