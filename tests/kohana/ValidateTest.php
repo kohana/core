@@ -1125,6 +1125,7 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 * calling check()
 	 *
 	 * @test
+	 * @ticket 3059
 	 * @covers Validate::check
 	 */
 	public function test_check_allows_option_for_empty_data_array_to_validate()
@@ -1134,6 +1135,11 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 		$this->assertFalse($validate->check(FALSE));
 
 		$this->assertTrue($validate->check(TRUE));
+
+		$validate->rule('name', 'not_empty');
+
+		$this->assertFalse($validate->check(TRUE));
+		$this->assertFalse($validate->check());
 	}
 
 	/**
