@@ -793,10 +793,10 @@ class Kohana_Validate extends ArrayObject {
 		// Overload the current array with the new one
 		$this->exchangeArray($data);
 
-		if ($submitted === FALSE)
+		if ($submitted === FALSE AND ! $allow_empty)
 		{
 			// Because no data was submitted, validation will not be forced
-			return (boolean) $allow_empty;
+			return FALSE;
 		}
 
 		// Remove the filters, rules, and callbacks that apply to every field
