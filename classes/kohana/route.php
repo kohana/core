@@ -81,9 +81,9 @@ class Kohana_Route {
 	 * @param   array    regex patterns for route keys
 	 * @return  Route
 	 */
-	public static function set($name, $uri_callback_regex = NULL)
+	public static function set($name, $uri_callback = NULL, $regex = NULL)
 	{
-		return Route::$_routes[$name] = new Route($uri_callback_regex);
+		return Route::$_routes[$name] = new Route($uri_callback, $regex);
 	}
 
 	/**
@@ -213,22 +213,27 @@ class Kohana_Route {
 	 * @return  void
 	 * @uses    Route::_compile
 	 */
-	public function __construct($uri_callback_regex = NULL)
+	public function __construct($uri_callback = NULL, $regex = NULL)
 	{
-		if ($uri_callback_regex === NULL)
+		if ($uri_callback === NULL)
 		{
 			// Assume the route is from cache
 			return;
 		}
 
-		if (is_callable($uri_callback_regex))
+		if (is_callable($uri_callback))
 		{
-			$this->_callback = $uri_callback_regex;
+			$this->_callback = $uri_callback;
 		}
 		// assume it's a string uri, how do we detect a regex?
-		elseif ( ! empty($uri_callback_regex))
+		elseif ( ! empty($uri_callback))
 		{
-			$this->_uri = $uri_callback_regex;
+			$this->_uri = $uri_callback;
+		}
+
+		if ( ! empty($regex))
+		{
+			$this->_regex = $regex;
 		}
 
 		// Store the compiled regex locally
