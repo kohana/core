@@ -1358,10 +1358,10 @@ class Kohana_Request {
 		}
 	}
 
-	public static function process_uri($uri)
+	public static function process_uri($uri, $routes = NULL)
 	{
 		// Load routes
-		$routes = Route::all();
+		$routes = $routes === NULL ? Route::all() : $routes;
 		$params = NULL;
 
 		foreach ($routes as $name => $route)
