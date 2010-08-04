@@ -209,7 +209,7 @@ abstract class Kohana_Session {
 	/**
 	 * Set a variable in the session array.
 	 *
-	 *     $session->set('foo');
+	 *     $session->set('foo', 'bar');
 	 *
 	 * @param   string   variable name
 	 * @param   mixed    value
