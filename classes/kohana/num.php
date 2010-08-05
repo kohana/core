@@ -110,27 +110,38 @@ class Kohana_Num {
 			switch ($mode)
 			{
 				case self::ROUND_HALF_DOWN:
-					return floor($value * $factor) / $factor;
-				break;
-
 				case self::ROUND_HALF_EVEN:
 				case self::ROUND_HALF_ODD:
 					if (($value * $factor) - floor($value * $factor) === 0.5)
 					{
-						// Round up if the integer is odd and the round mode is set to even
-						// or the integer is even and the round mode is set to odd.
-						// Any other instance round down.
-						$up = (!!(floor($value * $factor) & 1) === ($mode === self::ROUND_HALF_EVEN));
-
-						if ($up)
+						if ($mode === self::ROUND_HALF_DOWN)
 						{
-							$value = ceil($value * $factor);
+							if ($value >= 0)
+							{
+								return floor($value * $factor) / $factor;
+							}
+							else
+							{
+								return ceil($value * $factor) / $factor;
+							}
 						}
 						else
 						{
-							$value = floor($value * $factor);
+							// Round up if the integer is odd and the round mode is set to even
+							// or the integer is even and the round mode is set to odd.
+							// Any other instance round down.
+							$up = (!!(floor($value * $factor) & 1) === ($mode === self::ROUND_HALF_EVEN));
+
+							if ($up)
+							{
+								$value = ceil($value * $factor);
+							}
+							else
+							{
+								$value = floor($value * $factor);
+							}
+							return $value / $factor;
 						}
-						return $value / $factor;
 					}
 					else
 					{
