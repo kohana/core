@@ -78,4 +78,61 @@ class Kohana_Num {
 		return number_format($number, $places, $decimal, $thousands);
 	}
 
+	/**
+	 * Round a number to a specified precision, using a specified tie breaking technique
+	 * 
+	 * @param float $value Number to round
+	 * @param integer $precision Desired precision
+	 * @param integer $mode Tie breaking mode, accepts the PHP_ROUND_HALF_* constants
+	 * @return float Rounded number
+	 */
+	static public function round($value, $precision = 0, $mode = self::ROUND_HALF_UP)
+	{
+		if (version_compare(PHP_VERSION, '5.3', '>='))
+		{
+			return round($value, $precision, $mode);
+		}
+
+		if ($mode === self::ROUND_HALF_UP)
+		{
+			return round($value, $precision);
+		}
+		else
+		{
+			$factor = ($precision === 0) ? 1 : pow(10, $precision);
+			
+			switch ($mode)
+			{
+				case self::ROUND_HALF_DOWN:
+					return floor($value * $factor) / $factor;
+				break;
+
+				case self::ROUND_HALF_EVEN:
+				case self::ROUND_HALF_ODD:
+					if (($value * $factor) - floor($value * $factor) === 0.5)
+					{
+						// Round up if the integer is odd and the round mode is set to even
+						// or the integer is even and the round mode is set to odd.
+						// Any other instance round down.
+						$up = (!!(floor($value * $factor) & 1) === ($mode === self::ROUND_HALF_EVEN));
+
+						if ($up)
+						{
+							$value = ceil($value * $factor);
+						}
+						else
+						{
+							$value = floor($value * $factor);
+						}
+						return $value / $factor;
+					}
+					else
+					{
+						return round($value, $precision);
+					}
+				break;
+			}
+		}
+	}
+
 } // End num
