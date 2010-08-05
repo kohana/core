@@ -83,4 +83,78 @@ Class Kohana_NumTest extends Kohana_Unittest_TestCase
 	{
 		$this->assertSame($expected, Num::format($number, $places, $monetary));
 	}
+
+	/**
+	 * Provides data for test_round()
+	 * @return array
+	 */
+	function provider_round()
+	{
+		return array(
+			array(5.5, 0, array(
+				6.0,
+				5.0,
+				6.0,
+				5.0,
+			)),
+			array(42.5, 0, array(
+				43.0,
+				42.0,
+				42.0,
+				43.0,
+			)),
+			array(10.4, 0, array(
+				10.0,
+				10.0,
+				10.0,
+				10.0,
+			)),
+			array(10.8, 0, array(
+				11.0,
+				11.0,
+				11.0,
+				11.0,
+			)),
+			array(-5.5, 0, array(
+				-6.0,
+				-5.0,
+				-6.0,
+				-5.0,
+			)),
+			array(-10.5, 0, array(
+				-11.0,
+				-10.0,
+				-10.0,
+				-11.0,
+			)),
+			array(26.12375, 4, array(
+				26.1238,
+				26.1237,
+				26.1238,
+				26.1237,
+			)),
+			array(26.12325, 4, array(
+				26.1233,
+				26.1232,
+				26.1232,
+				26.1233,
+			)),
+		);
+	}
+
+	/**
+	 * @test
+	 * @dataProvider provider_round
+	 * @param number $input
+	 * @param integer $precision
+	 * @param integer $mode
+	 * @param number $expected
+	 */
+	function test_round($input, $precision, $expected)
+	{
+		foreach (array(Num::ROUND_HALF_UP, Num::ROUND_HALF_DOWN, Num::ROUND_HALF_EVEN, Num::ROUND_HALF_ODD) as $i => $mode)
+		{
+			$this->assertSame($expected[$i], Num::round($input, $precision, $mode, false));
+		}
+	}
 }
