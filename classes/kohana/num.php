@@ -89,11 +89,12 @@ class Kohana_Num {
 	 * @param float $value Number to round
 	 * @param integer $precision Desired precision
 	 * @param integer $mode Tie breaking mode, accepts the PHP_ROUND_HALF_* constants
+	 * @param boolean $native Set to false to force use of the userland implementation
 	 * @return float Rounded number
 	 */
-	static public function round($value, $precision = 0, $mode = self::ROUND_HALF_UP)
+	static public function round($value, $precision = 0, $mode = self::ROUND_HALF_UP, $native = true)
 	{
-		if (version_compare(PHP_VERSION, '5.3', '>='))
+		if (version_compare(PHP_VERSION, '5.3', '>=') && $native)
 		{
 			return round($value, $precision, $mode);
 		}
