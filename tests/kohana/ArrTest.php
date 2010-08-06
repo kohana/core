@@ -193,6 +193,17 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 				array('foo' => 'bin', array('temp' => 'name')),
 				array('foo' => 'bar', array('temp' => 'life')),
 			),
+			// Bug #3139
+			array(
+				array('foo'	=> array('bar')),
+				array('foo'	=> 'bar'),
+				array('foo'	=> array('bar')),
+			),
+			array(
+				array('foo'	=> 'bar'),
+				array('foo'	=> array('bar')),
+				array('foo'	=> 'bar'),
+			),
 		);
 	}
 
