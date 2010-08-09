@@ -380,19 +380,20 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 * @group kohana.validation.helpers
-	 * @group requires.internet
 	 * @dataProvider provider_email_domain
 	 * @param string  $email   Email domain to check
 	 * @param boolean $correct Is it correct?
 	 */
 	function test_email_domain($email, $correct)
 	{
+		if ( ! $this->hasInternet())
+			$this->markTestSkipped('An internet connection is required for this test');
+
 		if( ! Kohana::$is_windows OR version_compare(PHP_VERSION, '5.3.0', '>='))
 		{
 			$this->assertSame(
 				$correct,
-				Validate::email_domain($email),
-				'Make sure you\'re connected to the internet'
+				Validate::email_domain($email)
 			);
 		}
 		else
