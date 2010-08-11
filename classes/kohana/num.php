@@ -116,14 +116,9 @@ class Kohana_Num {
 					{
 						if ($mode === self::ROUND_HALF_DOWN)
 						{
-							if ($value >= 0)
-							{
-								return floor($value * $factor) / $factor;
-							}
-							else
-							{
-								return ceil($value * $factor) / $factor;
-							}
+							// Round down operation, so we round down unless the value
+							// is -ve because up is down and down is up down there. ;)
+							$up = ($value < 0);
 						}
 						else
 						{
@@ -131,17 +126,17 @@ class Kohana_Num {
 							// or the integer is even and the round mode is set to odd.
 							// Any other instance round down.
 							$up = (!!(floor($value * $factor) & 1) === ($mode === self::ROUND_HALF_EVEN));
-
-							if ($up)
-							{
-								$value = ceil($value * $factor);
-							}
-							else
-							{
-								$value = floor($value * $factor);
-							}
-							return $value / $factor;
 						}
+
+						if ($up)
+						{
+							$value = ceil($value * $factor);
+						}
+						else
+						{
+							$value = floor($value * $factor);
+						}
+						return $value / $factor;
 					}
 					else
 					{
