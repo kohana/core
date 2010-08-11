@@ -85,7 +85,7 @@ class Kohana_File {
 	 * @param string $extension Extension to lookup
 	 * @return array Array of MIMEs associated with the specified extension
 	 */
-	static public function mimes_by_ext($extension)
+	public static function mimes_by_ext($extension)
 	{
 		// Load all of the mime types
 		$mimes = Kohana::config('mimes');
