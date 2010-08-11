@@ -223,6 +223,22 @@ abstract class Kohana_Session {
 	}
 
 	/**
+	 * Set a variable by reference.
+	 *
+	 *     $session->bind('foo', $foo);
+	 *
+	 * @param   string  variable name
+	 * @param   mixed   referenced value
+	 * @return  $this
+	 */
+	public function bind($key, & $value)
+	{
+		$this->_data[$key] =& $value;
+
+		return $this;
+	}
+
+	/**
 	 * Removes a variable in the session array.
 	 *
 	 *     $session->delete('foo');
