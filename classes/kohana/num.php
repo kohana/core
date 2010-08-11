@@ -92,7 +92,7 @@ class Kohana_Num {
 	 * @param boolean $native Set to false to force use of the userland implementation
 	 * @return float Rounded number
 	 */
-	static public function round($value, $precision = 0, $mode = self::ROUND_HALF_UP, $native = true)
+	public static function round($value, $precision = 0, $mode = self::ROUND_HALF_UP, $native = true)
 	{
 		if (version_compare(PHP_VERSION, '5.3', '>=') && $native)
 		{
