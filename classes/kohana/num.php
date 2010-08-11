@@ -112,6 +112,7 @@ class Kohana_Num {
 				case self::ROUND_HALF_DOWN:
 				case self::ROUND_HALF_EVEN:
 				case self::ROUND_HALF_ODD:
+					// Check if we have a rounding tie, otherwise we can just call round()
 					if (($value * $factor) - floor($value * $factor) === 0.5)
 					{
 						if ($mode === self::ROUND_HALF_DOWN)
