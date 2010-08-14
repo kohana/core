@@ -14,6 +14,38 @@
 Class Kohana_DateTest extends Kohana_Unittest_TestCase
 {
 	/**
+	 * Provides test data for test_offset()
+	 *
+	 * @return array
+	 */
+	public function provider_offset()
+	{
+		return array(
+			array(
+				-18000,
+				'America/Chicago',
+				'GMT',
+			),
+		);
+	}
+
+	/**
+	 * Tests Date::offset()
+	 *
+	 * @test
+	 * @dataProvider provider_offset
+	 * @covers Date::offset
+	 * @param integer $expected Expected offset
+	 * @param string  $remote   Remote TZ
+	 * @param string  $local    Local TZ
+	 * @param integer $now      Current timestamp
+	 */
+	public function test_offset($expected, $remote, $local, $now = NULL)
+	{
+		$this->assertSame($expected, Date::offset($remote, $local, $now));
+	}
+
+	/**
 	 * Provides test data for test_date()
 	 *
 	 * @return array
