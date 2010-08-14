@@ -141,14 +141,14 @@ class Kohana_RequestTest extends Kohana_Unittest_TestCase
 				array(),
 				'http',
 				TRUE,
-				'http://localhost/foo/bar'
+				'http://localhost/kohana/foo/bar'
 			),
 			array(
 				'foo',
 				array('action' => 'bar'),
 				'http',
 				TRUE,
-				'http://localhost/foo/bar'
+				'http://localhost/kohana/foo/bar'
 			),
 		);
 	}
@@ -167,6 +167,7 @@ class Kohana_RequestTest extends Kohana_Unittest_TestCase
 	public function test_url($uri, $params, $protocol, $is_cli, $expected)
 	{
 		$this->setEnvironment(array(
+			'Kohana::$base_url'  => '/kohana/',
 			'_SERVER'            => array('HTTP_HOST' => 'localhost', 'argc' => $_SERVER['argc']),
 			'Kohana::$index_file' => FALSE,
 			'Kohana::$is_cli'    => $is_cli,
