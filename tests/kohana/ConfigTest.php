@@ -206,4 +206,38 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 		// to break due to minor modifications
 		$this->assertType('Kohana_Config_Reader', $config->load($config_group));
 	}
+
+	/**
+	 * Calling load() with a group that doesn't exist, should get it to use the last reader
+	 * to create a new config group
+	 *
+	 * @test
+	 * @covers Kohana_Config::load
+	 */
+	public function test_load_returns_new_config_group_if_one_dnx()
+	{
+		$config  = new Kohana_Config;
+		$group   = 'my_group';
+
+		$reader1 = $this->getMock('Kohana_Config_Reader');
+		$reader2 = $this->getMock('Kohana_Config_Reader', array('load'), array(), 'Kohana_Config_Waffles');
+
+		// This is a slightly hacky way of doing it, but it works
+		$reader2
+			->expects($this->exactly(2))
+			->method('load')
+			->with($group)
+			->will($this->onConsecutiveCalls(
+				$this->returnValue(FALSE), 
+				$this->returnValue(clone $reader2)
+			));
+
+		$config->attach($reader1)->attach($reader2);
+
+		$new_config = $config->load('my_group');
+
+		$this->assertType('Kohana_Config_Waffles', $new_config);
+		// Slightly taboo, testing a different api!!
+		$this->assertSame(array(), $new_config->as_array());
+	}
 }
