@@ -3,6 +3,8 @@
 /**
  * Tests Kohana Core
  *
+ * @TODO Use a virtual filesystem (see phpunit doc on mocking fs) for find_file etc.
+ *
  * @group kohana
  * @group kohana.core
  *
@@ -14,6 +16,17 @@
  */
 class Kohana_CoreTest extends Kohana_Unittest_TestCase
 {
+	/**
+	 * Helper function which replaces the "/" to OS-specific delimiter
+	 * 
+	 * @param string $path
+	 * @return string
+	 */
+	private function separator($path)
+	{
+		return str_replace('/', DIRECTORY_SEPARATOR, $path);
+	}
+
 	/**
 	 * Provides test data for testSanitize()
 	 * 
@@ -47,79 +60,34 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Replaces the "/" to OS-specific delimiter
-	 * 
-	 * @see providerFindFile()
-	 * @param string $path
-	 * @return string
-	 */
-	private function separator($path)
-	{
-		return str_replace('/', DIRECTORY_SEPARATOR, $path);
-	}
-
-	/**
-	 * Provides test data for testSanitize()
-	 * 
-	 * @return array
-	 */
-	function providerFindFile()
-	{
-		return array(
-			// $folder, $class, $result
-			array('classes', 'foo', FALSE),
-			array('classes', 'date', $this->separator(SYSPATH.'classes/date.php')),
-			array('views', $this->separator('kohana/error'), $this->separator(SYSPATH.'views/kohana/error.php')),
-			array('config', 'credit_cards', array($this->separator(SYSPATH.'config/credit_cards.php')))
-		);
-	}
-
-	/**
-	 * Tests Kohana::find_file()
+	 * If a file can't be found then find_file() should return FALSE if 
+	 * only a single file was requested, or an empty array if multiple files
+	 * (i.e. configuration files) were requested
 	 *
 	 * @test
-	 * @dataProvider providerFindFile
 	 * @covers Kohana::find_file
-	 * @param boolean $value  Input for Kohana::find_file
-	 * @param boolean $result Output for Kohana::find_file
 	 */
-	function testFindFile($folder, $class, $result)
+	public function test_find_file_returns_false_or_array_on_failure()
 	{
-		$this->assertSame($result, Kohana::find_file($folder, $class));
+		$this->assertFalse(Kohana::find_file('configy', 'zebra'));
+
+		$this->assertSame(array(), Kohana::find_file('configy', 'zebra', NULL, TRUE));
 	}
 
 	/**
-	 * Provides test data for testListFiles()
-	 * 
-	 * @return array
-	 */
-	function providerListFiles()
-	{
-		return array(
-			// $folder, $result
-			array('i18n', array(
-				$this->separator('i18n/en.php') => $this->separator(SYSPATH.'i18n/en.php'),
-				$this->separator('i18n/es.php') => $this->separator(SYSPATH.'i18n/es.php'),
-				$this->separator('i18n/fr.php') => $this->separator(SYSPATH.'i18n/fr.php'),
-			)),
-			array('messages', array(
-				$this->separator('messages/validate.php') => $this->separator(SYSPATH.'messages/validate.php')
-			)),
-		);
-	}
-
-	/**
-	 * Tests Kohana::list_files()
+	 * Kohana::list_files() should return an array on success and an empty array on failure
 	 *
 	 * @test
-	 * @dataProvider providerListFiles
 	 * @covers Kohana::list_files
-	 * @param boolean $folder Input for Kohana::list_files
-	 * @param boolean $result Output for Kohana::list_files
 	 */
-	function testListFiles($folder, $result)
+	public function test_list_files_returns_array_on_success_and_failure()
 	{
-		$this->assertSame($result, Kohana::list_files($folder));
+		$files = Kohana::list_files('config');
+
+		$this->assertType('array', $files);
+		$this->assertGreaterThan(3, count($files));
+		
+		$this->assertSame(array(), Kohana::list_files('geshmuck'));
 	}
 
 	/**
@@ -369,16 +337,15 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for testModules()
+	 * Provides test data for test_modules_sets_and_returns_valid_modules()
 	 * 
 	 * @return array
 	 */
-	function providerModules()
+	function provider_modules_sets_and_returns_valid_modules()
 	{
 		return array(
-			array(NULL, array('unittest' => $this->separator(MODPATH.'unittest/'))),
 			array(array(), array()),
-			array(array('unittest' => MODPATH.'foobar'), array()),
+			array(array('unittest' => MODPATH.'fo0bar'), array()),
 			array(array('unittest' => MODPATH.'unittest'), array('unittest' => $this->separator(MODPATH.'unittest/'))),
 		);
 	}
@@ -387,12 +354,12 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::modules()
 	 *
 	 * @test
-	 * @dataProvider providerModules
+	 * @dataProvider provider_modules_sets_and_returns_valid_modules
 	 * @covers Kohana::modules
 	 * @param boolean $source   Input for Kohana::modules
 	 * @param boolean $expected Output for Kohana::modules
 	 */
-	function testModules($source, $expected)
+	function test_modules_sets_and_returns_valid_modules($source, $expected)
 	{
 		$modules = Kohana::modules();
 
@@ -402,28 +369,47 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for testIncludePaths()
-	 * 
-	 * @return array
+	 * To make the tests as portable as possible this just tests that 
+	 * you get an array of modules when you can Kohana::modules() and that
+	 * said array contains unittest
+	 *
+	 * @test
+	 * @covers Kohana::modules
 	 */
-	function providerIncludePaths()
+	public function test_modules_returns_array_of_modules()
 	{
-		return array(
-			array(array(APPPATH, $this->separator(MODPATH.'unittest/'), SYSPATH)),
-		);
+		$modules = Kohana::modules();
+
+		$this->assertType('array', $modules);
+
+		$this->assertArrayHasKey('unittest', $modules);
 	}
 
 	/**
 	 * Tests Kohana::include_paths()
 	 *
+	 * The include paths must contain the apppath and syspath
 	 * @test
-	 * @dataProvider providerIncludePaths
 	 * @covers Kohana::include_paths
-	 * @param boolean $expected  Input for Kohana::include_paths
 	 */
-	function testIncludePaths($expected)
+	function testIncludePaths()
 	{
-		$this->assertEquals($expected, Kohana::include_paths());
+		$include_paths = Kohana::include_paths();
+		$modules       = Kohana::modules();
+
+		$this->assertType('array', $include_paths);
+
+		// We must have at least 2 items in include paths (APP / SYS)
+		$this->assertGreaterThan(2, count($include_paths));
+		// Make sure said paths are in the include paths
+		// And make sure they're in the correct positions
+		$this->assertSame(APPPATH, reset($include_paths));
+		$this->assertSame(SYSPATH, end($include_paths));
+		
+		foreach($modules as $module)
+		{
+			$this->assertContains($module, $include_paths);
+		}
 	}
 
 	/**
