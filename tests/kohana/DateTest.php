@@ -572,4 +572,74 @@ Class Kohana_DateTest extends Kohana_Unittest_TestCase
 		);
 	}
 
-}	
+	/**
+	 * Provids for test_unix2dos
+	 *
+	 * @return array Test Data
+	 */
+	public function provider_unix2dos()
+	{
+		return array(
+			array(
+				1024341746,
+				1281786936
+			),
+			array(
+				2162688,
+				315554400
+			)
+		);
+	}
+
+	/**
+	 * Test Date::unix2dos()
+	 *
+	 * You should always pass a timestamp as otherwise the current
+	 * date/time would be used and that's oviously variable
+	 *
+	 * Geert seems to be the only person who knows how unix2dos() works
+	 * so we just throw in some random values and see what happens
+	 *
+	 * @test
+	 * @dataProvider provider_unix2dos
+	 * @covers Date::unix2dos
+	 * @param integer $expected  Expected output
+	 * @param integer $timestamp Input timestamp
+	 */
+	public function test_unix2dos($expected, $timestamp)
+	{
+		$this->assertSame($expected, Date::unix2dos($timestamp));
+	}
+
+	/**
+	 * Provides test data for test_dos2unix
+	 *
+	 * @return array Test data
+	 */
+	public function provider_dos2unix()
+	{
+		return array(
+			array(
+				1281786936,
+				1024341746,
+			),
+			array(
+				315554400,
+				2162688,
+			),
+		);
+	}
+
+	/**
+	 * Tests Date::dos2unix
+	 *
+	 * @test
+	 * @dataProvider provider_dos2unix
+	 * @param integer $expected  Expected output
+	 * @param integer $timestamp Input timestamp
+	 */
+	public function test_dos2unix($expected, $timestamp)
+	{
+		$this->assertEquals($expected, Date::dos2unix($timestamp));
+	}
+}
