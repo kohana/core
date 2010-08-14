@@ -122,40 +122,6 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 		$this->assertSame($result, Kohana::list_files($folder));
 	}
 
-	
-	/**
-	 * Tests Kohana::init()
-	 * @covers Kohana::init
-	 * @covers Kohana::deinit
-	 *
-	 * @test
-	 */
-	/*
-	function testinit()
-	{
-		$original_modules = Kohana::modules();
-
-		#de-init first
-		Kohana::deinit();
-
-		#now we should only have unit test autoloaders
-		$this->assertSame(1, count(spl_autoload_functions()));
-
-		#re-init
-		spl_autoload_register(array('Kohana', 'auto_load'));
-		Kohana::init(array(
-			'base_url'   => '/',
-			'index_file' => FALSE,
-		));
-
-		Kohana::$log->attach(new Kohana_Log_File(APPPATH.'logs'));
-		Kohana::$config->attach(new Kohana_Config_File);
-		Kohana::modules($original_modules);
-
-		$this->assertSame(2, count(spl_autoload_functions()));
-		//$this->assertSame(array(APPPATH, SYSPATH)+array_values($original_modules), Kohana::include_paths());
-	}*/
-
 	/**
 	 * Tests Kohana::globals()
 	 *
