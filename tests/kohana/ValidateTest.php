@@ -901,19 +901,20 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 */
 	public function test_callbacks_stores_multiple_callbacks()
 	{
-		$this->markTestSkipped('Callbacks() needs to accept parameters');
-
 		$validate = new Validate(array('year' => 1999));
 
-		// Just some misc. callbacks, not actually relevant
-		$callbacks = array(
-			array('misc_callback', array()),
-			array('another_callback', array('foo', 'bar'))
+		$validate->callbacks('year', array('misc_callback', 'another_callback'));
+
+		$this->assertAttributeSame(
+			array(
+				'year' => array( 
+					array('misc_callback', array()),
+					array('another_callback', array()),
+				),
+			), 
+			'_callbacks', 
+			$validate
 		);
-
-		$validate->callbacks('year', $callbacks);
-
-		$this->assertAttributeSame(array('year' => $callbacks), '_callbacks', $validate);
 	}
 
 	/**
