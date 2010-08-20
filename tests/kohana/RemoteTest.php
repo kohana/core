@@ -5,7 +5,6 @@
  *
  * @group kohana
  * @group kohana.remote
- * @group requires.internet
  *
  * @package    Unittest
  * @author     Kohana Team
@@ -39,6 +38,9 @@ class Kohana_RemoteTest extends Kohana_Unittest_TestCase
 	 */
 	function testGet($input, $expected)
 	{
+		if ( ! $this->hasInternet())
+			$this->markTestSkipped('An internet connection is required for this test');
+
 		#$this->assertSame($expected, Remote::get($input));
 	}
 
@@ -67,6 +69,9 @@ class Kohana_RemoteTest extends Kohana_Unittest_TestCase
 	 */
 	function testStatus($input, $expected)
 	{
+		if ( ! $this->hasInternet())
+			$this->markTestSkipped('An internet connection is required for this test');
+		
 		$this->assertSame($expected, Remote::status($input));
 	}
 }

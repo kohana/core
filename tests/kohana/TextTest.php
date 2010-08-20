@@ -384,6 +384,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 		$this->assertFalse(strpos('vice', Text::auto_link_emails($original)));
 	}
 
+
 	/**
 	 * Provides some test data for test_number()
 	 *
@@ -412,6 +413,102 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	public function test_number($expected, $number)
 	{
 		$this->assertSame($expected, Text::number($number));
+	}
+
+	/**
+	 * Provides test data for test_auto_link_urls()
+	 *
+	 * @return array 
+	 */
+	public function provider_auto_link_urls()
+	{
+		return array(
+			// First we try with the really obvious url
+			array(
+				'Some random text <a href="http://www.google.com">http://www.google.com</a>',
+				'Some random text http://www.google.com',
+			),
+			// Then we try with varying urls
+			array(
+				'Some random <a href="http://www.google.com">www.google.com</a>',
+				'Some random www.google.com',
+			),
+			array(
+				'Some random google.com',
+				'Some random google.com',
+			),
+			//Check that it doesn't link urls in a href
+			array(
+				'Look at me <a href="http://google.com">Awesome stuff</a>',
+				'Look at me <a href="http://google.com">Awesome stuff</a>',
+			),
+			array(
+				'Look at me <a href="http://www.google.com">http://www.google.com</a>',
+				'Look at me <a href="http://www.google.com">http://www.google.com</a>',
+			),
+		);
+	}
+
+	/**
+	 * Runs tests for Test::auto_link_urls
+	 *
+	 * @test
+	 * @dataProvider provider_auto_link_urls
+	 */
+	public function test_auto_link_urls($expected, $text)
+	{
+		$this->assertSame($expected, Text::auto_link_urls($text));
+	}
+
+	/**
+	 * Provides test data for test_auto_link
+	 *
+	 * @return array Test data
+	 */
+	public function provider_auto_link()
+	{
+		return array(
+			array(
+				'Hi there, my site is kohanaframework.org and you can email me at nobody@kohanaframework.org',
+				array('kohanaframework.org'),
+			),
+
+			array(
+				'Hi my.domain.com@domain.com you came from',
+				FALSE,
+				array('my.domain.com@domain.com'),
+			),
+		);
+	}
+
+	/**
+	 * Tests Text::auto_link()
+	 *
+	 * @test
+	 * @dataProvider provider_auto_link
+	 */
+	public function test_auto_link($text, $urls = array(), $emails = array())
+	{
+		$linked_text = Text::auto_link($text);
+
+		if($urls === FALSE)
+		{
+			$this->assertNotContains('http://', $linked_text);
+		}
+		elseif(count($urls))
+		{
+			foreach($urls as $url)
+			{
+				// Assert that all the urls have been caught by text auto_link_urls()
+				$this->assertContains(Text::auto_link_urls($url), $linked_text);
+			}
+		}
+
+		foreach($emails as $email)
+		{
+			$this->assertNotContains($email, $linked_text);
+		}
+		
 	}
 
 }

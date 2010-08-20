@@ -358,7 +358,7 @@ class Kohana_HTML {
 			}
 
 			// Add the attribute value
-			$compiled .= ' '.$key.'="'.htmlspecialchars($value, ENT_QUOTES, Kohana::$charset).'"';
+			$compiled .= ' '.$key.'="'.HTML::chars($value).'"';
 		}
 
 		return $compiled;

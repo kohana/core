@@ -449,4 +449,28 @@ Class Kohana_SessionTest extends Kohana_Unittest_TestCase
 			$session
 		);
 	}
+
+	/**
+	 * If a session variable exists then get_once should get it then remove it.
+	 * If the variable does not exist then it should return the default
+	 *
+	 * @test
+	 * @covers Session::get_once
+	 */
+	public function test_get_once_gets_once_or_returns_default()
+	{
+		$session = $this->getMockSession();
+
+		$session->set('foo', 'bar');
+
+		// Test that a default is returned
+		$this->assertSame('mud', $session->get_once('fud', 'mud'));
+
+		// Now test that it actually removes the value
+		$this->assertSame('bar', $session->get_once('foo'));
+
+		$this->assertAttributeSame(array(), '_data', $session);
+
+		$this->assertSame('maybe', $session->get_once('foo', 'maybe'));
+	}
 }

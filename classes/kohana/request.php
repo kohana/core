@@ -1,8 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Request wrapper.
- * 
- * Request wrapper. Uses the [Route] class to determine what
+ * Request and response wrapper. Uses the [Route] class to determine what
  * [Controller] to send the request to.
  *
  * @package    Kohana
@@ -13,15 +11,70 @@
  */
 class Kohana_Request {
 
-	// Request types
-	const CONNECT = 'CONNECT';
-	const DELETE  = 'DELETE';
-	const GET     = 'GET';
-	const HEAD    = 'HEAD';
-	const POST    = 'POST';
-	const PUT     = 'PUT';
-	const OPTIONS = 'OPTIONS';
-	const TRACE   = 'TRACE';
+	// HTTP status codes and messages
+	public static $messages = array(
+		// Informational 1xx
+		100 => 'Continue',
+		101 => 'Switching Protocols',
+
+		// Success 2xx
+		200 => 'OK',
+		201 => 'Created',
+		202 => 'Accepted',
+		203 => 'Non-Authoritative Information',
+		204 => 'No Content',
+		205 => 'Reset Content',
+		206 => 'Partial Content',
+		207 => 'Multi-Status',
+
+		// Redirection 3xx
+		300 => 'Multiple Choices',
+		301 => 'Moved Permanently',
+		302 => 'Found', // 1.1
+		303 => 'See Other',
+		304 => 'Not Modified',
+		305 => 'Use Proxy',
+		// 306 is deprecated but reserved
+		307 => 'Temporary Redirect',
+
+		// Client Error 4xx
+		400 => 'Bad Request',
+		401 => 'Unauthorized',
+		402 => 'Payment Required',
+		403 => 'Forbidden',
+		404 => 'Not Found',
+		405 => 'Method Not Allowed',
+		406 => 'Not Acceptable',
+		407 => 'Proxy Authentication Required',
+		408 => 'Request Timeout',
+		409 => 'Conflict',
+		410 => 'Gone',
+		411 => 'Length Required',
+		412 => 'Precondition Failed',
+		413 => 'Request Entity Too Large',
+		414 => 'Request-URI Too Long',
+		415 => 'Unsupported Media Type',
+		416 => 'Requested Range Not Satisfiable',
+		417 => 'Expectation Failed',
+		422 => 'Unprocessable Entity',
+		423 => 'Locked',
+		424 => 'Failed Dependency',
+
+		// Server Error 5xx
+		500 => 'Internal Server Error',
+		501 => 'Not Implemented',
+		502 => 'Bad Gateway',
+		503 => 'Service Unavailable',
+		504 => 'Gateway Timeout',
+		505 => 'HTTP Version Not Supported',
+		507 => 'Insufficient Storage',
+		509 => 'Bandwidth Limit Exceeded'
+	);
+
+	/**
+	 * @var  string  method: GET, POST, PUT, DELETE, etc
+	 */
+	public static $method = 'GET';
 
 	/**
 	 * @var  string  protocol: http, https, ftp, cli, etc
@@ -44,7 +97,12 @@ class Kohana_Request {
 	public static $client_ip = '0.0.0.0';
 
 	/**
-	 * @var  object  originating request instance
+	 * @var  boolean  AJAX-generated request
+	 */
+	public static $is_ajax = FALSE;
+
+	/**
+	 * @var  object  main request instance
 	 */
 	public static $instance;
 
@@ -54,10 +112,10 @@ class Kohana_Request {
 	public static $current;
 
 	/**
-	 * Originating request instance. If no URI is provided, the URI will
+	 * Main request singleton instance. If no URI is provided, the URI will
 	 * be automatically detected using PATH_INFO, REQUEST_URI, or PHP_SELF.
 	 *
-	 *     $request = Request::origin();
+	 *     $request = Request::instance();
 	 *
 	 * @param   string   URI of the request
 	 * @return  Request
@@ -83,7 +141,7 @@ class Kohana_Request {
 				if (isset($options['method']))
 				{
 					// Use the specified method
-					$config['method'] = strtoupper($options['method']);
+					Request::$method = strtoupper($options['method']);
 				}
 
 				if (isset($options['get']))
@@ -103,7 +161,7 @@ class Kohana_Request {
 				if (isset($_SERVER['REQUEST_METHOD']))
 				{
 					// Use the server request method
-					$config['method'] = $_SERVER['REQUEST_METHOD'];
+					Request::$method = $_SERVER['REQUEST_METHOD'];
 				}
 
 				if ( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
@@ -115,7 +173,7 @@ class Kohana_Request {
 				if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
 				{
 					// This request is an AJAX request
-					$config['is_ajax'] = TRUE;
+					Request::$is_ajax = TRUE;
 				}
 
 				if (isset($_SERVER['HTTP_REFERER']))
@@ -148,18 +206,11 @@ class Kohana_Request {
 					Request::$client_ip = $_SERVER['REMOTE_ADDR'];
 				}
 
-				if ($config['method'] !== 'GET')
+				if (Request::$method !== 'GET' AND Request::$method !== 'POST')
 				{
-					// Get the request body
-					$config['body'] = file_get_contents('php://input');
-
-					// If the request method isn't POST and the content type is URL encoded
-					if ($config['method'] !== 'POST' AND $_SERVER['CONTENT_TYPE'] === 'application/x-www-form-urlencoded')
-					{
-						// Methods besides GET and POST do not properly parse the form-encoded
-						// query string into the $_POST array, so we overload it manually.
-						parse_str($config['body'], $_POST);
-					}
+					// Methods besides GET and POST do not properly parse the form-encoded
+					// query string into the $_POST array, so we overload it manually.
+					parse_str(file_get_contents('php://input'), $_POST);
 				}
 
 				if ($uri === TRUE)
@@ -220,18 +271,11 @@ class Kohana_Request {
 			// Remove all dot-paths from the URI, they are not valid
 			$uri = preg_replace('#\.[\s./]*/#', '', $uri);
 
-			// Apply the global GET and POST properties to the request
-			$config['get'] = $_GET;
-			$config['post'] = $_POST;
-
-			// Reduce multiple slashes to a single slash
-			$uri = preg_replace('#//+#', '/', $uri);
-
-			// Remove all dot-paths from the URI, they are not valid
-			$uri = preg_replace('#\.[\s./]*/#', '', $uri);
-
 			// Create the instance singleton
-			Request::$instance = Request::$current = new Request($uri, $config);
+			Request::$instance = Request::$current = new Request($uri);
+
+			// Add the default Content-Type header
+			Request::$instance->headers['Content-Type'] = 'text/html; charset='.Kohana::$charset;
 		}
 
 		return Request::$instance;
@@ -428,49 +472,6 @@ class Kohana_Request {
 	}
 
 	/**
-	 * Parses the the HTTP request headers and returns an array containing
-	 * key value pairs. This method is slow, but provides an accurate
-	 * representation of the HTTP request.
-	 * 
-	 *      // Get http headers into the request
-	 *      $request->headers += Request::http_request_headers();
-	 *
-	 * @return  array
-	 * @since   3.1.0
-	 */
-	public static function http_request_headers()
-	{
-		// Setup the output
-		$headers = array();
-
-		// Parse the content type
-		if( ! empty($_SERVER['CONTENT_TYPE']))
-		{
-			$headers['Content-Type'] = $_SERVER['CONTENT_TYPE'];
-		}
-
-		// Parse the content length
-		if ( ! empty($_SERVER['CONTENT_LENGTH']))
-		{
-			$headers['Content-Length'] = $_SERVER['CONTENT_LENGTH'];
-		}
-
-		foreach ($_SERVER as $key => $value)
-		{
-			// If there is no HTTP header here, skip
-			if (strpos($key, 'HTTP_') !== 0)
-			{
-				continue;
-			}
-
-			// This is a dirty hack to ensure HTTP_X_FOO_BAR becomes X-Foo-Bar
-			$headers[str_replace(' ', '-', ucwords(strtolower(str_replace(array('HTTP_', '_'), array('', ' '), $key))))] = $value;
-		}
-
-		return $headers;
-	}
-
-	/**
 	 * Parses an accept header and returns an array (type => quality) of the
 	 * accepted types, ordered by quality.
 	 *
@@ -529,43 +530,6 @@ class Kohana_Request {
 	}
 
 	/**
-	 * Tests whether the request is for an internal call or
-	 * external call
-	 *
-	 * @param   string   the uri to test
-	 * @return  boolean  FALSE internal call, TRUE for external request
-	 */
-	protected static function _request_external($uri)
-	{
-		// If there is no protocol
-		if (FALSE === strpos($uri, '://'))
-		{
-			// request is internal
-			return FALSE;
-		}
-
-		// Grab the basepath and match against URI
-		$base_path = URL::base(TRUE, TRUE);
-		$base_path_position = strpos($uri, $base_path);
-
-		// If the base_path did not match at all, or it was located beyond the start
-		// of the URI
-		if (FALSE === $base_path_position or 0 < $base_path_position)
-		{
-			return TRUE;
-		}
-		else
-		{
-			return FALSE;
-		}
-	}
-
-	/**
-	 * @var  string  method: GET, POST, PUT, DELETE, etc
-	 */
-	public $method = 'GET';
-
-	/**
 	 * @var  object  route matched for this request
 	 */
 	public $route;
@@ -576,24 +540,14 @@ class Kohana_Request {
 	public $status = 200;
 
 	/**
-	 * @var  object  response 
+	 * @var  string  response body
 	 */
-	public $response;
+	public $response = '';
 
 	/**
-	 * @var  array  headers to send with the request
+	 * @var  array  headers to send with the response body
 	 */
 	public $headers = array();
-
-	/**
-	 * @var  string contents of the request body
-	 */
-	public $body = NULL;
-
-	/**
-	 * @var  array  cookies to be sent with the request
-	 */
-	public $cookies = array();
 
 	/**
 	 * @var  string  controller directory
@@ -615,35 +569,8 @@ class Kohana_Request {
 	 */
 	public $uri;
 
-	/**
-	 * @var  array   GET parameters for this request
-	 */
-	public $get = array();
-
-	/**
-	 * @var  array   POST parameters for this request
-	 */
-	public $post = array();
-
-	/**
-	 * @var  boolean  AJAX-generated request
-	 */
-	public $is_ajax = FALSE;
-
-	/**
-	 * @var  array|bool Original GET, POST, SERVER vars before alteration
-	 */
-	protected $_previous_environment = FALSE;
-
-	/**
-	 * @var  array    parameters extracted from the route
-	 */
+	// Parameters extracted from the route
 	protected $_params;
-
-	/**
-	 * @var  boolean  true if external request
-	 */
-	protected $_external = FALSE;
 
 	/**
 	 * Creates a new request object for the given URI. New requests should be
@@ -652,29 +579,13 @@ class Kohana_Request {
 	 *     $request = new Request($uri);
 	 *
 	 * @param   string  URI of the request
-	 * @param   config  settings for this request object
 	 * @return  void
 	 * @throws  Kohana_Request_Exception
 	 * @uses    Route::all
 	 * @uses    Route::matches
 	 */
-	public function __construct($uri, array $config = array())
+	public function __construct($uri)
 	{
-		// Parse an array of request properties
-		foreach ($config as $key => $value)
-		{
-			if (property_exists($this, $key))
-				$this->$key = $value;
-		}
-
-		// Test if request is internal or external
-		if (Request::_request_external($uri))
-		{
-			$this->_external = TRUE;
-			$this->uri = $uri;
-			return;
-		}
-
 		// Remove trailing slashes from the URI
 		$uri = trim($uri, '/');
 
@@ -722,7 +633,7 @@ class Kohana_Request {
 		}
 
 		// No matching route for this URI
-		$this->response = new Response(array('status' => 404));
+		$this->status = 404;
 
 		throw new Kohana_Request_Exception('Unable to find a route to match the URI: :uri',
 			array(':uri' => $uri));
@@ -814,20 +725,56 @@ class Kohana_Request {
 	}
 
 	/**
-	 * Get/Set value(s) to/from the request header
+	 * Sends the response status and all set headers. The current server
+	 * protocol (HTTP/1.0 or HTTP/1.1) will be used when available. If not
+	 * available, HTTP/1.1 will be used.
 	 *
-	 * @param   string|array key of the header to get or set
-	 * @param   string   value to set to the key
-	 * @return  mixed
-	 * @since   3.1.0
+	 *     $request->send_headers();
+	 *
+	 * @return  $this
+	 * @uses    Request::$messages
 	 */
-	public function header($key = NULL, $value = NULL)
+	public function send_headers()
 	{
-		return $this->_access_property('headers', $key, $value);
+		if ( ! headers_sent())
+		{
+			if (isset($_SERVER['SERVER_PROTOCOL']))
+			{
+				// Use the default server protocol
+				$protocol = $_SERVER['SERVER_PROTOCOL'];
+			}
+			else
+			{
+				// Default to using newer protocol
+				$protocol = 'HTTP/1.1';
+			}
+
+			// HTTP status line
+			header($protocol.' '.$this->status.' '.Request::$messages[$this->status]);
+
+			foreach ($this->headers as $name => $value)
+			{
+				if (is_string($name))
+				{
+					// Combine the name and value to make a raw header
+					$value = "{$name}: {$value}";
+				}
+
+				// Send the raw header
+				header($value, TRUE);
+			}
+		}
+
+		return $this;
 	}
 
 	/**
-	 * Redirects as the request response.
+	 * Redirects as the request response. If the URL does not include a
+	 * protocol, it will be converted into a complete URL.
+	 *
+	 *     $request->redirect($url);
+	 *
+	 * [!!] No further processing can be done after this method is called!
 	 *
 	 * @param   string   redirect location
 	 * @param   integer  status code: 301, 302, etc
@@ -844,174 +791,189 @@ class Kohana_Request {
 		}
 
 		// Set the response status
-		$config['status'] = $code;
+		$this->status = $code;
 
 		// Set the location header
-		$config['headers']['Location'] = $url;
+		$this->headers['Location'] = $url;
 
-		// Create response and send headers
-		$this->response = Response::factory($config)
-			->send_headers();
+		// Send headers
+		$this->send_headers();
 
 		// Stop execution
 		exit;
 	}
 
 	/**
-	 * Sets and gets the method this [Request] will use when executed.
-	 * 
-	 * - When no argument is supplied the current HTTP method will be returned.
-	 * - HTTP methods supplied will be set to this request
-	 * 
-	 *      // Make the request type GET (default)
-	 *      $request->method(Request::GET);
-	 * 
-	 *      // Make the request type POST
-	 *      $request->method(Request::POST);
-	 * 
-	 *      // Make the request type PUT
-	 *      $request->method(Request::PUT);
+	 * Send file download as the response. All execution will be halted when
+	 * this method is called! Use TRUE for the filename to send the current
+	 * response as the file content. The third parameter allows the following
+	 * options to be set:
 	 *
-	 * @param   string   method to set to the [Request]
-	 * @return  mixed
-	 * @throws  Kohana_Request_Exception
-	 * @since   3.1.0
+	 * Type      | Option    | Description                        | Default Value
+	 * ----------|-----------|------------------------------------|--------------
+	 * `boolean` | inline    | Display inline instead of download | `FALSE`
+	 * `string`  | mime_type | Manual mime type                   | Automatic
+	 * `boolean` | delete    | Delete the file after sending      | `FALSE`
+	 *
+	 * Download a file that already exists:
+	 *
+	 *     $request->send_file('media/packages/kohana.zip');
+	 *
+	 * Download generated content as a file:
+	 *
+	 *     $request->response = $content;
+	 *     $request->send_file(TRUE, $filename);
+	 *
+	 * [!!] No further processing can be done after this method is called!
+	 *
+	 * @param   string   filename with path, or TRUE for the current response
+	 * @param   string   downloaded file name
+	 * @param   array    additional options
+	 * @return  void
+	 * @throws  Kohana_Exception
+	 * @uses    File::mime_by_ext
+	 * @uses    File::mime
+	 * @uses    Request::send_headers
 	 */
-	public function method($method = NULL)
+	public function send_file($filename, $download = NULL, array $options = NULL)
 	{
-		// If there is no method supplied
-		if ($method === NULL)
+		if ( ! empty($options['mime_type']))
 		{
-			// Return the current method
-			return $this->method;
+			// The mime-type has been manually set
+			$mime = $options['mime_type'];
 		}
 
-		// Transform the method to uppercase
-		$method = strtoupper($method);
-
-		// Create a reflection of this class
-		// NOTE: Reflection may be too slow, might need to refactor!
-		$reflection = new ReflectionClass($this);
-
-		// If the method does not match one of the HTTP methods defined (as a constant)
-		if ( ! in_array($method, $reflection->getConstants()))
+		if ($filename === TRUE)
 		{
-			// Throw an exception
-			throw new Kohana_Request_Exception(__METHOD__.' HTTP method supplied is not supported : :method', array(':method' => $method));
+			if (empty($download))
+			{
+				throw new Kohana_Exception('Download name must be provided for streaming files');
+			}
+
+			// Temporary files will automatically be deleted
+			$options['delete'] = FALSE;
+
+			if ( ! isset($mime))
+			{
+				// Guess the mime using the file extension
+				$mime = File::mime_by_ext(strtolower(pathinfo($download, PATHINFO_EXTENSION)));
+			}
+
+			// Force the data to be rendered if 
+			$file_data = (string) $this->response;
+
+			// Get the content size
+			$size = strlen($file_data);
+
+			// Create a temporary file to hold the current response
+			$file = tmpfile();
+
+			// Write the current response into the file
+			fwrite($file, $file_data);
+
+			// Prepare the file for reading
+			fseek($file, 0);
+
+			// File data is no longer needed
+			unset($file_data);
+		}
+		else
+		{
+			// Get the complete file path
+			$filename = realpath($filename);
+
+			if (empty($download))
+			{
+				// Use the file name as the download file name
+				$download = pathinfo($filename, PATHINFO_BASENAME);
+			}
+
+			// Get the file size
+			$size = filesize($filename);
+
+			if ( ! isset($mime))
+			{
+				// Get the mime type
+				$mime = File::mime($filename);
+			}
+
+			// Open the file for reading
+			$file = fopen($filename, 'rb');
 		}
 
-		// Set the method to this request
-		$this->method = $method;
+		// Inline or download?
+		$disposition = empty($options['inline']) ? 'attachment' : 'inline';
 
-		// Return this
-		return $this;
-	}
+		// Set the headers for a download
+		$this->headers['Content-Disposition'] = $disposition.'; filename="'.$download.'"';
+		$this->headers['Content-Type']        = $mime;
+		$this->headers['Content-Length']      = $size;
 
-	/**
-	 * Gets and sets the HTTP `GET` parameters to the [Request].
-	 * All `GET` parameters will be returned as an array if no arguments are passed.
-	 * 
-	 *      $get_parameters = $request->get();
-	 * 
-	 * A single GET parameter can be returned when passing the corresponding key.
-	 * 
-	 *      $bar = $request->get('foo');
-	 * 
-	 * Key/value pairs can be set passing an associative array.
-	 * 
-	 *      $request = Request::factory('foo/bar')
-	 *           ->get(array('foo' => 'bar', 'important' => FALSE));
-	 * 
-	 * A single GET parameter can be set if passing a key value pair as arguments.
-	 * 
-	 *      $request = Request::factory('foo/bar')
-	 *           ->get('foo', 'bar');
-	 *
-	 * @param   array|string  array of key value pairs or key as string
-	 * @param   mixed    value to set to key
-	 * @return  mixed
-	 * @since   3.1.0
-	 */
-	public function get($key = NULL, $value = NULL)
-	{
-		return $this->_access_property('get', $key, $value);
-	}
+		if ( ! empty($options['resumable']))
+		{
+			// @todo: ranged download processing
+		}
 
-	/**
-	 * Gets and sets the HTTP `POST` parameters to the [Request].
-	 * All `POST` parameters will be returned as an array if no arguments are passed.
-	 * 
-	 *      $post_parameters = $request->post();
-	 * 
-	 * A single POST parameter can be returned when passing the corresponding key.
-	 * 
-	 *      $bar = $request->post('foo');
-	 * 
-	 * Key/value pairs can be set passing an associative array.
-	 * 
-	 *      $request = Request::factory('foo/bar')
-	 *           ->post(array('foo' => 'bar', 'important' => FALSE));
-	 * 
-	 * A single POST parameter can be set if passing a key value pair as arguments.
-	 * 
-	 *      $request = Request::factory('foo/bar')
-	 *           ->post('foo', 'bar');
-	 *
-	 * @param   array|string  array of key value pairs or key as string
-	 * @param   mixed    value to set to key
-	 * @return  mixed
-	 * @since   3.1.0
-	 */
-	public function post($key = NULL, $value = NULL)
-	{
-		return $this->_access_property('post', $key, $value);
-	}
+		// Send all headers now
+		$this->send_headers();
 
+		while (ob_get_level())
+		{
+			// Flush all output buffers
+			ob_end_flush();
+		}
 
-	/**
-	 * Gets and sets the HTTP [Request] Cookies. All cookies will be returned as an array if no arguments are passed.
-	 * 
-	 *      $headers = $request->cookies();
-	 * 
-	 * A single cookie can be returned when passing the corresponding key.
-	 * 
-	 *      $bar = $request->cookies('Request-Foo');
-	 * 
-	 * Key/value pairs can be set passing an associative array.
-	 * 
-	 *      $request = Request::factory('foo/bar')
-	 *           ->cookies(array('Request-Foo' => 'bar', 'Kohana-Version' => 3.1));
-	 * 
-	 * A single cookie can be set if passing a key value pair as arguments.
-	 * 
-	 *      $request = Request::factory('foo/bar')
-	 *           ->cookies('Request-Foo', 'bar');
-	 *
-	 * @param   array|string  array of key value pairs or key as string
-	 * @param   mixed    value to set to key
-	 * @return  mixed
-	 * @since   3.1.0
-	 */
-	public function cookies($key = NULL, $value = NULL)
-	{
-		return $this->_access_property('cookies', $key, $value);
-	}
+		// Manually stop execution
+		ignore_user_abort(TRUE);
 
-	/**
-	 * Provides __read only__ access to the `_external` property
-	 * enabling testing of the request for external state.
-	 * 
-	 *      // If request is external
-	 *      if ($request->external())
-	 *      {
-	 *           // Do something
-	 *      }
-	 *
-	 * @return  boolean
-	 */
-	public function external()
-	{
-		return $this->_external;
+		// Keep the script running forever
+		set_time_limit(0);
+
+		// Send data in 16kb blocks
+		$block = 1024 * 16;
+
+		while ( ! feof($file))
+		{
+			if (connection_aborted())
+				break;
+
+			// Output a block of the file
+			echo fread($file, $block);
+
+			// Send the data now
+			flush();
+		}
+
+		// Close the file
+		fclose($file);
+
+		if ( ! empty($options['delete']))
+		{
+			try
+			{
+				// Attempt to remove the file
+				unlink($filename);
+			}
+			catch (Exception $e)
+			{
+				// Create a text version of the exception
+				$error = Kohana::exception_text($e);
+
+				if (is_object(Kohana::$log))
+				{
+					// Add this exception to the log
+					Kohana::$log->add(Kohana::ERROR, $error);
+
+					// Make sure the logs are written
+					Kohana::$log->write();
+				}
+
+				// Do NOT display the exception, it will corrupt the output!
+			}
+		}
+
+		// Stop execution
+		exit;
 	}
 
 	/**
@@ -1029,19 +991,13 @@ class Kohana_Request {
 	 *
 	 *     $request->execute();
 	 *
-	 * @return  Kohana_Response
+	 * @return  $this
 	 * @throws  Kohana_Exception
 	 * @uses    [Kohana::$profiling]
 	 * @uses    [Profiler]
 	 */
 	public function execute()
 	{
-		// If this is an external request, process it as such
-		if ($this->_external)
-		{
-			return $this->_external_execute();
-		}
-
 		// Create the class prefix
 		$prefix = 'controller_';
 
@@ -1074,13 +1030,6 @@ class Kohana_Request {
 
 		try
 		{
-			// If this is not the originating request
-			if ($this !== Request::$instance)
-			{
-				// Initialise the Request environment
-				$this->_init_environment();
-			}
-
 			// Load the controller using reflection
 			$class = new ReflectionClass($prefix.$this->controller);
 
@@ -1093,12 +1042,6 @@ class Kohana_Request {
 			// Create a new instance of the controller
 			$controller = $class->newInstance($this);
 
-			// Link the controllers response object to the request
-			$this->response = $controller->response;
-
-			// Execute the "before action" method
-			$class->getMethod('before')->invoke($controller);
-
 			// Determine the action to use
 			$action = empty($this->action) ? Route::$default_action : $this->action;
 
@@ -1106,14 +1049,7 @@ class Kohana_Request {
 			$class->getMethod('action_'.$action)->invokeArgs($controller, $this->_params);
 
 			// Execute the "after action" method
-			$class->getMethod('after')->invoke($controller);
-
-			// If this is not the originating request
-			if ($this !== Request::$instance)
-			{
-				// De-initialise the Request environment
-				$this->_deinit_environment();
-			}
+			$after->invoke($controller);
 		}
 		catch (Exception $e)
 		{
@@ -1129,16 +1065,13 @@ class Kohana_Request {
 			if ($e instanceof ReflectionException)
 			{
 				// Reflection will throw exceptions for missing classes or actions
-				$this->response->status = new Response(array('status' => 404));
+				$this->status = 404;
 			}
 			else
 			{
 				// All other exceptions are PHP/server errors
-				$this->response->status = new Response(array('status' => 500));
+				$this->status = 500;
 			}
-
-			// Send the response headers
-			$this->response->send_headers();
 
 			// Re-throw the exception
 			throw $e;
@@ -1153,212 +1086,73 @@ class Kohana_Request {
 			Profiler::stop($benchmark);
 		}
 
-		return $this->response;
+		return $this;
 	}
 
+
 	/**
-	 * Initialises the server environment variables
-	 * for this request execution.
+	 * Generates an [ETag](http://en.wikipedia.org/wiki/HTTP_ETag) from the
+	 * request response.
+	 *
+	 *     $etag = $request->generate_etag();
 	 * 
-	 * - Stores _GET, _POST and select _SERVER vars
-	 * - Replaces _GET, _POST and select _SERVER vars
+	 * [!!] If the request response is empty when this method is called, an
+	 * exception will be thrown!
 	 *
-	 * @return  void
-	 * @since   3.1.0
+	 * @return string
+	 * @throws Kohana_Request_Exception
 	 */
-	protected function _init_environment()
+	public function generate_etag()
 	{
-		// Store existing $_GET, $_POST, $_SERVER vars
-		$this->_previous_environment = array(
-			'_GET'    => $_GET,
-			'_POST'   => $_POST,
-			'_SERVER' => $_SERVER,
-		);
-
-		// Assign this requests values to globals
-		$_GET = $this->get;
-		$_POST = $this->post;
-
-		$query_strings = array();
-		foreach ($_GET as $key => $val)
+	    if ($this->response === NULL)
 		{
-			$query_strings[] = $key.'='.urlencode($val);
+			throw new Kohana_Request_Exception('No response yet associated with request - cannot auto generate resource ETag');
 		}
 
-		// Get argc number
-		$_argc = $query_strings ? 1 : 0;
-
-		// Create the full query string
-		$query_string = implode('&', $query_strings);
-
-		// Augment the existing $_SERVER
-		$_REQUEST_SERVER = array(
-			'QUERY_STRING'     => $query_string,
-			'argv'             => $query_string,
-			'argc'             => $_argc,
-			'REQUEST_METHOD'   => $this->method,
-			'SCRIPT_NAME'      => '/'.Kohana::$index_file.'//'.$this->uri,
-			'REQUEST_URI'      => '/'.$this->uri,
-			'DOCUMENT_URI'     => '/'.Kohana::$index_file.'//'.$this->uri,
-			'REQUEST_TIME'     => time(),
-			'PHP_SELF'         => '/'.Kohana::$index_file.'/'.$this->uri,
-		);
-
-		// Apply new server settings
-		$_SERVER = ($_REQUEST_SERVER += $_SERVER);
-
-		$http_headers = array();
-		foreach ($_SERVER as $key => $value)
-		{
-			if ( ! preg_match_all('/HTTP_(\w+)/', $key, $headers))
-				continue;
-
-			$http_headers[ucwords(strtolower(str_replace('_', '-', $headers[1][0])))] = $value;
-		}
-
-		// Set new internal headings
-		$this->headers += $http_headers;
+		// Generate a unique hash for the response
+		return '"'.sha1($this->response).'"';
 	}
+
 
 	/**
-	 * Returns the server environment variables
-	 * to their initial state
+	 * Checks the browser cache to see the response needs to be returned.
 	 *
-	 * @return void
-	 * @since   3.1.0
+	 *     $request->check_cache($etag);
+	 *
+	 * [!!] If the cache check succeeds, no further processing can be done!
+	 *
+	 * @param   string  etag to check
+	 * @return  $this
+	 * @throws  Kohana_Request_Exception
+	 * @uses    Request::generate_etag
 	 */
-	protected function _deinit_environment()
+	public function check_cache($etag = null)
 	{
-		// Exit now if environment is initialised already
-		if ( ! $this->_previous_environment)
+		if (empty($etag))
 		{
-			return;
+			$etag = $this->generate_etag();
 		}
 
-		// Restore globals
-		$_GET = $this->_previous_environment['_GET'];
-		$_POST = $this->_previous_environment['_POST'];
-		$_SERVER = $this->_previous_environment['_SERVER'];
+		// Set the ETag header
+		$this->headers['ETag'] = $etag;
 
-		// Reset the previous environment
-		$this->_previous_environment = FALSE;
-	}
-
-	/**
-	 * Execute a request that is to an external source
-	 *
-	 * @param   array    Additional headers to send with the request
-	 * @param   string   The HTTP method to use
-	 * @return  [Kohana_Response]
-	 * @throws  [Kohana_Request_Exception]
-	 * @since   3.1.0
-	 */
-	protected function _external_execute()
-	{
-		// Start benchmarking if required
-		if (Kohana::$profiling)
-		{
-			// Start benchmarking
-			$benchmark = Profiler::start('Requests', '"'.$this->uri.'" « "'.Request::$current->uri.'"');
-		}
-
-		// Encode the request components
-		$encoded_components = array(
-			'cookies'  => ($this->cookies) ? http_build_query($this->cookies, '', '; ') : NULL,
-			'get'      => ($this->get) ? http_build_query($this->get) : NULL,
+		// Add the Cache-Control header if it is not already set
+		// This allows etags to be used with Max-Age, etc
+		$this->headers += array(
+			'Cache-Control' => 'must-revalidate',
 		);
 
-		// If there are GET parameters, add them to the uri
-		if ($encoded_components['get'] !== NULL)
+		if (isset($_SERVER['HTTP_IF_NONE_MATCH']) AND $_SERVER['HTTP_IF_NONE_MATCH'] === $etag)
 		{
-			$this->uri .= '?'.$encoded_components['get'];
+			// No need to send data again
+			$this->status = 304;
+			$this->send_headers();
+
+			// Stop execution
+			exit;
 		}
 
-		// Store the currently active request
-		$previous = Request::$current;
-
-		// Change the current request to this request
-		Request::$current = $this;
-
-		// Compile the base curl settings
-		$curl_options = array(
-			CURLOPT_HTTPHEADER    => $this->headers,
-			CURLOPT_CUSTOMREQUEST => $this->method,
-		);
-
-		if ($this->cookies)
-		{
-			// If there are cookies present, set the cookie string
-			$curl_options[CURLOPT_COOKIE] = $encoded_components['cookies'];
-		}
-
-		if (in_array($this->method, array('POST', 'PUT', 'DELETE')))
-		{
-			// If the method supports POST data, apply it
-			$curl_options[CURLOPT_POSTFIELDS] = $this->post;
-		}
-
-		try
-		{
-			// Create a response
-			$this->response = Remote::get($this->uri, $curl_options);
-		}
-		catch (Kohana_Exception $e)
-		{
-			// Convert Remote exceptions to Kohana_Request_Exception
-			throw new Kohana_Request_Exception(__METHOD__.' unable to complete external request with message : :message', array(':message' => $e->getMessage()));
-		}
-		catch (Exception $e)
-		{
-			// Rethrow unexpected exceptions
-			throw $e;
-		}
-
-		// Restore the previous request
-		Request::$current = $previous;
-
-		if ($benchmark !== NULL)
-		{
-			// Stop the benchmark
-			Profiler::stop($benchmark);
-		}
-
-		// Return the response
-		return $this->response;
+		return $this;
 	}
 
-	/**
-	 * Provides access to the GET/POST variables
-	 * within this object.
-	 * 
-	 *     // Set a value to POST
-	 *     $this->_access_property('post', 'age', 25);
-	 *
-	 * @param   string   either `get` or `post`
-	 * @param   string   the key to set
-	 * @param   string   the value to set to the key
-	 * @return  mixed
-	 * @since   3.1.0
-	 */
-	protected function _access_property($property, $key = NULL, $value = NULL)
-	{
-		if ($key === NULL)
-		{
-			return $this->{$property};
-		}
-		else if (is_array($key))
-		{
-			$this->{$property} = $key;
-			return $this;
-		}
-		else if ($value === NULL)
-		{
-			return isset($this->{$property}[$key]) ? $this->{$property}[$key] : NULL;
-		}
-		else
-		{
-			$this->{$property}[$key] = $value;
-			return $this;
-		}
-	}
 } // End Request

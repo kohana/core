@@ -164,10 +164,17 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	function provider_merge()
 	{
 		return array(
+			// Test how it merges arrays and sub arrays with assoc keys
 			array(
 				array('name' => 'mary', 'children' => array('fred', 'paul', 'sally', 'jane')),
 				array('name' => 'john', 'children' => array('fred', 'paul', 'sally', 'jane')),
 				array('name' => 'mary', 'children' => array('jane')),
+			),
+			// See how it merges sub-arrays with numerical indexes
+			array(
+				array(array('test1','test3'), array('test2','test4')),
+				array(array('test1'), array('test2')),
+				array(array('test3'), array('test4')),
 			),
 			array(
 				array(array('test1','test3'), array('test2','test4')),
@@ -179,10 +186,17 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 				array('digits' => array(0, 1)),
 				array('digits' => array(2, 3)),
 			),
+			// See how it manages merging items with numerical indexes
 			array(
 				array(0, 1, 2, 3),
 				array(0, 1),
 				array(2, 3),
+			),
+			// Try and get it to merge assoc. arrays recursively
+			array(
+				array('foo' => 'bar', array('temp' => 'life')),
+				array('foo' => 'bin', array('temp' => 'name')),
+				array('foo' => 'bar', array('temp' => 'life')),
 			),
 		);
 	}
@@ -234,6 +248,8 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 			array($array['users'], $array, 'users.*'),
 			// Now we check that keys after a wilcard will be processed
 			array(array(0 => array(0 => 2)), $array, 'users.*.interests.*.length'),
+			// See what happens when it can't dig any deeper from a wildcard
+			array(NULL, $array, 'users.*.fans'),
 		);
 	}
 

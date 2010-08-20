@@ -380,19 +380,20 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 * @group kohana.validation.helpers
-	 * @group requires.internet
 	 * @dataProvider provider_email_domain
 	 * @param string  $email   Email domain to check
 	 * @param boolean $correct Is it correct?
 	 */
 	function test_email_domain($email, $correct)
 	{
+		if ( ! $this->hasInternet())
+			$this->markTestSkipped('An internet connection is required for this test');
+
 		if( ! Kohana::$is_windows OR version_compare(PHP_VERSION, '5.3.0', '>='))
 		{
 			$this->assertSame(
 				$correct,
-				Validate::email_domain($email),
-				'Make sure you\'re connected to the internet'
+				Validate::email_domain($email)
 			);
 		}
 		else
@@ -900,19 +901,20 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 */
 	public function test_callbacks_stores_multiple_callbacks()
 	{
-		$this->markTestSkipped('Callbacks() needs to accept parameters');
-
 		$validate = new Validate(array('year' => 1999));
 
-		// Just some misc. callbacks, not actually relevant
-		$callbacks = array(
-			array('misc_callback', array()),
-			array('another_callback', array('foo', 'bar'))
+		$validate->callbacks('year', array('misc_callback', 'another_callback'));
+
+		$this->assertAttributeSame(
+			array(
+				'year' => array( 
+					array('misc_callback', array()),
+					array('another_callback', array()),
+				),
+			), 
+			'_callbacks', 
+			$validate
 		);
-
-		$validate->callbacks('year', $callbacks);
-
-		$this->assertAttributeSame(array('year' => $callbacks), '_callbacks', $validate);
 	}
 
 	/**
@@ -1125,6 +1127,7 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 * calling check()
 	 *
 	 * @test
+	 * @ticket 3059
 	 * @covers Validate::check
 	 */
 	public function test_check_allows_option_for_empty_data_array_to_validate()
@@ -1134,6 +1137,11 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 		$this->assertFalse($validate->check(FALSE));
 
 		$this->assertTrue($validate->check(TRUE));
+
+		$validate->rule('name', 'not_empty');
+
+		$this->assertFalse($validate->check(TRUE));
+		$this->assertFalse($validate->check());
 	}
 
 	/**

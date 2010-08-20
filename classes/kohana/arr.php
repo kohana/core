@@ -97,11 +97,6 @@ class Kohana_Arr {
 			{
 				// Handle wildcards
 
-				if (empty($keys))
-				{
-					return $array;
-				}
-
 				$values = array();
 				foreach ($array as $arr)
 				{

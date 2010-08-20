@@ -209,7 +209,7 @@ abstract class Kohana_Session {
 	/**
 	 * Set a variable in the session array.
 	 *
-	 *     $session->set('foo');
+	 *     $session->set('foo', 'bar');
 	 *
 	 * @param   string   variable name
 	 * @param   mixed    value
@@ -218,6 +218,22 @@ abstract class Kohana_Session {
 	public function set($key, $value)
 	{
 		$this->_data[$key] = $value;
+
+		return $this;
+	}
+
+	/**
+	 * Set a variable by reference.
+	 *
+	 *     $session->bind('foo', $foo);
+	 *
+	 * @param   string  variable name
+	 * @param   mixed   referenced value
+	 * @return  $this
+	 */
+	public function bind($key, & $value)
+	{
+		$this->_data[$key] =& $value;
 
 		return $this;
 	}
