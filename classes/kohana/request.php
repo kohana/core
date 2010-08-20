@@ -1042,6 +1042,9 @@ class Kohana_Request {
 			// Create a new instance of the controller
 			$controller = $class->newInstance($this);
 
+			// Execute the "before action" method
+			$class->getMethod('before')->invoke($controller);
+
 			// Determine the action to use
 			$action = empty($this->action) ? Route::$default_action : $this->action;
 
@@ -1049,7 +1052,7 @@ class Kohana_Request {
 			$class->getMethod('action_'.$action)->invokeArgs($controller, $this->_params);
 
 			// Execute the "after action" method
-			$after->invoke($controller);
+			$class->getMethod('after')->invoke($controller);
 		}
 		catch (Exception $e)
 		{
