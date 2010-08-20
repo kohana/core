@@ -11,7 +11,7 @@
 class Kohana_Text {
 
 	/**
-	 * @var  array   number units and text equivilents
+	 * @var  array   number units and text equivalents
 	 */
 	public static $units = array(
 		1000000000 => 'billion',
@@ -33,7 +33,7 @@ class Kohana_Text {
 		15 => 'fifteen',
 		14 => 'fourteen',
 		13 => 'thirteen',
-		12 => 'tweleve',
+		12 => 'twelve',
 		11 => 'eleven',
 		10 => 'ten',
 		9  => 'nine',
