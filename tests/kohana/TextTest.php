@@ -437,7 +437,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 				'Some random google.com',
 				'Some random google.com',
 			),
-			//Check that it doesn't link urls in a href
+			// Check that it doesn't link urls in a href
 			array(
 				'Look at me <a href="http://google.com">Awesome stuff</a>',
 				'Look at me <a href="http://google.com">Awesome stuff</a>',
@@ -445,6 +445,15 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 			array(
 				'Look at me <a href="http://www.google.com">http://www.google.com</a>',
 				'Look at me <a href="http://www.google.com">http://www.google.com</a>',
+			),
+			// @issue 3190
+			array(
+				'<a href="http://www.google.com/">www.google.com</a>',
+				'<a href="http://www.google.com/">www.google.com</a>',
+			),
+			array(
+				'<a href="http://www.google.com/">www.google.com</a> <a href="http://www.google.com/">http://www.google.com/</a>',
+				'<a href="http://www.google.com/">www.google.com</a> http://www.google.com/',
 			),
 		);
 	}
