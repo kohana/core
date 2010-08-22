@@ -808,8 +808,8 @@ class Kohana_Core {
 						}
 						catch (Exception $e)
 						{
-							// Cache has already been deleted
-							return NULL;
+							// Cache has mostly likely already been deleted,
+							// let return happen normally.
 						}
 					}
 				}
@@ -827,8 +827,19 @@ class Kohana_Core {
 				chmod($dir, 0777);
 			}
 
-			// Write the cache
-			return (bool) file_put_contents($dir.$file, serialize($data));
+			// Force the data to be a string
+			$data = serialize($data);
+
+			try
+			{
+				// Write the cache
+				return (bool) file_put_contents($dir.$file, $data);
+			}
+			catch (Exception $e)
+			{
+				// Failed to write cache
+				return FALSE;
+			}
 		}
 		catch (Exception $e)
 		{
@@ -997,7 +1008,7 @@ class Kohana_Core {
 			echo Kohana::exception_text($e), "\n";
 
 			// Exit with an error status
-			exit(1);
+			// exit(1);
 		}
 	}
 
