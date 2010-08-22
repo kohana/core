@@ -186,12 +186,6 @@ class Kohana_Core {
 			Kohana::$profiling = (bool) $settings['profile'];
 		}
 
-		if (Kohana::$profiling === TRUE)
-		{
-			// Start a new benchmark
-			$benchmark = Profiler::start('Kohana', __FUNCTION__);
-		}
-
 		// Start an output buffer
 		ob_start();
 
@@ -297,12 +291,6 @@ class Kohana_Core {
 
 		// Load the config
 		Kohana::$config = Kohana_Config::instance();
-
-		if (isset($benchmark))
-		{
-			// Stop benchmarking
-			Profiler::stop($benchmark);
-		}
 	}
 
 	/**
@@ -469,12 +457,9 @@ class Kohana_Core {
 	public static function modules(array $modules = NULL)
 	{
 		if ($modules === NULL)
-			return Kohana::$_modules;
-
-		if (Kohana::$profiling === TRUE)
 		{
-			// Start a new benchmark
-			$benchmark = Profiler::start('Kohana', __FUNCTION__);
+			// Not changing modules, just return the current set
+			return Kohana::$_modules;
 		}
 
 		// Start a new list of include paths, APPPATH first
@@ -512,12 +497,6 @@ class Kohana_Core {
 				// Include the module initialization file once
 				require_once $init;
 			}
-		}
-
-		if (isset($benchmark))
-		{
-			// Stop the benchmark
-			Profiler::stop($benchmark);
 		}
 
 		return Kohana::$_modules;
