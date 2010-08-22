@@ -788,62 +788,55 @@ class Kohana_Core {
 		// Cache directories are split by keys to prevent filesystem overload
 		$dir = Kohana::$cache_dir.DIRECTORY_SEPARATOR.$file[0].$file[1].DIRECTORY_SEPARATOR;
 
-		try
+		if ($data === NULL)
 		{
-			if ($data === NULL)
+			if (is_file($dir.$file))
 			{
-				if (is_file($dir.$file))
+				if ((time() - filemtime($dir.$file)) < $lifetime)
 				{
-					if ((time() - filemtime($dir.$file)) < $lifetime)
+					// Return the cache
+					return unserialize(file_get_contents($dir.$file));
+				}
+				else
+				{
+					try
 					{
-						// Return the cache
-						return unserialize(file_get_contents($dir.$file));
+						// Cache has expired
+						unlink($dir.$file);
 					}
-					else
+					catch (Exception $e)
 					{
-						try
-						{
-							// Cache has expired
-							unlink($dir.$file);
-						}
-						catch (Exception $e)
-						{
-							// Cache has mostly likely already been deleted,
-							// let return happen normally.
-						}
+						// Cache has mostly likely already been deleted,
+						// let return happen normally.
 					}
 				}
-
-				// Cache not found
-				return NULL;
 			}
 
-			if ( ! is_dir($dir))
-			{
-				// Create the cache directory
-				mkdir($dir, 0777, TRUE);
+			// Cache not found
+			return NULL;
+		}
 
-				// Set permissions (must be manually set to fix umask issues)
-				chmod($dir, 0777);
-			}
+		if ( ! is_dir($dir))
+		{
+			// Create the cache directory
+			mkdir($dir, 0777, TRUE);
 
-			// Force the data to be a string
-			$data = serialize($data);
+			// Set permissions (must be manually set to fix umask issues)
+			chmod($dir, 0777);
+		}
 
-			try
-			{
-				// Write the cache
-				return (bool) file_put_contents($dir.$file, $data);
-			}
-			catch (Exception $e)
-			{
-				// Failed to write cache
-				return FALSE;
-			}
+		// Force the data to be a string
+		$data = serialize($data);
+
+		try
+		{
+			// Write the cache
+			return (bool) file_put_contents($dir.$file, $data);
 		}
 		catch (Exception $e)
 		{
-			throw $e;
+			// Failed to write cache
+			return FALSE;
 		}
 	}
 
