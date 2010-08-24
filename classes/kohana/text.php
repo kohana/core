@@ -369,19 +369,15 @@ class Kohana_Text {
 	 */
 	public static function auto_link_emails($text)
 	{
-		// Finds all email addresses that are not part of an existing html mailto anchor
+		// Find and replace all email addresses that are not part of an existing html mailto anchor
 		// Note: The "58;" negative lookbehind prevents matching of existing encoded html mailto anchors
 		//       The html entity for a colon (:) is &#58; or &#058; or &#0058; etc.
-		if (preg_match_all('~\b(?<!href="mailto:|">|58;)(?!\.)[-+_a-z0-9.]++(?<!\.)@(?![-.])[-a-z0-9.]+(?<!\.)\.[a-z]{2,6}\b~i', $text, $matches))
-		{
-			foreach ($matches[0] as $match)
-			{
-				// Replace each email with an encoded mailto
-				$text = preg_replace('!\b'.preg_quote($match).'\b!', HTML::mailto($match), $text);
-			}
-		}
+		return preg_replace_callback('~\b(?<!href="mailto:|">|58;)(?!\.)[-+_a-z0-9.]++(?<!\.)@(?![-.])[-a-z0-9.]+(?<!\.)\.[a-z]{2,6}\b~i', 'Text::_auto_link_emails_callback', $text);
+	}
 
-		return $text;
+	protected static function _auto_link_emails_callback($matches)
+	{
+		return HTML::mailto($matches[0]);
 	}
 
 	/**
