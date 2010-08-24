@@ -477,6 +477,15 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	public function provider_auto_link_emails()
 	{
 		return array(
+			// @issue 3162
+			array(
+				'<span class="broken"><a href="mailto:info@test.com">info@test.com</a></span>',
+				'<span class="broken">info@test.com</span>',
+			),
+			array(
+				'<a href="mailto:info@test.com">info@test.com</a>',
+				'<a href="mailto:info@test.com">info@test.com</a>',
+			),
 			// @issue 3189
 			array(
 				'<a href="mailto:email@address.com">email@address.com</a> <a href="mailto:email@address.com">email@address.com</a>',
