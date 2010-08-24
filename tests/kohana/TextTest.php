@@ -461,6 +461,34 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
+	 * Provides test data for test_auto_link_emails()
+	 *
+	 * @return array 
+	 */
+	public function provider_auto_link_emails()
+	{
+		return array(
+			// @issue 3189
+			array(
+				'<a href="mailto:email@address.com">email@address.com</a> <a href="mailto:email@address.com">email@address.com</a>',
+				'<a href="mailto:email@address.com">email@address.com</a> email@address.com',
+			),
+		);
+	}
+
+	/**
+	 * Runs tests for Test::auto_link_emails
+	 *
+	 * @test
+	 * @dataProvider provider_auto_link_emails
+	 */
+	public function test_auto_link_emails($expected, $text)
+	{
+		// Use html_entity_decode because emails will be randomly encoded by HTML::mailto
+		$this->assertSame($expected, html_entity_decode(Text::auto_link_emails($text)));
+	}
+
+	/**
 	 * Provides test data for test_auto_link
 	 *
 	 * @return array Test data
