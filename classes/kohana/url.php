@@ -33,14 +33,19 @@ class Kohana_URL {
 	 */
 	public static function base($index = FALSE, $protocol = FALSE)
 	{
+		// Start with the configured base URL
+		$base_url = Kohana::$base_url;
+
 		if ($protocol === TRUE)
 		{
 			// Use the current protocol
 			$protocol = Request::$protocol;
 		}
-
-		// Start with the configured base URL
-		$base_url = Kohana::$base_url;
+		elseif ($scheme = parse_url($base_url, PHP_URL_SCHEME))
+		{
+			// Use the configured default protocol
+			$protocol = $scheme;
+		}
 
 		if ($index === TRUE AND ! empty(Kohana::$index_file))
 		{
@@ -50,14 +55,19 @@ class Kohana_URL {
 
 		if (is_string($protocol))
 		{
-			if (parse_url($base_url, PHP_URL_HOST))
+			if ($domain = parse_url($base_url, PHP_URL_HOST))
 			{
 				// Remove everything but the path from the URL
 				$base_url = parse_url($base_url, PHP_URL_PATH);
 			}
+			else
+			{
+				// Attempt ot use HTPP_HOST and fallback to SERVER_NAME
+				$domain = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME'];
+			}
 
 			// Add the protocol and domain to the base URL
-			$base_url = $protocol.'://'.$_SERVER['HTTP_HOST'].$base_url;
+			$base_url = $protocol.'://'.$domain.$base_url;
 		}
 
 		return $base_url;

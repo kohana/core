@@ -11,7 +11,7 @@
 class Kohana_Text {
 
 	/**
-	 * @var  array   number units and text equivilents
+	 * @var  array   number units and text equivalents
 	 */
 	public static $units = array(
 		1000000000 => 'billion',
@@ -33,7 +33,7 @@ class Kohana_Text {
 		15 => 'fifteen',
 		14 => 'fourteen',
 		13 => 'thirteen',
-		12 => 'tweleve',
+		12 => 'twelve',
 		11 => 'eleven',
 		10 => 'ten',
 		9  => 'nine',
@@ -312,6 +312,8 @@ class Kohana_Text {
 	 *
 	 *     echo Text::auto_link($text);
 	 *
+	 * [!!] This method is not foolproof since it uses regex to parse HTML.
+	 *
 	 * @param   string   text to auto link
 	 * @return  string
 	 * @uses    Text::auto_link_urls
@@ -328,33 +330,29 @@ class Kohana_Text {
 	 *
 	 *     echo Text::auto_link_urls($text);
 	 *
+	 * [!!] This method is not foolproof since it uses regex to parse HTML.
+	 *
 	 * @param   string   text to auto link
 	 * @return  string
 	 * @uses    HTML::anchor
 	 */
 	public static function auto_link_urls($text)
 	{
-		// Finds all http/https/ftp/ftps links that are not part of an existing html anchor
-		if (preg_match_all('~\b(?<!href="|">)(?:ht|f)tps?://\S+(?:/|\b)~i', $text, $matches))
-		{
-			foreach ($matches[0] as $match)
-			{
-				// Replace each link with an anchor
-				$text = str_replace($match, HTML::anchor($match), $text);
-			}
-		}
+		// Find and replace all http/https/ftp/ftps links that are not part of an existing html anchor
+		$text = preg_replace_callback('~\b(?<!href="|">)(?:ht|f)tps?://\S+(?:/|\b)~i', 'Text::_auto_link_urls_callback1', $text);
 
-		// Find all naked www.links.com (without http://)
-		if (preg_match_all('~\b(?<!://)www(?:\.[a-z0-9][-a-z0-9]*+)+\.[a-z]{2,6}\b~i', $text, $matches))
-		{
-			foreach ($matches[0] as $match)
-			{
-				// Replace each link with an anchor
-				$text = str_replace($match, HTML::anchor('http://'.$match, $match), $text);
-			}
-		}
+		// Find and replace all naked www.links.com (without http://)
+		return preg_replace_callback('~\b(?<!://|">)www(?:\.[a-z0-9][-a-z0-9]*+)+\.[a-z]{2,6}\b~i', 'Text::_auto_link_urls_callback2', $text);
+	}
 
-		return $text;
+	protected static function _auto_link_urls_callback1($matches)
+	{
+		return HTML::anchor($matches[0]);
+	}
+
+	protected static function _auto_link_urls_callback2($matches)
+	{
+		return HTML::anchor('http://'.$matches[0], $matches[0]);
 	}
 
 	/**
@@ -362,6 +360,8 @@ class Kohana_Text {
 	 * be altered.
 	 *
 	 *     echo Text::auto_link_emails($text);
+	 *
+	 * [!!] This method is not foolproof since it uses regex to parse HTML.
 	 *
 	 * @param   string   text to auto link
 	 * @return  string

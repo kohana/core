@@ -186,12 +186,6 @@ class Kohana_Core {
 			Kohana::$profiling = (bool) $settings['profile'];
 		}
 
-		if (Kohana::$profiling === TRUE)
-		{
-			// Start a new benchmark
-			$benchmark = Profiler::start('Kohana', __FUNCTION__);
-		}
-
 		// Start an output buffer
 		ob_start();
 
@@ -297,12 +291,6 @@ class Kohana_Core {
 
 		// Load the config
 		Kohana::$config = Kohana_Config::instance();
-
-		if (isset($benchmark))
-		{
-			// Stop benchmarking
-			Profiler::stop($benchmark);
-		}
 	}
 
 	/**
@@ -469,12 +457,9 @@ class Kohana_Core {
 	public static function modules(array $modules = NULL)
 	{
 		if ($modules === NULL)
-			return Kohana::$_modules;
-
-		if (Kohana::$profiling === TRUE)
 		{
-			// Start a new benchmark
-			$benchmark = Profiler::start('Kohana', __FUNCTION__);
+			// Not changing modules, just return the current set
+			return Kohana::$_modules;
 		}
 
 		// Start a new list of include paths, APPPATH first
@@ -512,12 +497,6 @@ class Kohana_Core {
 				// Include the module initialization file once
 				require_once $init;
 			}
-		}
-
-		if (isset($benchmark))
-		{
-			// Stop the benchmark
-			Profiler::stop($benchmark);
 		}
 
 		return Kohana::$_modules;
@@ -788,51 +767,55 @@ class Kohana_Core {
 		// Cache directories are split by keys to prevent filesystem overload
 		$dir = Kohana::$cache_dir.DIRECTORY_SEPARATOR.$file[0].$file[1].DIRECTORY_SEPARATOR;
 
-		try
+		if ($data === NULL)
 		{
-			if ($data === NULL)
+			if (is_file($dir.$file))
 			{
-				if (is_file($dir.$file))
+				if ((time() - filemtime($dir.$file)) < $lifetime)
 				{
-					if ((time() - filemtime($dir.$file)) < $lifetime)
+					// Return the cache
+					return unserialize(file_get_contents($dir.$file));
+				}
+				else
+				{
+					try
 					{
-						// Return the cache
-						return unserialize(file_get_contents($dir.$file));
+						// Cache has expired
+						unlink($dir.$file);
 					}
-					else
+					catch (Exception $e)
 					{
-						try
-						{
-							// Cache has expired
-							unlink($dir.$file);
-						}
-						catch (Exception $e)
-						{
-							// Cache has already been deleted
-							return NULL;
-						}
+						// Cache has mostly likely already been deleted,
+						// let return happen normally.
 					}
 				}
-
-				// Cache not found
-				return NULL;
 			}
 
-			if ( ! is_dir($dir))
-			{
-				// Create the cache directory
-				mkdir($dir, 0777, TRUE);
+			// Cache not found
+			return NULL;
+		}
 
-				// Set permissions (must be manually set to fix umask issues)
-				chmod($dir, 0777);
-			}
+		if ( ! is_dir($dir))
+		{
+			// Create the cache directory
+			mkdir($dir, 0777, TRUE);
 
+			// Set permissions (must be manually set to fix umask issues)
+			chmod($dir, 0777);
+		}
+
+		// Force the data to be a string
+		$data = serialize($data);
+
+		try
+		{
 			// Write the cache
-			return (bool) file_put_contents($dir.$file, serialize($data));
+			return (bool) file_put_contents($dir.$file, $data);
 		}
 		catch (Exception $e)
 		{
-			throw $e;
+			// Failed to write cache
+			return FALSE;
 		}
 	}
 
@@ -997,7 +980,7 @@ class Kohana_Core {
 			echo Kohana::exception_text($e), "\n";
 
 			// Exit with an error status
-			exit(1);
+			// exit(1);
 		}
 	}
 
