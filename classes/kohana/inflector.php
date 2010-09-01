@@ -63,7 +63,7 @@ class Kohana_Inflector {
 	 * [!!] Special inflections are defined in `config/inflector.php`.
 	 *
 	 * @param   string   word to singularize
-	 * @param   integer  number of things
+	 * @param   integer  count of thing
 	 * @return  string
 	 * @uses    Inflector::uncountable
 	 */
@@ -72,9 +72,9 @@ class Kohana_Inflector {
 		// Remove garbage
 		$str = strtolower(trim($str));
 
-		if (is_string($count))
+		if ($count !== NULL)
 		{
-			// Convert to integer when using a digit string
+			// Force an integer value, so that === 0 works
 			$count = (int) $count;
 		}
 
@@ -108,10 +108,12 @@ class Kohana_Inflector {
 		}
 		elseif (preg_match('/[^aeiou]ies$/', $str))
 		{
+			// Replace "ies" with "y"
 			$str = substr($str, 0, -3).'y';
 		}
 		elseif (substr($str, -1) === 's' AND substr($str, -2) !== 'ss')
 		{
+			// Remove singular "s"
 			$str = substr($str, 0, -1);
 		}
 
@@ -132,7 +134,8 @@ class Kohana_Inflector {
 	 *
 	 * [!!] Special inflections are defined in `config/inflector.php`.
 	 *
-	 * @param   string  word to pluralize
+	 * @param   string   word to pluralize
+	 * @param   integer  count of thing
 	 * @return  string
 	 * @uses    Inflector::uncountable
 	 */
@@ -140,6 +143,11 @@ class Kohana_Inflector {
 	{
 		// Remove garbage
 		$str = strtolower(trim($str));
+
+		if ($count !== NULL)
+		{
+			$count
+		}
 
 		if (is_string($count))
 		{
