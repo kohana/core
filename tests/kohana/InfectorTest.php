@@ -55,6 +55,9 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 			array('cats', 2, 'cats'),
 			array('cats', '2', 'cats'),
 			array('children', NULL, 'child'),
+			array('meters', 0.6, 'meters'),
+			array('meters', 1.6, 'meters'),
+			array('meters', 1.0, 'meter'),
 		);
 	}
 
@@ -85,6 +88,9 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 			array('cats', 1, 'cats'),
 			array('cats', '1', 'cats'),
 			array('movie', NULL, 'movies'),
+			array('meter', 0.6, 'meters'),
+			array('meter', 1.6, 'meters'),
+			array('meter', 1.0, 'meter'),
 		);
 	}
 
