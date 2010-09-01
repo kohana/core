@@ -146,12 +146,7 @@ class Kohana_Inflector {
 
 		if ($count !== NULL)
 		{
-			$count
-		}
-
-		if (is_string($count))
-		{
-			// Convert to integer when using a digit string
+			// Force an integer value, so that === 0 works
 			$count = (int) $count;
 		}
 
