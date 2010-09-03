@@ -46,6 +46,8 @@ class Kohana_UTF8Test extends Kohana_Unittest_TestCase
 			array("\0", TRUE),
 			array("\$eno\r", TRUE),
 			array('Señor', FALSE),
+			array(array('Se', 'nor'), TRUE),
+			array(array('Se', 'ñor'), FALSE),
 		);
 	}
 
@@ -105,6 +107,29 @@ class Kohana_UTF8Test extends Kohana_Unittest_TestCase
 	public function testStripNonAscii($input, $expected)
 	{
 		$this->assertSame($expected, UTF8::strip_non_ascii($input));
+	}
+
+	/**
+	 * Provides test data for testStrIreplace()
+	 */
+	public function providerStrIreplace()
+	{
+		return array(
+			array('т', 't', 'cocoñuт', 'cocoñut'),
+			array('Ñ', 'N', 'cocoñuт', 'cocoNuт'),
+			array(array('т', 'Ñ'), array('t', 'N'), 'cocoñuт', 'cocoNut'),
+		);
+	}
+
+	/**
+	 * Tests UTF8::str_ireplace
+	 *
+	 * @test
+	 * @dataProvider providerStrIreplace
+	 */
+	public function testStrIreplace($search, $replace, $subject, $expected)
+	{
+		$this->assertSame($expected, UTF8::str_ireplace($search, $replace, $subject));
 	}
 
 	/**

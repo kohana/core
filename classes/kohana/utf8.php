@@ -87,11 +87,16 @@ class Kohana_UTF8 {
 	 *
 	 *     $ascii = UTF8::is_ascii($str);
 	 *
-	 * @param   string  string to check
-	 * @return  bool
+	 * @param   mixed    string or array of strings to check
+	 * @return  boolean
 	 */
 	public static function is_ascii($str)
 	{
+		if (is_array($str))
+		{
+			$str = implode($str);
+		}
+
 		return ! preg_match('/[^\x00-\x7F]/S', $str);
 	}
 
