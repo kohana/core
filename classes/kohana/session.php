@@ -37,7 +37,7 @@ abstract class Kohana_Session {
 		if ($type === NULL)
 		{
 			// Use the default type
-			$type = Session::$type;
+			$type = Session::$default;
 		}
 
 		if ( ! isset(Session::$instances[$type]))
