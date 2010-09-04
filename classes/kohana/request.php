@@ -674,7 +674,7 @@ class Kohana_Request {
 			$params['controller'] = $this->controller;
 		}
 
-		if ( ! isset($params['action']))
+		if ( ! isset($params['action']) AND $this->action !== Route::$default_action)
 		{
 			// Add the current action
 			$params['action'] = $this->action;
@@ -859,17 +859,23 @@ class Kohana_Request {
 				$mime = File::mime_by_ext(strtolower(pathinfo($download, PATHINFO_EXTENSION)));
 			}
 
+			// Force the data to be rendered if 
+			$file_data = (string) $this->response;
+
 			// Get the content size
-			$size = strlen($this->response);
+			$size = strlen($file_data);
 
 			// Create a temporary file to hold the current response
 			$file = tmpfile();
 
 			// Write the current response into the file
-			fwrite($file, $this->response);
+			fwrite($file, $file_data);
 
 			// Prepare the file for reading
 			fseek($file, 0);
+
+			// File data is no longer needed
+			unset($file_data);
 		}
 		else
 		{

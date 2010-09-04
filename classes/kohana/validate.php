@@ -14,7 +14,7 @@ class Kohana_Validate extends ArrayObject {
 	 * Creates a new Validation instance.
 	 *
 	 * @param   array   array to use for validation
-	 * @return  object
+	 * @return  Validate
 	 */
 	public static function factory(array $array)
 	{
@@ -565,14 +565,14 @@ class Kohana_Validate extends ArrayObject {
 
 	/**
 	 * Overwrites or appends filters to a field. Each filter will be executed once.
-	 * All rules must be valid callbacks.
+	 * All rules must be valid PHP callbacks.
 	 *
 	 *     // Run trim() on all fields
 	 *     $validation->filter(TRUE, 'trim');
 	 *
 	 * @param   string  field name
 	 * @param   mixed   valid PHP callback
-	 * @param   array   extra parameters for the callback
+	 * @param   array   extra parameters for the filter
 	 * @return  $this
 	 */
 	public function filter($field, $filter, array $params = NULL)
@@ -616,7 +616,7 @@ class Kohana_Validate extends ArrayObject {
 	 *
 	 * @param   string  field name
 	 * @param   string  function or static method name
-	 * @param   array   extra parameters for the callback
+	 * @param   array   extra parameters for the rule
 	 * @return  $this
 	 */
 	public function rule($field, $rule, array $params = NULL)
@@ -625,6 +625,12 @@ class Kohana_Validate extends ArrayObject {
 		{
 			// Set the field label to the field name
 			$this->_labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
+		}
+
+		if('matches' === $rule)
+		{
+			$match_field = $params[0];
+			$this->_labels[$match_field] = preg_replace('/[^\pL]+/u', ' ', $match_field);
 		}
 
 		// Store the rule and params for this rule
@@ -652,8 +658,6 @@ class Kohana_Validate extends ArrayObject {
 
 	/**
 	 * Adds a callback to a field. Each callback will be executed only once.
-	 * No extra parameters can be passed as the format for callbacks is
-	 * predefined as (Validate $array, $field, array $errors).
 	 *
 	 *     // The "username" must be checked with a custom method
 	 *     $validation->callback('username', array($this, 'check_username'));
@@ -662,9 +666,10 @@ class Kohana_Validate extends ArrayObject {
 	 *
 	 * @param   string  field name
 	 * @param   mixed   callback to add
+	 * @param   array   extra parameters for the callback
 	 * @return  $this
 	 */
-	public function callback($field, $callback)
+	public function callback($field, $callback, array $params = array())
 	{
 		if ( ! isset($this->_callbacks[$field]))
 		{
@@ -681,7 +686,7 @@ class Kohana_Validate extends ArrayObject {
 		if ( ! in_array($callback, $this->_callbacks[$field], TRUE))
 		{
 			// Store the callback
-			$this->_callbacks[$field][] = $callback;
+			$this->_callbacks[$field][] = array($callback, $params);
 		}
 
 		return $this;
@@ -713,9 +718,10 @@ class Kohana_Validate extends ArrayObject {
 	 *          // The data is valid, do something here
 	 *     }
 	 *
+	 * @param   boolean   allow empty array?
 	 * @return  boolean
 	 */
-	public function check()
+	public function check($allow_empty = FALSE)
 	{
 		if (Kohana::$profiling === TRUE)
 		{
@@ -793,7 +799,7 @@ class Kohana_Validate extends ArrayObject {
 		// Overload the current array with the new one
 		$this->exchangeArray($data);
 
-		if ($submitted === FALSE)
+		if ($submitted === FALSE AND ! $allow_empty)
 		{
 			// Because no data was submitted, validation will not be forced
 			return FALSE;
@@ -929,8 +935,10 @@ class Kohana_Validate extends ArrayObject {
 				continue;
 			}
 
-			foreach ($set as $callback)
+			foreach ($set as $callback_array)
 			{
+				list($callback, $params) = $callback_array;
+
 				if (is_string($callback) AND strpos($callback, '::') !== FALSE)
 				{
 					// Make the static callback into an array
@@ -952,7 +960,7 @@ class Kohana_Validate extends ArrayObject {
 					}
 
 					// Call $object->$method($this, $field, $errors) with Reflection
-					$method->invoke($object, $this, $field);
+					$method->invoke($object, $this, $field, $params);
 				}
 				else
 				{
@@ -960,7 +968,7 @@ class Kohana_Validate extends ArrayObject {
 					$function = new ReflectionFunction($callback);
 
 					// Call $function($this, $field, $errors) with Reflection
-					$function->invoke($this, $field);
+					$function->invoke($this, $field, $params);
 				}
 
 				if (isset($this->_errors[$field]))

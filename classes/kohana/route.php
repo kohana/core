@@ -117,8 +117,8 @@ class Kohana_Route {
 	}
 
 	/**
-	 * Saves or loads the route cache. If you routes will remain the same for
-	 * an long period of time, use this to reload the routes from the cache
+	 * Saves or loads the route cache. If your routes will remain the same for
+	 * a long period of time, use this to reload the routes from the cache
 	 * rather than redefining them on every page load.
 	 *
 	 *     if ( ! Route::cache())

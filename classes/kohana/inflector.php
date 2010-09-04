@@ -63,24 +63,21 @@ class Kohana_Inflector {
 	 * [!!] Special inflections are defined in `config/inflector.php`.
 	 *
 	 * @param   string   word to singularize
-	 * @param   integer  number of things
+	 * @param   integer  count of thing
 	 * @return  string
 	 * @uses    Inflector::uncountable
 	 */
 	public static function singular($str, $count = NULL)
 	{
+		// $count should always be a float
+		$count = ($count === NULL) ? 1.0 : (float) $count;
+
+		// Do nothing when $count is not 1
+		if ($count != 1)
+			return $str;
+
 		// Remove garbage
 		$str = strtolower(trim($str));
-
-		if (is_string($count))
-		{
-			// Convert to integer when using a digit string
-			$count = (int) $count;
-		}
-
-		// Do nothing with a single count
-		if ($count === 0 OR $count > 1)
-			return $str;
 
 		// Cache key name
 		$key = 'singular_'.$str.$count;
@@ -108,10 +105,12 @@ class Kohana_Inflector {
 		}
 		elseif (preg_match('/[^aeiou]ies$/', $str))
 		{
+			// Replace "ies" with "y"
 			$str = substr($str, 0, -3).'y';
 		}
 		elseif (substr($str, -1) === 's' AND substr($str, -2) !== 'ss')
 		{
+			// Remove singular "s"
 			$str = substr($str, 0, -1);
 		}
 
@@ -132,24 +131,22 @@ class Kohana_Inflector {
 	 *
 	 * [!!] Special inflections are defined in `config/inflector.php`.
 	 *
-	 * @param   string  word to pluralize
+	 * @param   string   word to pluralize
+	 * @param   integer  count of thing
 	 * @return  string
 	 * @uses    Inflector::uncountable
 	 */
 	public static function plural($str, $count = NULL)
 	{
-		// Remove garbage
-		$str = strtolower(trim($str));
-
-		if (is_string($count))
-		{
-			// Convert to integer when using a digit string
-			$count = (int) $count;
-		}
+		// $count should always be a float
+		$count = ($count === NULL) ? 0.0 : (float) $count;
 
 		// Do nothing with singular
-		if ($count === 1)
+		if ($count == 1)
 			return $str;
+
+		// Remove garbage
+		$str = strtolower(trim($str));
 
 		// Cache key name
 		$key = 'plural_'.$str.$count;

@@ -50,6 +50,12 @@ class Kohana_Arr {
 	 */
 	public static function path($array, $path, $default = NULL)
 	{
+		if (array_key_exists($path, $array))
+		{
+			// No need to do extra processing
+			return $array[$path];
+		}
+
 		// Remove outer dots, wildcards, or spaces
 		$path = trim($path, '.* ');
 
@@ -90,11 +96,6 @@ class Kohana_Arr {
 			elseif ($key === '*')
 			{
 				// Handle wildcards
-
-				if (empty($keys))
-				{
-					return $array;
-				}
 
 				$values = array();
 				foreach ($array as $arr)
