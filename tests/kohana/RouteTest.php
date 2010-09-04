@@ -45,19 +45,19 @@ class Kohana_RouteTest extends Kohana_Unittest_TestCase
 			// Cache files are split into directories based on first two characters of hash
 			if($dir[0] !== '.' AND strlen($dir) === 2)
 			{
-				$cache = opendir(Kohana::$cache_dir.'/'.$dir);
+				$cache = opendir(Kohana::$cache_dir.DIRECTORY_SEPARATOR.$dir);
 
 				while($file = readdir($cache))
 				{
 					if($file[0] !== '.')
 					{
-						unlink(Kohana::$cache_dir.'/'.$dir.'/'.$file);
+						unlink(Kohana::$cache_dir.DIRECTORY_SEPARATOR.$dir.DIRECTORY_SEPARATOR.$file);
 					}
 				}
 
 				closedir($cache);
 
-				rmdir(Kohana::$cache_dir.'/'.$dir);
+				rmdir(Kohana::$cache_dir.DIRECTORY_SEPARATOR.$dir);
 			}
 		}
 
