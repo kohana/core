@@ -58,8 +58,8 @@ Class Kohana_LogTest extends Kohana_Unittest_TestCase
 
 		$this->assertSame($logger, $logger->attach($writer));
 
-		$this->assertAttributeContains(
-			array('object' => spl_object_hash($writer), 'types' => NULL),
+		$this->assertAttributeSame(
+			array(spl_object_hash($writer) => array('object' => $writer, 'types' => NULL)),
 			'_writers',
 			$logger
 		);

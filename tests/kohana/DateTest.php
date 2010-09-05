@@ -214,6 +214,40 @@ Class Kohana_DateTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
+	 * Provides test data for test_formatted_time()
+	 *
+	 * @return array
+	 */
+	public function provider_formatted_time()
+	{
+		return array(
+			// Test the default format
+			array('2010-04-16 17:00:00', '5:00PM 16th April 2010'),
+			// Now we use our own format
+			// Binary date!
+			array('01/01/2010 01:00', '1AM 1st January 2010', 'd/m/Y H:i'),
+		);
+	}
+
+	/**
+	 * Tests Date::formatted_time()
+	 *
+	 * @test
+	 * @dataProvider provider_formatted_time
+	 * @covers Date::formatted_time
+	 * @ticket 3035
+	 * @param string         $expected         Expected output
+	 * @param string|integer $datetime_str     The datetime timestamp / string
+	 * @param string|null    $timestamp_format The output format
+	 */
+	public function test_formatted_time($expected, $datetime_str, $timestamp_format = NULL)
+	{
+		$timestamp = Date::formatted_time($datetime_str, $timestamp_format);
+
+		$this->assertSame($expected, $timestamp);
+	}
+
+	/**
 	 * Tests Date::months()
 	 * 
 	 * @test

@@ -44,6 +44,8 @@ Class Kohana_CLITest extends Kohana_Unittest_TestCase
 	 */
 	function setUp()
 	{
+		parent::setUp();
+
 		$_SERVER['argv'] = array('index.php');
 
 		foreach($this->options as $option => $value)

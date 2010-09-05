@@ -17,17 +17,6 @@
 class Kohana_CoreTest extends Kohana_Unittest_TestCase
 {
 	/**
-	 * Helper function which replaces the "/" to OS-specific delimiter
-	 * 
-	 * @param string $path
-	 * @return string
-	 */
-	private function separator($path)
-	{
-		return str_replace('/', DIRECTORY_SEPARATOR, $path);
-	}
-
-	/**
 	 * Provides test data for testSanitize()
 	 * 
 	 * @return array
@@ -316,8 +305,8 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 				'SYSPATH'.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'kohana.php'
 			),
 			array(
-				Kohana::find_file('classes', $this->separator('kohana/unittest/runner')), 
-				$this->separator('MODPATH/unittest/classes/kohana/unittest/runner.php')
+				Kohana::find_file('classes', $this->dirSeparator('kohana/unittest/runner')), 
+				$this->dirSeparator('MODPATH/unittest/classes/kohana/unittest/runner.php')
 			),
 		);
 	}
@@ -346,7 +335,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 		return array(
 			array(array(), array()),
 			array(array('unittest' => MODPATH.'fo0bar'), array()),
-			array(array('unittest' => MODPATH.'unittest'), array('unittest' => $this->separator(MODPATH.'unittest/'))),
+			array(array('unittest' => MODPATH.'unittest'), array('unittest' => $this->dirSeparator(MODPATH.'unittest/'))),
 		);
 	}
 
@@ -420,7 +409,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	function providerExceptionText()
 	{
 		return array(
-			array(new Kohana_Exception('foobar'), $this->separator('Kohana_Exception [ 0 ]: foobar ~ SYSPATH/tests/kohana/CoreTest.php [ '.__LINE__.' ]')),
+			array(new Kohana_Exception('foobar'), $this->dirSeparator('Kohana_Exception [ 0 ]: foobar ~ SYSPATH/tests/kohana/CoreTest.php [ '.__LINE__.' ]')),
 		);
 	}
 

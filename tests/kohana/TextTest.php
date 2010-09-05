@@ -13,6 +13,8 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 */
 	function setUp()
 	{
+		parent::setUp();
+
 		Text::alternate();
 	}
 
