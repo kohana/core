@@ -58,6 +58,8 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 			array('meters', 0.6, 'meters'),
 			array('meters', 1.6, 'meters'),
 			array('meters', 1.0, 'meter'),
+			array('status', NULL, 'status'),
+			array('statuses', NULL, 'status'),
 		);
 	}
 
