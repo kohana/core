@@ -86,20 +86,4 @@ Class Kohana_SecurityTest extends Kohana_Unittest_TestCase
 		$this->assertSame($expected, Security::token(FALSE));
 		Session::instance()->delete(Security::$token_name);
 	}
-
-	/**
-	 * Tests that Security::xss_clean() removes null bytes
-	 * 
-	 *
-	 * @test
-	 * @covers Security::xss_clean
-	 * @ticket 2676
-	 * @see http://www.hakipedia.com/index.php/Poison_Null_Byte#Perl_PHP_Null_Byte_Injection
-	 */
-	function test_xss_clean_removes_null_bytes()
-	{
-		$input = "<\0script>alert('XSS');<\0/script>";
-
-		$this->assertSame("alert('XSS');", Security::xss_clean($input));
-	}
 }
