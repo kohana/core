@@ -320,7 +320,7 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_email()
+	public function provider_email()
 	{
 		return array(
 			array('foo', TRUE,  FALSE),
@@ -348,7 +348,7 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 * @param boolean $strict  Use strict settings
 	 * @param boolean $correct Is $email address valid?
 	 */
-	function test_email($email, $strict, $correct)
+	public function test_email($email, $strict, $correct)
 	{
 		$this->assertSame(
 			$correct,
@@ -361,7 +361,7 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_email_domain()
+	public function provider_email_domain()
 	{
 		return array(
 			array('google.com', TRUE),
@@ -384,7 +384,7 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 * @param string  $email   Email domain to check
 	 * @param boolean $correct Is it correct?
 	 */
-	function test_email_domain($email, $correct)
+	public function test_email_domain($email, $correct)
 	{
 		if ( ! $this->hasInternet())
 			$this->markTestSkipped('An internet connection is required for this test');
@@ -407,7 +407,7 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_exact_length()
+	public function provider_exact_length()
 	{
 		return array(
 			array('somestring', 10, TRUE),
@@ -429,7 +429,7 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 * @param boolean $correct Is $length the actual length of the string?
 	 * @return bool
 	 */
-	function test_exact_length($string, $length, $correct)
+	public function test_exact_length($string, $length, $correct)
 	{
 		return $this->assertSame(
 			$correct,
@@ -446,7 +446,7 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 */
-	function test_factory_method_returns_instance_with_values()
+	public function test_factory_method_returns_instance_with_values()
 	{
 		$values = array(
 			'this'			=> 'something else',
@@ -503,7 +503,7 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_max_length()
+	public function provider_max_length()
 	{
 		return array(
 			// Border line
@@ -527,7 +527,7 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 * @param integer $maxlength Max length for this string
 	 * @param boolean $correct   Is $string <= $maxlength
 	 */
-	function test_max_length($string, $maxlength, $correct)
+	public function test_max_length($string, $maxlength, $correct)
 	{
 		 $this->assertSame(
 			$correct,
@@ -540,7 +540,7 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_min_length()
+	public function provider_min_length()
 	{
 		return array(
 			array('This is obviously long enough', 10, TRUE),
@@ -561,7 +561,7 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 * @param integer $minlength  The minimum allowed length
 	 * @param boolean $correct    Is $string 's length >= $minlength
 	 */
-	function test_min_length($string, $minlength, $correct)
+	public function test_min_length($string, $minlength, $correct)
 	{
 		$this->assertSame(
 			$correct,
@@ -574,7 +574,7 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_not_empty()
+	public function provider_not_empty()
 	{
 		// Create a blank arrayObject
 		$ao = new ArrayObject;
@@ -607,7 +607,7 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 * @param mixed   $value  Value to check
 	 * @param boolean $empty  Is the value really empty?
 	 */
-	function test_not_empty($value, $empty)
+	public function test_not_empty($value, $empty)
 	{
 		return $this->assertSame(
 			$empty,

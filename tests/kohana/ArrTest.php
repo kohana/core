@@ -18,7 +18,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_callback()
+	public function provider_callback()
 	{
 		return array(
 			// Tests....
@@ -44,7 +44,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 * @param string $str       String to parse
 	 * @param array  $expected  Callback and its parameters
 	 */
-	function test_callback($str, $expected)
+	public function test_callback($str, $expected)
 	{
 		$result = Arr::callback($str);
 
@@ -57,7 +57,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_extract()
+	public function provider_extract()
 	{
 		return array(
 			array(
@@ -87,7 +87,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 * @param mixed $default
 	 * @param array $expected
 	 */
-	function test_extract(array $array, array $keys, $default, $expected)
+	public function test_extract(array $array, array $keys, $default, $expected)
 	{
 		$array = Arr::extract($array, $keys, $default);
 
@@ -101,7 +101,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_get()
+	public function provider_get()
 	{
 		return array(
 			array(array('uno', 'dos', 'tress'), 1, NULL, 'dos'),
@@ -124,7 +124,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 * @param mixed          $default    What to return if $key isn't set
 	 * @param mixed          $expected   The expected value returned
 	 */
-	function test_get(array $array, $key, $default, $expected)
+	public function test_get(array $array, $key, $default, $expected)
 	{
 		$this->assertSame(
 			$expected,
@@ -137,7 +137,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_is_assoc()
+	public function provider_is_assoc()
 	{
 		return array(
 			array(array('one', 'two', 'three'), FALSE),
@@ -153,7 +153,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 * @param array   $array     Array to check
 	 * @param boolean $expected  Is $array assoc
 	 */
-	function test_is_assoc(array $array, $expected)
+	public function test_is_assoc(array $array, $expected)
 	{
 		$this->assertSame(
 			$expected,
@@ -161,7 +161,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 		);
 	}
 
-	function provider_merge()
+	public function provider_merge()
 	{
 		return array(
 			// Test how it merges arrays and sub arrays with assoc keys
@@ -206,7 +206,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_merge
 	 */
-	function test_merge($expected, $array1, $array2)
+	public function test_merge($expected, $array1, $array2)
 	{
 		$this->assertSame(
 			$expected,
@@ -219,7 +219,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_path()
+	public function provider_path()
 	{
 		$array = array(
 			'foobar' =>	array('definition' => 'lost'),
@@ -262,7 +262,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 * @param mixed   $default   The value to return if dnx
 	 * @param boolean $expected  The expected value
 	 */
-	function test_path($expected, $array, $path, $default = NULL)
+	public function test_path($expected, $array, $path, $default = NULL)
 	{
 		$this->assertSame(
 			$expected,
@@ -275,7 +275,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_range()
+	public function provider_range()
 	{
 		return array(
 			array(1, 2),
@@ -291,7 +291,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 * @param integer $step  The step between each value in the array
 	 * @param integer $max   The max value of the range (inclusive)
 	 */
-	function test_range($step, $max)
+	public function test_range($step, $max)
 	{
 		$range = Arr::range($step, $max);
 
@@ -313,7 +313,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_unshift()
+	public function provider_unshift()
 	{
 		return array(
 			array(array('one' => '1', 'two' => '2',), 'zero', '0'),
@@ -330,7 +330,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 * @param string $key
 	 * @param mixed $value
 	 */
-	function test_unshift(array $array, $key, $value)
+	public function test_unshift(array $array, $key, $value)
 	{
 		$original = $array;
 
@@ -349,7 +349,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Test Data
 	 */
-	function provider_overwrite()
+	public function provider_overwrite()
 	{
 		return array(
 			array(
@@ -366,7 +366,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_overwrite
 	 */
-	function test_overwrite($expected, $arr1, $arr2, $arr3 = array(), $arr4 = array())
+	public function test_overwrite($expected, $arr1, $arr2, $arr3 = array(), $arr4 = array())
 	{
 		$this->assertSame(
 			$expected,
@@ -379,7 +379,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Test Data
 	 */
-	function provider_binary_search()
+	public function provider_binary_search()
 	{
 		return array(
 			array(2, 'john', array('mary', 'louise', 'john', 'kent'))
@@ -391,7 +391,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_binary_search
 	 */
-	function test_binary_search($expected, $needle, $haystack, $sort = FALSE)
+	public function test_binary_search($expected, $needle, $haystack, $sort = FALSE)
 	{
 		$this->assertSame(
 			$expected,
@@ -400,11 +400,11 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for testMap
+	 * Provides test data for test_map
 	 *
 	 * @return array Test Data
 	 */
-	function providerMap()
+	public function provider_map()
 	{
 		return array(
 			array('strip_tags', array('<p>foobar</p>'), array('foobar')),
@@ -415,9 +415,9 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	/**
 	 *
 	 * @test
-	 * @dataProvider providermap
+	 * @dataProvider provider_map
 	 */
-	function testMap($method, $source, $expected)
+	public function test_map($method, $source, $expected)
 	{
 		$this->assertSame(
 			$expected,
@@ -426,11 +426,11 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for testFlatten
+	 * Provides test data for test_flatten
 	 *
 	 * @return array Test Data
 	 */
-	function providerFlatten()
+	public function provider_flatten()
 	{
 		return array(
 			array(array('set' => array('one' => 'something'), 'two' => 'other'), array('one' => 'something', 'two' => 'other')),
@@ -440,9 +440,9 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	/**
 	 *
 	 * @test
-	 * @dataProvider providerFlatten
+	 * @dataProvider provider_flatten
 	 */
-	function testFlatten($source, $expected)
+	public function test_flatten($source, $expected)
 	{
 		$this->assertSame(
 			$expected,

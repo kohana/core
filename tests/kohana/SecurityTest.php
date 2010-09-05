@@ -13,7 +13,7 @@ Class Kohana_SecurityTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Test data sets
 	 */
-	function provider_encode_php_tags()
+	public function provider_encode_php_tags()
 	{
 		return array(
 			array("&lt;?php echo 'helloo'; ?&gt;", "<?php echo 'helloo'; ?>"),
@@ -27,17 +27,17 @@ Class Kohana_SecurityTest extends Kohana_Unittest_TestCase
 	 * @dataProvider provider_encode_php_tags
 	 * @covers Security::encode_php_tags
 	 */
-	function test_encode_php_tags($expected, $input)
+	public function test_encode_php_tags($expected, $input)
 	{
 		$this->assertSame($expected, Security::encode_php_tags($input));
 	}
 
 	/**
-	 * Provides test data for testStripImageTags()
+	 * Provides test data for test_strip_image_tags()
 	 *
 	 * @return array Test data sets
 	 */
-	function providerStripImageTags()
+	public function provider_strip_image_tags()
 	{
 		return array(
 			array('foo', '<img src="foo" />'),
@@ -48,10 +48,10 @@ Class Kohana_SecurityTest extends Kohana_Unittest_TestCase
 	 * Tests Security::strip_image_tags()
 	 *
 	 * @test
-	 * @dataProvider providerStripImageTags
+	 * @dataProvider provider_strip_image_tags
 	 * @covers Security::strip_image_tags
 	 */
-	function testStripImageTags($expected, $input)
+	public function test_strip_image_tags($expected, $input)
 	{
 		$this->assertSame($expected, Security::strip_image_tags($input));
 	}
@@ -61,7 +61,7 @@ Class Kohana_SecurityTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Test data sets
 	 */
-	function providerCSRFToken()
+	public function provider_csrf_token()
 	{
 		$array = array();
 		for ($i = 0; $i <= 4; $i++)
@@ -76,10 +76,10 @@ Class Kohana_SecurityTest extends Kohana_Unittest_TestCase
 	 * Tests Security::token()
 	 *
 	 * @test
-	 * @dataProvider providerCSRFToken
+	 * @dataProvider provider_csrf_token
 	 * @covers Security::token
 	 */
-	function testCSRFToken($expected, $input, $iteration)
+	public function test_csrf_token($expected, $input, $iteration)
 	{
 		Security::$token_name = 'token_'.$iteration;
 		$this->assertSame(TRUE, $input);

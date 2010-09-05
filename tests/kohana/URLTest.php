@@ -27,11 +27,11 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	);
 
 	/**
-	 * Provides test data for testBase()
+	 * Provides test data for test_base()
 	 * 
 	 * @return array
 	 */
-	function provider_base()
+	public function provider_base()
 	{
 		return array(
 			// $index, $protocol, $expected, $enviroment
@@ -51,8 +51,17 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 			array(TRUE,   TRUE,   'https://example.com/kohana/index.php/', array('Request::$protocol' => 'https')),
 			array(FALSE,  TRUE,   'https://example.com/kohana/', array('Request::$protocol' => 'https')),
 
-			// Change base url
-			array(FALSE, 'https', 'https://example.com/kohana/', array('Kohana::$base_url' => 'omglol://example.com/kohana/'))
+			// Change base url'
+			array(FALSE, 'https', 'https://example.com/kohana/', array('Kohana::$base_url' => 'omglol://example.com/kohana/')),
+
+			// Use protocol from base url if none specified
+			array(FALSE, FALSE,   'http://www.example.com/', array('Kohana::$base_url' => 'http://www.example.com/')),
+
+			// Use HTTP_HOST before SERVER_NAME
+			array(FALSE, 'http',  'http://example.com/kohana/', array('HTTP_HOST' => 'example.com', 'SERVER_NAME' => 'example.org')),
+
+			// Use SERVER_NAME if HTTP_HOST DNX
+			array(FALSE, 'http',  'http://example.org/kohana/', array('HTTP_HOST' => NULL, 'SERVER_NAME' => 'example.org')),
 		);
 	}
 
@@ -66,7 +75,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * @param string  $expected    Expected url
 	 * @param array   $enviroment  Array of enviroment vars to change @see Kohana_URLTest::setEnvironment()
 	 */
-	function test_base($index, $protocol, $expected, array $enviroment = array())
+	public function test_base($index, $protocol, $expected, array $enviroment = array())
 	{
 		$this->setEnvironment($enviroment);
 
@@ -81,7 +90,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * 
 	 * @return array
 	 */
-	function provider_site()
+	public function provider_site()
 	{
 		return array(
 			array('', FALSE,		'/kohana/index.php/'),
@@ -121,7 +130,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * @param string          $expected    Expected result
 	 * @param array           $enviroment  Array of enviroment vars to set
 	 */
-	function test_site($uri, $protocol, $expected, array $enviroment = array())
+	public function test_site($uri, $protocol, $expected, array $enviroment = array())
 	{
 		$this->setEnvironment($enviroment);
 
@@ -135,7 +144,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * Provides test data for test_title()
 	 * @return array
 	 */
-	function provider_title()
+	public function provider_title()
 	{
 		return array(
 			// Tests that..
@@ -171,7 +180,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * @param string $separator    Seperate to replace invalid characters with
 	 * @param string $expected     Expected result
 	 */
-	function testTitle($expected, $title, $separator, $ascii_only = FALSE)
+	public function test_Title($expected, $title, $separator, $ascii_only = FALSE)
 	{
 		$this->assertSame(
 			$expected,
@@ -183,7 +192,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * Provides test data for URL::query()
 	 * @return array
 	 */
-	public function providerQuery()
+	public function provider_Query()
 	{
 		return array(
 			array(NULL, '', array()),
@@ -197,12 +206,12 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * Tests URL::query()
 	 *
 	 * @test
-	 * @dataProvider providerQuery
+	 * @dataProvider provider_query
 	 * @param array $params Query string
 	 * @param string $expected Expected result
 	 * @param array $enviroment Set environment
 	 */
-	function testQuery($params, $expected, $enviroment)
+	public function test_query($params, $expected, $enviroment)
 	{
 		$this->setEnvironment($enviroment);
 

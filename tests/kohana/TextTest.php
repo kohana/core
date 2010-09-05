@@ -286,7 +286,9 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
+	 * Provides test data for test_similar
 	 *
+	 * @return array
 	 */
 	function provider_similar()
 	{
@@ -309,7 +311,12 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 		$this->assertSame($expected, Text::similar($words));
 	}
 
-	function provider_bytes()
+	/**
+	 * Provides test data for test_bytes
+	 *
+	 * @return array
+	 */
+	public function provider_bytes()
 	{
 		return array
 			(
