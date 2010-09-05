@@ -541,13 +541,13 @@ class Kohana_Date {
 	 */
 	public static function formatted_time($datetime_str = 'now', $timestamp_format = NULL)
 	{
-		$timestamp_format = $timestamp_format == NULL ? self::$timestamp_format : $timestamp_format;
+		$timestamp_format = $timestamp_format == NULL ? Date::$timestamp_format : $timestamp_format;
 		
 		$time = new DateTime($datetime_str, new DateTimeZone(
 			Date::$timezone ? Date::$timezone : date_default_timezone_get()
 		));
 		
-		return $time->format(Date::$timestamp_format);
+		return $time->format($timestamp_format);
 	}
 
 } // End date
