@@ -17,7 +17,7 @@ class Kohana_ModelTest extends Kohana_Unittest_TestCase
 	/**
 	 * @test
 	 */
-	function test_construct()
+	public function test_construct()
 	{
 		#$model = new Model_Foobar('foo');
 		#$model = Model::factory('Foobar', 'foo');

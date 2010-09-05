@@ -19,7 +19,7 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 	 * 
 	 * @return array
 	 */
-	function provider_uncountable()
+	public function provider_uncountable()
 	{
 		return array(
 			// $value, $result
@@ -36,7 +36,7 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function test_uncountable($input, $expected)
+	public function test_uncountable($input, $expected)
 	{
 		$this->assertSame($expected, Inflector::uncountable($input));
 	}
@@ -46,7 +46,7 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 	 * 
 	 * @return array
 	 */
-	function provider_singular()
+	public function provider_singular()
 	{
 		return array(
 			// $value, $result
@@ -69,7 +69,7 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function test_singular($input, $count, $expected)
+	public function test_singular($input, $count, $expected)
 	{
 		$this->assertSame($expected, Inflector::singular($input, $count));
 	}
@@ -79,7 +79,7 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 	 * 
 	 * @return array
 	 */
-	function provider_plural()
+	public function provider_plural()
 	{
 		return array(
 			// $value, $result
@@ -102,7 +102,7 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function test_plural($input, $count, $expected)
+	public function test_plural($input, $count, $expected)
 	{
 		$this->assertSame($expected, Inflector::plural($input, $count));
 	}
@@ -112,7 +112,7 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 	 * 
 	 * @return array
 	 */
-	function provider_camelize()
+	public function provider_camelize()
 	{
 		return array(
 			// $value, $result
@@ -133,7 +133,7 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function test_camelize($input, $method, $expected)
+	public function test_camelize($input, $method, $expected)
 	{
 		$this->assertSame($expected, Inflector::$method($input));
 	}

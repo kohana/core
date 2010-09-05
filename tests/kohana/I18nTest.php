@@ -19,7 +19,7 @@ class Kohana_I18nTest extends Kohana_Unittest_TestCase
 	 * 
 	 * @return array
 	 */
-	function provider_lang()
+	public function provider_lang()
 	{
 		return array(
 			// $value, $result
@@ -37,7 +37,7 @@ class Kohana_I18nTest extends Kohana_Unittest_TestCase
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function test_open($input, $expected)
+	public function test_open($input, $expected)
 	{
 		$this->assertSame($expected, I18n::lang($input));
 	}
@@ -47,7 +47,7 @@ class Kohana_I18nTest extends Kohana_Unittest_TestCase
 	 * 
 	 * @return array
 	 */
-	function provider_get()
+	public function provider_get()
 	{
 		return array(
 			// $value, $result
@@ -65,7 +65,7 @@ class Kohana_I18nTest extends Kohana_Unittest_TestCase
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function test_get($lang, $input, $expected)
+	public function test_get($lang, $input, $expected)
 	{
 		I18n::lang($lang);
 		$this->assertSame($expected, I18n::get($input));

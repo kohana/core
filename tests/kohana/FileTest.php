@@ -19,7 +19,7 @@ class Kohana_FileTest extends Kohana_Unittest_Testcase
 	 * 
 	 * @return array
 	 */
-	function provider_mime()
+	public function provider_mime()
 	{
 		return array(
 			// $value, $result
@@ -36,7 +36,7 @@ class Kohana_FileTest extends Kohana_Unittest_Testcase
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function test_mime($input)
+	public function test_mime($input)
 	{
 		$this->assertSame(1, preg_match('/^(?:application|audio|image|message|multipart|text|video)\/[a-z.+0-9-]+$/i', File::mime($input)));
 	}
@@ -46,7 +46,7 @@ class Kohana_FileTest extends Kohana_Unittest_Testcase
 	 * 
 	 * @return array
 	 */
-	function provider_split_join()
+	public function provider_split_join()
 	{
 		return array(
 			// $value, $result
@@ -63,7 +63,7 @@ class Kohana_FileTest extends Kohana_Unittest_Testcase
 	 * @param boolean $peices   Input for File::split
 	 * @param boolean $expected Output for File::splut
 	 */
-	function test_split_join($input, $peices, $expected)
+	public function test_split_join($input, $peices, $expected)
 	{
 		$this->assertSame($expected, File::split($input, $peices));
 		$this->assertSame($expected, File::join($input));

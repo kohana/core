@@ -28,7 +28,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * 
 	 * @return array
 	 */
-	function provider_open()
+	public function provider_open()
 	{
 		return array(
 			// $value, $result
@@ -47,7 +47,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function test_open($action, $attributes)
+	public function test_open($action, $attributes)
 	{
 		$tag = Form::open($action, $attributes);
 
@@ -70,7 +70,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 *
 	 * @test
 	 */
-	function test_close()
+	public function test_close()
 	{
 		$this->assertSame('</form>', Form::close());
 	}
@@ -80,7 +80,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * 
 	 * @return array
 	 */
-	function provider_input()
+	public function provider_input()
 	{
 		return array(
 			// $value, $result
@@ -99,7 +99,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function test_input($type, $name, $value, $attributes)
+	public function test_input($type, $name, $value, $attributes)
 	{
 		$matcher = array(
 			'tag' => 'input',
@@ -128,7 +128,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * 
 	 * @return array
 	 */
-	function provider_file()
+	public function provider_file()
 	{
 		return array(
 			// $value, $result
@@ -144,7 +144,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function test_file($name, $attributes, $expected)
+	public function test_file($name, $attributes, $expected)
 	{
 		$this->assertSame($expected, Form::file($name, $attributes));
 	}
@@ -154,7 +154,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * 
 	 * @return array
 	 */
-	function provider_check()
+	public function provider_check()
 	{
 		return array(
 			// $value, $result
@@ -176,7 +176,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function test_check($type, $name, $value, $checked, $attributes)
+	public function test_check($type, $name, $value, $checked, $attributes)
 	{
 		$matcher = array('tag' => 'input', 'attributes' => array('name' => $name, 'type' => $type));
 
@@ -198,7 +198,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * 
 	 * @return array
 	 */
-	function provider_text()
+	public function provider_text()
 	{
 		return array(
 			// $value, $result
@@ -218,7 +218,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function test_text($type, $name, $body, $attributes)
+	public function test_text($type, $name, $body, $attributes)
 	{
 		$matcher = array(
 			'tag' => $type,
@@ -246,7 +246,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * 
 	 * @return array
 	 */
-	function provider_select()
+	public function provider_select()
 	{
 		return array(
 			// $value, $result
@@ -268,7 +268,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function test_select($name, $options, $selected, $expected)
+	public function test_select($name, $options, $selected, $expected)
 	{
 		// Much more efficient just to assertSame() rather than assertTag() on each element
 		$this->assertSame($expected, Form::select($name, $options, $selected));
@@ -279,7 +279,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * 
 	 * @return array
 	 */
-	function provider_submit()
+	public function provider_submit()
 	{
 		return array(
 			// $value, $result
@@ -295,7 +295,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function test_submit($name, $value, $expected)
+	public function test_submit($name, $value, $expected)
 	{
 		$matcher = array(
 			'tag' => 'input',
@@ -311,7 +311,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * 
 	 * @return array
 	 */
-	function provider_image()
+	public function provider_image()
 	{
 		return array(
 			// $value, $result
@@ -327,7 +327,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function test_image($name, $value, $attributes, $expected)
+	public function test_image($name, $value, $attributes, $expected)
 	{
 		$this->assertSame($expected, Form::image($name, $value, $attributes));
 	}

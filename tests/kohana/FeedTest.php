@@ -18,7 +18,7 @@ class Kohana_FeedTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_parse()
+	public function provider_parse()
 	{
 		return array(
 			// $source, $expected
@@ -35,7 +35,7 @@ class Kohana_FeedTest extends Kohana_Unittest_TestCase
 	 * @param string  $source   URL to test
 	 * @param integer $expected Count of items
 	 */
-	function test_parse($source, $expected)
+	public function test_parse($source, $expected)
 	{
 		if ( ! $this->hasInternet())
 			$this->markTestSkipped('An internet connection is required for this test');
@@ -48,7 +48,7 @@ class Kohana_FeedTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_create()
+	public function provider_create()
 	{
 		$info = array('pubDate' => 123, 'image' => array('link' => 'http://kohanaframework.org/image.png', 'url' => 'http://kohanaframework.org/', 'title' => 'title'));
 
@@ -107,7 +107,7 @@ class Kohana_FeedTest extends Kohana_Unittest_TestCase
 	 * @param integer $items    items to add
 	 * @param integer $matcher  output
 	 */
-	function test_create($info, $items, $enviroment, $matcher_item, $matchers_image)
+	public function test_create($info, $items, $enviroment, $matcher_item, $matchers_image)
 	{
 		$this->setEnvironment($enviroment);
 

@@ -38,7 +38,7 @@ Class Kohana_NumTest extends Kohana_Unittest_TestCase
 	 * Provides test data for test_ordinal()
 	 * @return array
 	 */
-	function provider_ordinal()
+	public function provider_ordinal()
 	{
 		return array(
 			array(0, 'th'),
@@ -57,7 +57,7 @@ Class Kohana_NumTest extends Kohana_Unittest_TestCase
 	 * @param integer $number
 	 * @param <type> $expected
 	 */
-	function test_ordinal($number, $expected)
+	public function test_ordinal($number, $expected)
 	{
 		$this->assertSame($expected, Num::ordinal($number));
 	}
@@ -66,7 +66,7 @@ Class Kohana_NumTest extends Kohana_Unittest_TestCase
 	 * Provides test data for test_format()
 	 * @return array
 	 */
-	function provider_format()
+	public function provider_format()
 	{
 		return array(
 			// English
@@ -88,7 +88,7 @@ Class Kohana_NumTest extends Kohana_Unittest_TestCase
 	 * @param boolean $monetary
 	 * @param string $expected
 	 */
-	function test_format($number, $places, $monetary, $expected)
+	public function test_format($number, $places, $monetary, $expected)
 	{
 		$this->assertSame($expected, Num::format($number, $places, $monetary));
 	}

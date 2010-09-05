@@ -31,7 +31,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * 
 	 * @return array
 	 */
-	function provider_base()
+	public function provider_base()
 	{
 		return array(
 			// $index, $protocol, $expected, $enviroment
@@ -75,7 +75,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * @param string  $expected    Expected url
 	 * @param array   $enviroment  Array of enviroment vars to change @see Kohana_URLTest::setEnvironment()
 	 */
-	function test_base($index, $protocol, $expected, array $enviroment = array())
+	public function test_base($index, $protocol, $expected, array $enviroment = array())
 	{
 		$this->setEnvironment($enviroment);
 
@@ -90,7 +90,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * 
 	 * @return array
 	 */
-	function provider_site()
+	public function provider_site()
 	{
 		return array(
 			array('', FALSE,		'/kohana/index.php/'),
@@ -130,7 +130,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * @param string          $expected    Expected result
 	 * @param array           $enviroment  Array of enviroment vars to set
 	 */
-	function test_site($uri, $protocol, $expected, array $enviroment = array())
+	public function test_site($uri, $protocol, $expected, array $enviroment = array())
 	{
 		$this->setEnvironment($enviroment);
 
@@ -144,7 +144,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * Provides test data for test_title()
 	 * @return array
 	 */
-	function provider_title()
+	public function provider_title()
 	{
 		return array(
 			// Tests that..
@@ -180,7 +180,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * @param string $separator    Seperate to replace invalid characters with
 	 * @param string $expected     Expected result
 	 */
-	function test_Title($expected, $title, $separator, $ascii_only = FALSE)
+	public function test_Title($expected, $title, $separator, $ascii_only = FALSE)
 	{
 		$this->assertSame(
 			$expected,
@@ -211,7 +211,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * @param string $expected Expected result
 	 * @param array $enviroment Set environment
 	 */
-	function test_query($params, $expected, $enviroment)
+	public function test_query($params, $expected, $enviroment)
 	{
 		$this->setEnvironment($enviroment);
 
