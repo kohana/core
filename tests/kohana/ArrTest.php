@@ -395,11 +395,11 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for testMap
+	 * Provides test data for test_map
 	 *
 	 * @return array Test Data
 	 */
-	function providerMap()
+	function provider_map()
 	{
 		return array(
 			array('strip_tags', array('<p>foobar</p>'), array('foobar')),
@@ -410,9 +410,9 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	/**
 	 *
 	 * @test
-	 * @dataProvider providermap
+	 * @dataProvider provider_map
 	 */
-	function testMap($method, $source, $expected)
+	function test_map($method, $source, $expected)
 	{
 		$this->assertSame(
 			$expected,
@@ -421,11 +421,11 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for testFlatten
+	 * Provides test data for test_flatten
 	 *
 	 * @return array Test Data
 	 */
-	function providerFlatten()
+	function provider_flatten()
 	{
 		return array(
 			array(array('set' => array('one' => 'something'), 'two' => 'other'), array('one' => 'something', 'two' => 'other')),
@@ -435,9 +435,9 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	/**
 	 *
 	 * @test
-	 * @dataProvider providerFlatten
+	 * @dataProvider provider_flatten
 	 */
-	function testFlatten($source, $expected)
+	function test_flatten($source, $expected)
 	{
 		$this->assertSame(
 			$expected,

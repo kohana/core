@@ -27,7 +27,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	);
 
 	/**
-	 * Provides test data for testBase()
+	 * Provides test data for test_base()
 	 * 
 	 * @return array
 	 */
@@ -180,7 +180,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * @param string $separator    Seperate to replace invalid characters with
 	 * @param string $expected     Expected result
 	 */
-	function testTitle($expected, $title, $separator, $ascii_only = FALSE)
+	function test_Title($expected, $title, $separator, $ascii_only = FALSE)
 	{
 		$this->assertSame(
 			$expected,
@@ -192,7 +192,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * Provides test data for URL::query()
 	 * @return array
 	 */
-	public function providerQuery()
+	public function provider_Query()
 	{
 		return array(
 			array(NULL, '', array()),
@@ -206,12 +206,12 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * Tests URL::query()
 	 *
 	 * @test
-	 * @dataProvider providerQuery
+	 * @dataProvider provider_query
 	 * @param array $params Query string
 	 * @param string $expected Expected result
 	 * @param array $enviroment Set environment
 	 */
-	function testQuery($params, $expected, $enviroment)
+	function test_query($params, $expected, $enviroment)
 	{
 		$this->setEnvironment($enviroment);
 

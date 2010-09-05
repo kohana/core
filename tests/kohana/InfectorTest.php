@@ -15,11 +15,11 @@
 class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 {
 	/**
-	 * Provides test data for testLang()
+	 * Provides test data for test_lang()
 	 * 
 	 * @return array
 	 */
-	function providerUncountable()
+	function provider_uncountable()
 	{
 		return array(
 			// $value, $result
@@ -32,21 +32,21 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 	 * Tests Inflector::uncountable
 	 *
 	 * @test
-	 * @dataProvider providerUncountable
+	 * @dataProvider provider_uncountable
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function testUncountable($input, $expected)
+	function test_uncountable($input, $expected)
 	{
 		$this->assertSame($expected, Inflector::uncountable($input));
 	}
 
 	/**
-	 * Provides test data for testLang()
+	 * Provides test data for test_lang()
 	 * 
 	 * @return array
 	 */
-	function providerSingular()
+	function provider_singular()
 	{
 		return array(
 			// $value, $result
@@ -65,21 +65,21 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 	 * Tests Inflector::singular
 	 *
 	 * @test
-	 * @dataProvider providerSingular
+	 * @dataProvider provider_singular
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function testSingular($input, $count, $expected)
+	function test_singular($input, $count, $expected)
 	{
 		$this->assertSame($expected, Inflector::singular($input, $count));
 	}
 
 	/**
-	 * Provides test data for testLang()
+	 * Provides test data for test_lang()
 	 * 
 	 * @return array
 	 */
-	function providerPlural()
+	function provider_plural()
 	{
 		return array(
 			// $value, $result
@@ -98,21 +98,21 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 	 * Tests Inflector::plural
 	 *
 	 * @test
-	 * @dataProvider providerPlural
+	 * @dataProvider provider_plural
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function testPlural($input, $count, $expected)
+	function test_plural($input, $count, $expected)
 	{
 		$this->assertSame($expected, Inflector::plural($input, $count));
 	}
 
 	/**
-	 * Provides test data for testCamelize()
+	 * Provides test data for test_camelize()
 	 * 
 	 * @return array
 	 */
-	function providerCamelize()
+	function provider_camelize()
 	{
 		return array(
 			// $value, $result
@@ -129,11 +129,11 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 	 * Tests Inflector::camelize
 	 *
 	 * @test
-	 * @dataProvider providerCamelize
+	 * @dataProvider provider_camelize
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function testCamelize($input, $method, $expected)
+	function test_camelize($input, $method, $expected)
 	{
 		$this->assertSame($expected, Inflector::$method($input));
 	}

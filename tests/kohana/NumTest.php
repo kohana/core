@@ -14,14 +14,23 @@ Class Kohana_NumTest extends Kohana_Unittest_TestCase
 {
 	protected $default_locale;
 
+	/**
+	 * SetUp test enviroment
+	 */
 	public function setUp()
 	{
-		$this->default_locale = setlocale(LC_ALL, 0);
+		parent::setUp();
+
 		setlocale(LC_ALL, 'English');
 	}
-	
+
+	/**
+	 * Tear down environment
+	 */
 	public function tearDown()
 	{
+		parent::tearDown();
+
 		setlocale(LC_ALL, $this->default_locale);
 	}
 	

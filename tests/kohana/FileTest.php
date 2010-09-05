@@ -15,11 +15,11 @@
 class Kohana_FileTest extends Kohana_Unittest_Testcase
 {
 	/**
-	 * Provides test data for testSanitize()
+	 * Provides test data for test_sanitize()
 	 * 
 	 * @return array
 	 */
-	function providerMime()
+	function provider_mime()
 	{
 		return array(
 			// $value, $result
@@ -32,21 +32,21 @@ class Kohana_FileTest extends Kohana_Unittest_Testcase
 	 * Tests File::mime()
 	 *
 	 * @test
-	 * @dataProvider providerMime
+	 * @dataProvider provider_mime
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function testMime($input)
+	function test_mime($input)
 	{
 		$this->assertSame(1, preg_match('/^(?:application|audio|image|message|multipart|text|video)\/[a-z.+0-9-]+$/i', File::mime($input)));
 	}
 
 	/**
-	 * Provides test data for testSplitJoin()
+	 * Provides test data for test_split_join()
 	 * 
 	 * @return array
 	 */
-	function providerSplitJoin()
+	function provider_split_join()
 	{
 		return array(
 			// $value, $result
@@ -58,12 +58,12 @@ class Kohana_FileTest extends Kohana_Unittest_Testcase
 	 * Tests File::mime()
 	 *
 	 * @test
-	 * @dataProvider providerSplitJoin
+	 * @dataProvider provider_split_join
 	 * @param boolean $input    Input for File::split
 	 * @param boolean $peices   Input for File::split
 	 * @param boolean $expected Output for File::splut
 	 */
-	function testSplitJoin($input, $peices, $expected)
+	function test_split_join($input, $peices, $expected)
 	{
 		$this->assertSame($expected, File::split($input, $peices));
 		$this->assertSame($expected, File::join($input));
