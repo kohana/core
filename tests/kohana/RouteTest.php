@@ -354,7 +354,7 @@ class Kohana_RouteTest extends Kohana_Unittest_TestCase
 	public function provider_composing_url_from_route()
 	{
 		return array(
-			array('/welcome'),
+			array('/'),
 			array('/news/view/42', array('controller' => 'news', 'action' => 'view', 'id' => 42)),
 			array('http://kohanaframework.org/news', array('controller' => 'news'), true)
 		);
