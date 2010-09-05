@@ -20,7 +20,7 @@ class Kohana_RouteTest extends Kohana_Unittest_TestCase
 	{
 		parent::setUp();
 
-		$this->cleanCacheDir();
+		$this->clean_cache_dir();
 	}
 
 	/**
@@ -30,7 +30,38 @@ class Kohana_RouteTest extends Kohana_Unittest_TestCase
 	{
 		parent::tearDown();
 
-		$this->cleanCacheDir();
+		$this->clean_cache_dir();
+	}
+
+	/**
+	 * Removes all kohana related cache files in the cache directory
+	 */
+	public function clean_cache_dir()
+	{
+		$cache_dir = opendir(Kohana::$cache_dir);
+
+		while($dir = readdir($cache_dir))
+		{
+			// Cache files are split into directories based on first two characters of hash
+			if($dir[0] !== '.' AND strlen($dir) === 2)
+			{
+				$cache = opendir(Kohana::$cache_dir.DIRECTORY_SEPARATOR.$dir);
+
+				while($file = readdir($cache))
+				{
+					if($file[0] !== '.')
+					{
+						unlink(Kohana::$cache_dir.DIRECTORY_SEPARATOR.$dir.DIRECTORY_SEPARATOR.$file);
+					}
+				}
+
+				closedir($cache);
+
+				rmdir(Kohana::$cache_dir.DIRECTORY_SEPARATOR.$dir);
+			}
+		}
+
+		closedir($cache_dir);
 	}
 
 	/**
@@ -109,7 +140,7 @@ class Kohana_RouteTest extends Kohana_Unittest_TestCase
 	 * Route::cache() should return FALSE if cached routes could not be found
 	 *
 	 * The cache is cleared before and after each test in setUp tearDown 
-	 * by cleanCacheDir()
+	 * by clean_cache_dir()
 	 * 
 	 * @test
 	 * @covers Route::cache
