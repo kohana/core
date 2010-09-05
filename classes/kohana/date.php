@@ -19,12 +19,15 @@ class Kohana_Date {
 	const MINUTE = 60;
 	
 	/**
-	 * @var  string  timestamp format
+	 * Default timestamp format for formatted_time
+	 * @var  string
 	 */
 	public static $timestamp_format = 'Y-m-d H:i:s';
 
 	/**
-	 * @var  string  timezone for dates logged
+	 * Timezone for formatted_time
+	 * @link http://uk2.php.net/manual/en/timezones.php
+	 * @var  string 
 	 */
 	public static $timezone;
 

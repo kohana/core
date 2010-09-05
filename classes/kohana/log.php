@@ -12,7 +12,16 @@
  */
 class Kohana_Log {
 
-	// Singleton static instance
+	/**
+	 * Timestamp format for log entries
+	 * @var string
+	 */
+	public static $timestamp = 'Y-m-d H:i:s';
+
+	/**
+	 * Singleton instance container
+	 * @var Kohana_Log
+	 */
 	private static $_instance;
 
 	/**
@@ -103,7 +112,7 @@ class Kohana_Log {
 		// Create a new message and timestamp it
 		$this->_messages[] = array
 		(
-			'time' => Date::formatted_time(),
+			'time' => Date::formatted_time('now', self::$timestamp),
 			'type' => $type,
 			'body' => $message,
 		);
