@@ -51,8 +51,17 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 			array(TRUE,   TRUE,   'https://example.com/kohana/index.php/', array('Request::$protocol' => 'https')),
 			array(FALSE,  TRUE,   'https://example.com/kohana/', array('Request::$protocol' => 'https')),
 
-			// Change base url
-			array(FALSE, 'https', 'https://example.com/kohana/', array('Kohana::$base_url' => 'omglol://example.com/kohana/'))
+			// Change base url'
+			array(FALSE, 'https', 'https://example.com/kohana/', array('Kohana::$base_url' => 'omglol://example.com/kohana/')),
+
+			// Use protocol from base url if none specified
+			array(FALSE, FALSE,   'http://www.example.com/', array('Kohana::$base_url' => 'http://www.example.com/')),
+
+			// Use HTTP_HOST before SERVER_NAME
+			array(FALSE, 'http',  'http://example.com/kohana/', array('HTTP_HOST' => 'example.com', 'SERVER_NAME' => 'example.org')),
+
+			// Use SERVER_NAME if HTTP_HOST DNX
+			array(FALSE, 'http',  'http://example.org/kohana/', array('HTTP_HOST' => NULL, 'SERVER_NAME' => 'example.org')),
 		);
 	}
 
