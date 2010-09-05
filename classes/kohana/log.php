@@ -19,6 +19,12 @@ class Kohana_Log {
 	public static $timestamp = 'Y-m-d H:i:s';
 
 	/**
+	 * Timezone for log entries
+	 * @var string
+	 */
+	public static $timezone;
+
+	/**
 	 * Singleton instance container
 	 * @var Kohana_Log
 	 */
@@ -112,7 +118,7 @@ class Kohana_Log {
 		// Create a new message and timestamp it
 		$this->_messages[] = array
 		(
-			'time' => Date::formatted_time('now', self::$timestamp),
+			'time' => Date::formatted_time('now', self::$timestamp, self::$timezone),
 			'type' => $type,
 			'body' => $message,
 		);

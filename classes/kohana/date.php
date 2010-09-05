@@ -542,12 +542,13 @@ class Kohana_Date {
 	 * @param   string  timestamp_format timestamp format
 	 * @return  string
 	 */
-	public static function formatted_time($datetime_str = 'now', $timestamp_format = NULL)
+	public static function formatted_time($datetime_str = 'now', $timestamp_format = NULL, $timezone = NULL)
 	{
 		$timestamp_format = $timestamp_format == NULL ? Date::$timestamp_format : $timestamp_format;
-		
+		$timezone         = $timezone === NULL ? Date::$timezone : $timezone;
+	
 		$time = new DateTime($datetime_str, new DateTimeZone(
-			Date::$timezone ? Date::$timezone : date_default_timezone_get()
+			$timezone ? $timezone : date_default_timezone_get()
 		));
 		
 		return $time->format($timestamp_format);
