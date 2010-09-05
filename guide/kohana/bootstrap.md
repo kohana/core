@@ -1,0 +1,1 @@
+This will discuss the bootstrap.  Setting/using environment variables, loading modules, setting routes, and executing the request.

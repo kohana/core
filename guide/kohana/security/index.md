@@ -1,0 +1,1 @@
+General security concerns, like using the Security class, CSRF, and a breif intro to XSS, database security, etc.

@@ -1,0 +1,1 @@
+This should really reinforce how the cascading filesystem works in relation to modules (in seems like a lot of new users don't understand this very well).  Also talk about installing/activating modules and creating your own modules.

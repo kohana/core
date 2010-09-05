@@ -1,0 +1,1 @@
+This will explain and give samples of using fragments, and also link to the Cache module docs if they want something more complicated.
