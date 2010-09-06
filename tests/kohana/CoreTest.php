@@ -17,22 +17,11 @@
 class Kohana_CoreTest extends Kohana_Unittest_TestCase
 {
 	/**
-	 * Helper function which replaces the "/" to OS-specific delimiter
-	 * 
-	 * @param string $path
-	 * @return string
-	 */
-	private function separator($path)
-	{
-		return str_replace('/', DIRECTORY_SEPARATOR, $path);
-	}
-
-	/**
-	 * Provides test data for testSanitize()
+	 * Provides test data for test_sanitize()
 	 * 
 	 * @return array
 	 */
-	function providerSanitize()
+	public function provider_sanitize()
 	{
 		return array(
 			// $value, $result
@@ -47,12 +36,12 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::santize()
 	 *
 	 * @test
-	 * @dataProvider providerSanitize
+	 * @dataProvider provider_sanitize
 	 * @covers Kohana::sanitize
 	 * @param boolean $value  Input for Kohana::sanitize
 	 * @param boolean $result Output for Kohana::sanitize
 	 */
-	function testSanitize($value, $result)
+	public function test_sanitize($value, $result)
 	{
 		$this->setEnvironment(array('Kohana::$magic_quotes' => TRUE));
 
@@ -96,7 +85,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @covers Kohana::globals
 	 */
-	function test_globals_removes_user_def_globals()
+	public function test_globals_removes_user_def_globals()
 	{
 		$GLOBALS = array('hackers' => 'foobar','name' => array('','',''), '_POST' => array());
 
@@ -110,7 +99,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * 
 	 * @return array
 	 */
-	function providerCache()
+	public function provider_cache()
 	{
 		return array(
 			// $value, $result
@@ -124,24 +113,24 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::cache()
 	 *
 	 * @test
-	 * @dataProvider providerCache
+	 * @dataProvider provider_cache
 	 * @covers Kohana::cache
 	 * @param boolean $key      Key to cache/get for Kohana::cache
 	 * @param boolean $value    Output from Kohana::cache
 	 * @param boolean $lifetime Lifetime for Kohana::cache
 	 */
-	function testCache($key, $value, $lifetime)
+	public function test_cache($key, $value, $lifetime)
 	{
 		Kohana::cache($key, $value, $lifetime);
 		$this->assertEquals($value, Kohana::cache($key));
 	}
 
 	/**
-	 * Provides test data for testMessage()
+	 * Provides test data for test_message()
 	 * 
 	 * @return array
 	 */
-	function providerMessage()
+	public function provider_message()
 	{
 		return array(
 			// $value, $result
@@ -179,23 +168,23 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::message()
 	 *
 	 * @test
-	 * @dataProvider providerMessage
+	 * @dataProvider provider_message
 	 * @covers Kohana::message
 	 * @param boolean $expected Output for Kohana::message
 	 * @param boolean $file     File to look in for Kohana::message
 	 * @param boolean $key      Key for Kohana::message
 	 */
-	function testMessage($expected, $file, $key)
+	public function test_message($expected, $file, $key)
 	{
 		$this->assertEquals($expected, Kohana::message($file, $key));
 	}
 
 	/**
-	 * Provides test data for testErrorHandler()
+	 * Provides test data for test_error_handler()
 	 * 
 	 * @return array
 	 */
-	function providerErrorHandler()
+	public function provider_error_handler()
 	{
 		return array(
 			array(1, 'Foobar', 'foobar.php', __LINE__),
@@ -206,14 +195,14 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::error_handler()
 	 *
 	 * @test
-	 * @dataProvider providerErrorHandler
+	 * @dataProvider provider_error_handler
 	 * @covers Kohana::error_handler
 	 * @param boolean $code  Input for Kohana::sanitize
 	 * @param boolean $error  Input for Kohana::sanitize
 	 * @param boolean $file  Input for Kohana::sanitize
 	 * @param boolean $line Output for Kohana::sanitize
 	 */
-	function testErrorHandler($code, $error, $file, $line)
+	public function test_error_handler($code, $error, $file, $line)
 	{
 		$error_level = error_reporting();
 		error_reporting(E_ALL);
@@ -234,7 +223,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * 
 	 * @return array
 	 */
-	function providerExceptionHandler()
+	public function provider_exception_handler()
 	{
 		return array(
 			// $exception_type, $message, $is_cli, $expected
@@ -249,7 +238,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::exception_handler()
 	 *
 	 * @test
-	 * @dataProvider providerExceptionHandler
+	 * @dataProvider provider_exception_handler
 	 * @covers Kohana::exception_handler
 	 * @param boolean $exception_type    Exception type to throw
 	 * @param boolean $message           Message to pass to exception
@@ -257,7 +246,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * @param boolean $expected          Output for Kohana::exception_handler
 	 * @param string  $expexcted_message What to look for in the output string
 	 */
-	function testExceptionHandler($exception_type, $message, $is_cli, $expected, $expected_message)
+	public function teste_exception_handler($exception_type, $message, $is_cli, $expected, $expected_message)
 	{
 		try
 		{
@@ -277,11 +266,11 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for testDebug()
+	 * Provides test data for test_debug()
 	 * 
 	 * @return array
 	 */
-	function providerDebug()
+	public function provider_debug()
 	{
 		return array(
 			// $exception_type, $message, $is_cli, $expected
@@ -293,12 +282,12 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::debug()
 	 *
 	 * @test
-	 * @dataProvider providerDebug
+	 * @dataProvider provider_debug
 	 * @covers Kohana::debug
 	 * @param boolean $thing    The thing to debug
 	 * @param boolean $expected Output for Kohana::debug
 	 */
-	function testdebug($thing, $expected)
+	public function testdebug($thing, $expected)
 	{
 		$this->assertEquals($expected, Kohana::debug($thing));
 	}
@@ -308,7 +297,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * 
 	 * @return array
 	 */
-	function providerDebugPath()
+	public function provider_debug_path()
 	{
 		return array(
 			array(
@@ -316,8 +305,8 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 				'SYSPATH'.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'kohana.php'
 			),
 			array(
-				Kohana::find_file('classes', $this->separator('kohana/unittest/runner')), 
-				$this->separator('MODPATH/unittest/classes/kohana/unittest/runner.php')
+				Kohana::find_file('classes', $this->dirSeparator('kohana/unittest/runner')), 
+				$this->dirSeparator('MODPATH/unittest/classes/kohana/unittest/runner.php')
 			),
 		);
 	}
@@ -326,12 +315,12 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::debug_path()
 	 *
 	 * @test
-	 * @dataProvider providerDebugPath
+	 * @dataProvider provider_debug_path
 	 * @covers Kohana::debug_path
 	 * @param boolean $path     Input for Kohana::debug_path
 	 * @param boolean $expected Output for Kohana::debug_path
 	 */
-	function testDebugPath($path, $expected)
+	public function testDebugPath($path, $expected)
 	{
 		$this->assertEquals($expected, Kohana::debug_path($path));
 	}
@@ -341,12 +330,12 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * 
 	 * @return array
 	 */
-	function provider_modules_sets_and_returns_valid_modules()
+	public function provider_modules_sets_and_returns_valid_modules()
 	{
 		return array(
 			array(array(), array()),
 			array(array('unittest' => MODPATH.'fo0bar'), array()),
-			array(array('unittest' => MODPATH.'unittest'), array('unittest' => $this->separator(MODPATH.'unittest/'))),
+			array(array('unittest' => MODPATH.'unittest'), array('unittest' => $this->dirSeparator(MODPATH.'unittest/'))),
 		);
 	}
 
@@ -359,7 +348,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * @param boolean $source   Input for Kohana::modules
 	 * @param boolean $expected Output for Kohana::modules
 	 */
-	function test_modules_sets_and_returns_valid_modules($source, $expected)
+	public function test_modules_sets_and_returns_valid_modules($source, $expected)
 	{
 		$modules = Kohana::modules();
 
@@ -392,7 +381,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @covers Kohana::include_paths
 	 */
-	function testIncludePaths()
+	public function test_include_paths()
 	{
 		$include_paths = Kohana::include_paths();
 		$modules       = Kohana::modules();
@@ -413,14 +402,14 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for testExceptionText()
+	 * Provides test data for test_exception_text()
 	 * 
 	 * @return array
 	 */
-	function providerExceptionText()
+	public function provider_exception_text()
 	{
 		return array(
-			array(new Kohana_Exception('foobar'), $this->separator('Kohana_Exception [ 0 ]: foobar ~ SYSPATH/tests/kohana/CoreTest.php [ '.__LINE__.' ]')),
+			array(new Kohana_Exception('foobar'), $this->dirSeparator('Kohana_Exception [ 0 ]: foobar ~ SYSPATH/tests/kohana/CoreTest.php [ '.__LINE__.' ]')),
 		);
 	}
 
@@ -428,22 +417,22 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::exception_text()
 	 *
 	 * @test
-	 * @dataProvider providerExceptionText
+	 * @dataProvider provider_exception_text
 	 * @covers Kohana::exception_text
 	 * @param object $exception exception to test
 	 * @param string $expected  expected output
 	 */
-	function testExceptionText($exception, $expected)
+	public function test_exception_text($exception, $expected)
 	{
 		$this->assertEquals($expected, Kohana::exception_text($exception));
 	}
 
 	/**
-	 * Provides test data for testDump()
+	 * Provides test data for test_dump()
 	 * 
 	 * @return array
 	 */
-	function providerDump()
+	public function provider_dump()
 	{
 		return array(
 			array('foobar', 128, '<small>string</small><span>(6)</span> "foobar"'),
@@ -459,13 +448,13 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::dump()
 	 *
 	 * @test
-	 * @dataProvider providerDump
+	 * @dataProvider provider_dump
 	 * @covers Kohana::dump
 	 * @covers Kohana::_dump
 	 * @param object $exception exception to test
 	 * @param string $expected  expected output
 	 */
-	function testDump($input, $length, $expected)
+	public function test_dump($input, $length, $expected)
 	{
 		$this->assertEquals($expected, Kohana::dump($input, $length));
 	}
