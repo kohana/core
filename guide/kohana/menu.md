@@ -18,7 +18,6 @@
       - [Upgrading from v2.x](upgrading)
    - Basic Usage
       - [Debugging](debugging)
-      - [Configuration](configuration)
       - [Loading Classes](autoloading)
       - [Sessions & Cookies](sessions)
       - [Fragments](fragments)
