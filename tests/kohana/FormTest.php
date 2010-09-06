@@ -320,15 +320,51 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	}
 
 	/**
-	 * Tests Form::submit()
+	 * Tests Form::image()
 	 *
 	 * @test
 	 * @dataProvider providerImage
-	 * @param boolean $input  Input for File::mime
-	 * @param boolean $expected Output for File::mime
+	 * @param boolean $input  Input for File::image
+	 * @param boolean $expected Output for File::image
 	 */
 	function testImage($name, $value, $attributes, $expected)
 	{
 		$this->assertSame($expected, Form::image($name, $value, $attributes));
+	}
+
+	/**
+	 * Provides test data for testLabel()
+	 * 
+	 * @return array
+	 */
+	function providerLabel()
+	{
+		return array(
+			// $value, $result
+			// Single for provided
+			array('email', NULL, NULL, '<label for="email">Email</label>'),
+			array('email_address', NULL, NULL, '<label for="email_address">Email Address</label>'),
+			array('email-address', NULL, NULL, '<label for="email-address">Email Address</label>'),
+			// For and text values provided
+			array('name', 'First name', NULL, '<label for="name">First name</label>'),
+			// with attributes
+			array('lastname', 'Last name', array('class' => 'text'), '<label class="text" for="lastname">Last name</label>'),
+			array('lastname', 'Last name', array('class' => 'text', 'id'=>'txt_lastname'), '<label id="txt_lastname" class="text" for="lastname">Last name</label>'),
+		);
+	}
+
+	/**
+	 * Tests Form::label()
+	 *
+	 * @test
+	 * @dataProvider providerLabel
+	 * @param boolean $for         Input for File::label
+	 * @param boolean $text        Input for File::label
+	 * @param boolean $attributes  Input for File::label
+	 * @param boolean $expected    Output for File::label
+	 */
+	function testLabel($for, $text, $attributes, $expected)
+	{
+		$this->assertSame($expected, Form::label($for, $text, $attributes));
 	}
 }
