@@ -28,7 +28,7 @@
       - [Validation](security/validation)
       - [Cookies](security/cookies)
       - [Database](security/database)
-      - [Encryption](security/encrpytion)
+      - [Encryption](security/encryption)
       - [Deploying](security/deploying)
    - [Tutorials](tutorials)
       - [Hello World](tutorials/hello-world)
