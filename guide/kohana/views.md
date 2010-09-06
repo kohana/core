@@ -1,1 +1,0 @@
-http://kohanaframework.org/guide/using.views
