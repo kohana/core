@@ -113,6 +113,27 @@ Class Kohana_SessionTest extends Kohana_Unittest_TestCase
 		$session->__construct($config, $session_id);
 	}
 
+	/**
+	 * Calling $session->bind() should allow you to bind a variable
+	 * to a session variable
+	 *
+	 * @test
+	 * @covers Session::bind
+	 * @ticket 3164
+	 */
+	public function test_bind_actually_binds_variable()
+	{
+		$session = $this->getMockForAbstractClass('Session');
+
+		$var = 'asd';
+
+		$session->bind('our_var', $var);
+
+		$var = 'foobar';
+
+		$this->assertSame('foobar', $session->get('our_var'));
+	}
+
 	
 	/**
 	 * When a session is initially created it should have no data

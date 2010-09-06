@@ -18,7 +18,7 @@ Class Kohana_CookieTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_set()
+	public function provider_set()
 	{
 		return array(
 			array('foo', 'bar', NULL, TRUE),
@@ -37,7 +37,7 @@ Class Kohana_CookieTest extends Kohana_Unittest_TestCase
 	 * @param mixed   $exp      exp to set
 	 * @param boolean $expected Output for cookie::set()
 	 */
-	function test_set($key, $value, $exp, $expected)
+	public function test_set($key, $value, $exp, $expected)
 	{
 		$this->assertSame($expected, cookie::set($key, $value, $exp));
 	}
@@ -47,7 +47,7 @@ Class Kohana_CookieTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_get()
+	public function provider_get()
 	{
 		return array(
 			array('foo', Cookie::salt('foo', 'bar').'~bar', 'bar'),
@@ -66,7 +66,7 @@ Class Kohana_CookieTest extends Kohana_Unittest_TestCase
 	 * @param mixed   $value    value to set
 	 * @param boolean $expected Output for cookie::get()
 	 */
-	function test_get($key, $value, $expected)
+	public function test_get($key, $value, $expected)
 	{
 		// Force $_COOKIE
 		if ($key !== NULL)
@@ -80,7 +80,7 @@ Class Kohana_CookieTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_delete()
+	public function provider_delete()
 	{
 		return array(
 			array('foo', TRUE),
@@ -96,7 +96,7 @@ Class Kohana_CookieTest extends Kohana_Unittest_TestCase
 	 * @param mixed   $key      key to use
 	 * @param boolean $expected Output for cookie::delete()
 	 */
-	function test_delete($key, $expected)
+	public function test_delete($key, $expected)
 	{
 		$this->assertSame($expected, cookie::delete($key));
 	}
@@ -106,7 +106,7 @@ Class Kohana_CookieTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_salt()
+	public function provider_salt()
 	{
 		return array(
 			array('foo', 'bar', '795317c9df04d8061e6e134a9b3487dc9ad69117'),
@@ -123,7 +123,7 @@ Class Kohana_CookieTest extends Kohana_Unittest_TestCase
 	 * @param mixed   $value    value to salt with
 	 * @param boolean $expected Output for cookie::delete()
 	 */
-	function test_salt($key, $value, $expected)
+	public function test_salt($key, $value, $expected)
 	{
 		$this->assertSame($expected, cookie::salt($key, $value));
 	}

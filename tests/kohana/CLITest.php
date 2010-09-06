@@ -42,8 +42,10 @@ Class Kohana_CLITest extends Kohana_Unittest_TestCase
 	 *
 	 * PHPUnit automatically backups up & restores global variables
 	 */
-	function setUp()
+	public function setUp()
 	{
+		parent::setUp();
+
 		$_SERVER['argv'] = array('index.php');
 
 		foreach($this->options as $option => $value)
@@ -69,7 +71,7 @@ Class Kohana_CLITest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 */
-	function test_only_loops_over_available_arguments()
+	public function test_only_loops_over_available_arguments()
 	{
 		++$_SERVER['argc'];
 		
@@ -83,7 +85,7 @@ Class Kohana_CLITest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 */
-	function test_only_parses_wanted_arguments()
+	public function test_only_parses_wanted_arguments()
 	{
 		$options = CLI::options('uri');
 
@@ -98,7 +100,7 @@ Class Kohana_CLITest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 */
-	function test_does_not_parse_invalid_arguments()
+	public function test_does_not_parse_invalid_arguments()
 	{
 		$options = CLI::options('uri', 'invalid');
 		
@@ -112,7 +114,7 @@ Class Kohana_CLITest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 */
-	function test_parses_multiple_arguments()
+	public function test_parses_multiple_arguments()
 	{
 		$options = CLI::options('uri', 'version');
 
@@ -128,7 +130,7 @@ Class Kohana_CLITest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 */
-	function test_parses_arguments_without_value_as_null()
+	public function test_parses_arguments_without_value_as_null()
 	{
 		$options = CLI::options('uri', 'we_are_cool');
 
@@ -142,7 +144,7 @@ Class Kohana_CLITest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @ticket 2642
 	 */
-	function test_cli_only_splits_on_the_first_equals()
+	public function test_cli_only_splits_on_the_first_equals()
 	{
 		$options = CLI::options('important');
 

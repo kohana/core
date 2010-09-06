@@ -24,11 +24,11 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	);
 
 	/**
-	 * Provides test data for testOpen()
+	 * Provides test data for test_open()
 	 * 
 	 * @return array
 	 */
-	function providerOpen()
+	public function provider_open()
 	{
 		return array(
 			// $value, $result
@@ -43,11 +43,11 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * Tests Form::open()
 	 *
 	 * @test
-	 * @dataProvider providerOpen
+	 * @dataProvider provider_open
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function testOpen($action, $attributes)
+	public function test_open($action, $attributes)
 	{
 		$tag = Form::open($action, $attributes);
 
@@ -70,17 +70,17 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 *
 	 * @test
 	 */
-	function testClose()
+	public function test_close()
 	{
 		$this->assertSame('</form>', Form::close());
 	}
 
 	/**
-	 * Provides test data for testInput()
+	 * Provides test data for test_input()
 	 * 
 	 * @return array
 	 */
-	function providerInput()
+	public function provider_input()
 	{
 		return array(
 			// $value, $result
@@ -95,11 +95,11 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * Tests Form::input()
 	 *
 	 * @test
-	 * @dataProvider providerInput
+	 * @dataProvider provider_input
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function testInput($type, $name, $value, $attributes)
+	public function test_input($type, $name, $value, $attributes)
 	{
 		$matcher = array(
 			'tag' => 'input',
@@ -124,11 +124,11 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	}
 
 	/**
-	 * Provides test data for testFile()
+	 * Provides test data for test_file()
 	 * 
 	 * @return array
 	 */
-	function providerFile()
+	public function provider_file()
 	{
 		return array(
 			// $value, $result
@@ -140,21 +140,21 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * Tests Form::file()
 	 *
 	 * @test
-	 * @dataProvider providerFile
+	 * @dataProvider provider_file
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function testFile($name, $attributes, $expected)
+	public function test_file($name, $attributes, $expected)
 	{
 		$this->assertSame($expected, Form::file($name, $attributes));
 	}
 
 	/**
-	 * Provides test data for testCheck()
+	 * Provides test data for test_check()
 	 * 
 	 * @return array
 	 */
-	function provider_check()
+	public function provider_check()
 	{
 		return array(
 			// $value, $result
@@ -176,7 +176,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function test_check($type, $name, $value, $checked, $attributes)
+	public function test_check($type, $name, $value, $checked, $attributes)
 	{
 		$matcher = array('tag' => 'input', 'attributes' => array('name' => $name, 'type' => $type));
 
@@ -194,11 +194,11 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	}
 
 	/**
-	 * Provides test data for testText()
+	 * Provides test data for test_text()
 	 * 
 	 * @return array
 	 */
-	function providerText()
+	public function provider_text()
 	{
 		return array(
 			// $value, $result
@@ -214,11 +214,11 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * Tests Form::textarea()
 	 *
 	 * @test
-	 * @dataProvider providerText
+	 * @dataProvider provider_text
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function testText($type, $name, $body, $attributes)
+	public function test_text($type, $name, $body, $attributes)
 	{
 		$matcher = array(
 			'tag' => $type,
@@ -242,11 +242,11 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 
 
 	/**
-	 * Provides test data for testSelect()
+	 * Provides test data for test_select()
 	 * 
 	 * @return array
 	 */
-	function providerSelect()
+	public function provider_select()
 	{
 		return array(
 			// $value, $result
@@ -264,22 +264,22 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * Tests Form::select()
 	 *
 	 * @test
-	 * @dataProvider providerSelect
+	 * @dataProvider provider_select
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function testSelect($name, $options, $selected, $expected)
+	public function test_select($name, $options, $selected, $expected)
 	{
 		// Much more efficient just to assertSame() rather than assertTag() on each element
 		$this->assertSame($expected, Form::select($name, $options, $selected));
 	}
 
 	/**
-	 * Provides test data for testSubmit()
+	 * Provides test data for test_submit()
 	 * 
 	 * @return array
 	 */
-	function providerSubmit()
+	public function provider_submit()
 	{
 		return array(
 			// $value, $result
@@ -291,11 +291,11 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * Tests Form::submit()
 	 *
 	 * @test
-	 * @dataProvider providerSubmit
+	 * @dataProvider provider_submit
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function testSubmit($name, $value, $expected)
+	public function test_submit($name, $value, $expected)
 	{
 		$matcher = array(
 			'tag' => 'input',
@@ -307,11 +307,11 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 
 
 	/**
-	 * Provides test data for testImage()
+	 * Provides test data for test_image()
 	 * 
 	 * @return array
 	 */
-	function providerImage()
+	public function provider_image()
 	{
 		return array(
 			// $value, $result
@@ -323,11 +323,11 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * Tests Form::submit()
 	 *
 	 * @test
-	 * @dataProvider providerImage
+	 * @dataProvider provider_image
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function testImage($name, $value, $attributes, $expected)
+	public function test_image($name, $value, $attributes, $expected)
 	{
 		$this->assertSame($expected, Form::image($name, $value, $attributes));
 	}
