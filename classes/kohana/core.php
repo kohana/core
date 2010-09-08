@@ -810,7 +810,7 @@ class Kohana_Core {
 		try
 		{
 			// Write the cache
-			return (bool) file_put_contents($dir.$file, $data);
+			return (bool) file_put_contents($dir.$file, $data, LOCK_EX);
 		}
 		catch (Exception $e)
 		{
