@@ -227,6 +227,23 @@ class Kohana_Core {
 
 		if (isset($settings['cache_dir']))
 		{
+			if ( ! is_dir($settings['cache_dir']))
+			{
+				try
+				{
+					// Create the cache directory
+					mkdir($settings['cache_dir'], 0755, TRUE);
+
+					// Set permissions (must be manually set to fix umask issues)
+					chmod($settings['cache_dir'], 0755);
+				}
+				catch (Exception $e)
+				{
+					throw new Kohana_Exception('Cound not create cache directory :dir',
+						array(':dir' => Kohana::debug_path($settings['cache_dir'])));
+				}
+			}
+
 			// Set the cache directory path
 			Kohana::$cache_dir = realpath($settings['cache_dir']);
 		}
@@ -236,23 +253,7 @@ class Kohana_Core {
 			Kohana::$cache_dir = APPPATH.'cache';
 		}
 
-		if ( ! is_dir(Kohana::$cache_dir))
-		{
-			try
-			{
-				// Create the cache directory
-				mkdir(Kohana::$cache_dir, 0777, TRUE);
-
-				// Set permissions (must be manually set to fix umask issues)
-				chmod(Kohana::$cache_dir, 0777);
-			}
-			catch (Exception $e)
-			{
-				throw new Kohana_Exception('Cound not create cache directory :dir',
-					array(':dir' => Kohana::debug_path(Kohana::$cache_dir)));
-			}
-		}
-		elseif ( ! is_writable(Kohana::$cache_dir))
+		if ( ! is_writable(Kohana::$cache_dir))
 		{
 			throw new Kohana_Exception('Directory :dir must be writable',
 				array(':dir' => Kohana::debug_path(Kohana::$cache_dir)));
