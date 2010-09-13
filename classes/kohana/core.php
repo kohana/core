@@ -1152,12 +1152,24 @@ class Kohana_Core {
 			if (UTF8::strlen($var) > $length)
 			{
 				// Encode the truncated string
+				$var = UTF8::clean($var);
+
 				$str = htmlspecialchars(UTF8::substr($var, 0, $length), ENT_NOQUOTES, Kohana::$charset).'&nbsp;&hellip;';
 			}
 			else
 			{
 				// Encode the string
-				$str = htmlspecialchars($var, ENT_NOQUOTES, Kohana::$charset);
+				try
+				{
+					$str = htmlspecialchars($var, ENT_NOQUOTES, Kohana::$charset);
+				}
+				catch (Exception $e)
+				{
+					// Probably an encoding error, clean the string up
+					$var = UTF8::clean($var);
+
+					$str = htmlspecialchars($var, ENT_NOQUOTES, Kohana::$charset);
+				}
 			}
 
 			return '<small>string</small><span>('.strlen($var).')</span> "'.$str.'"';
