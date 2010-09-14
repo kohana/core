@@ -111,6 +111,11 @@ class Kohana_Core {
 	public static $errors = TRUE;
 
 	/**
+	 * @var  string  error rendering view
+	 */
+	public static $error_view = 'kohana/error';
+
+	/**
 	 * @var  array  types of errors to display at shutdown
 	 */
 	public static $shutdown_errors = array(E_PARSE, E_ERROR, E_USER_ERROR, E_COMPILE_ERROR);
@@ -160,6 +165,7 @@ class Kohana_Core {
 	 * `string`  | base_url   | set the base URL for the application           | `"/"`
 	 * `string`  | index_file | set the index.php file name                    | `"index.php"`
 	 * `string`  | cache_dir  | set the cache directory path                   | `APPPATH."cache"`
+	 * `string`  | error_view | set the error rendering view                   | `"kohana/error"`
 	 *
 	 * @throws  Kohana_Exception
 	 * @param   array   global settings
@@ -212,6 +218,12 @@ class Kohana_Core {
 
 		// Enable the Kohana shutdown handler, which catches E_FATAL errors.
 		register_shutdown_function(array('Kohana', 'shutdown_handler'));
+
+		if (isset($settings['error_view']))
+		{
+			// Change the default error rendering
+			Kohana::$error_view = (string) $settings['error_view'];
+		}
 
 		if (ini_get('register_globals'))
 		{
@@ -994,7 +1006,7 @@ class Kohana_Core {
 			ob_start();
 
 			// Include the exception HTML
-			include Kohana::find_file('views', 'kohana/error');
+			include Kohana::find_file('views', Kohana::$error_view);
 
 			// Display the contents of the output buffer
 			echo ob_get_clean();
