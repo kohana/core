@@ -557,8 +557,21 @@ class Kohana_Core {
 	 */
 	public static function find_file($dir, $file, $ext = NULL, $array = FALSE)
 	{
-		// Use the defined extension by default
-		$ext = ($ext === NULL) ? EXT : '.'.$ext;
+		if ($ext === NULL)
+		{
+			// Use the default extension
+			$ext = EXT;
+		}
+		elseif ($ext)
+		{
+			// Prefix the extension with a period
+			$ext = ".{$ext}";
+		}
+		else
+		{
+			// Use no extension
+			$ext = '';
+		}
 
 		// Create a partial path of the filename
 		$path = $dir.DIRECTORY_SEPARATOR.$file.$ext;
