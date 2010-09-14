@@ -221,6 +221,13 @@ class Kohana_Core {
 
 		if (isset($settings['error_view']))
 		{
+			if ( ! Kohana::find_file('views', $settings['error_view']))
+			{
+				throw new Kohana_Exception('Error view file does not exist: views/:file', array(
+					':file' => $settings['error_view'],
+				));
+			}
+
 			// Change the default error rendering
 			Kohana::$error_view = (string) $settings['error_view'];
 		}
