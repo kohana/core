@@ -323,7 +323,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 	 * Tests Form::image()
 	 *
 	 * @test
-	 * @dataProvider providerImage
+	 * @dataProvider provider_image
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
