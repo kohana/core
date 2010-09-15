@@ -674,7 +674,7 @@ class Kohana_Request {
 			$params['controller'] = $this->controller;
 		}
 
-		if ( ! isset($params['action']) AND $this->action !== Route::$default_action)
+		if ( ! isset($params['action']))
 		{
 			// Add the current action
 			$params['action'] = $this->action;

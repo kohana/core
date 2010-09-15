@@ -18,7 +18,7 @@ class Kohana_RequestTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 */
-	function testCreate()
+	public function test_create()
 	{
 		$request = Request::factory('foo/bar')->execute();
 
@@ -37,17 +37,23 @@ class Kohana_RequestTest extends Kohana_Unittest_TestCase
 		}
 	}
 
-	function testAcceptType()
+	/**
+	 * Tests Request::accept_type()
+	 *
+	 * @test
+	 * @covers Request::accept_type
+	 */
+	public function test_accept_type()
 	{
 		$this->assertEquals(array('*/*' => 1), Request::accept_type());
 	}
 
 	/**
-	 * Provides test data for testInstance()
+	 * Provides test data for test_instance()
 	 * 
 	 * @return array
 	 */
-	function providerInstance()
+	public function provider_instance()
 	{
 		return array(
 			// $route, $is_cli, $_server, $status, $response
@@ -69,12 +75,12 @@ class Kohana_RequestTest extends Kohana_Unittest_TestCase
 	 * Tests Request::instance()
 	 *
 	 * @test
-	 * @dataProvider providerInstance
+	 * @dataProvider provider_instance
 	 * @covers Request::instance
 	 * @param boolean $value  Input for Kohana::sanitize
 	 * @param boolean $result Output for Kohana::sanitize
 	 */
-	function testInstance($route, $is_cli, $server, $status, $response)
+	public function test_instance($route, $is_cli, $server, $status, $response)
 	{
 		$this->setEnvironment(array(
 			'_SERVER'            => $server+array('argc' => $_SERVER['argc']),
@@ -100,7 +106,7 @@ class Kohana_RequestTest extends Kohana_Unittest_TestCase
 	 * Provides test data for Request::accept_lang()
 	 * @return array
 	 */
-	public function providerAcceptLang()
+	public function provider_accept_lang()
 	{
 		return array(
 			array('en-us', 1, array('_SERVER' => array('HTTP_ACCEPT_LANGUAGE' => 'en-us,en;q=0.5'))),
@@ -114,12 +120,12 @@ class Kohana_RequestTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 * @covers Request::accept_lang
-	 * @dataProvider providerAcceptLang
+	 * @dataProvider provider_accept_lang
 	 * @param array $params Query string
 	 * @param string $expected Expected result
 	 * @param array $enviroment Set environment
 	 */
-	function testAcceptLang($params, $expected, $enviroment)
+	public function test_accept_lang($params, $expected, $enviroment)
 	{
 		$this->setEnvironment($enviroment);
 
