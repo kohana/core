@@ -283,7 +283,7 @@ class Kohana_Validate extends ArrayObject {
 	public static function luhn($number)
 	{
 		// Remove all non-digit characters from the number
-		if (($number = preg_replace('/\D+/', '', $number)) === '')
+		if (preg_match("/\D/", $number))
 			return FALSE;
 
 		// Check number length

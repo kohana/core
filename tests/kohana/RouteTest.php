@@ -20,7 +20,7 @@ class Kohana_RouteTest extends Kohana_Unittest_TestCase
 	{
 		parent::setUp();
 
-		$this->clean_cache_dir();
+		Kohana_Unittest_Helpers::clean_cache_dir();
 	}
 
 	/**
@@ -30,7 +30,7 @@ class Kohana_RouteTest extends Kohana_Unittest_TestCase
 	{
 		parent::tearDown();
 
-		$this->clean_cache_dir();
+		Kohana_Unittest_Helpers::clean_cache_dir();
 	}
 
 	/**
