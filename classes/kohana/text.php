@@ -99,14 +99,15 @@ class Kohana_Text {
 		if ($limit <= 0)
 			return $end_char;
 
-		if ($preserve_words == FALSE)
-		{
+		if ($preserve_words === FALSE)
 			return rtrim(UTF8::substr($str, 0, $limit)).$end_char;
-		}
 
-		preg_match('/^.{'.($limit - 1).'}\S*/us', $str, $matches);
+		// Don't preserve words. The limit is considered the top limit.
+		// No strings with a length longer than $limit should be returned.
+		if ( ! preg_match('/^.{0,'.$limit.'}\s/us', $str, $matches))
+			return $end_char;
 
-		return rtrim($matches[0]).(strlen($matches[0]) == strlen($str) ? '' : $end_char);
+		return rtrim($matches[0]).(strlen($matches[0]) === strlen($str) ? '' : $end_char);
 	}
 
 	/**

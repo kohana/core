@@ -114,15 +114,18 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	public function provider_limit_chars()
 	{
 		return array
-			(
-				// Some basic tests
-				array('', '', 100, NULL, FALSE),
-				array('…', 'BOO!', -42, NULL, FALSE),
-
-				// 
-				array('making php bet…', 'making php better for the sane', 14, NULL, FALSE),
-				array('making php better…', 'making php better for the sane', 14, NULL, TRUE),
-			);
+		(
+			array('', '', 100, NULL, FALSE),
+			array('…', 'BOO!', -42, NULL, FALSE),
+			array('making php bet…', 'making php better for the sane', 14, NULL, FALSE),
+			array('Garçon! Un café s.v.p.', 'Garçon! Un café s.v.p.', 50, '__', FALSE),
+			array('Garçon!__', 'Garçon! Un café s.v.p.', 8, '__', FALSE),
+			// @issue 3238
+			array('making php…', 'making php better for the sane', 14, NULL, TRUE),
+			array('Garçon!__', 'Garçon! Un café s.v.p.', 9, '__', TRUE),
+			array('Garçon!__', 'Garçon! Un café s.v.p.', 7, '__', TRUE),
+			array('__', 'Garçon! Un café s.v.p.', 5, '__', TRUE),
+		);
 	}
 
 	/**
