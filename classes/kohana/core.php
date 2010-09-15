@@ -258,7 +258,7 @@ class Kohana_Core {
 				}
 				catch (Exception $e)
 				{
-					throw new Kohana_Exception('Cound not create cache directory :dir',
+					throw new Kohana_Exception('Could not create cache directory :dir',
 						array(':dir' => Kohana::debug_path($settings['cache_dir'])));
 				}
 			}
