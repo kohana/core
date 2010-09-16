@@ -35,7 +35,7 @@ class Kohana_Encrypt {
 	 */
 	public static $instances = array();
 
-	// OS-dependant RAND type to use
+	// OS-dependent RAND type to use
 	protected static $_rand;
 
 	/**
