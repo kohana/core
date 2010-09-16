@@ -40,4 +40,5 @@
    - [Custom Error Pages](tutorials/error-pages)
    - [Content Translation](tutorials/translation)
    - [Clean URLs](tutorials/clean-urls)
+   - [Template Driven Site](tutorials/templates)
    - [Working with Git](tutorials/git)

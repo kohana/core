@@ -1,0 +1,1 @@
+Discuss models.  What should go in a model, what shouldn't be in a model.  Provide simple examples using the query builder, as well as mention modeling libraries.

@@ -1,1 +1,1 @@
-http://kohanaframework.org/guide/security.xss
+<http://kohanaframework.org/guide/security.xss>

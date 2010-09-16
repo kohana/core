@@ -1,1 +1,1 @@
-http://kohanaframework.org/guide/about.mvc
+<http://kohanaframework.org/guide/about.mvc>

@@ -1,3 +1,5 @@
-http://kohanaframework.org/guide/about.upgrading
+This page needs a lot of work.
 
-This probably needs to get cleaned up a little bit.
+<http://kohanaframework.org/guide/about.upgrading>
+
+<http://kerkness.ca/wiki/doku.php?id=what_version_of_kohana_should_i_use>

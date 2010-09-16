@@ -1,1 +1,1 @@
-http://kohanaframework.org/guide/about.conventions
+<http://kohanaframework.org/guide/about.conventions>
