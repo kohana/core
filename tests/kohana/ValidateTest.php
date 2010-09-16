@@ -628,8 +628,15 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 			array('-10.5', TRUE),
 			array('10.5a', FALSE),
 			// @issue 3240
-			array('.5',    FALSE),
-			array('5.',    FALSE),
+			array(.4,      TRUE),
+			array(-.4,     TRUE),
+			array(4.,      TRUE),
+			array(-4.,     TRUE),
+			array('.5',    TRUE),
+			array('-.5',   TRUE),
+			array('5.',    TRUE),
+			array('-5.',   TRUE),
+			array('.',     FALSE),
 			array('1.2.3', FALSE),
 		);
 	}
