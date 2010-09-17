@@ -22,6 +22,7 @@
 - Basic Usage
    - [Debugging](debugging)
    - [Loading Classes](autoloading)
+   - [Requests](requests)
    - [Sessions & Cookies](sessions)
    - [Fragments](fragments)
    - [Helpers](helpers)
