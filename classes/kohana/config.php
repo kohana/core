@@ -3,15 +3,24 @@
  * Wrapper for configuration arrays. Multiple configuration readers can be
  * attached to allow loading configuration from files, database, etc.
  *
+ * Configuration directives cascade across config sources in the same way that 
+ * files cascade across the filesystem.
+ *
+ * Directives from sources high in the sources list will override ones from those
+ * below them.
+ *
  * @package    Kohana
  * @category   Configuration
  * @author     Kohana Team
- * @copyright  (c) 2009 Kohana Team
+ * @copyright  (c) 2010 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 class Kohana_Config {
 
-	// Singleton static instance
+	/**
+	 * Singleton instance
+	 * @var Kohana_Config
+	 */
 	protected static $_instance;
 
 	/**
@@ -33,7 +42,7 @@ class Kohana_Config {
 	}
 
 	// Configuration readers
-	protected $_readers = array();
+	protected $_sources = array();
 
 	/**
 	 * Attach a configuration reader. By default, the reader will be added as
@@ -47,17 +56,17 @@ class Kohana_Config {
 	 * @param   boolean  add the reader as the first used object
 	 * @return  $this
 	 */
-	public function attach(Kohana_Config_Reader $reader, $first = TRUE)
+	public function attach(Kohana_Config_Source $source, $first = TRUE)
 	{
 		if ($first === TRUE)
 		{
 			// Place the log reader at the top of the stack
-			array_unshift($this->_readers, $reader);
+			array_unshift($this->_sources, $source);
 		}
 		else
 		{
 			// Place the reader at the bottom of the stack
-			$this->_readers[] = $reader;
+			$this->_sources[] = $source;
 		}
 
 		return $this;
@@ -71,12 +80,12 @@ class Kohana_Config {
 	 * @param   object  Kohana_Config_Reader instance
 	 * @return  $this
 	 */
-	public function detach(Kohana_Config_Reader $reader)
+	public function detach(Kohana_Config_Source $source)
 	{
-		if (($key = array_search($reader, $this->_readers)) !== FALSE)
+		if (($key = array_search($source, $this->_sources)) !== FALSE)
 		{
 			// Remove the writer
-			unset($this->_readers[$key]);
+			unset($this->_sources[$key]);
 		}
 
 		return $this;
@@ -95,29 +104,34 @@ class Kohana_Config {
 	 */
 	public function load($group)
 	{
-		foreach ($this->_readers as $reader)
+		if( ! count($this->_sources))
 		{
-			if ($config = $reader->load($group))
+			throw new Kohana_Exception('No configuration sources attached');
+		}
+
+		if(isset($this->_groups[$group]))
+		{
+			return $this->_groups[$group];
+		}
+
+		$config = array();
+
+		// We search with the "lowest" source and work our way up
+		$sources = array_reverse($this->_sources);
+
+		foreach ($sources as $source)
+		{
+			if ($source instanceof Kohana_Config_Reader)
 			{
-				// Found a reader for this configuration group
-				return $config;
+				$config = $source->load($group) + $config;
 			}
 		}
 
-		// Reset the iterator
-		reset($this->_readers);
-
-		if ( ! is_object($config = current($this->_readers)))
-		{
-			throw new Kohana_Exception('No configuration readers attached');
-		}
-
-		// Load the reader as an empty array
-		return $config->load($group, array());
+		return $this->_groups[$group] = new Kohana_Config_Group($this, $group, $config);
 	}
 
 	/**
-	 * Copy one configuration group to all of the other readers.
+	 * Copy one configuration group to all of the other writers.
 	 * 
 	 *     $config->copy($name);
 	 *
@@ -129,21 +143,17 @@ class Kohana_Config {
 		// Load the configuration group
 		$config = $this->load($group);
 
-		foreach ($this->_readers as $reader)
+		foreach ($this->_sources as $source)
 		{
-			if ($config instanceof $reader)
+			if ( ! ($source instanceof Kohana_Config_Writer))
 			{
-				// Do not copy the config to the same group
 				continue;
 			}
-
-			// Load the configuration object
-			$object = $reader->load($group, array());
 
 			foreach ($config as $key => $value)
 			{
 				// Copy each value in the config
-				$object->offsetSet($key, $value);
+				$source->write($group, $key, $config);
 			}
 		}
 
