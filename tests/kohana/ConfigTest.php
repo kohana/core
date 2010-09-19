@@ -35,11 +35,11 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @covers Kohana_Config
 	 */
-	public function test_initially_there_are_no_readers()
+	public function test_initially_there_are_no_sources()
 	{
 		$config = new Kohana_Config;
 
-		$this->assertAttributeSame(array(), '_readers', $config);
+		$this->assertAttributeSame(array(), '_sources', $config);
 	}
 
 	/**
@@ -56,7 +56,7 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 
 		$this->assertSame($config, $config->attach($reader));
 
-		$this->assertAttributeContains($reader, '_readers', $config);
+		$this->assertAttributeContains($reader, '_sources', $config);
 	}
 
 	/**
@@ -78,7 +78,7 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 
 		// Rather than do two assertContains we'll do an assertSame to assert
 		// the order of the readers
-		$this->assertAttributeSame(array($reader2, $reader1), '_readers', $config);
+		$this->assertAttributeSame(array($reader2, $reader1), '_sources', $config);
 
 		// Now we test using the second parameter
 		$config = new Kohana_Config;
@@ -86,7 +86,7 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 		$config->attach($reader1);
 		$config->attach($reader2, TRUE);
 
-		$this->assertAttributeSame(array($reader2, $reader1), '_readers', $config);
+		$this->assertAttributeSame(array($reader2, $reader1), '_sources', $config);
 	}
 
 	/**
@@ -105,7 +105,7 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 		$config->attach($reader1);
 		$config->attach($reader2, FALSE);
 
-		$this->assertAttributeSame(array($reader1, $reader2), '_readers', $config);
+		$this->assertAttributeSame(array($reader1, $reader2), '_sources', $config);
 	}
 
 	/**
@@ -130,12 +130,12 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 
 		$this->assertSame($config, $config->detach($reader1));
 
-		$this->assertAttributeNotContains($reader1, '_readers', $config);
-		$this->assertAttributeContains($reader2, '_readers', $config);
+		$this->assertAttributeNotContains($reader1, '_sources', $config);
+		$this->assertAttributeContains($reader2, '_sources', $config);
 
 		$this->assertSame($config, $config->detach($reader2));
 
-		$this->assertAttributeNotContains($reader2, '_readers', $config);
+		$this->assertAttributeNotContains($reader2, '_sources', $config);
 	}
 
 	/**
@@ -160,84 +160,12 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 	 * @covers Kohana_Config::load
 	 * @expectedException Kohana_Exception
 	 */
-	public function test_load_throws_exception_if_there_are_no_readers()
+	public function test_load_throws_exception_if_there_are_no_sources()
 	{
 		// The following code should throw an exception and phpunit will catch / handle it
 		// (see the @expectedException doccomment)
 		$config = new Kohana_config;
 
 		$config->load('random');
-	}
-
-	/**
-	 * When load() is called it should interrogate each reader in turn until a match
-	 * is found
-	 *
-	 * @test
-	 * @covers Kohana_Config::load
-	 */
-	public function test_load_interrogates_each_reader_until_group_found()
-	{
-		$config       = new Kohana_Config;
-		$config_group = 'groupy';
-
-		$reader1 = $this->getMock('Kohana_Config_Reader', array('load'));
-		$reader1
-			->expects($this->once())
-			->method('load')
-			->with($config_group)
-			->will($this->returnValue(FALSE));
-		
-		$reader2 = $this->getMock('Kohana_Config_Reader', array('load'));
-		$reader2
-			->expects($this->once())
-			->method('load')
-			->with($config_group)
-			->will($this->returnValue($reader2));
-
-		$reader3 = $this->getMock('Kohana_Config_Reader', array('load'));
-		$reader3->expects($this->never())->method('load');
-
-		$config->attach($reader1, FALSE);
-		$config->attach($reader2, FALSE);
-		$config->attach($reader3, FALSE);
-
-		// By asserting a return type we're making the test a little less brittle / less likely
-		// to break due to minor modifications
-		$this->assertType('Kohana_Config_Reader', $config->load($config_group));
-	}
-
-	/**
-	 * Calling load() with a group that doesn't exist, should get it to use the last reader
-	 * to create a new config group
-	 *
-	 * @test
-	 * @covers Kohana_Config::load
-	 */
-	public function test_load_returns_new_config_group_if_one_dnx()
-	{
-		$config  = new Kohana_Config;
-		$group   = 'my_group';
-
-		$reader1 = $this->getMock('Kohana_Config_Reader');
-		$reader2 = $this->getMock('Kohana_Config_Reader', array('load'), array(), 'Kohana_Config_Waffles');
-
-		// This is a slightly hacky way of doing it, but it works
-		$reader2
-			->expects($this->exactly(2))
-			->method('load')
-			->with($group)
-			->will($this->onConsecutiveCalls(
-				$this->returnValue(FALSE), 
-				$this->returnValue(clone $reader2)
-			));
-
-		$config->attach($reader1)->attach($reader2);
-
-		$new_config = $config->load('my_group');
-
-		$this->assertType('Kohana_Config_Waffles', $new_config);
-		// Slightly taboo, testing a different api!!
-		$this->assertSame(array(), $new_config->as_array());
 	}
 }
