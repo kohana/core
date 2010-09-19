@@ -177,6 +177,11 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 				array(array('test3'), array('test4')),
 			),
 			array(
+				array(array('test1','test3'), array('test2','test4')),
+				array(array('test1'), array('test2')),
+				array(array('test3'), array('test4')),
+			),
+			array(
 				array('digits' => array(0, 1, 2, 3)),
 				array('digits' => array(0, 1)),
 				array('digits' => array(2, 3)),

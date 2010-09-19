@@ -28,6 +28,11 @@ abstract class Kohana_Controller {
 	public $request;
 
 	/**
+	 * @var  object The response that will be returned from controller
+	 */
+	public $response;
+
+	/**
 	 * Creates a new controller instance. Each controller must be constructed
 	 * with the request object that created it.
 	 *
@@ -38,6 +43,9 @@ abstract class Kohana_Controller {
 	{
 		// Assign the request to the controller
 		$this->request = $request;
+		
+		// Assign a response to the controller
+		$this->response = new Response;
 	}
 
 	/**

@@ -1060,17 +1060,13 @@ class Kohana_Request {
 			// Create a new instance of the controller
 			$controller = $class->newInstance($this);
 
-			// Execute the "before action" method
-			$class->getMethod('before')->invoke($controller);
-
 			// Determine the action to use
 			$action = empty($this->action) ? Route::$default_action : $this->action;
 
-			// Execute the main action with the parameters
-			$class->getMethod('action_'.$action)->invokeArgs($controller, $this->_params);
-
-			// Execute the "after action" method
-			$class->getMethod('after')->invoke($controller);
+			// Get all the method objects before invoking them
+			$before = $class->getMethod('before');
+			$method = $class->getMethod('action_'.$action);
+			$after = $class->getMethod('after');
 		}
 		catch (Exception $e)
 		{
@@ -1088,13 +1084,27 @@ class Kohana_Request {
 				// Reflection will throw exceptions for missing classes or actions
 				$this->status = 404;
 			}
-			else
-			{
-				// All other exceptions are PHP/server errors
-				$this->status = 500;
-			}
 
 			// Re-throw the exception
+			throw $e;
+		}
+
+		try
+		{
+			// Execute the "before action" method
+			$before->invoke($controller);
+
+			// Execute the main action with the parameters
+			$method->invokeArgs($controller, $this->_params);
+
+			// Execute the "after action" method
+			$after->invoke($controller);
+		}
+		catch (Exception $e)
+		{
+			// All other exceptions are PHP/server errors
+			$this->status = 500;
+
 			throw $e;
 		}
 

@@ -13,14 +13,47 @@ class Kohana_Remote {
 	// Default curl options
 	public static $default_options = array
 	(
-		CURLOPT_USERAGENT      => 'Mozilla/5.0 (compatible; Kohana v3.0 +http://kohanaphp.com/)',
 		CURLOPT_CONNECTTIMEOUT => 5,
 		CURLOPT_TIMEOUT        => 5,
+		CURLOPT_HEADERFUNCTION => array('Remote', '_parse_headers'),
+		CURLOPT_HEADER         => FALSE,
 	);
 
 	/**
-	 * Returns the output of a remote URL. Any [curl option](http://php.net/curl_setopt)
-	 * may be used.
+	 * @var     array  Headers from the request
+	 */
+	protected static $_headers = array();
+
+	/**
+	 * Parses the returned headers from the remote
+	 * request
+	 *
+	 * @param   resource the curl resource
+	 * @param   string   the full header string
+	 * @return  int
+	 */
+	protected static function _parse_headers($remote, $header)
+	{
+		$headers = array();
+
+		if (preg_match_all('/(\w[^\s:]*):[ ]*([^\r\n]*(?:\r\n[ \t][^\r\n]*)*)/', $header, $matches))
+		{
+			foreach ($matches[0] as $key => $value)
+				$headers[$matches[1][$key]] = $matches[2][$key];
+		}
+
+		// If there are headers to apply
+		if ($headers)
+		{
+			Remote::$_headers += $headers;
+		}
+
+		return strlen($header);
+	}
+
+	/**
+	 * Returns the output of a remote URL.
+	 * Any [curl option](http://php.net/curl_setopt) may be used.
 	 *
 	 *     // Do a simple GET request
 	 *     $data = Remote::get($url);
@@ -33,11 +66,14 @@ class Kohana_Remote {
 	 *
 	 * @param   string   remote URL
 	 * @param   array    curl options
-	 * @return  string
-	 * @throws  Kohana_Exception
+	 * @return  [Kohana_Response]
+	 * @throws  [Kohana_Exception]
 	 */
 	public static function get($url, array $options = NULL)
 	{
+		// Reset the headers
+		Remote::$_headers = array();
+
 		if ($options === NULL)
 		{
 			// Use default options
@@ -51,6 +87,7 @@ class Kohana_Remote {
 
 		// The transfer must always be returned
 		$options[CURLOPT_RETURNTRANSFER] = TRUE;
+		$options[CURLOPT_USERAGENT]      = 'Mozilla/5.0 (compatible; Kohana v'.Kohana::VERSION.' +http://kohanaphp.com/)';
 
 		// Open a new remote connection
 		$remote = curl_init($url);
@@ -86,7 +123,11 @@ class Kohana_Remote {
 				array(':url' => $url, ':code' => $code, ':error' => $error));
 		}
 
-		return $response;
+		return new Response(array(
+			'status'     => $code,
+			'headers'    => Remote::$_headers,
+			'body'       => $response,
+		));
 	}
 
 	/**
@@ -95,9 +136,10 @@ class Kohana_Remote {
 	 *     $status = Remote::status($url);
 	 *
 	 * @param   string  URL to check
+	 * @param   array   HTTP Headers to include
 	 * @return  integer
 	 */
-	public static function status($url)
+	public static function status($url, array $http_headers = array())
 	{
 		// Get the hostname and path
 		$url = parse_url($url);
@@ -123,6 +165,9 @@ class Kohana_Remote {
 		fwrite($remote, 'Host: '.$url['host'].$CRLF);
 		fwrite($remote, 'Connection: close'.$CRLF);
 		fwrite($remote, 'User-Agent: Kohana Framework (+http://kohanaphp.com/)'.$CRLF);
+
+		foreach ($http_headers as $name => $value)
+			fwrite($remote, $name.': '.$value.$CRLF);
 
 		// Send one more CRLF to terminate the headers
 		fwrite($remote, $CRLF);

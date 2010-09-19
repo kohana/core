@@ -11,7 +11,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	/**
 	 * Sets up the test enviroment
 	 */
-	public function setUp()
+	function setUp()
 	{
 		parent::setUp();
 
@@ -24,7 +24,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 */
-	public function test_auto_para_returns_empty_string_on_empty_input()
+	function test_auto_para_returns_empty_string_on_empty_input()
 	{
 		$this->assertSame('', Text::auto_p(''));
 	}
@@ -33,7 +33,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Test Data
 	 */
-	public function provider_auto_para_does_not_enclose_html_tags_in_paragraphs()
+	function provider_auto_para_does_not_enclose_html_tags_in_paragraphs()
 	{
 		return array(
 			array(
@@ -54,7 +54,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_auto_para_does_not_enclose_html_tags_in_paragraphs
 	 */ 
-	public function test_auto_para_does_not_enclose_html_tags_in_paragraphs(array $tags, $text)
+	function test_auto_para_does_not_enclose_html_tags_in_paragraphs(array $tags, $text)
 	{
 		$output = Text::auto_p($text);
 		
@@ -73,7 +73,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 */
-	public function test_auto_para_encloses_slot_in_paragraph()
+	function test_auto_para_encloses_slot_in_paragraph()
 	{
 		$text = 'Pick a pinch of purple pepper';
 
@@ -85,7 +85,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Array of test data
 	 */
-	public function provider_limit_words()
+	function provider_limit_words()
 	{
 		return array
 		(
@@ -101,7 +101,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_limit_words
 	 */
-	public function test_limit_words($expected, $str, $limit, $end_char)
+	function test_limit_words($expected, $str, $limit, $end_char)
 	{
 		$this->assertSame($expected, Text::limit_words($str, $limit, $end_char));
 	}
@@ -111,7 +111,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Test data
 	 */
-	public function provider_limit_chars()
+	function provider_limit_chars()
 	{
 		return array
 		(
@@ -134,7 +134,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_limit_chars
 	 */
-	public function test_limit_chars($expected, $str, $limit, $end_char, $preserve_words)
+	function test_limit_chars($expected, $str, $limit, $end_char, $preserve_words)
 	{
 		$this->assertSame($expected, Text::limit_chars($str, $limit, $end_char, $preserve_words));
 	}
@@ -144,7 +144,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 */
-	public function test_alternate_alternates_between_parameters()
+	function test_alternate_alternates_between_parameters()
 	{
 		list($val_a, $val_b, $val_c) = array('good', 'bad', 'ugly');
 
@@ -161,7 +161,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @covers Text::alternate
 	 */
-	public function test_alternate_resets_when_called_with_no_params_and_returns_empty_string()
+	function test_alternate_resets_when_called_with_no_params_and_returns_empty_string()
 	{
 		list($val_a, $val_b, $val_c) = array('yes', 'no', 'maybe');
 		
@@ -177,7 +177,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @returns array Array of test data 
 	 */
-	public function provider_reduce_slashes()
+	function provider_reduce_slashes()
 	{
 		return array
 			(
@@ -192,7 +192,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_reduce_slashes
 	 */
-	public function test_reduce_slashes($expected, $str)
+	function test_reduce_slashes($expected, $str)
 	{
 		$this->assertSame($expected, Text::reduce_slashes($str));
 	}
@@ -202,7 +202,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Test data
 	 */
-	public function provider_censor()
+	function provider_censor()
 	{
 
 		return array
@@ -223,7 +223,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_censor
 	 */
-	public function test_censor($expected, $str, $badwords, $replacement, $replace_partial_words)
+	function test_censor($expected, $str, $badwords, $replacement, $replace_partial_words)
 	{
 		$this->assertSame($expected, Text::censor($str, $badwords, $replacement, $replace_partial_words));
 	}
@@ -233,7 +233,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Test Data
 	 */
-	public function provider_random()
+	function provider_random()
 	{
 		return array(
 			array('alnum', 8),
@@ -259,7 +259,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_random
 	 */
-	public function test_random($type, $length)
+	function test_random($type, $length)
 	{
 		$pool = (string) $type;
 
@@ -293,7 +293,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	public function provider_similar()
+	function provider_similar()
 	{
 		return array
 			(
@@ -309,7 +309,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @dataProvider provider_similar
 	 * @covers Text::similar
 	 */
-	public function test_similar($expected, $words)
+	function test_similar($expected, $words)
 	{
 		$this->assertSame($expected, Text::similar($words));
 	}
@@ -341,7 +341,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_bytes
 	 */
-	public function test_bytes($expected, $bytes, $force_unit, $format, $si)
+	function test_bytes($expected, $bytes, $force_unit, $format, $si)
 	{
 		$this->assertSame($expected, Text::bytes($bytes, $force_unit, $format, $si));
 	}
@@ -351,7 +351,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Test data
 	 */
-	public function provider_widont()
+	function provider_widont()
 	{
 		return array
 			(
@@ -367,7 +367,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_widont
 	 */
-	public function test_widont($expected, $string)
+	function test_widont($expected, $string)
 	{
 		$this->assertSame($expected, Text::widont($string));
 	}
@@ -386,7 +386,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @covers Text::auto_link_emails
 	 * @ticket 2772
 	 */
-	public function test_auto_link_emails_respects_word_boundaries()
+	function test_auto_link_emails_respects_word_boundaries()
 	{
 		$original = '<ul>
 						<li>voorzitter@xxxx.com</li>

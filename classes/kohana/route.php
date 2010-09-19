@@ -45,6 +45,18 @@ class Kohana_Route {
 	const REGEX_ESCAPE  = '[.\\+*?[^\\]${}=!|]';
 
 	/**
+	 * @var  string  default protocol for all routes
+	 * 
+	 * @example  'http://'
+	 */
+	public static $default_protocol = 'http://';
+
+	/**
+	 * @var  array   list of valid localhost entries
+	 */
+	public static $localhosts = array(FALSE, '', 'local', 'localhost');
+
+	/**
 	 * @var  string  default action for all routes
 	 */
 	public static $default_action = 'index';
@@ -303,23 +315,6 @@ class Kohana_Route {
 	 */
 	public function uri(array $params = NULL)
 	{
-		if ($params === NULL)
-		{
-			// Use the default parameters
-			$params = $this->_defaults;
-		}
-		else
-		{
-			// Add the default parameters
-			$params += $this->_defaults;
-		}
-
-		if (isset($params['action']) AND $params['action'] === Route::$default_action)
-		{
-			// Remove the default action from the URI
-			unset($params['action']);
-		}
-
 		// Start with the routed URI
 		$uri = $this->_uri;
 
@@ -340,6 +335,9 @@ class Kohana_Route {
 			while(preg_match('#'.Route::REGEX_KEY.'#', $replace, $match))
 			{
 				list($key, $param) = $match;
+
+				if ($param === 'host')
+					continue;
 
 				if (isset($params[$param]))
 				{
@@ -365,8 +363,9 @@ class Kohana_Route {
 			if ( ! isset($params[$param]))
 			{
 				// Ungrouped parameters are required
-				throw new Kohana_Exception('Required route parameter not passed: :param',
-					array(':param' => $param));
+				throw new Kohana_Exception('Required route parameter not passed: :param', array(
+					':param' => $param,
+				));
 			}
 
 			$uri = str_replace($key, $params[$param], $uri);
@@ -375,7 +374,19 @@ class Kohana_Route {
 		// Trim all extra slashes from the URI
 		$uri = preg_replace('#//+#', '/', rtrim($uri, '/'));
 
-		return $uri;
+		// If the localhost setting matches a local route, return the uri as is
+		if ( ! isset($params['host']) OR in_array($params['host'], Route::$localhosts))
+			return $uri;
+
+		// If the localhost setting does not have a protocol
+		if (strpos($params['host'], '://') === FALSE)
+		{
+			// Use the default defined protocol
+			$params['host'] = Route::$default_protocol.$params['host'];
+		}
+
+		// Compile the final uri and return it
+		return rtrim($params['host'], '/').'/'.$uri;
 	}
 
 	/**
