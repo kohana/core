@@ -10,7 +10,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaphp.com/license
  */
-Interface Kohana_Config_Reader
+Interface Kohana_Config_Reader extends Kohana_Config_Source
 {
 	
 	/**
