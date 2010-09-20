@@ -282,9 +282,11 @@ class Kohana_Validate extends ArrayObject {
 	 */
 	public static function luhn($number)
 	{
-		// Remove all non-digit characters from the number
-		if (($number = preg_replace('/\D+/', '', $number)) === '')
+		if ( ! ctype_digit($number))
+		{
+			// Luhn can only be used on numbers!
 			return FALSE;
+		}
 
 		// Check number length
 		$length = strlen($number);
