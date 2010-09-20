@@ -45,6 +45,8 @@ Kohana::$config->attach(new Kohana_Config_File);
 
 You can add conditional statements to make the bootstrap have different values based on certain settings.  For example, detect whether we are live by checking `$_SERVER['HTTP_HOST'] and if so caching should be on, and profiling disabled. This is just an example, there are many different ways to accomplish the same thing.
 
+[!!] Note: The default bootstrap will set Kohana::$environment = $_ENV['KOHANA_ENV'] if set. Docs on how to supply this variable are available in your web server's documentation (e.g. [Apache](http://httpd.apache.org/docs/1.3/mod/mod_env.html#setenv), [Lighttpd](http://redmine.lighttpd.net/wiki/1/Docs:ModSetEnv#Options)). This is considered better practice than many alternative methods to set Kohana::$enviroment.
+
 ~~~
 // Excerpt from http://github.com/isaiahdw/kohanaphp.com/blob/f2afe8e28b/application/bootstrap.php
 ... [trimmed]
@@ -55,7 +57,7 @@ You can add conditional statements to make the bootstrap have different values b
 if (strpos($_SERVER['HTTP_HOST'], 'kohanaphp.com') !== FALSE)
 {
 	// We are live!
-	Kohana::$environment = 'live';
+	Kohana::$environment = Kohana::PRODUCTION;
  
 	// Turn off notices and strict errors
 	error_reporting(E_ALL ^ E_NOTICE ^ E_STRICT);
@@ -66,9 +68,9 @@ if (strpos($_SERVER['HTTP_HOST'], 'kohanaphp.com') !== FALSE)
  ... [trimmed]
  */
 Kohana::init(array(
-	'base_url'   => Kohana::$environment === 'live' ? '/' : '/kohanaphp.com/',
-	'caching'    => Kohana::$environment === 'live',
-	'profile'    => Kohana::$environment !== 'live',
+	'base_url'   => Kohana::$environment === Kohana::PRODUCTION ? '/' : '/kohanaphp.com/',
+	'caching'    => Kohana::$environment === Kohana::PRODUCTION,
+	'profile'    => Kohana::$environment !== Kohana::PRODUCTION,
 	'index_file' => FALSE,
 ));
 
