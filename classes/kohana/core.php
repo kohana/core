@@ -1149,27 +1149,20 @@ class Kohana_Core {
 		}
 		elseif (is_string($var))
 		{
+			// Clean invalid multibyte characters. iconv is only invoked
+			// if there are non ASCII characters in the string, so this
+			// isn't too much of a hit.
+			$var = UTF8::clean($var);
+
 			if (UTF8::strlen($var) > $length)
 			{
 				// Encode the truncated string
-				$var = UTF8::clean($var);
-
 				$str = htmlspecialchars(UTF8::substr($var, 0, $length), ENT_NOQUOTES, Kohana::$charset).'&nbsp;&hellip;';
 			}
 			else
 			{
 				// Encode the string
-				try
-				{
-					$str = htmlspecialchars($var, ENT_NOQUOTES, Kohana::$charset);
-				}
-				catch (Exception $e)
-				{
-					// Probably an encoding error, clean the string up
-					$var = UTF8::clean($var);
-
-					$str = htmlspecialchars($var, ENT_NOQUOTES, Kohana::$charset);
-				}
+				$str = htmlspecialchars($var, ENT_NOQUOTES, Kohana::$charset);
 			}
 
 			return '<small>string</small><span>('.strlen($var).')</span> "'.$str.'"';
