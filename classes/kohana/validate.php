@@ -275,7 +275,7 @@ class Kohana_Validate extends ArrayObject {
 
 	/**
 	 * Validate a number against the [Luhn](http://en.wikipedia.org/wiki/Luhn_algorithm)
-	 * (mod10) forumla.
+	 * (mod10) formula.
 	 *
 	 * @param   string   number to check
 	 * @return  boolean
