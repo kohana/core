@@ -107,7 +107,7 @@ class Kohana_Http_Header_Value {
 			$key = key($value);
 
 			// If the key is a string
-			if (is_string($key)
+			if (is_string($key))
 			{
 				// Apply the key as a property
 				$this->key = $key;
