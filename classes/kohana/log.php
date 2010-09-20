@@ -23,6 +23,11 @@ class Kohana_Log {
 	public static $timezone;
 
 	/**
+	 * @var  boolean  immediately write when logs are added
+	 */
+	public static $write_on_add = FALSE;
+
+	/**
 	 * @var  Kohana_Log  Singleton instance container
 	 */
 	private static $_instance;
@@ -119,6 +124,12 @@ class Kohana_Log {
 			'type' => $type,
 			'body' => $message,
 		);
+
+		if (self::$write_on_add)
+		{
+			// Write logs as they are added
+			$this->write();
+		}
 
 		return $this;
 	}
