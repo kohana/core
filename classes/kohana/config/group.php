@@ -113,6 +113,8 @@ class Kohana_Config_Group extends ArrayObject {
 	 */
 	public function offsetSet($key, $value)
 	{
+		$this->_parent_instance->_write_config($this->_group_name, $key, $value);
+
 		return parent::offsetSet($key, $value);
 	}
 }

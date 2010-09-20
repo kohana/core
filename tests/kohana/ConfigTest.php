@@ -168,4 +168,89 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 
 		$config->load('random');
 	}
+
+	/**
+	 * Make sure that _write_config() passes the changed configuration to all 
+	 * writers in the queue
+	 *
+	 * @test
+	 * @covers Kohana_Config
+	 */
+	public function test_write_config_passes_changed_config_to_all_writers()
+	{
+		$config = new Kohana_Config;
+
+		$reader1 = $this->getMock('Kohana_Config_Reader');
+		$writer1 = $this->getMock('Kohana_Config_Writer', array('write'));
+		$writer2 = $this->getMock('Kohana_Config_Writer', array('write'));
+
+		$writer1
+			->expects($this->once())
+			->method('write')
+			->with('some_group', 'key', 'value');
+
+		$writer2
+			->expects($this->once())
+			->method('write')
+			->with('some_group', 'key', 'value');
+
+		$config->attach($reader1)->attach($writer1)->attach($writer2);
+
+		$config->_write_config('some_group', 'key', 'value');
+	}
+
+	/**
+	 * When we call copy() we expect it to copy the merged config to all writers
+	 *
+	 * @TODO This test sucks due to limitations in the phpunit mock generator.  MAKE THIS AWESOME AGAIN!
+	 * @test
+	 * @covers Kohana_Config::copy
+	 */
+	public function test_copy_copies_merged_config_to_all_writers()
+	{
+		$config = new Kohana_Config;
+
+		$reader1 = $this->getMock('Kohana_Config_Reader', array('load'));
+		$reader2 = $this->getMock('Kohana_Config_Reader', array('load'));
+
+		$reader1
+			->expects($this->once())
+			->method('load')
+			->with('something')
+			->will($this->returnValue(array('pie' => 'good', 'kohana' => 'awesome')));
+
+		$reader2
+			->expects($this->once())
+			->method('load')
+			->with('something')
+			->will($this->returnValue(array('kohana' => 'good')));
+
+		$writer1 = $this->getMock('Kohana_Config_Writer', array('write'));
+		$writer2 = $this->getMock('Kohana_Config_Writer', array('write'));
+
+		// Due to crazy limitations in phpunit's mocking engine we have to be fairly
+		// liberal here as to what order we receive the config items
+		// Good news is that order shouldn't matter *yay*
+		//
+		// Now save your eyes and skip the next... 13 lines!
+		$key = $this->logicalOr('pie', 'kohana');
+		$val = $this->logicalOr('good', 'awesome');
+
+		$writer1
+			->expects($this->exactly(2))
+			->method('write')
+			->with('something', clone $key, clone $val);
+
+		$writer2
+			->expects($this->exactly(2))
+			->method('write')
+			->with('something', clone $key, clone $val);
+
+		$config
+			->attach($reader1)->attach($reader2, FALSE)
+			->attach($writer1)->attach($writer2);
+
+		// Now let's get this thing going!
+		$config->copy('something');
+	}
 }

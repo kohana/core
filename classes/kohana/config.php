@@ -145,18 +145,38 @@ class Kohana_Config {
 		// Load the configuration group
 		$config = $this->load($group);
 
-		foreach ($this->_sources as $source)
+		// Assuming there are more config items than config groups then this is slightly
+		// more efficient method as it only requires the inner loop to be setup a few times
+		//
+		// Oh, and it's very DRY ;)
+		foreach($config->as_array() as $key => $value)
+		{
+			$this->_write_config($group, $key, $value);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Callback used by the config group to store changes made to configuration
+	 *
+	 * @param string         Group name
+	 * @param string         Variable name
+	 * @param mixed          The new value
+	 * @return Kohana_Config Chainable instance
+	 */
+	public function _write_config($group, $key, $value)
+	{
+		foreach($this->_sources as $source)
 		{
 			if ( ! ($source instanceof Kohana_Config_Writer))
 			{
 				continue;
 			}
 
-			foreach ($config as $key => $value)
-			{
-				// Copy each value in the config
-				$source->write($group, $key, $config);
-			}
+			
+			// Copy each value in the config
+			$source->write($group, $key, $value);
 		}
 
 		return $this;

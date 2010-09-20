@@ -121,4 +121,31 @@ Class Kohana_Config_GroupTest extends Kohana_Unittest_TestCase
 
 		$this->assertSame('awesome', $group->get('status'));
 	}
+
+	/**
+	 * If we modify the config via set() [$var] or ->$var then the change should be passed to
+	 * the parent config instance so that the config writers can be notified.
+	 * 
+	 * The modification to the config should also stick
+	 *
+	 * @test
+	 * @covers Kohana_Config_Group::offsetSet
+	 */
+	public function test_writes_changes_to_config()
+	{
+		$mock  = $this->getMock('Kohana_Config', array('_write_config'));
+
+		$mock
+			->expects($this->exactly(3))
+			->method('_write_config')
+			->with('kohana', 'status', $this->LogicalOr('totally', 'maybe', 'not'));
+
+		$group = $this->get_mock_group('kohana', array('status' => 'kool'), $mock);
+
+		$group['status'] = 'totally';
+
+		$group->status = 'maybe';
+
+		$group->set('status', 'not');
+	}
 }

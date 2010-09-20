@@ -12,7 +12,6 @@
  */
 Interface Kohana_Config_Writer extends Kohana_Config_Source
 {
-	
 	/**
 	 * Writes the passed config for $group
 	 *
@@ -24,8 +23,5 @@ Interface Kohana_Config_Writer extends Kohana_Config_Source
 	 * @param array       $config The configuration to write
 	 * @return boolean
 	 */
-	public function write($group, $key, array $config);
-
-
-	
+	public function write($group, $key, $config);
 }
