@@ -52,7 +52,7 @@ class Kohana_Config {
 	 *     $config->attach($reader);        // Try first
 	 *     $config->attach($reader, FALSE); // Try last
 	 *
-	 * @param   object   Kohana_Config_Reader instance
+	 * @param   object   Kohana_Config_Source instance
 	 * @param   boolean  add the reader as the first used object
 	 * @return  $this
 	 */
@@ -77,7 +77,7 @@ class Kohana_Config {
 	 *
 	 *     $config->detach($reader);
 	 *
-	 * @param   object  Kohana_Config_Reader instance
+	 * @param   object  Kohana_Config_Source instance
 	 * @return  $this
 	 */
 	public function detach(Kohana_Config_Source $source)
@@ -92,14 +92,16 @@ class Kohana_Config {
 	}
 
 	/**
-	 * Load a configuration group. Searches the readers in order until the
-	 * group is found. If the group does not exist, an empty configuration
-	 * array will be loaded using the first reader.
+	 * Load a configuration group. 	Searches all the config sources, merging all the 
+	 * directives found into a single config group.  Any changes made to the config 
+	 * in this group will be mirrored across all writable sources.  
 	 *
 	 *     $array = $config->load($name);
 	 *
+	 * See [Kohana_Config_Group] for more info
+	 *
 	 * @param   string  configuration group name
-	 * @return  object  Kohana_Config_Reader
+	 * @return  object  Kohana_Config_Group
 	 * @throws  Kohana_Exception
 	 */
 	public function load($group)
@@ -116,7 +118,7 @@ class Kohana_Config {
 
 		$config = array();
 
-		// We search with the "lowest" source and work our way up
+		// We search from the "lowest" source and work our way up
 		$sources = array_reverse($this->_sources);
 
 		foreach ($sources as $source)
