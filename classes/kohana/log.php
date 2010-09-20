@@ -13,20 +13,17 @@
 class Kohana_Log {
 
 	/**
-	 * Timestamp format for log entries
-	 * @var string
+	 * @var  string  timestamp format for log entries
 	 */
 	public static $timestamp = 'Y-m-d H:i:s';
 
 	/**
-	 * Timezone for log entries
-	 * @var string
+	 * @var  string  timezone for log entries
 	 */
 	public static $timezone;
 
 	/**
-	 * Singleton instance container
-	 * @var Kohana_Log
+	 * @var  Kohana_Log  Singleton instance container
 	 */
 	private static $_instance;
 
