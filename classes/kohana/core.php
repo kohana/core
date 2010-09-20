@@ -1181,6 +1181,11 @@ class Kohana_Core {
 		}
 		elseif (is_string($var))
 		{
+			// Clean invalid multibyte characters. iconv is only invoked
+			// if there are non ASCII characters in the string, so this
+			// isn't too much of a hit.
+			$var = UTF8::clean($var);
+
 			if (UTF8::strlen($var) > $length)
 			{
 				// Encode the truncated string
