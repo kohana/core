@@ -167,9 +167,9 @@ class Kohana_Text {
 	 */
 	public static function random($type = NULL, $length = 8)
 	{
-		if ( ! $type)
+		if ($type === NULL)
 		{
-			// Default is to generate an alpha-numeric string
+			// Default is to generate an alphanumeric string
 			$type = 'alnum';
 		}
 
