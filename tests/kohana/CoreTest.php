@@ -204,8 +204,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 */
 	public function test_error_handler($code, $error, $file, $line)
 	{
-		$error_level = error_reporting();
-		error_reporting(E_ALL);
+		$error_level = error_reporting(E_ALL);
 		try
 		{
 			Kohana::error_handler($code, $error, $file, $line);
