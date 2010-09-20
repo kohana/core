@@ -277,11 +277,15 @@ class Kohana_Validate extends ArrayObject {
 	 * Validate a number against the [Luhn](http://en.wikipedia.org/wiki/Luhn_algorithm)
 	 * (mod10) forumla.
 	 *
-	 * @param   integer  number to check
+	 * @param   string   number to check
 	 * @return  boolean
 	 */
 	public static function luhn($number)
 	{
+		// Force the value to be a string as this method uses string functions.
+		// Converting to an integer may pass PHP_INT_MAX and result in an error!
+		$number = (string) $number;
+
 		if ( ! ctype_digit($number))
 		{
 			// Luhn can only be used on numbers!
