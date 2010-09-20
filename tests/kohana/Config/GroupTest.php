@@ -22,7 +22,7 @@ Class Kohana_Config_GroupTest extends Kohana_Unittest_TestCase
 	 */
 	public function get_mock_config()
 	{
-		return $this->getMock('Kohana_Config');
+		return new Kohana_Config;
 	}
 
 	/**
@@ -148,4 +148,45 @@ Class Kohana_Config_GroupTest extends Kohana_Unittest_TestCase
 
 		$group->set('status', 'not');
 	}
+
+	/**
+	 * Calling as_array() should return the full array, inc. any modifications
+	 *
+	 * @test
+	 * @covers Kohana_Config_Group::as_array
+	 */
+	public function test_as_array_returns_full_array()
+	{
+		$config = $this->get_mock_group('something', array('var' => 'value'));
+
+		$this->assertSame(array('var' => 'value'), $config->as_array());
+
+		// Now change some vars **ahem**
+		$config->var    = 'LOLCAT';
+		$config->lolcat = 'IN UR CODE';
+
+		$this->assertSame(
+			array('var' => 'LOLCAT', 'lolcat' => 'IN UR CODE'),
+			$config->as_array()
+		);
+
+		// And if we remove an item it should be removed from the exported array
+		unset($config['lolcat']);
+		$this->assertSame(array('var' => 'LOLCAT'), $config->as_array());
+	}
+
+	/**
+	 * Casting the object to a string should serialize the output of as_array
+	 *
+	 * @test
+	 * @covers Kohana_Config_Group::__toString
+	 */
+	public function test_to_string_serializes_array_output()
+	{
+		$vars   = array('kohana' => 'cool', 'unit_tests' => 'boring');
+		$config = $this->get_mock_group('hehehe', $vars);
+
+		$this->assertSame(serialize($vars), (string) $config);
+	}
 }
+
