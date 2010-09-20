@@ -919,6 +919,13 @@ class Kohana_Request {
 			$file = fopen($filename, 'rb');
 		}
 
+		if ( ! is_resource($file))
+		{
+			throw new Kohana_Exception('Could not read file to send: :file', array(
+				':file' => $download,
+			));
+		}
+
 		// Inline or download?
 		$disposition = empty($options['inline']) ? 'attachment' : 'inline';
 
