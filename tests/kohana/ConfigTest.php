@@ -200,6 +200,72 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
+	 * Config sources are stored in a stack, make sure that config at the bottom
+	 * of the stack is overriden by config at the top
+	 *
+	 * @test
+	 * @covers Kohana_Config::load
+	 */
+	public function test_config_is_loaded_from_top_to_bottom_of_stack()
+	{
+		$group_name =  'lolumns';
+
+		$reader1 = $this->getMock('Kohana_Config_Reader', array('load'), array(), 'Unittest_Config_Reader_1');
+		$reader2 = $this->getMock('Kohana_Config_Reader', array('load'), array(), 'Unittest_Config_Reader_2');
+
+		$reader1
+			->expects($this->once())
+			->method('load')
+			->with($group_name)
+			->will($this->returnValue(array('foo' => 'bar', 'kohana' => 'awesome')));
+
+		$reader2
+			->expects($this->once())
+			->method('load')
+			->with($group_name)
+			->will($this->returnValue(array('kohana' => 'sweet', 'music' => 'tasteful')));
+
+		$config = new Kohana_Config;
+
+		// Attach $reader1 at the "top" and reader2 at the "bottom"
+		$config->attach($reader1)->attach($reader2, FALSE);
+
+		$this->assertSame(
+			array(
+				'foo'    => 'bar',
+				'kohana' => 'awesome',
+				'music'  => 'tasteful'
+			),
+			$config->load($group_name)->as_array()
+		);
+	}
+
+	/**
+	 * load() should keep a record of what config groups have been requested and if
+	 * a group is requested more than once the first instance should be returned
+	 *
+	 * @test
+	 * @covers Kohana_Config::load
+	 */
+	public function test_load_reuses_config_groups()
+	{
+		$reader = $this->getMock('Kohana_Config_Reader', array('load'));
+		$reader
+			->expects($this->once())
+			->method('load')
+			->with('something')
+			->will($this->returnValue(array()));
+
+		$config = new Kohana_Config;
+
+		$config->attach($reader);
+
+		$group = $config->load('something');
+
+		$this->assertSame($group, $config->load('something'));
+	}
+
+	/**
 	 * When we call copy() we expect it to copy the merged config to all writers
 	 *
 	 * @TODO This test sucks due to limitations in the phpunit mock generator.  MAKE THIS AWESOME AGAIN!
