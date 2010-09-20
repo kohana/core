@@ -422,7 +422,7 @@ class Kohana_Form {
 		if ($text === NULL)
 		{
 			// Use the input name as the text
-			$text = ucwords(preg_replace('/\W+/', ' ', $input));
+			$text = ucwords(preg_replace('/[\W_]+/', ' ', $input));
 		}
 
 		// Set the label target
