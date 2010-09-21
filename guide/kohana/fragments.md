@@ -82,7 +82,7 @@ if ( ! Fragment::load('rss:'.$feed)):
 		// Convert $item to object
 		$item = (object) $item;
 		
-		echo html::anchor($item->link,$item->title);
+		echo HTML::anchor($item->link,$item->title);
 		
 		?>
 		<blockquote>
@@ -93,7 +93,9 @@ if ( ! Fragment::load('rss:'.$feed)):
 		
 	endforeach;
 
-Fragment::save(); endif;
+	Fragment::save();
+
+endif;
 
 echo View::factory('profiler/stats');
 ~~~
@@ -125,7 +127,9 @@ if ( ! Fragment::load('homepage', Date::MINUTE * 5)):
 	
 	echo "<p>More home page stuff</p>";
 	
-Fragment::save(); endif;
+	Fragment::save();
+
+endif;
 
 echo View::factory('profiler/stats');
 ~~~
