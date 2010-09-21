@@ -441,7 +441,6 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 			array(TRUE, 128, '<small>bool</small> TRUE'),
 			array(array('foobar'), 128, "<small>array</small><span>(1)</span> <span>(\n    0 => <small>string</small><span>(6)</span> \"foobar\"\n)</span>"),
 			array(new StdClass, 128, "<small>object</small> <span>stdClass(0)</span> <code>{\n}</code>"),
-			array("fo\x6F\xFF\x00bar\x8F\xC2\xB110", 128, '<small>string</small><span>(10)</span> "foobar±10"'),
 		);
 	}
 
