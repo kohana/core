@@ -1,25 +1,29 @@
 # Fragments
 
-Fragments are a quick and simple way to cache HTML or other output.  Fragments are not useful for caching objects or raw database results, in which case you should use a more robust caching method, which can be achieved with the [Cache module](../cache).
+Fragments are a quick and simple way to cache HTML or other output.  Fragments are not useful for caching objects or raw database results, in which case you should use a more robust caching method, which can be achieved with the [Cache module](../cache). Fragments use [Kohana::cache()] and will be placed in the cache directory (`application/cache` by default).
 
-You should use Fragment (or any caching solution) when reading the cache is faster than reprocessing the result.  Reading a parsing a remote file, parsing a complicated template, calculating something, etc.
+You should use Fragment (or any caching solution) when reading the cache is faster than reprocessing the result.  Reading and parsing a remote file, parsing a complicated template, calculating something, etc.
+
+Fragments are typically used in view files.
 
 ## Usage
 
-Fragments are used by calling [Fragment::load()] at the beginning of what you want cached, and [Fragment::save()] at the end.  They use [output buffering](http://www.php.net/manual/en/function.ob-start.php) to capture the output between the two function calls. You can force the deletion of a Fragment using [Fragment::delete()].
+Fragments are used by calling [Fragment::load()] in an `if` statement at the beginning of what you want cached, and [Fragment::save()] at the end.  They use [output buffering](http://www.php.net/manual/en/function.ob-start.php) to capture the output between the two function calls.
 
-You can specify the lifetime (in seconds) of the Fragment using the second parameter.  The default lifetime is 30 seconds.  It is useful to use the [Date] helper to make more readable lifetimes.
+You can specify the lifetime (in seconds) of the Fragment using the second parameter of [Fragment::load()].  The default lifetime is 30 seconds.  You can use the [Date] helper to make more readable times.
+
+Fragments will store a different cache for each language (using [I18n]) if you pass `true` as the third parameter to [Fragment::load()];
+
+You can force the deletion of a Fragment using [Fragment::delete()], or specify a lifetime of 0.
 
 ~~~
-// Cache for 5 minutes
-if ( ! Fragment::load('foobar', Date::MINUTE * 5))
+// Cache for 5 minutes, and cache each language
+if ( ! Fragment::load('foobar', Date::MINUTE * 5, true))
 {
     // Anything that is echo'ed here will be saved
     Fragment::save();
 }
 ~~~
-
-Fragments use [Kohana::cache()] and will be placed in the cache directory (`application/cache` by default), and can be told to respect I18n settings be passing `true` as the third parameter to [Fragment::load()];
 
 ## Example: Calculating Pi
 
@@ -70,22 +74,24 @@ $limit = 50;
 // Displayed feeds are cached for 30 seconds (default)
 if ( ! Fragment::load('rss:'.$feed)):
 
-// Parse the feed
-$items = Feed::parse($feed, $limit);
-
-foreach ($items as $item)
-{
-	// Convert $item to object
-	$item = (object) $item;
+	// Parse the feed
+	$items = Feed::parse($feed, $limit);
 	
-	echo html::anchor($item->link,$item->title)
-	?>
-	<blockquote>
-		<p>author: <?php echo $item->creator ?></p>
-		<p>date: <?php echo $item->pubDate ?></p>
-	</blockquote>
-	<?php
-}
+	foreach ($items as $item):
+	
+		// Convert $item to object
+		$item = (object) $item;
+		
+		echo html::anchor($item->link,$item->title);
+		
+		?>
+		<blockquote>
+			<p>author: <?php echo $item->creator ?></p>
+			<p>date: <?php echo $item->pubDate ?></p>
+		</blockquote>
+		<?php
+		
+	endforeach;
 
 Fragment::save(); endif;
 
@@ -118,5 +124,8 @@ if ( ! Fragment::load('homepage', Date::MINUTE * 5)):
 	Fragment::save(); endif;
 	
 	echo "<p>More home page stuff</p>";
+	
 Fragment::save(); endif;
+
+echo View::factory('profiler/stats');
 ~~~
