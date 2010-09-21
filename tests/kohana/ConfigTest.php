@@ -204,13 +204,13 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 			->expects($this->once())
 			->method('load')
 			->with($group_name)
-			->will($this->returnValue(array('foo' => 'bar', 'kohana' => 'awesome')));
+			->will($this->returnValue(array('foo' => 'bar', 'kohana' => 'awesome', 'life' => array('normal', 'fated'))));
 
 		$reader2
 			->expects($this->once())
 			->method('load')
 			->with($group_name)
-			->will($this->returnValue(array('kohana' => 'sweet', 'music' => 'tasteful')));
+			->will($this->returnValue(array('kohana' => 'sweet', 'music' => 'tasteful', 'life' => array('extraordinary', 'destined'))));
 
 		$config = new Kohana_Config;
 
@@ -219,9 +219,15 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 
 		$this->assertSame(
 			array(
-				'foo'    => 'bar',
 				'kohana' => 'awesome',
-				'music'  => 'tasteful'
+				'music'  => 'tasteful',
+				'life'   => array(
+					'extraordinary',
+					'destined',
+					'normal',
+					'fated',
+				),
+				'foo'    => 'bar',
 			),
 			$config->load($group_name)->as_array()
 		);

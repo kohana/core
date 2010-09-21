@@ -101,7 +101,7 @@ class Kohana_Config {
 		{
 			if ($source instanceof Kohana_Config_Reader)
 			{
-				$config = $source->load($group) + $config;
+				$config = Arr::merge($config, $source->load($group));
 			}
 		}
 
