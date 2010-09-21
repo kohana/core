@@ -217,13 +217,12 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
-	 * Validates a credit card number using the Luhn (mod10) formula.
-	 *
-	 * @link http://en.wikipedia.org/wiki/Luhn_algorithm
+	 * Validates a credit card number, with a Luhn check if possible.
 	 *
 	 * @param   integer       credit card number
 	 * @param   string|array  card type, or an array of card types
 	 * @return  boolean
+	 * @uses    Validate::luhn
 	 */
 	public static function credit_card($number, $type = NULL)
 	{
@@ -270,6 +269,31 @@ class Kohana_Validate extends ArrayObject {
 		// No Luhn check required
 		if ($cards[$type]['luhn'] == FALSE)
 			return TRUE;
+
+		return Validate::luhn($number);
+	}
+
+	/**
+	 * Validate a number against the [Luhn](http://en.wikipedia.org/wiki/Luhn_algorithm)
+	 * (mod10) formula.
+	 *
+	 * @param   string   number to check
+	 * @return  boolean
+	 */
+	public static function luhn($number)
+	{
+		// Force the value to be a string as this method uses string functions.
+		// Converting to an integer may pass PHP_INT_MAX and result in an error!
+		$number = (string) $number;
+
+		if ( ! ctype_digit($number))
+		{
+			// Luhn can only be used on numbers!
+			return FALSE;
+		}
+
+		// Check number length
+		$length = strlen($number);
 
 		// Checksum of the card number
 		$checksum = 0;
@@ -418,7 +442,8 @@ class Kohana_Validate extends ArrayObject {
 		// Get the decimal point for the current locale
 		list($decimal) = array_values(localeconv());
 
-		return (bool) preg_match('/^-?[0-9'.$decimal.']++$/D', (string) $str);
+		// A lookahead is used to make sure the string contains at least one digit (before or after the decimal point)
+		return (bool) preg_match('/^-?+(?=.*[0-9])[0-9]*+'.preg_quote($decimal).'?+[0-9]*+$/D', (string) $str);
 	}
 
 	/**

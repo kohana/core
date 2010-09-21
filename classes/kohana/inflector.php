@@ -98,6 +98,11 @@ class Kohana_Inflector {
 		{
 			$str = $irregular;
 		}
+		elseif (preg_match('/us$/', $str))
+		{
+			// http://en.wikipedia.org/wiki/Plural_form_of_words_ending_in_-us
+			// Already singular, do nothing
+		}
 		elseif (preg_match('/[sxz]es$/', $str) OR preg_match('/[^aeioudgkprt]hes$/', $str))
 		{
 			// Remove "es"

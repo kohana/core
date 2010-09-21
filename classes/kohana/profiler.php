@@ -195,6 +195,9 @@ class Kohana_Profiler {
 			? Profiler::groups()
 			: array_intersect_key(Profiler::groups(), array_flip((array) $groups));
 
+		// All statistics
+		$stats = array();
+
 		foreach ($groups as $group => $names)
 		{
 			foreach ($names as $name => $tokens)

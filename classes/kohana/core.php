@@ -111,6 +111,11 @@ class Kohana_Core {
 	public static $errors = TRUE;
 
 	/**
+	 * @var  string  error rendering view
+	 */
+	public static $error_view = 'kohana/error';
+
+	/**
 	 * @var  array  types of errors to display at shutdown
 	 */
 	public static $shutdown_errors = array(E_PARSE, E_ERROR, E_USER_ERROR, E_COMPILE_ERROR);
@@ -160,6 +165,7 @@ class Kohana_Core {
 	 * `string`  | base_url   | set the base URL for the application           | `"/"`
 	 * `string`  | index_file | set the index.php file name                    | `"index.php"`
 	 * `string`  | cache_dir  | set the cache directory path                   | `APPPATH."cache"`
+	 * `string`  | error_view | set the error rendering view                   | `"kohana/error"`
 	 *
 	 * @throws  Kohana_Exception
 	 * @param   array   global settings
@@ -213,6 +219,19 @@ class Kohana_Core {
 		// Enable the Kohana shutdown handler, which catches E_FATAL errors.
 		register_shutdown_function(array('Kohana', 'shutdown_handler'));
 
+		if (isset($settings['error_view']))
+		{
+			if ( ! Kohana::find_file('views', $settings['error_view']))
+			{
+				throw new Kohana_Exception('Error view file does not exist: views/:file', array(
+					':file' => $settings['error_view'],
+				));
+			}
+
+			// Change the default error rendering
+			Kohana::$error_view = (string) $settings['error_view'];
+		}
+
 		if (ini_get('register_globals'))
 		{
 			// Reverse the effects of register_globals
@@ -227,6 +246,23 @@ class Kohana_Core {
 
 		if (isset($settings['cache_dir']))
 		{
+			if ( ! is_dir($settings['cache_dir']))
+			{
+				try
+				{
+					// Create the cache directory
+					mkdir($settings['cache_dir'], 0755, TRUE);
+
+					// Set permissions (must be manually set to fix umask issues)
+					chmod($settings['cache_dir'], 0755);
+				}
+				catch (Exception $e)
+				{
+					throw new Kohana_Exception('Could not create cache directory :dir',
+						array(':dir' => Kohana::debug_path($settings['cache_dir'])));
+				}
+			}
+
 			// Set the cache directory path
 			Kohana::$cache_dir = realpath($settings['cache_dir']);
 		}
@@ -540,8 +576,21 @@ class Kohana_Core {
 	 */
 	public static function find_file($dir, $file, $ext = NULL, $array = FALSE)
 	{
-		// Use the defined extension by default
-		$ext = ($ext === NULL) ? EXT : '.'.$ext;
+		if ($ext === NULL)
+		{
+			// Use the default extension
+			$ext = EXT;
+		}
+		elseif ($ext)
+		{
+			// Prefix the extension with a period
+			$ext = ".{$ext}";
+		}
+		else
+		{
+			// Use no extension
+			$ext = '';
+		}
 
 		// Create a partial path of the filename
 		$path = $dir.DIRECTORY_SEPARATOR.$file.$ext;
@@ -810,7 +859,7 @@ class Kohana_Core {
 		try
 		{
 			// Write the cache
-			return (bool) file_put_contents($dir.$file, $data);
+			return (bool) file_put_contents($dir.$file, $data, LOCK_EX);
 		}
 		catch (Exception $e)
 		{
@@ -964,7 +1013,7 @@ class Kohana_Core {
 			ob_start();
 
 			// Include the exception HTML
-			include Kohana::find_file('views', 'kohana/error');
+			include Kohana::find_file('views', Kohana::$error_view);
 
 			// Display the contents of the output buffer
 			echo ob_get_clean();
@@ -1132,6 +1181,11 @@ class Kohana_Core {
 		}
 		elseif (is_string($var))
 		{
+			// Clean invalid multibyte characters. iconv is only invoked
+			// if there are non ASCII characters in the string, so this
+			// isn't too much of a hit.
+			$var = UTF8::clean($var);
+
 			if (UTF8::strlen($var) > $length)
 			{
 				// Encode the truncated string

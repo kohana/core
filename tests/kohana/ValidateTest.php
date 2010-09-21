@@ -314,6 +314,40 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 		);
 	}
 
+	/**
+	 * Provides test data for test_credit_card()
+	 */
+	public function provider_luhn()
+	{
+		return array(
+			array('4222222222222', TRUE),
+			array('4012888888881881', TRUE),
+			array('5105105105105100', TRUE),
+			array('6011111111111117', TRUE),
+			array('60111111111111.7', FALSE),
+			array('6011111111111117X', FALSE),
+			array('6011111111111117 ', FALSE),
+			array('WORD ', FALSE),
+		);
+	}
+
+	/**
+	 * Tests Validate::luhn()
+	 *
+	 * @test
+	 * @covers Validate::luhn
+	 * @group kohana.validation.helpers
+	 * @dataProvider  provider_luhn()
+	 * @param string  $number   Credit card number
+	 * @param boolean $expected
+	 */
+	public function test_luhn($number, $expected)
+	{
+		$this->assertSame(
+			$expected,
+			Validate::luhn($number)
+		);
+	}
 
 	/**
 	 * Provides test data for test_email()
@@ -621,10 +655,23 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	public function provider_numeric()
 	{
 		return array(
+			array(12345,   TRUE),
+			array(123.45,  TRUE),
 			array('12345', TRUE),
-		    array('10.5',  TRUE),
-		    array('-10.5', TRUE),
-		    array('10.5a', FALSE)
+			array('10.5',  TRUE),
+			array('-10.5', TRUE),
+			array('10.5a', FALSE),
+			// @issue 3240
+			array(.4,      TRUE),
+			array(-.4,     TRUE),
+			array(4.,      TRUE),
+			array(-4.,     TRUE),
+			array('.5',    TRUE),
+			array('-.5',   TRUE),
+			array('5.',    TRUE),
+			array('-5.',   TRUE),
+			array('.',     FALSE),
+			array('1.2.3', FALSE),
 		);
 	}
 
