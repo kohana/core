@@ -17,30 +17,6 @@
  */
 class Kohana_Config {
 
-	/**
-	 * Singleton instance
-	 * @var Kohana_Config
-	 */
-	protected static $_instance;
-
-	/**
-	 * Get the singleton instance of Kohana_Config.
-	 *
-	 *     $config = Kohana_Config::instance();
-	 *
-	 * @return  Kohana_Config
-	 */
-	public static function instance()
-	{
-		if (self::$_instance === NULL)
-		{
-			// Create a new instance
-			self::$_instance = new self;
-		}
-
-		return self::$_instance;
-	}
-
 	// Configuration readers
 	protected $_sources = array();
 

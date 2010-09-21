@@ -16,19 +16,6 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 {
 
 	/**
-	 * Calling Kohana_Config::instance() should return the global singleton
-	 * which should persist
-	 *
-	 * @test
-	 * @covers Kohana_Config::instance
-	 */
-	public function test_instance_returns_singleton_instance()
-	{
-		$this->assertSame(Kohana_Config::instance(), Kohana_Config::instance());
-		$this->assertNotSame(new Kohana_Config, Kohana_Config::instance());
-	}
-
-	/**
 	 * When a config object is initially created there should be
 	 * no readers attached
 	 *
