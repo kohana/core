@@ -175,6 +175,19 @@ abstract class Kohana_Session {
 	}
 
 	/**
+	 * Get the current session cookie name.
+	 *
+	 *     $name = $session->id();
+	 *
+	 * @return  string
+	 * @since   3.0.8
+	 */
+	public function name()
+	{
+		return $this->_name;
+	}
+
+	/**
 	 * Get a variable from the session array.
 	 *
 	 *     $foo = $session->get('foo');
