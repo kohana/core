@@ -335,14 +335,32 @@ class Kohana_Request {
 	 *     // Returns "Chrome" when using Google Chrome
 	 *     $browser = Request::user_agent('browser');
 	 *
-	 * @param   string  value to return: browser, version, robot, mobile, platform
-	 * @return  string  requested information
-	 * @return  FALSE   no information found
+	 * Multiple values can be returned at once by using an array:
+	 *
+	 *     // Get the browser and platform with a single call
+	 *     $info = Request::user_agent(array('browser', 'platform'));
+	 *
+	 * When using an array for the value, an associative array will be returned.
+	 *
+	 * @param   mixed   string to return: browser, version, robot, mobile, platform; or array of values
+	 * @return  mixed   requested information, FALSE if nothing is found
 	 * @uses    Kohana::config
 	 * @uses    Request::$user_agent
 	 */
 	public static function user_agent($value)
 	{
+		if (is_array($value))
+		{
+			$agent = array();
+			foreach ($value as $v)
+			{
+				// Add each key to the set
+				$agent[$v] = Request::user_agent($v);
+			}
+
+			return $agent;
+		}
+
 		static $info;
 
 		if (isset($info[$value]))
@@ -877,7 +895,7 @@ class Kohana_Request {
 				$mime = File::mime_by_ext(strtolower(pathinfo($download, PATHINFO_EXTENSION)));
 			}
 
-			// Force the data to be rendered if 
+			// Force the data to be rendered if
 			$file_data = (string) $this->response;
 
 			// Get the content size
@@ -1140,7 +1158,7 @@ class Kohana_Request {
 	 * request response.
 	 *
 	 *     $etag = $request->generate_etag();
-	 * 
+	 *
 	 * [!!] If the request response is empty when this method is called, an
 	 * exception will be thrown!
 	 *
