@@ -934,6 +934,23 @@ class Kohana_Request {
 		$this->headers['Content-Type']        = $mime;
 		$this->headers['Content-Length']      = $size;
 
+		if (Request::user_agent('browser') === 'Internet Explorer')
+		{
+			// Naturally, IE does not act like a real browser...
+
+			if (Request::$protocol === 'https')
+			{
+				// http://support.microsoft.com/kb/316431
+				$this->headers['Pragma'] = $this->headers['Cache-Control'] = 'public';
+			}
+
+			if (version_compare(Request::user_agent('version'), '8.0', '>='))
+			{
+				// http://ajaxian.com/archives/ie-8-security
+				$this->headers['X-Content-Type-Options'] = 'nosniff';
+			}
+		}
+
 		if ( ! empty($options['resumable']))
 		{
 			// @todo: ranged download processing
