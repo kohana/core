@@ -208,6 +208,37 @@ class Kohana_Inflector {
 	}
 
 	/**
+	 * Converts a camelcase string to a string separated by the specified glue
+	 *
+	 * @param   string  phrase to camelize
+	 * @param	string	string to glue components
+	 * @return  string	decamelized phrase
+	 */
+	public static function decamelize($str, $glue = ' ')
+	{
+		if (preg_match('#^([^A-Z]*)[A-Z]#', $str, $matches))
+		{
+			if ($matches[1])
+			{
+				$result = $matches[1] . $glue;
+			}
+			else
+			{
+				$result = '';
+			}
+
+			preg_match_all('#[A-Z](?:[a-z][^A-Z]*|[^a-z]+[a-z]*)#', $str, $matches);
+			$result .= implode($glue, $matches[0]);
+
+			return strtolower($result);
+		}
+		else
+		{
+			return $str;
+		}
+	}
+
+	/**
 	 * Makes a phrase underscored instead of spaced.
 	 *
 	 *     $str = Inflector::underscore('five cats'); // "five_cats";
