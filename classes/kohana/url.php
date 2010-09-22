@@ -88,6 +88,12 @@ class Kohana_URL {
 		// Chop off possible scheme, host, port, user and pass parts
 		$path = preg_replace('~^[-a-z0-9+.]++://[^/]++/?~', '', trim($uri, '/'));
 
+		if ( ! UTF8::is_ascii($path))
+		{
+			// Encode all non-ASCII characters, as per RFC 1738
+			$path = preg_replace('~([^/]+)~e', 'rawurlencode("$1")', $path);
+		}
+
 		// Concat the URL
 		return URL::base(TRUE, $protocol).$path;
 	}
