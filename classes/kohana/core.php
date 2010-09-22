@@ -790,7 +790,7 @@ class Kohana_Core {
 
 		if (isset($path))
 		{
-			return Arr::path($config[$group], $path);
+			return Arr::path($config[$group], $path, NULL, '.');
 		}
 		else
 		{
