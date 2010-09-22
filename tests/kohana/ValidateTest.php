@@ -618,15 +618,15 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 		$ao1['test'] = 'value';
 		
 		return array(
-			array(array(),		FALSE),
-			array(Null,			FALSE),
-			array('',			FALSE),
-			array(0,			FALSE),
-			array($ao,			FALSE),
-			array($ao1,			TRUE),
-			array(array(NULL),	TRUE),
-			array('0',			TRUE),
-			array('Something',	TRUE),
+			array(array(),      FALSE),
+			array(NULL,         FALSE),
+			array('',           FALSE),
+			array($ao,          FALSE),
+			array($ao1,         TRUE),
+			array(array(NULL),  TRUE),
+			array(0,            TRUE),
+			array('0',          TRUE),
+			array('Something',  TRUE),
 		);
 	}
 

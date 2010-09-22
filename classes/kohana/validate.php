@@ -34,7 +34,8 @@ class Kohana_Validate extends ArrayObject {
 			$value = $value->getArrayCopy();
 		}
 
-		return ($value === '0' OR ! empty($value));
+		// Value cannot be NULL, FALSE, '', or an empty array
+		return ! in_array($value, array(NULL, FALSE, '', array()), TRUE);
 	}
 
 	/**

@@ -198,6 +198,17 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 				array('foo' => 'bin', array('temp' => 'name')),
 				array('foo' => 'bar', array('temp' => 'life')),
 			),
+			// Bug #3139
+			array(
+				array('foo'	=> array('bar')),
+				array('foo'	=> 'bar'),
+				array('foo'	=> array('bar')),
+			),
+			array(
+				array('foo'	=> 'bar'),
+				array('foo'	=> array('bar')),
+				array('foo'	=> 'bar'),
+			),
 		);
 	}
 
@@ -222,7 +233,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	public function provider_path()
 	{
 		$array = array(
-			'foobar' =>	array('definition' => 'lost'),
+			'foobar' => array('definition' => 'lost'),
 			'kohana' => 'awesome',
 			'users'  => array(
 				1 => array('name' => 'matt'),
@@ -234,7 +245,9 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 			// Tests returns normal values
 			array($array['foobar'], $array, 'foobar'),
 			array($array['kohana'], $array, 'kohana'),
-			array($array['foobar']['definition'], $array,  'foobar.definition'),
+			array($array['foobar']['definition'], $array, 'foobar.definition'),
+			// Custom delimiters
+			array($array['foobar']['definition'], $array, 'foobar/definition', NULL, '/'),
 			// We should be able to use NULL as a default, returned if the key DNX
 			array(NULL, $array, 'foobar.alternatives',  NULL),
 			array(NULL, $array, 'kohana.alternatives',  NULL),
@@ -258,15 +271,16 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_path
-	 * @param string  $path      The path to follow
-	 * @param mixed   $default   The value to return if dnx
-	 * @param boolean $expected  The expected value
+	 * @param string  $path       The path to follow
+	 * @param mixed   $default    The value to return if dnx
+	 * @param boolean $expected   The expected value
+	 * @param string  $delimiter  The path delimiter
 	 */
-	public function test_path($expected, $array, $path, $default = NULL)
+	public function test_path($expected, $array, $path, $default = NULL, $delimiter = NULL)
 	{
 		$this->assertSame(
 			$expected,
-			Arr::path($array, $path, $default)
+			Arr::path($array, $path, $default, $delimiter)
 		);
 	}
 

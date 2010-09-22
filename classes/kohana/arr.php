@@ -11,6 +11,11 @@
 class Kohana_Arr {
 
 	/**
+	 * @var  string  default delimiter for path()
+	 */
+	public static $delimiter = '.';
+
+	/**
 	 * Tests if an array is associative or not.
 	 *
 	 *     // Returns TRUE
@@ -44,11 +49,12 @@ class Kohana_Arr {
 	 *     $colors = Arr::path($array, 'theme.*.color');
 	 *
 	 * @param   array   array to search
-	 * @param   string  key path, dot separated
+	 * @param   string  key path, delimiter separated
 	 * @param   mixed   default value if the path is not set
+	 * @param   string  key path delimiter
 	 * @return  mixed
 	 */
-	public static function path($array, $path, $default = NULL)
+	public static function path($array, $path, $default = NULL, $delimiter = NULL)
 	{
 		if (array_key_exists($path, $array))
 		{
@@ -56,11 +62,17 @@ class Kohana_Arr {
 			return $array[$path];
 		}
 
-		// Remove outer dots, wildcards, or spaces
-		$path = trim($path, '.* ');
+		if ($delimiter === NULL)
+		{
+			// Use the default delimiter
+			$delimiter = Arr::$delimiter;
+		}
 
-		// Split the keys by slashes
-		$keys = explode('.', $path);
+		// Remove outer delimiters, wildcards, or spaces
+		$path = trim($path, "{$delimiter}* ");
+
+		// Split the keys by delimiter
+		$keys = explode($delimiter, $path);
 
 		do
 		{
@@ -296,7 +308,7 @@ class Kohana_Arr {
 			{
 				if (isset($result[$key]))
 				{
-					if (is_array($val))
+					if (is_array($val) && is_array($result[$key]))
 					{
 						if (Arr::is_assoc($val))
 						{
