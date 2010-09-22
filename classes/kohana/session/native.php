@@ -17,8 +17,8 @@ class Kohana_Session_Native extends Session {
 
 	protected function _read($id = NULL)
 	{
-		// Set the cookie lifetime
-		session_set_cookie_params($this->_lifetime);
+		// Sync up the session cookie with Cookie parameters
+		session_set_cookie_params($this->_lifetime, Cookie::$path, Cookie::$domain, Cookie::$secure, Cookie::$httponly);
 
 		// Set the session cookie name
 		session_name($this->_name);
