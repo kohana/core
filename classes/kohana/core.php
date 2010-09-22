@@ -96,6 +96,11 @@ class Kohana_Core {
 	public static $cache_dir;
 
 	/**
+	 * @var  integer  default lifetime for caching, in seconds
+	 */
+	public static $cache_life = 60;
+
+	/**
 	 * @var  boolean  enabling internal caching?
 	 */
 	public static $caching = FALSE;
@@ -165,6 +170,7 @@ class Kohana_Core {
 	 * `string`  | base_url   | set the base URL for the application           | `"/"`
 	 * `string`  | index_file | set the index.php file name                    | `"index.php"`
 	 * `string`  | cache_dir  | set the cache directory path                   | `APPPATH."cache"`
+	 * `integer` | cache_life | set the default cache lifetime                 | `60`
 	 * `string`  | error_view | set the error rendering view                   | `"kohana/error"`
 	 *
 	 * @throws  Kohana_Exception
@@ -276,6 +282,12 @@ class Kohana_Core {
 		{
 			throw new Kohana_Exception('Directory :dir must be writable',
 				array(':dir' => Kohana::debug_path(Kohana::$cache_dir)));
+		}
+
+		if (isset($settings['cache_life']))
+		{
+			// Set the default cache lifetime
+			Kohana::$cache_life = (int) $settings['cache_life'];
 		}
 
 		if (isset($settings['caching']))
@@ -808,13 +820,19 @@ class Kohana_Core {
 	 * @return  mixed    for getting
 	 * @return  boolean  for setting
 	 */
-	public static function cache($name, $data = NULL, $lifetime = 60)
+	public static function cache($name, $data = NULL, $lifetime = NULL)
 	{
 		// Cache file is a hash of the name
 		$file = sha1($name).'.txt';
 
 		// Cache directories are split by keys to prevent filesystem overload
 		$dir = Kohana::$cache_dir.DIRECTORY_SEPARATOR.$file[0].$file[1].DIRECTORY_SEPARATOR;
+
+		if ($lifetime === NULL)
+		{
+			// Use the default lifetime
+			$lifetime = Kohana::$cache_life;
+		}
 
 		if ($data === NULL)
 		{
