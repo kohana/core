@@ -11,6 +11,43 @@
 class Kohana_Text {
 
 	/**
+	 * @var  array   number units and text equivalents
+	 */
+	public static $units = array(
+		1000000000 => 'billion',
+		1000000    => 'million',
+		1000       => 'thousand',
+		100        => 'hundred',
+		90 => 'ninety',
+		80 => 'eighty',
+		70 => 'seventy',
+		60 => 'sixty',
+		50 => 'fifty',
+		40 => 'fourty',
+		30 => 'thirty',
+		20 => 'twenty',
+		19 => 'nineteen',
+		18 => 'eighteen',
+		17 => 'seventeen',
+		16 => 'sixteen',
+		15 => 'fifteen',
+		14 => 'fourteen',
+		13 => 'thirteen',
+		12 => 'twelve',
+		11 => 'eleven',
+		10 => 'ten',
+		9  => 'nine',
+		8  => 'eight',
+		7  => 'seven',
+		6  => 'six',
+		5  => 'five',
+		4  => 'four',
+		3  => 'three',
+		2  => 'two',
+		1  => 'one',
+	);
+
+	/**
 	 * Limits a phrase to a given number of words.
 	 *
 	 *     $text = Text::limit_words($text);
@@ -23,7 +60,7 @@ class Kohana_Text {
 	public static function limit_words($str, $limit = 100, $end_char = NULL)
 	{
 		$limit = (int) $limit;
-		$end_char = ($end_char === NULL) ? '&#8230;' : $end_char;
+		$end_char = ($end_char === NULL) ? '…' : $end_char;
 
 		if (trim($str) === '')
 			return $str;
@@ -52,7 +89,7 @@ class Kohana_Text {
 	 */
 	public static function limit_chars($str, $limit = 100, $end_char = NULL, $preserve_words = FALSE)
 	{
-		$end_char = ($end_char === NULL) ? '&#8230;' : $end_char;
+		$end_char = ($end_char === NULL) ? '…' : $end_char;
 
 		$limit = (int) $limit;
 
@@ -62,14 +99,15 @@ class Kohana_Text {
 		if ($limit <= 0)
 			return $end_char;
 
-		if ($preserve_words == FALSE)
-		{
+		if ($preserve_words === FALSE)
 			return rtrim(UTF8::substr($str, 0, $limit)).$end_char;
-		}
 
-		preg_match('/^.{'.($limit - 1).'}\S*/us', $str, $matches);
+		// Don't preserve words. The limit is considered the top limit.
+		// No strings with a length longer than $limit should be returned.
+		if ( ! preg_match('/^.{0,'.$limit.'}\s/us', $str, $matches))
+			return $end_char;
 
-		return rtrim($matches[0]).(strlen($matches[0]) == strlen($str) ? '' : $end_char);
+		return rtrim($matches[0]).(strlen($matches[0]) === strlen($str) ? '' : $end_char);
 	}
 
 	/**
@@ -108,7 +146,7 @@ class Kohana_Text {
 	 * The following types are supported:
 	 *
 	 * alnum
-	 * :  Upper and lower case a-z, 0-9
+	 * :  Upper and lower case a-z, 0-9 (default)
 	 *
 	 * alpha
 	 * :  Upper and lower case a-z
@@ -127,8 +165,14 @@ class Kohana_Text {
 	 * @return  string
 	 * @uses    UTF8::split
 	 */
-	public static function random($type = 'alnum', $length = 8)
+	public static function random($type = NULL, $length = 8)
 	{
+		if ($type === NULL)
+		{
+			// Default is to generate an alphanumeric string
+			$type = 'alnum';
+		}
+
 		$utf8 = FALSE;
 
 		switch ($type)
@@ -275,6 +319,8 @@ class Kohana_Text {
 	 *
 	 *     echo Text::auto_link($text);
 	 *
+	 * [!!] This method is not foolproof since it uses regex to parse HTML.
+	 *
 	 * @param   string   text to auto link
 	 * @return  string
 	 * @uses    Text::auto_link_urls
@@ -291,33 +337,29 @@ class Kohana_Text {
 	 *
 	 *     echo Text::auto_link_urls($text);
 	 *
+	 * [!!] This method is not foolproof since it uses regex to parse HTML.
+	 *
 	 * @param   string   text to auto link
 	 * @return  string
 	 * @uses    HTML::anchor
 	 */
 	public static function auto_link_urls($text)
 	{
-		// Finds all http/https/ftp/ftps links that are not part of an existing html anchor
-		if (preg_match_all('~\b(?<!href="|">)(?:ht|f)tps?://\S+(?:/|\b)~i', $text, $matches))
-		{
-			foreach ($matches[0] as $match)
-			{
-				// Replace each link with an anchor
-				$text = str_replace($match, HTML::anchor($match), $text);
-			}
-		}
+		// Find and replace all http/https/ftp/ftps links that are not part of an existing html anchor
+		$text = preg_replace_callback('~\b(?<!href="|">)(?:ht|f)tps?://\S+(?:/|\b)~i', 'Text::_auto_link_urls_callback1', $text);
 
-		// Find all naked www.links.com (without http://)
-		if (preg_match_all('~\b(?<!://)www(?:\.[a-z0-9][-a-z0-9]*+)+\.[a-z]{2,6}\b~i', $text, $matches))
-		{
-			foreach ($matches[0] as $match)
-			{
-				// Replace each link with an anchor
-				$text = str_replace($match, HTML::anchor('http://'.$match, $match), $text);
-			}
-		}
+		// Find and replace all naked www.links.com (without http://)
+		return preg_replace_callback('~\b(?<!://|">)www(?:\.[a-z0-9][-a-z0-9]*+)+\.[a-z]{2,6}\b~i', 'Text::_auto_link_urls_callback2', $text);
+	}
 
-		return $text;
+	protected static function _auto_link_urls_callback1($matches)
+	{
+		return HTML::anchor($matches[0]);
+	}
+
+	protected static function _auto_link_urls_callback2($matches)
+	{
+		return HTML::anchor('http://'.$matches[0], $matches[0]);
 	}
 
 	/**
@@ -326,25 +368,23 @@ class Kohana_Text {
 	 *
 	 *     echo Text::auto_link_emails($text);
 	 *
+	 * [!!] This method is not foolproof since it uses regex to parse HTML.
+	 *
 	 * @param   string   text to auto link
 	 * @return  string
 	 * @uses    HTML::mailto
 	 */
 	public static function auto_link_emails($text)
 	{
-		// Finds all email addresses that are not part of an existing html mailto anchor
+		// Find and replace all email addresses that are not part of an existing html mailto anchor
 		// Note: The "58;" negative lookbehind prevents matching of existing encoded html mailto anchors
 		//       The html entity for a colon (:) is &#58; or &#058; or &#0058; etc.
-		if (preg_match_all('~\b(?<!href="mailto:|">|58;)(?!\.)[-+_a-z0-9.]++(?<!\.)@(?![-.])[-a-z0-9.]+(?<!\.)\.[a-z]{2,6}\b~i', $text, $matches))
-		{
-			foreach ($matches[0] as $match)
-			{
-				// Replace each email with an encoded mailto
-				$text = preg_replace('!\b'.preg_quote($match).'\b!', HTML::mailto($match), $text);
-			}
-		}
+		return preg_replace_callback('~\b(?<!href="mailto:|58;)(?!\.)[-+_a-z0-9.]++(?<!\.)@(?![-.])[-a-z0-9.]+(?<!\.)\.[a-z]{2,6}\b(?!</a>)~i', 'Text::_auto_link_emails_callback', $text);
+	}
 
-		return $text;
+	protected static function _auto_link_emails_callback($matches)
+	{
+		return HTML::mailto($matches[0]);
 	}
 
 	/**
@@ -442,6 +482,87 @@ class Kohana_Text {
 		}
 
 		return sprintf($format, $bytes / pow($mod, $power), $units[$power]);
+	}
+
+	/**
+	 * Format a number to human-readable text.
+	 *
+	 *     // Display: one thousand and twenty-four
+	 *     echo Text::number(1024);
+	 *
+	 *     // Display: five million, six hundred and thirty-two
+	 *     echo Text::number(5000632);
+	 *
+	 * @param   integer   number to format
+	 * @return  string
+	 * @since   3.0.8
+	 */
+	public static function number($number)
+	{
+		// The number must always be an integer
+		$number = (int) $number;
+
+		// Uncompiled text version
+		$text = array();
+
+		// Last matched unit within the loop
+		$last_unit = NULL;
+
+		// The last matched item within the loop
+		$last_item = '';
+
+		foreach (Text::$units as $unit => $name)
+		{
+			if ($number / $unit >= 1)
+			{
+				// $value = the number of times the number is divisble by unit
+				$number -= $unit * ($value = (int) floor($number / $unit));
+				// Temporary var for textifying the current unit
+				$item = '';
+
+				if ($unit < 100)
+				{
+					if ($last_unit < 100 AND $last_unit >= 20)
+					{
+						$last_item .= '-'.$name;
+					}
+					else
+					{
+						$item = $name;
+					}
+				}
+				else
+				{
+					$item = Text::number($value).' '.$name;
+				}
+
+				// In the situation that we need to make a composite number (i.e. twenty-three)
+				// then we need to modify the previous entry
+				if(empty($item))
+				{
+					array_pop($text);
+
+					$item = $last_item;
+				}
+
+				$last_item = $text[] = $item;
+				$last_unit = $unit;
+			}
+		}
+
+		if(count($text) > 1)
+		{
+			$and = array_pop($text);
+		}
+
+		$text = implode(', ', $text);
+
+		if(isset($and))
+		{
+			$text .= ' and '.$and;
+		}
+
+		return $text;
 	}
 
 	/**

@@ -15,11 +15,11 @@
 class Kohana_RemoteTest extends Kohana_Unittest_TestCase
 {
 	/**
-	 * Provides test data for testGet()
+	 * Provides test data for test_get()
 	 * 
 	 * @return array
 	 */
-	function providerGet()
+	public function provider_get()
 	{
 		return array(
 			// $value, $result
@@ -32,21 +32,24 @@ class Kohana_RemoteTest extends Kohana_Unittest_TestCase
 	 * Tests Remote::get
 	 *
 	 * @test
-	 * @dataProvider providerGet
+	 * @dataProvider provider_get
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function testGet($input, $expected)
+	public function test_get($input, $expected)
 	{
+		if ( ! $this->hasInternet())
+			$this->markTestSkipped('An internet connection is required for this test');
+
 		#$this->assertSame($expected, Remote::get($input));
 	}
 
 	/**
-	 * Provides test data for testStatus()
+	 * Provides test data for test_status()
 	 * 
 	 * @return array
 	 */
-	function providerStatus()
+	public function provider_status()
 	{
 		return array(
 			// $value, $result
@@ -60,12 +63,15 @@ class Kohana_RemoteTest extends Kohana_Unittest_TestCase
 	 * Tests Remote::status
 	 *
 	 * @test
-	 * @dataProvider providerStatus
+	 * @dataProvider provider_status
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function testStatus($input, $expected)
+	public function test_status($input, $expected)
 	{
+		if ( ! $this->hasInternet())
+			$this->markTestSkipped('An internet connection is required for this test');
+		
 		$this->assertSame($expected, Remote::status($input));
 	}
 }

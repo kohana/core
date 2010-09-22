@@ -16,8 +16,8 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.0.7';
-	const CODENAME = 'hattrick';
+	const VERSION  = '3.0.8';
+	const CODENAME = 'großen jäger';
 
 	// Log message types
 	const ERROR = 'ERROR';
@@ -96,6 +96,11 @@ class Kohana_Core {
 	public static $cache_dir;
 
 	/**
+	 * @var  integer  default lifetime for caching, in seconds
+	 */
+	public static $cache_life = 60;
+
+	/**
 	 * @var  boolean  enabling internal caching?
 	 */
 	public static $caching = FALSE;
@@ -109,6 +114,11 @@ class Kohana_Core {
 	 * @var  boolean  enable error handling?
 	 */
 	public static $errors = TRUE;
+
+	/**
+	 * @var  string  error rendering view
+	 */
+	public static $error_view = 'kohana/error';
 
 	/**
 	 * @var  array  types of errors to display at shutdown
@@ -160,6 +170,8 @@ class Kohana_Core {
 	 * `string`  | base_url   | set the base URL for the application           | `"/"`
 	 * `string`  | index_file | set the index.php file name                    | `"index.php"`
 	 * `string`  | cache_dir  | set the cache directory path                   | `APPPATH."cache"`
+	 * `integer` | cache_life | set the default cache lifetime                 | `60`
+	 * `string`  | error_view | set the error rendering view                   | `"kohana/error"`
 	 *
 	 * @throws  Kohana_Exception
 	 * @param   array   global settings
@@ -184,12 +196,6 @@ class Kohana_Core {
 		{
 			// Enable profiling
 			Kohana::$profiling = (bool) $settings['profile'];
-		}
-
-		if (Kohana::$profiling === TRUE)
-		{
-			// Start a new benchmark
-			$benchmark = Profiler::start('Kohana', __FUNCTION__);
 		}
 
 		// Start an output buffer
@@ -219,6 +225,19 @@ class Kohana_Core {
 		// Enable the Kohana shutdown handler, which catches E_FATAL errors.
 		register_shutdown_function(array('Kohana', 'shutdown_handler'));
 
+		if (isset($settings['error_view']))
+		{
+			if ( ! Kohana::find_file('views', $settings['error_view']))
+			{
+				throw new Kohana_Exception('Error view file does not exist: views/:file', array(
+					':file' => $settings['error_view'],
+				));
+			}
+
+			// Change the default error rendering
+			Kohana::$error_view = (string) $settings['error_view'];
+		}
+
 		if (ini_get('register_globals'))
 		{
 			// Reverse the effects of register_globals
@@ -233,6 +252,23 @@ class Kohana_Core {
 
 		if (isset($settings['cache_dir']))
 		{
+			if ( ! is_dir($settings['cache_dir']))
+			{
+				try
+				{
+					// Create the cache directory
+					mkdir($settings['cache_dir'], 0755, TRUE);
+
+					// Set permissions (must be manually set to fix umask issues)
+					chmod($settings['cache_dir'], 0755);
+				}
+				catch (Exception $e)
+				{
+					throw new Kohana_Exception('Could not create cache directory :dir',
+						array(':dir' => Kohana::debug_path($settings['cache_dir'])));
+				}
+			}
+
 			// Set the cache directory path
 			Kohana::$cache_dir = realpath($settings['cache_dir']);
 		}
@@ -246,6 +282,12 @@ class Kohana_Core {
 		{
 			throw new Kohana_Exception('Directory :dir must be writable',
 				array(':dir' => Kohana::debug_path(Kohana::$cache_dir)));
+		}
+
+		if (isset($settings['cache_life']))
+		{
+			// Set the default cache lifetime
+			Kohana::$cache_life = (int) $settings['cache_life'];
 		}
 
 		if (isset($settings['caching']))
@@ -297,12 +339,6 @@ class Kohana_Core {
 
 		// Load the config
 		Kohana::$config = Kohana_Config::instance();
-
-		if (isset($benchmark))
-		{
-			// Stop benchmarking
-			Profiler::stop($benchmark);
-		}
 	}
 
 	/**
@@ -469,12 +505,9 @@ class Kohana_Core {
 	public static function modules(array $modules = NULL)
 	{
 		if ($modules === NULL)
-			return Kohana::$_modules;
-
-		if (Kohana::$profiling === TRUE)
 		{
-			// Start a new benchmark
-			$benchmark = Profiler::start('Kohana', __FUNCTION__);
+			// Not changing modules, just return the current set
+			return Kohana::$_modules;
 		}
 
 		// Start a new list of include paths, APPPATH first
@@ -512,12 +545,6 @@ class Kohana_Core {
 				// Include the module initialization file once
 				require_once $init;
 			}
-		}
-
-		if (isset($benchmark))
-		{
-			// Stop the benchmark
-			Profiler::stop($benchmark);
 		}
 
 		return Kohana::$_modules;
@@ -561,8 +588,21 @@ class Kohana_Core {
 	 */
 	public static function find_file($dir, $file, $ext = NULL, $array = FALSE)
 	{
-		// Use the defined extension by default
-		$ext = ($ext === NULL) ? EXT : '.'.$ext;
+		if ($ext === NULL)
+		{
+			// Use the default extension
+			$ext = EXT;
+		}
+		elseif ($ext)
+		{
+			// Prefix the extension with a period
+			$ext = ".{$ext}";
+		}
+		else
+		{
+			// Use no extension
+			$ext = '';
+		}
 
 		// Create a partial path of the filename
 		$path = $dir.DIRECTORY_SEPARATOR.$file.$ext;
@@ -750,7 +790,7 @@ class Kohana_Core {
 
 		if (isset($path))
 		{
-			return Arr::path($config[$group], $path);
+			return Arr::path($config[$group], $path, NULL, '.');
 		}
 		else
 		{
@@ -780,7 +820,7 @@ class Kohana_Core {
 	 * @return  mixed    for getting
 	 * @return  boolean  for setting
 	 */
-	public static function cache($name, $data = NULL, $lifetime = 60)
+	public static function cache($name, $data = NULL, $lifetime = NULL)
 	{
 		// Cache file is a hash of the name
 		$file = sha1($name).'.txt';
@@ -788,51 +828,61 @@ class Kohana_Core {
 		// Cache directories are split by keys to prevent filesystem overload
 		$dir = Kohana::$cache_dir.DIRECTORY_SEPARATOR.$file[0].$file[1].DIRECTORY_SEPARATOR;
 
-		try
+		if ($lifetime === NULL)
 		{
-			if ($data === NULL)
+			// Use the default lifetime
+			$lifetime = Kohana::$cache_life;
+		}
+
+		if ($data === NULL)
+		{
+			if (is_file($dir.$file))
 			{
-				if (is_file($dir.$file))
+				if ((time() - filemtime($dir.$file)) < $lifetime)
 				{
-					if ((time() - filemtime($dir.$file)) < $lifetime)
+					// Return the cache
+					return unserialize(file_get_contents($dir.$file));
+				}
+				else
+				{
+					try
 					{
-						// Return the cache
-						return unserialize(file_get_contents($dir.$file));
+						// Cache has expired
+						unlink($dir.$file);
 					}
-					else
+					catch (Exception $e)
 					{
-						try
-						{
-							// Cache has expired
-							unlink($dir.$file);
-						}
-						catch (Exception $e)
-						{
-							// Cache has already been deleted
-							return NULL;
-						}
+						// Cache has mostly likely already been deleted,
+						// let return happen normally.
 					}
 				}
-
-				// Cache not found
-				return NULL;
 			}
 
-			if ( ! is_dir($dir))
-			{
-				// Create the cache directory
-				mkdir($dir, 0777, TRUE);
+			// Cache not found
+			return NULL;
+		}
 
-				// Set permissions (must be manually set to fix umask issues)
-				chmod($dir, 0777);
-			}
+		if ( ! is_dir($dir))
+		{
+			// Create the cache directory
+			mkdir($dir, 0777, TRUE);
 
+			// Set permissions (must be manually set to fix umask issues)
+			chmod($dir, 0777);
+		}
+
+		// Force the data to be a string
+		$data = serialize($data);
+
+		try
+		{
 			// Write the cache
-			return (bool) file_put_contents($dir.$file, serialize($data));
+			return (bool) file_put_contents($dir.$file, $data, LOCK_EX);
 		}
 		catch (Exception $e)
 		{
-			throw $e;
+			// Failed to write cache
+			return FALSE;
 		}
 	}
 
@@ -981,7 +1031,7 @@ class Kohana_Core {
 			ob_start();
 
 			// Include the exception HTML
-			include Kohana::find_file('views', 'kohana/error');
+			include Kohana::find_file('views', Kohana::$error_view);
 
 			// Display the contents of the output buffer
 			echo ob_get_clean();
@@ -997,7 +1047,7 @@ class Kohana_Core {
 			echo Kohana::exception_text($e), "\n";
 
 			// Exit with an error status
-			exit(1);
+			// exit(1);
 		}
 	}
 
@@ -1149,6 +1199,11 @@ class Kohana_Core {
 		}
 		elseif (is_string($var))
 		{
+			// Clean invalid multibyte characters. iconv is only invoked
+			// if there are non ASCII characters in the string, so this
+			// isn't too much of a hit.
+			$var = UTF8::clean($var);
+
 			if (UTF8::strlen($var) > $length)
 			{
 				// Encode the truncated string

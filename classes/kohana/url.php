@@ -33,14 +33,19 @@ class Kohana_URL {
 	 */
 	public static function base($index = FALSE, $protocol = FALSE)
 	{
+		// Start with the configured base URL
+		$base_url = Kohana::$base_url;
+
 		if ($protocol === TRUE)
 		{
 			// Use the current protocol
 			$protocol = Request::$protocol;
 		}
-
-		// Start with the configured base URL
-		$base_url = Kohana::$base_url;
+		elseif ($protocol === FALSE AND $scheme = parse_url($base_url, PHP_URL_SCHEME))
+		{
+			// Use the configured default protocol
+			$protocol = $scheme;
+		}
 
 		if ($index === TRUE AND ! empty(Kohana::$index_file))
 		{
@@ -50,14 +55,19 @@ class Kohana_URL {
 
 		if (is_string($protocol))
 		{
-			if (parse_url($base_url, PHP_URL_HOST))
+			if ($domain = parse_url($base_url, PHP_URL_HOST))
 			{
 				// Remove everything but the path from the URL
 				$base_url = parse_url($base_url, PHP_URL_PATH);
 			}
+			else
+			{
+				// Attempt ot use HTPP_HOST and fallback to SERVER_NAME
+				$domain = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME'];
+			}
 
 			// Add the protocol and domain to the base URL
-			$base_url = $protocol.'://'.$_SERVER['HTTP_HOST'].$base_url;
+			$base_url = $protocol.'://'.$domain.$base_url;
 		}
 
 		return $base_url;
@@ -75,23 +85,17 @@ class Kohana_URL {
 	 */
 	public static function site($uri = '', $protocol = FALSE)
 	{
-		// Get the path from the URI
-		$path = trim(parse_url($uri, PHP_URL_PATH), '/');
+		// Chop off possible scheme, host, port, user and pass parts
+		$path = preg_replace('~^[-a-z0-9+.]++://[^/]++/?~', '', trim($uri, '/'));
 
-		if ($query = parse_url($uri, PHP_URL_QUERY))
+		if ( ! UTF8::is_ascii($path))
 		{
-			// ?query=string
-			$query = '?'.$query;
-		}
-
-		if ($fragment = parse_url($uri, PHP_URL_FRAGMENT))
-		{
-			// #fragment
-			$fragment = '#'.$fragment;
+			// Encode all non-ASCII characters, as per RFC 1738
+			$path = preg_replace('~([^/]+)~e', 'rawurlencode("$1")', $path);
 		}
 
 		// Concat the URL
-		return URL::base(TRUE, $protocol).$path.$query.$fragment;
+		return URL::base(TRUE, $protocol).$path;
 	}
 
 	/**

@@ -113,12 +113,13 @@ class Kohana_Request {
 
 	/**
 	 * Main request singleton instance. If no URI is provided, the URI will
-	 * be automatically detected using PATH_INFO, REQUEST_URI, or PHP_SELF.
+	 * be automatically detected.
 	 *
 	 *     $request = Request::instance();
 	 *
 	 * @param   string   URI of the request
 	 * @return  Request
+	 * @uses    Request::detect_uri
 	 */
 	public static function instance( & $uri = TRUE)
 	{
@@ -215,53 +216,7 @@ class Kohana_Request {
 
 				if ($uri === TRUE)
 				{
-					if ( ! empty($_SERVER['PATH_INFO']))
-					{
-						// PATH_INFO does not contain the docroot or index
-						$uri = $_SERVER['PATH_INFO'];
-					}
-					else
-					{
-						// REQUEST_URI and PHP_SELF include the docroot and index
-
-						if (isset($_SERVER['REQUEST_URI']))
-						{
-							// REQUEST_URI includes the query string, remove it
-							$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-
-							// Decode the request URI
-							$uri = rawurldecode($uri);
-						}
-						elseif (isset($_SERVER['PHP_SELF']))
-						{
-							$uri = $_SERVER['PHP_SELF'];
-						}
-						elseif (isset($_SERVER['REDIRECT_URL']))
-						{
-							$uri = $_SERVER['REDIRECT_URL'];
-						}
-						else
-						{
-							// If you ever see this error, please report an issue at http://dev.kohanaphp.com/projects/kohana3/issues
-							// along with any relevant information about your web server setup. Thanks!
-							throw new Kohana_Exception('Unable to detect the URI using PATH_INFO, REQUEST_URI, or PHP_SELF');
-						}
-
-						// Get the path from the base URL, including the index file
-						$base_url = parse_url(Kohana::$base_url, PHP_URL_PATH);
-
-						if (strpos($uri, $base_url) === 0)
-						{
-							// Remove the base URL from the URI
-							$uri = substr($uri, strlen($base_url));
-						}
-
-						if (Kohana::$index_file AND strpos($uri, Kohana::$index_file) === 0)
-						{
-							// Remove the index file from the URI
-							$uri = substr($uri, strlen(Kohana::$index_file));
-						}
-					}
+					$uri = Request::detect_uri();
 				}
 			}
 
@@ -279,6 +234,69 @@ class Kohana_Request {
 		}
 
 		return Request::$instance;
+	}
+
+	/**
+	 * Automatically detects the URI of the main request using PATH_INFO,
+	 * REQUEST_URI, PHP_SELF or REDIRECT_URL.
+	 *
+	 *     $uri = Request::detect_uri();
+	 *
+	 * @return  string  URI of the main request
+	 * @throws  Kohana_Exception
+	 * @since   3.0.8
+	 */
+	public static function detect_uri()
+	{
+		if ( ! empty($_SERVER['PATH_INFO']))
+		{
+			// PATH_INFO does not contain the docroot or index
+			$uri = $_SERVER['PATH_INFO'];
+		}
+		else
+		{
+			// REQUEST_URI and PHP_SELF include the docroot and index
+
+			if (isset($_SERVER['REQUEST_URI']))
+			{
+				// REQUEST_URI includes the query string, remove it
+				$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+				// Decode the request URI
+				$uri = rawurldecode($uri);
+			}
+			elseif (isset($_SERVER['PHP_SELF']))
+			{
+				$uri = $_SERVER['PHP_SELF'];
+			}
+			elseif (isset($_SERVER['REDIRECT_URL']))
+			{
+				$uri = $_SERVER['REDIRECT_URL'];
+			}
+			else
+			{
+				// If you ever see this error, please report an issue at http://dev.kohanaphp.com/projects/kohana3/issues
+				// along with any relevant information about your web server setup. Thanks!
+				throw new Kohana_Exception('Unable to detect the URI using PATH_INFO, REQUEST_URI, PHP_SELF or REDIRECT_URL');
+			}
+
+			// Get the path from the base URL, including the index file
+			$base_url = parse_url(Kohana::$base_url, PHP_URL_PATH);
+
+			if (strpos($uri, $base_url) === 0)
+			{
+				// Remove the base URL from the URI
+				$uri = substr($uri, strlen($base_url));
+			}
+
+			if (Kohana::$index_file AND strpos($uri, Kohana::$index_file) === 0)
+			{
+				// Remove the index file from the URI
+				$uri = substr($uri, strlen(Kohana::$index_file));
+			}
+		}
+
+		return $uri;
 	}
 
 	/**
@@ -317,14 +335,32 @@ class Kohana_Request {
 	 *     // Returns "Chrome" when using Google Chrome
 	 *     $browser = Request::user_agent('browser');
 	 *
-	 * @param   string  value to return: browser, version, robot, mobile, platform
-	 * @return  string  requested information
-	 * @return  FALSE   no information found
+	 * Multiple values can be returned at once by using an array:
+	 *
+	 *     // Get the browser and platform with a single call
+	 *     $info = Request::user_agent(array('browser', 'platform'));
+	 *
+	 * When using an array for the value, an associative array will be returned.
+	 *
+	 * @param   mixed   string to return: browser, version, robot, mobile, platform; or array of values
+	 * @return  mixed   requested information, FALSE if nothing is found
 	 * @uses    Kohana::config
 	 * @uses    Request::$user_agent
 	 */
 	public static function user_agent($value)
 	{
+		if (is_array($value))
+		{
+			$agent = array();
+			foreach ($value as $v)
+			{
+				// Add each key to the set
+				$agent[$v] = Request::user_agent($v);
+			}
+
+			return $agent;
+		}
+
 		static $info;
 
 		if (isset($info[$value]))
@@ -859,17 +895,23 @@ class Kohana_Request {
 				$mime = File::mime_by_ext(strtolower(pathinfo($download, PATHINFO_EXTENSION)));
 			}
 
+			// Force the data to be rendered if
+			$file_data = (string) $this->response;
+
 			// Get the content size
-			$size = strlen($this->response);
+			$size = strlen($file_data);
 
 			// Create a temporary file to hold the current response
 			$file = tmpfile();
 
 			// Write the current response into the file
-			fwrite($file, $this->response);
+			fwrite($file, $file_data);
 
 			// Prepare the file for reading
 			fseek($file, 0);
+
+			// File data is no longer needed
+			unset($file_data);
 		}
 		else
 		{
@@ -895,6 +937,13 @@ class Kohana_Request {
 			$file = fopen($filename, 'rb');
 		}
 
+		if ( ! is_resource($file))
+		{
+			throw new Kohana_Exception('Could not read file to send: :file', array(
+				':file' => $download,
+			));
+		}
+
 		// Inline or download?
 		$disposition = empty($options['inline']) ? 'attachment' : 'inline';
 
@@ -902,6 +951,23 @@ class Kohana_Request {
 		$this->headers['Content-Disposition'] = $disposition.'; filename="'.$download.'"';
 		$this->headers['Content-Type']        = $mime;
 		$this->headers['Content-Length']      = $size;
+
+		if (Request::user_agent('browser') === 'Internet Explorer')
+		{
+			// Naturally, IE does not act like a real browser...
+
+			if (Request::$protocol === 'https')
+			{
+				// http://support.microsoft.com/kb/316431
+				$this->headers['Pragma'] = $this->headers['Cache-Control'] = 'public';
+			}
+
+			if (version_compare(Request::user_agent('version'), '8.0', '>='))
+			{
+				// http://ajaxian.com/archives/ie-8-security
+				$this->headers['X-Content-Type-Options'] = 'nosniff';
+			}
+		}
 
 		if ( ! empty($options['resumable']))
 		{
@@ -1092,7 +1158,7 @@ class Kohana_Request {
 	 * request response.
 	 *
 	 *     $etag = $request->generate_etag();
-	 * 
+	 *
 	 * [!!] If the request response is empty when this method is called, an
 	 * exception will be thrown!
 	 *

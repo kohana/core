@@ -11,8 +11,10 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	/**
 	 * Sets up the test enviroment
 	 */
-	function setUp()
+	public function setUp()
 	{
+		parent::setUp();
+
 		Text::alternate();
 	}
 
@@ -22,7 +24,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 */
-	function test_auto_para_returns_empty_string_on_empty_input()
+	public function test_auto_para_returns_empty_string_on_empty_input()
 	{
 		$this->assertSame('', Text::auto_p(''));
 	}
@@ -31,7 +33,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Test Data
 	 */
-	function provider_auto_para_does_not_enclose_html_tags_in_paragraphs()
+	public function provider_auto_para_does_not_enclose_html_tags_in_paragraphs()
 	{
 		return array(
 			array(
@@ -52,7 +54,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_auto_para_does_not_enclose_html_tags_in_paragraphs
 	 */ 
-	function test_auto_para_does_not_enclose_html_tags_in_paragraphs(array $tags, $text)
+	public function test_auto_para_does_not_enclose_html_tags_in_paragraphs(array $tags, $text)
 	{
 		$output = Text::auto_p($text);
 		
@@ -71,7 +73,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 */
-	function test_auto_para_encloses_slot_in_paragraph()
+	public function test_auto_para_encloses_slot_in_paragraph()
 	{
 		$text = 'Pick a pinch of purple pepper';
 
@@ -83,13 +85,13 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Array of test data
 	 */
-	function provider_limit_words()
+	public function provider_limit_words()
 	{
 		return array
 		(
 			array('', '', 100, NULL),
-			array('&#8230;', 'The rain in spain', -10, NULL),
-			array('The rain&#8230;', 'The rain in spain', 2, NULL),
+			array('…', 'The rain in spain', -10, NULL),
+			array('The rain…', 'The rain in spain', 2, NULL),
 			array('The rain...', 'The rain in spain', 2, '...'),
 		);
 	}
@@ -99,7 +101,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_limit_words
 	 */
-	function test_limit_words($expected, $str, $limit, $end_char)
+	public function test_limit_words($expected, $str, $limit, $end_char)
 	{
 		$this->assertSame($expected, Text::limit_words($str, $limit, $end_char));
 	}
@@ -109,18 +111,21 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Test data
 	 */
-	function provider_limit_chars()
+	public function provider_limit_chars()
 	{
 		return array
-			(
-				// Some basic tests
-				array('', '', 100, NULL, FALSE),
-				array('&#8230;', 'BOO!', -42, NULL, FALSE),
-
-				// 
-				array('making php bet&#8230;', 'making php better for the sane', 14, NULL, FALSE),
-				array('making php better&#8230;', 'making php better for the sane', 14, NULL, TRUE),
-			);
+		(
+			array('', '', 100, NULL, FALSE),
+			array('…', 'BOO!', -42, NULL, FALSE),
+			array('making php bet…', 'making php better for the sane', 14, NULL, FALSE),
+			array('Garçon! Un café s.v.p.', 'Garçon! Un café s.v.p.', 50, '__', FALSE),
+			array('Garçon!__', 'Garçon! Un café s.v.p.', 8, '__', FALSE),
+			// @issue 3238
+			array('making php…', 'making php better for the sane', 14, NULL, TRUE),
+			array('Garçon!__', 'Garçon! Un café s.v.p.', 9, '__', TRUE),
+			array('Garçon!__', 'Garçon! Un café s.v.p.', 7, '__', TRUE),
+			array('__', 'Garçon! Un café s.v.p.', 5, '__', TRUE),
+		);
 	}
 
 	/**
@@ -129,7 +134,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_limit_chars
 	 */
-	function test_limit_chars($expected, $str, $limit, $end_char, $preserve_words)
+	public function test_limit_chars($expected, $str, $limit, $end_char, $preserve_words)
 	{
 		$this->assertSame($expected, Text::limit_chars($str, $limit, $end_char, $preserve_words));
 	}
@@ -139,7 +144,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 */
-	function test_alternate_alternates_between_parameters()
+	public function test_alternate_alternates_between_parameters()
 	{
 		list($val_a, $val_b, $val_c) = array('good', 'bad', 'ugly');
 
@@ -156,7 +161,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @covers Text::alternate
 	 */
-	function test_alternate_resets_when_called_with_no_params_and_returns_empty_string()
+	public function test_alternate_resets_when_called_with_no_params_and_returns_empty_string()
 	{
 		list($val_a, $val_b, $val_c) = array('yes', 'no', 'maybe');
 		
@@ -172,7 +177,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @returns array Array of test data 
 	 */
-	function provider_reduce_slashes()
+	public function provider_reduce_slashes()
 	{
 		return array
 			(
@@ -187,7 +192,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_reduce_slashes
 	 */
-	function test_reduce_slashes($expected, $str)
+	public function test_reduce_slashes($expected, $str)
 	{
 		$this->assertSame($expected, Text::reduce_slashes($str));
 	}
@@ -197,7 +202,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Test data
 	 */
-	function provider_censor()
+	public function provider_censor()
 	{
 
 		return array
@@ -218,7 +223,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_censor
 	 */
-	function test_censor($expected, $str, $badwords, $replacement, $replace_partial_words)
+	public function test_censor($expected, $str, $badwords, $replacement, $replace_partial_words)
 	{
 		$this->assertSame($expected, Text::censor($str, $badwords, $replacement, $replace_partial_words));
 	}
@@ -228,7 +233,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Test Data
 	 */
-	function provider_random()
+	public function provider_random()
 	{
 		return array(
 			array('alnum', 8),
@@ -254,7 +259,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_random
 	 */
-	function test_random($type, $length)
+	public function test_random($type, $length)
 	{
 		$pool = (string) $type;
 
@@ -284,9 +289,11 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
+	 * Provides test data for test_similar
 	 *
+	 * @return array
 	 */
-	function provider_similar()
+	public function provider_similar()
 	{
 		return array
 			(
@@ -302,12 +309,17 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @dataProvider provider_similar
 	 * @covers Text::similar
 	 */
-	function test_similar($expected, $words)
+	public function test_similar($expected, $words)
 	{
 		$this->assertSame($expected, Text::similar($words));
 	}
 
-	function provider_bytes()
+	/**
+	 * Provides test data for test_bytes
+	 *
+	 * @return array
+	 */
+	public function provider_bytes()
 	{
 		return array
 			(
@@ -329,7 +341,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_bytes
 	 */
-	function test_bytes($expected, $bytes, $force_unit, $format, $si)
+	public function test_bytes($expected, $bytes, $force_unit, $format, $si)
 	{
 		$this->assertSame($expected, Text::bytes($bytes, $force_unit, $format, $si));
 	}
@@ -339,7 +351,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Test data
 	 */
-	function provider_widont()
+	public function provider_widont()
 	{
 		return array
 			(
@@ -355,7 +367,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_widont
 	 */
-	function test_widont($expected, $string)
+	public function test_widont($expected, $string)
 	{
 		$this->assertSame($expected, Text::widont($string));
 	}
@@ -374,7 +386,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 * @covers Text::auto_link_emails
 	 * @ticket 2772
 	 */
-	function test_auto_link_emails_respects_word_boundaries()
+	public function test_auto_link_emails_respects_word_boundaries()
 	{
 		$original = '<ul>
 						<li>voorzitter@xxxx.com</li>
@@ -382,6 +394,179 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 					</ul>';
 	
 		$this->assertFalse(strpos('vice', Text::auto_link_emails($original)));
+	}
+
+
+	/**
+	 * Provides some test data for test_number()
+	 *
+	 * @return array
+	 */
+	public function provider_number()
+	{
+		return array(
+			array('one', 1),
+			array('twenty-three', 23),
+			array('fourty-two', 42),
+			array('five million, six hundred and thirty-two', 5000632),
+			array('five million, six hundred and thirty', 5000630),
+			array('nine hundred million', 900000000),
+			array('thirty-seven thousand', 37000),
+			array('one thousand and twenty-four', 1024),
+		);
+	}
+
+	/**
+	 * Checks that Text::number formats a number into english text
+	 *
+	 * @test
+	 * @dataProvider provider_number
+	 */
+	public function test_number($expected, $number)
+	{
+		$this->assertSame($expected, Text::number($number));
+	}
+
+	/**
+	 * Provides test data for test_auto_link_urls()
+	 *
+	 * @return array 
+	 */
+	public function provider_auto_link_urls()
+	{
+		return array(
+			// First we try with the really obvious url
+			array(
+				'Some random text <a href="http://www.google.com">http://www.google.com</a>',
+				'Some random text http://www.google.com',
+			),
+			// Then we try with varying urls
+			array(
+				'Some random <a href="http://www.google.com">www.google.com</a>',
+				'Some random www.google.com',
+			),
+			array(
+				'Some random google.com',
+				'Some random google.com',
+			),
+			// Check that it doesn't link urls in a href
+			array(
+				'Look at me <a href="http://google.com">Awesome stuff</a>',
+				'Look at me <a href="http://google.com">Awesome stuff</a>',
+			),
+			array(
+				'Look at me <a href="http://www.google.com">http://www.google.com</a>',
+				'Look at me <a href="http://www.google.com">http://www.google.com</a>',
+			),
+			// @issue 3190
+			array(
+				'<a href="http://www.google.com/">www.google.com</a>',
+				'<a href="http://www.google.com/">www.google.com</a>',
+			),
+			array(
+				'<a href="http://www.google.com/">www.google.com</a> <a href="http://www.google.com/">http://www.google.com/</a>',
+				'<a href="http://www.google.com/">www.google.com</a> http://www.google.com/',
+			),
+		);
+	}
+
+	/**
+	 * Runs tests for Test::auto_link_urls
+	 *
+	 * @test
+	 * @dataProvider provider_auto_link_urls
+	 */
+	public function test_auto_link_urls($expected, $text)
+	{
+		$this->assertSame($expected, Text::auto_link_urls($text));
+	}
+
+	/**
+	 * Provides test data for test_auto_link_emails()
+	 *
+	 * @return array 
+	 */
+	public function provider_auto_link_emails()
+	{
+		return array(
+			// @issue 3162
+			array(
+				'<span class="broken"><a href="mailto:info@test.com">info@test.com</a></span>',
+				'<span class="broken">info@test.com</span>',
+			),
+			array(
+				'<a href="mailto:info@test.com">info@test.com</a>',
+				'<a href="mailto:info@test.com">info@test.com</a>',
+			),
+			// @issue 3189
+			array(
+				'<a href="mailto:email@address.com">email@address.com</a> <a href="mailto:email@address.com">email@address.com</a>',
+				'<a href="mailto:email@address.com">email@address.com</a> email@address.com',
+			),
+		);
+	}
+
+	/**
+	 * Runs tests for Test::auto_link_emails
+	 *
+	 * @test
+	 * @dataProvider provider_auto_link_emails
+	 */
+	public function test_auto_link_emails($expected, $text)
+	{
+		// Use html_entity_decode because emails will be randomly encoded by HTML::mailto
+		$this->assertSame($expected, html_entity_decode(Text::auto_link_emails($text)));
+	}
+
+	/**
+	 * Provides test data for test_auto_link
+	 *
+	 * @return array Test data
+	 */
+	public function provider_auto_link()
+	{
+		return array(
+			array(
+				'Hi there, my site is kohanaframework.org and you can email me at nobody@kohanaframework.org',
+				array('kohanaframework.org'),
+			),
+
+			array(
+				'Hi my.domain.com@domain.com you came from',
+				FALSE,
+				array('my.domain.com@domain.com'),
+			),
+		);
+	}
+
+	/**
+	 * Tests Text::auto_link()
+	 *
+	 * @test
+	 * @dataProvider provider_auto_link
+	 */
+	public function test_auto_link($text, $urls = array(), $emails = array())
+	{
+		$linked_text = Text::auto_link($text);
+
+		if($urls === FALSE)
+		{
+			$this->assertNotContains('http://', $linked_text);
+		}
+		elseif(count($urls))
+		{
+			foreach($urls as $url)
+			{
+				// Assert that all the urls have been caught by text auto_link_urls()
+				$this->assertContains(Text::auto_link_urls($url), $linked_text);
+			}
+		}
+
+		foreach($emails as $email)
+		{
+			$this->assertNotContains($email, $linked_text);
+		}
+		
 	}
 
 }

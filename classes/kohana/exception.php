@@ -16,9 +16,9 @@ class Kohana_Exception extends Exception {
 	 *     throw new Kohana_Exception('Something went terrible wrong, :user',
 	 *         array(':user' => $user));
 	 *
-	 * @param   string   error message
-	 * @param   array    translation variables
-	 * @param   integer  the exception code
+	 * @param   string     error message
+	 * @param   array      translation variables
+	 * @param   integer    the exception code
 	 * @return  void
 	 */
 	public function __construct($message, array $variables = NULL, $code = 0)

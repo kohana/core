@@ -42,6 +42,8 @@ class Kohana_Feed {
 		if ($feed === FALSE)
 			return array();
 
+		$namespaces = $feed->getNamespaces(true);
+
 		// Detect the feed type. RSS 1.0/2.0 and Atom 1.0 are supported.
 		$feed = isset($feed->channel) ? $feed->xpath('//item') : $feed->entry;
 
@@ -52,8 +54,14 @@ class Kohana_Feed {
 		{
 			if ($limit > 0 AND $i++ === $limit)
 				break;
+			$item_fields = (array) $item;
 
-			$items[] = (array) $item;
+			// get namespaced tags
+			foreach ($namespaces as $ns)
+			{
+				$item_fields += (array) $item->children($ns);
+			}
+			$items[] = $item_fields;
 		}
 
 		return $items;

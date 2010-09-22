@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Internationalization (i18n) class. Provides language loading and translation
- * methods without dependancies on [gettext](http://php.net/gettext).
+ * methods without dependencies on [gettext](http://php.net/gettext).
  *
  * Typically this class would never be used directly, but used via the __()
  * function, which loads the message and replaces parameters:
@@ -61,18 +61,22 @@ class Kohana_I18n {
 	 *     $hello = I18n::get('Hello friends, my name is :name');
 	 *
 	 * @param   string   text to translate
+	 * @param   string   target language
 	 * @return  string
 	 */
-	public static function get($string)
+	public static function get($string, $lang = NULL)
 	{
-		if ( ! isset(I18n::$_cache[I18n::$lang]))
+		if ( ! $lang)
 		{
-			// Load the translation table
-			I18n::load(I18n::$lang);
+			// Use the global target language
+			$lang = I18n::$lang;
 		}
 
+		// Load the translation table for this language
+		$table = I18n::load($lang);
+
 		// Return the translated string if it exists
-		return isset(I18n::$_cache[I18n::$lang][$string]) ? I18n::$_cache[I18n::$lang][$string] : $string;
+		return isset($table[$string]) ? $table[$string] : $string;
 	}
 
 	/**

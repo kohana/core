@@ -3,6 +3,8 @@
 /**
  * Tests Kohana Core
  *
+ * @TODO Use a virtual filesystem (see phpunit doc on mocking fs) for find_file etc.
+ *
  * @group kohana
  * @group kohana.core
  *
@@ -15,11 +17,11 @@
 class Kohana_CoreTest extends Kohana_Unittest_TestCase
 {
 	/**
-	 * Provides test data for testSanitize()
+	 * Provides test data for test_sanitize()
 	 * 
 	 * @return array
 	 */
-	function providerSanitize()
+	public function provider_sanitize()
 	{
 		return array(
 			// $value, $result
@@ -34,12 +36,12 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::santize()
 	 *
 	 * @test
-	 * @dataProvider providerSanitize
+	 * @dataProvider provider_sanitize
 	 * @covers Kohana::sanitize
 	 * @param boolean $value  Input for Kohana::sanitize
 	 * @param boolean $result Output for Kohana::sanitize
 	 */
-	function testSanitize($value, $result)
+	public function test_sanitize($value, $result)
 	{
 		$this->setEnvironment(array('Kohana::$magic_quotes' => TRUE));
 
@@ -47,114 +49,35 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Replaces the "/" to OS-specific delimiter
-	 * 
-	 * @see providerFindFile()
-	 * @param string $path
-	 * @return string
-	 */
-	private function separator($path)
-	{
-		return str_replace('/', DIRECTORY_SEPARATOR, $path);
-	}
-
-	/**
-	 * Provides test data for testSanitize()
-	 * 
-	 * @return array
-	 */
-	function providerFindFile()
-	{
-		return array(
-			// $folder, $class, $result
-			array('classes', 'foo', FALSE),
-			array('classes', 'date', $this->separator(SYSPATH.'classes/date.php')),
-			array('views', $this->separator('kohana/error'), $this->separator(SYSPATH.'views/kohana/error.php')),
-			array('config', 'credit_cards', array($this->separator(SYSPATH.'config/credit_cards.php')))
-		);
-	}
-
-	/**
-	 * Tests Kohana::find_file()
+	 * If a file can't be found then find_file() should return FALSE if 
+	 * only a single file was requested, or an empty array if multiple files
+	 * (i.e. configuration files) were requested
 	 *
 	 * @test
-	 * @dataProvider providerFindFile
 	 * @covers Kohana::find_file
-	 * @param boolean $value  Input for Kohana::find_file
-	 * @param boolean $result Output for Kohana::find_file
 	 */
-	function testFindFile($folder, $class, $result)
+	public function test_find_file_returns_false_or_array_on_failure()
 	{
-		$this->assertSame($result, Kohana::find_file($folder, $class));
+		$this->assertFalse(Kohana::find_file('configy', 'zebra'));
+
+		$this->assertSame(array(), Kohana::find_file('configy', 'zebra', NULL, TRUE));
 	}
 
 	/**
-	 * Provides test data for testListFiles()
-	 * 
-	 * @return array
-	 */
-	function providerListFiles()
-	{
-		return array(
-			// $folder, $result
-			array('i18n', array(
-				$this->separator('i18n/en.php') => $this->separator(SYSPATH.'i18n/en.php'),
-				$this->separator('i18n/es.php') => $this->separator(SYSPATH.'i18n/es.php'),
-				$this->separator('i18n/fr.php') => $this->separator(SYSPATH.'i18n/fr.php'),
-			)),
-			array('messages', array(
-				$this->separator('messages/validate.php') => $this->separator(SYSPATH.'messages/validate.php')
-			)),
-		);
-	}
-
-	/**
-	 * Tests Kohana::list_files()
+	 * Kohana::list_files() should return an array on success and an empty array on failure
 	 *
 	 * @test
-	 * @dataProvider providerListFiles
 	 * @covers Kohana::list_files
-	 * @param boolean $folder Input for Kohana::list_files
-	 * @param boolean $result Output for Kohana::list_files
 	 */
-	function testListFiles($folder, $result)
+	public function test_list_files_returns_array_on_success_and_failure()
 	{
-		$this->assertSame($result, Kohana::list_files($folder));
+		$files = Kohana::list_files('config');
+
+		$this->assertType('array', $files);
+		$this->assertGreaterThan(3, count($files));
+		
+		$this->assertSame(array(), Kohana::list_files('geshmuck'));
 	}
-
-	
-	/**
-	 * Tests Kohana::init()
-	 * @covers Kohana::init
-	 * @covers Kohana::deinit
-	 *
-	 * @test
-	 */
-	/*
-	function testinit()
-	{
-		$original_modules = Kohana::modules();
-
-		#de-init first
-		Kohana::deinit();
-
-		#now we should only have unit test autoloaders
-		$this->assertSame(1, count(spl_autoload_functions()));
-
-		#re-init
-		spl_autoload_register(array('Kohana', 'auto_load'));
-		Kohana::init(array(
-			'base_url'   => '/',
-			'index_file' => FALSE,
-		));
-
-		Kohana::$log->attach(new Kohana_Log_File(APPPATH.'logs'));
-		Kohana::$config->attach(new Kohana_Config_File);
-		Kohana::modules($original_modules);
-
-		$this->assertSame(2, count(spl_autoload_functions()));
-		//$this->assertSame(array(APPPATH, SYSPATH)+array_values($original_modules), Kohana::include_paths());
-	}*/
 
 	/**
 	 * Tests Kohana::globals()
@@ -162,7 +85,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @covers Kohana::globals
 	 */
-	function test_globals_removes_user_def_globals()
+	public function test_globals_removes_user_def_globals()
 	{
 		$GLOBALS = array('hackers' => 'foobar','name' => array('','',''), '_POST' => array());
 
@@ -176,7 +99,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * 
 	 * @return array
 	 */
-	function providerCache()
+	public function provider_cache()
 	{
 		return array(
 			// $value, $result
@@ -190,40 +113,54 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::cache()
 	 *
 	 * @test
-	 * @dataProvider providerCache
+	 * @dataProvider provider_cache
 	 * @covers Kohana::cache
 	 * @param boolean $key      Key to cache/get for Kohana::cache
 	 * @param boolean $value    Output from Kohana::cache
 	 * @param boolean $lifetime Lifetime for Kohana::cache
 	 */
-	function testCache($key, $value, $lifetime)
+	public function test_cache($key, $value, $lifetime)
 	{
 		Kohana::cache($key, $value, $lifetime);
 		$this->assertEquals($value, Kohana::cache($key));
 	}
 
 	/**
-	 * Provides test data for testMessage()
+	 * Provides test data for test_message()
 	 * 
 	 * @return array
 	 */
-	function providerMessage()
+	public function provider_message()
 	{
 		return array(
 			// $value, $result
-			array('validate', 'not_empty', ':field must not be empty'),
-			array('validate', NULL, array(
-				'not_empty'    => ':field must not be empty',
-				'matches'      => ':field must be the same as :param1',
-				'regex'        => ':field does not match the required format',
-				'exact_length' => ':field must be exactly :param1 characters long',
-				'min_length'   => ':field must be at least :param1 characters long',
-				'max_length'   => ':field must be less than :param1 characters long',
-				'in_array'     => ':field must be one of the available options',
-				'digit'        => ':field must be a digit',
-				'decimal'      => ':field must be a decimal with :param1 places',
-				'range'        => ':field must be within the range of :param1 to :param2',
-			)),
+			array(':field must not be empty', 'validate', 'not_empty'),
+			array(
+				array(
+					'alpha'         => ':field must contain only letters',
+					'alpha_dash'    => ':field must contain only letters and dashes',
+					'alpha_numeric' => ':field must contain only letters and numbers',
+					'color'         => ':field must be a color',
+					'credit_card'   => ':field must be a credit card number',
+					'date'          => ':field must be a date',
+					'decimal'       => ':field must be a decimal with :param1 places',
+					'digit'         => ':field must be a digit',
+					'email'         => ':field must be a email address',
+					'email_domain'  => ':field must contain a valid email domain',
+					'exact_length'  => ':field must be exactly :param1 characters long',
+					'in_array'      => ':field must be one of the available options',
+					'ip'            => ':field must be an ip address',
+					'matches'       => ':field must be the same as :param1',
+					'min_length'    => ':field must be at least :param1 characters long',
+					'max_length'    => ':field must be less than :param1 characters long',
+					'phone'         => ':field must be a phone number',
+					'not_empty'     => ':field must not be empty',
+					'range'         => ':field must be within the range of :param1 to :param2',
+					'regex'         => ':field does not match the required format',
+					'url'           => ':field must be a url',
+				),
+				'validate', NULL, 
+			),
 		);
 	}
 
@@ -231,23 +168,23 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::message()
 	 *
 	 * @test
-	 * @dataProvider providerMessage
+	 * @dataProvider provider_message
 	 * @covers Kohana::message
+	 * @param boolean $expected Output for Kohana::message
 	 * @param boolean $file     File to look in for Kohana::message
 	 * @param boolean $key      Key for Kohana::message
-	 * @param boolean $expected Output for Kohana::message
 	 */
-	function testMessage($file, $key, $expected)
+	public function test_message($expected, $file, $key)
 	{
 		$this->assertEquals($expected, Kohana::message($file, $key));
 	}
 
 	/**
-	 * Provides test data for testErrorHandler()
+	 * Provides test data for test_error_handler()
 	 * 
 	 * @return array
 	 */
-	function providerErrorHandler()
+	public function provider_error_handler()
 	{
 		return array(
 			array(1, 'Foobar', 'foobar.php', __LINE__),
@@ -258,14 +195,14 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::error_handler()
 	 *
 	 * @test
-	 * @dataProvider providerErrorHandler
+	 * @dataProvider provider_error_handler
 	 * @covers Kohana::error_handler
 	 * @param boolean $code  Input for Kohana::sanitize
 	 * @param boolean $error  Input for Kohana::sanitize
 	 * @param boolean $file  Input for Kohana::sanitize
 	 * @param boolean $line Output for Kohana::sanitize
 	 */
-	function testErrorHandler($code, $error, $file, $line)
+	public function test_error_handler($code, $error, $file, $line)
 	{
 		$error_level = error_reporting();
 		error_reporting(E_ALL);
@@ -286,7 +223,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * 
 	 * @return array
 	 */
-	function providerExceptionHandler()
+	public function provider_exception_handler()
 	{
 		return array(
 			// $exception_type, $message, $is_cli, $expected
@@ -301,7 +238,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::exception_handler()
 	 *
 	 * @test
-	 * @dataProvider providerExceptionHandler
+	 * @dataProvider provider_exception_handler
 	 * @covers Kohana::exception_handler
 	 * @param boolean $exception_type    Exception type to throw
 	 * @param boolean $message           Message to pass to exception
@@ -309,7 +246,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * @param boolean $expected          Output for Kohana::exception_handler
 	 * @param string  $expexcted_message What to look for in the output string
 	 */
-	function testExceptionHandler($exception_type, $message, $is_cli, $expected, $expected_message)
+	public function teste_exception_handler($exception_type, $message, $is_cli, $expected, $expected_message)
 	{
 		try
 		{
@@ -329,11 +266,11 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for testDebug()
+	 * Provides test data for test_debug()
 	 * 
 	 * @return array
 	 */
-	function providerDebug()
+	public function provider_debug()
 	{
 		return array(
 			// $exception_type, $message, $is_cli, $expected
@@ -345,12 +282,12 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::debug()
 	 *
 	 * @test
-	 * @dataProvider providerDebug
+	 * @dataProvider provider_debug
 	 * @covers Kohana::debug
 	 * @param boolean $thing    The thing to debug
 	 * @param boolean $expected Output for Kohana::debug
 	 */
-	function testdebug($thing, $expected)
+	public function testdebug($thing, $expected)
 	{
 		$this->assertEquals($expected, Kohana::debug($thing));
 	}
@@ -360,7 +297,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * 
 	 * @return array
 	 */
-	function providerDebugPath()
+	public function provider_debug_path()
 	{
 		return array(
 			array(
@@ -368,8 +305,8 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 				'SYSPATH'.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'kohana.php'
 			),
 			array(
-				Kohana::find_file('classes', $this->separator('kohana/unittest/runner')), 
-				$this->separator('MODPATH/unittest/classes/kohana/unittest/runner.php')
+				Kohana::find_file('classes', $this->dirSeparator('kohana/unittest/runner')), 
+				$this->dirSeparator('MODPATH/unittest/classes/kohana/unittest/runner.php')
 			),
 		);
 	}
@@ -378,28 +315,27 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::debug_path()
 	 *
 	 * @test
-	 * @dataProvider providerDebugPath
+	 * @dataProvider provider_debug_path
 	 * @covers Kohana::debug_path
 	 * @param boolean $path     Input for Kohana::debug_path
 	 * @param boolean $expected Output for Kohana::debug_path
 	 */
-	function testDebugPath($path, $expected)
+	public function testDebugPath($path, $expected)
 	{
 		$this->assertEquals($expected, Kohana::debug_path($path));
 	}
 
 	/**
-	 * Provides test data for testModules()
+	 * Provides test data for test_modules_sets_and_returns_valid_modules()
 	 * 
 	 * @return array
 	 */
-	function providerModules()
+	public function provider_modules_sets_and_returns_valid_modules()
 	{
 		return array(
-			array(NULL, array('unittest' => $this->separator(MODPATH.'unittest/'))),
 			array(array(), array()),
-			array(array('unittest' => MODPATH.'foobar'), array()),
-			array(array('unittest' => MODPATH.'unittest'), array('unittest' => $this->separator(MODPATH.'unittest/'))),
+			array(array('unittest' => MODPATH.'fo0bar'), array()),
+			array(array('unittest' => MODPATH.'unittest'), array('unittest' => $this->dirSeparator(MODPATH.'unittest/'))),
 		);
 	}
 
@@ -407,12 +343,12 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::modules()
 	 *
 	 * @test
-	 * @dataProvider providerModules
+	 * @dataProvider provider_modules_sets_and_returns_valid_modules
 	 * @covers Kohana::modules
 	 * @param boolean $source   Input for Kohana::modules
 	 * @param boolean $expected Output for Kohana::modules
 	 */
-	function testModules($source, $expected)
+	public function test_modules_sets_and_returns_valid_modules($source, $expected)
 	{
 		$modules = Kohana::modules();
 
@@ -422,39 +358,58 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for testIncludePaths()
-	 * 
-	 * @return array
+	 * To make the tests as portable as possible this just tests that 
+	 * you get an array of modules when you can Kohana::modules() and that
+	 * said array contains unittest
+	 *
+	 * @test
+	 * @covers Kohana::modules
 	 */
-	function providerIncludePaths()
+	public function test_modules_returns_array_of_modules()
 	{
-		return array(
-			array(array(APPPATH, $this->separator(MODPATH.'unittest/'), SYSPATH)),
-		);
+		$modules = Kohana::modules();
+
+		$this->assertType('array', $modules);
+
+		$this->assertArrayHasKey('unittest', $modules);
 	}
 
 	/**
 	 * Tests Kohana::include_paths()
 	 *
+	 * The include paths must contain the apppath and syspath
 	 * @test
-	 * @dataProvider providerIncludePaths
 	 * @covers Kohana::include_paths
-	 * @param boolean $expected  Input for Kohana::include_paths
 	 */
-	function testIncludePaths($expected)
+	public function test_include_paths()
 	{
-		$this->assertEquals($expected, Kohana::include_paths());
+		$include_paths = Kohana::include_paths();
+		$modules       = Kohana::modules();
+
+		$this->assertType('array', $include_paths);
+
+		// We must have at least 2 items in include paths (APP / SYS)
+		$this->assertGreaterThan(2, count($include_paths));
+		// Make sure said paths are in the include paths
+		// And make sure they're in the correct positions
+		$this->assertSame(APPPATH, reset($include_paths));
+		$this->assertSame(SYSPATH, end($include_paths));
+		
+		foreach($modules as $module)
+		{
+			$this->assertContains($module, $include_paths);
+		}
 	}
 
 	/**
-	 * Provides test data for testExceptionText()
+	 * Provides test data for test_exception_text()
 	 * 
 	 * @return array
 	 */
-	function providerExceptionText()
+	public function provider_exception_text()
 	{
 		return array(
-			array(new Kohana_Exception('foobar'), $this->separator('Kohana_Exception [ 0 ]: foobar ~ SYSPATH/tests/kohana/CoreTest.php [ '.__LINE__.' ]')),
+			array(new Kohana_Exception('foobar'), $this->dirSeparator('Kohana_Exception [ 0 ]: foobar ~ SYSPATH/tests/kohana/CoreTest.php [ '.__LINE__.' ]')),
 		);
 	}
 
@@ -462,22 +417,22 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::exception_text()
 	 *
 	 * @test
-	 * @dataProvider providerExceptionText
+	 * @dataProvider provider_exception_text
 	 * @covers Kohana::exception_text
 	 * @param object $exception exception to test
 	 * @param string $expected  expected output
 	 */
-	function testExceptionText($exception, $expected)
+	public function test_exception_text($exception, $expected)
 	{
 		$this->assertEquals($expected, Kohana::exception_text($exception));
 	}
 
 	/**
-	 * Provides test data for testDump()
+	 * Provides test data for test_dump()
 	 * 
 	 * @return array
 	 */
-	function providerDump()
+	public function provider_dump()
 	{
 		return array(
 			array('foobar', 128, '<small>string</small><span>(6)</span> "foobar"'),
@@ -486,6 +441,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 			array(TRUE, 128, '<small>bool</small> TRUE'),
 			array(array('foobar'), 128, "<small>array</small><span>(1)</span> <span>(\n    0 => <small>string</small><span>(6)</span> \"foobar\"\n)</span>"),
 			array(new StdClass, 128, "<small>object</small> <span>stdClass(0)</span> <code>{\n}</code>"),
+			array("fo\x6F\xFF\x00bar\x8F\xC2\xB110", 128, '<small>string</small><span>(10)</span> "foobar±10"'),
 		);
 	}
 
@@ -493,13 +449,13 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * Tests Kohana::dump()
 	 *
 	 * @test
-	 * @dataProvider providerDump
+	 * @dataProvider provider_dump
 	 * @covers Kohana::dump
 	 * @covers Kohana::_dump
 	 * @param object $exception exception to test
 	 * @param string $expected  expected output
 	 */
-	function testDump($input, $length, $expected)
+	public function test_dump($input, $length, $expected)
 	{
 		$this->assertEquals($expected, Kohana::dump($input, $length));
 	}

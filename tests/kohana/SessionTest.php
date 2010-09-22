@@ -113,6 +113,27 @@ Class Kohana_SessionTest extends Kohana_Unittest_TestCase
 		$session->__construct($config, $session_id);
 	}
 
+	/**
+	 * Calling $session->bind() should allow you to bind a variable
+	 * to a session variable
+	 *
+	 * @test
+	 * @covers Session::bind
+	 * @ticket 3164
+	 */
+	public function test_bind_actually_binds_variable()
+	{
+		$session = $this->getMockForAbstractClass('Session');
+
+		$var = 'asd';
+
+		$session->bind('our_var', $var);
+
+		$var = 'foobar';
+
+		$this->assertSame('foobar', $session->get('our_var'));
+	}
+
 	
 	/**
 	 * When a session is initially created it should have no data
@@ -448,5 +469,29 @@ Class Kohana_SessionTest extends Kohana_Unittest_TestCase
 			'_data',
 			$session
 		);
+	}
+
+	/**
+	 * If a session variable exists then get_once should get it then remove it.
+	 * If the variable does not exist then it should return the default
+	 *
+	 * @test
+	 * @covers Session::get_once
+	 */
+	public function test_get_once_gets_once_or_returns_default()
+	{
+		$session = $this->getMockSession();
+
+		$session->set('foo', 'bar');
+
+		// Test that a default is returned
+		$this->assertSame('mud', $session->get_once('fud', 'mud'));
+
+		// Now test that it actually removes the value
+		$this->assertSame('bar', $session->get_once('foo'));
+
+		$this->assertAttributeSame(array(), '_data', $session);
+
+		$this->assertSame('maybe', $session->get_once('foo', 'maybe'));
 	}
 }

@@ -34,7 +34,8 @@ class Kohana_Validate extends ArrayObject {
 			$value = $value->getArrayCopy();
 		}
 
-		return ($value === '0' OR ! empty($value));
+		// Value cannot be NULL, FALSE, '', or an empty array
+		return ! in_array($value, array(NULL, FALSE, '', array()), TRUE);
 	}
 
 	/**
@@ -217,13 +218,12 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
-	 * Validates a credit card number using the Luhn (mod10) formula.
-	 *
-	 * @link http://en.wikipedia.org/wiki/Luhn_algorithm
+	 * Validates a credit card number, with a Luhn check if possible.
 	 *
 	 * @param   integer       credit card number
 	 * @param   string|array  card type, or an array of card types
 	 * @return  boolean
+	 * @uses    Validate::luhn
 	 */
 	public static function credit_card($number, $type = NULL)
 	{
@@ -270,6 +270,31 @@ class Kohana_Validate extends ArrayObject {
 		// No Luhn check required
 		if ($cards[$type]['luhn'] == FALSE)
 			return TRUE;
+
+		return Validate::luhn($number);
+	}
+
+	/**
+	 * Validate a number against the [Luhn](http://en.wikipedia.org/wiki/Luhn_algorithm)
+	 * (mod10) formula.
+	 *
+	 * @param   string   number to check
+	 * @return  boolean
+	 */
+	public static function luhn($number)
+	{
+		// Force the value to be a string as this method uses string functions.
+		// Converting to an integer may pass PHP_INT_MAX and result in an error!
+		$number = (string) $number;
+
+		if ( ! ctype_digit($number))
+		{
+			// Luhn can only be used on numbers!
+			return FALSE;
+		}
+
+		// Check number length
+		$length = strlen($number);
 
 		// Checksum of the card number
 		$checksum = 0;
@@ -418,7 +443,8 @@ class Kohana_Validate extends ArrayObject {
 		// Get the decimal point for the current locale
 		list($decimal) = array_values(localeconv());
 
-		return (bool) preg_match('/^-?[0-9'.$decimal.']++$/D', (string) $str);
+		// A lookahead is used to make sure the string contains at least one digit (before or after the decimal point)
+		return (bool) preg_match('/^-?+(?=.*[0-9])[0-9]*+'.preg_quote($decimal).'?+[0-9]*+$/D', (string) $str);
 	}
 
 	/**
@@ -565,14 +591,14 @@ class Kohana_Validate extends ArrayObject {
 
 	/**
 	 * Overwrites or appends filters to a field. Each filter will be executed once.
-	 * All rules must be valid callbacks.
+	 * All rules must be valid PHP callbacks.
 	 *
 	 *     // Run trim() on all fields
 	 *     $validation->filter(TRUE, 'trim');
 	 *
 	 * @param   string  field name
 	 * @param   mixed   valid PHP callback
-	 * @param   array   extra parameters for the callback
+	 * @param   array   extra parameters for the filter
 	 * @return  $this
 	 */
 	public function filter($field, $filter, array $params = NULL)
@@ -616,7 +642,7 @@ class Kohana_Validate extends ArrayObject {
 	 *
 	 * @param   string  field name
 	 * @param   string  function or static method name
-	 * @param   array   extra parameters for the callback
+	 * @param   array   extra parameters for the rule
 	 * @return  $this
 	 */
 	public function rule($field, $rule, array $params = NULL)
@@ -625,6 +651,12 @@ class Kohana_Validate extends ArrayObject {
 		{
 			// Set the field label to the field name
 			$this->_labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
+		}
+
+		if('matches' === $rule AND ! isset($this->_labels[$params[0]]))
+		{
+			$match_field = $params[0];
+			$this->_labels[$match_field] = preg_replace('/[^\pL]+/u', ' ', $match_field);
 		}
 
 		// Store the rule and params for this rule
@@ -652,8 +684,6 @@ class Kohana_Validate extends ArrayObject {
 
 	/**
 	 * Adds a callback to a field. Each callback will be executed only once.
-	 * No extra parameters can be passed as the format for callbacks is
-	 * predefined as (Validate $array, $field, array $errors).
 	 *
 	 *     // The "username" must be checked with a custom method
 	 *     $validation->callback('username', array($this, 'check_username'));
@@ -662,6 +692,7 @@ class Kohana_Validate extends ArrayObject {
 	 *
 	 * @param   string  field name
 	 * @param   mixed   callback to add
+	 * @param   array   extra parameters for the callback
 	 * @return  $this
 	 */
 	public function callback($field, $callback, array $params = array())
@@ -794,10 +825,10 @@ class Kohana_Validate extends ArrayObject {
 		// Overload the current array with the new one
 		$this->exchangeArray($data);
 
-		if ($submitted === FALSE)
+		if ($submitted === FALSE AND ! $allow_empty)
 		{
 			// Because no data was submitted, validation will not be forced
-			return (boolean) $allow_empty;
+			return FALSE;
 		}
 
 		// Remove the filters, rules, and callbacks that apply to every field
