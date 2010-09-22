@@ -4,7 +4,7 @@ The bootstrap is located at `application/bootstrap.php`.  It is responsible for 
 
 [!!] The bootstrap is responsible for the flow of your application.  In previous versions of Kohana the bootstrap was in `system` and was somewhat of an unseen, uneditible force.  In Kohana 3 the bootstrap takes on a much more integral and versatile role.  Do not be afraid to edit and change your bootstrap however you see fit.
 
-## Evironment setup
+## Environment setup
 
 First the bootstrap sets the timezone and the locale, and adds Kohana's autoloader so the [cascading filesystem](files) works.  You could add any other settings that all your application needed here.
 
