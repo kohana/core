@@ -428,6 +428,68 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
+	 * Provides test data for test_ordinal
+	 *
+	 * @return array Test Data
+	 */
+	function provider_ordinal()
+	{
+		return array(
+			// 0 isn't ordinal, but some may think it is...
+			array(0, '0th'), 
+			array(1, '1st'),
+			array(2, '2nd'),
+			array(3, '3rd'),
+			array(4, '4th'),
+			array(5, '5th'),
+			array(6, '6th'),
+			array(7, '7th'),
+			array(8, '8th'),
+			array(9, '9th'),
+			array(10, '10th'),
+			array(11, '11th'),
+			array(12, '12th'),
+			array(13, '13th'),
+			array(14, '14th'),
+			array(21, '21st'),
+			array(22, '22nd'),
+			array(23, '23rd'),
+			array(24, '24th'),
+			array(111, '111th'),
+			array(112, '112th'),
+			array(113, '113th'),
+			array(114, '114th'),
+			array(121, '121st'),
+			array(122, '122nd'),
+			array(123, '123rd'),
+			array(124, '124th'),
+			// round floats
+			array(125.4, '125th'),
+			array(125.5, '126th'),
+			// accept string values
+			array('127', '127th'),
+			// negative values, are not ordinal, but...
+			array(-1, '-1st'),
+			array(-11, '-11th'),
+			array(-21, '-21st'),
+			// non-integers
+			array('none', '0th'),
+			array('foo', '0th'),
+		);
+	}
+
+	/**
+	 * Tests Text::ordinal()
+	 *
+	 * @test
+	 * @dataProvider provider_ordinal
+	 */
+	function test_ordinal($num, $ordinal)
+	{
+		$this->assertSame(Text::ordinal($num), $ordinal);
+	}
+
+	/**
 	 * Provides test data for test_auto_link_urls()
 	 *
 	 * @return array 

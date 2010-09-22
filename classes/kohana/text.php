@@ -566,6 +566,52 @@ class Kohana_Text {
 	}
 
 	/**
+	 * Gives the ordinal value of an integer: 1st, 2nd, 3rd, 11th...
+	 *
+	 *     echo Text::ordinal($num);
+	 *
+	 * @param   integer  number to convert to ordinal
+	 * @return  string
+	 */
+	public static function ordinal($num) 
+	{
+		// Make sure we have a valid integer
+		if ( ! is_int($num))
+		{
+			$num = is_float($num) ? round($num) : (int) $num;
+		}
+		
+		// Convert to a string
+		$num = (string) $num;
+		
+		// See if we're in the teens....
+		if (strlen($num) > 1 AND substr($num, -2, 1) == '1')
+		{
+			$num .= 'th';
+		}
+		else
+		{
+			// Append the correct ordinal
+			switch(substr($num, -1, 1))
+			{
+				case '1':
+					$num .= 'st';
+					break;
+				case '2':
+					$num .= 'nd';
+					break;
+				case '3':
+					$num .= 'rd';
+					break;
+				default:
+					$num .= 'th';
+			}
+		}
+		// Return the string value
+		return $num;
+	}
+	
+	/**
 	 * Prevents [widow words](http://www.shauninman.com/archive/2006/08/22/widont_wordpress_plugin)
 	 * by inserting a non-breaking space between the last two words.
 	 *
