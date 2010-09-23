@@ -22,10 +22,10 @@
 - Basic Usage
    - [Debugging](debugging)
    - [Loading Classes](autoloading)
+   - [Helpers](helpers)
    - [Requests](requests)
    - [Sessions & Cookies](sessions)
    - [Fragments](fragments)
-   - [Helpers](helpers)
    - [Profiling](profiling)
 - [Security](security)
    - [XSS](security/xss)
