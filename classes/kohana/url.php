@@ -136,10 +136,8 @@ class Kohana_URL {
 			return '';
 		}
 
-		$query = http_build_query($params, '', '&');
-
-		// Don't prepend '?' to an empty string
-		return ($query === '') ? '' : '?'.$query;
+		// ? is added for simple string concatenation
+		return '?'.http_build_query($params, '', '&');
 	}
 
 	/**
