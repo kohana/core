@@ -48,34 +48,45 @@ class Kohana_Arr {
 	 *     // Get the values of "color" in theme
 	 *     $colors = Arr::path($array, 'theme.*.color');
 	 *
+	 *     // Using an array of keys
+	 *     $colors = Arr::path($array, array('theme', '*', 'color'));
+	 *
 	 * @param   array   array to search
-	 * @param   string  key path, delimiter separated
+	 * @param   mixed   key path string (delimiter separated) or array of keys
 	 * @param   mixed   default value if the path is not set
 	 * @param   string  key path delimiter
 	 * @return  mixed
 	 */
 	public static function path($array, $path, $default = NULL, $delimiter = NULL)
 	{
-		if (array_key_exists($path, $array))
+		if (is_array($path))
 		{
-			// No need to do extra processing
-			return $array[$path];
+			// The path has already been separated into keys
+			$keys = $path;
 		}
-
-		if ($delimiter === NULL)
+		else
 		{
-			// Use the default delimiter
-			$delimiter = Arr::$delimiter;
+			if (array_key_exists($path, $array))
+			{
+				// No need to do extra processing
+				return $array[$path];
+			}
+
+			if ($delimiter === NULL)
+			{
+				// Use the default delimiter
+				$delimiter = Arr::$delimiter;
+			}
+
+			// Remove starting delimiters and spaces
+			$path = ltrim($path, "{$delimiter} ");
+
+			// Remove ending delimiters, spaces, and wildcards
+			$path = rtrim($path, "{$delimiter} *");
+
+			// Split the keys by delimiter
+			$keys = explode($delimiter, $path);
 		}
-
-		// Remove starting delimiters and spaces
-		$path = ltrim($path, "{$delimiter} ");
-
-		// Remove ending delimiters, spaces, and wildcards
-		$path = rtrim($path, "{$delimiter} *");
-
-		// Split the keys by delimiter
-		$keys = explode($delimiter, $path);
 
 		do
 		{

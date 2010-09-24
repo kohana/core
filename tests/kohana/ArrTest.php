@@ -260,6 +260,8 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 			array(NULL, $array, 'users.*.fans'),
 			// Starting wildcards, issue #3269
 			array(array('matt', 'john'), $array['users'], '*.name'),
+			// Path as array, issue #3260
+			array($array['users'][2]['name'], $array, array('users', 2, 'name')),
 		);
 	}
 
