@@ -208,34 +208,18 @@ class Kohana_Inflector {
 	}
 
 	/**
-	 * Converts a camelcase string to a string separated by the specified glue
+	 * Converts a camel case phrase into a spaced phrase.
 	 *
-	 * @param   string  phrase to camelize
-	 * @param	string	string to glue components
-	 * @return  string	decamelized phrase
+	 *     $str = Inflector::decamelize('houseCat');    // "house cat"
+	 *     $str = Inflector::decamelize('kingAllyCat'); // "king ally cat"
+	 *
+	 * @param   string   phrase to camelize
+	 * @param   string   word separator
+	 * @return  string
 	 */
-	public static function decamelize($str, $glue = ' ')
+	public static function decamelize($str, $sep = ' ')
 	{
-		if (preg_match('#^([^A-Z]*)[A-Z]#', $str, $matches))
-		{
-			if ($matches[1])
-			{
-				$result = $matches[1] . $glue;
-			}
-			else
-			{
-				$result = '';
-			}
-
-			preg_match_all('#[A-Z](?:[a-z][^A-Z]*|[^a-z]+[a-z]*)#', $str, $matches);
-			$result .= implode($glue, $matches[0]);
-
-			return strtolower($result);
-		}
-		else
-		{
-			return $str;
-		}
+		return strtolower(preg_replace('/([a-z])([A-Z])/', '$1'.$sep.'$2', trim($str)));
 	}
 
 	/**
