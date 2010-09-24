@@ -221,7 +221,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for test_get()
+	 * Provides test data for test_path()
 	 *
 	 * @return array
 	 */
@@ -258,11 +258,13 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 			array(array(0 => array(0 => 2)), $array, 'users.*.interests.*.length'),
 			// See what happens when it can't dig any deeper from a wildcard
 			array(NULL, $array, 'users.*.fans'),
+			// Starting wildcards, issue #3269
+			array(array('matt', 'john'), $array['users'], '*.name'),
 		);
 	}
 
 	/**
-	 * Tests Arr::get()
+	 * Tests Arr::path()
 	 *
 	 * @test
 	 * @dataProvider provider_path
