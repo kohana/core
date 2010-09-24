@@ -45,13 +45,19 @@ class Kohana_UTF8 {
 	 * [!!] This method requires [Iconv](http://php.net/iconv)
 	 *
 	 * @param   mixed   variable to clean
-	 * @param   string  character set, defaults to UTF-8
+	 * @param   string  character set, defaults to Kohana::$charset
 	 * @return  mixed
 	 * @uses    UTF8::strip_ascii_ctrl
 	 * @uses    UTF8::is_ascii
 	 */
-	public static function clean($var, $charset = 'UTF-8')
+	public static function clean($var, $charset = NULL)
 	{
+		if ( ! $charset)
+		{
+			// Use the application character set
+			$charset = Kohana::$charset;
+		}
+
 		if (is_array($var) OR is_object($var))
 		{
 			foreach ($var as $key => $val)
