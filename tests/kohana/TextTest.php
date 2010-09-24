@@ -244,6 +244,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 			array('distinct', 12),
 			array('aeiou', 4),
 			array('‹¡›«¿»', 8), // UTF8 characters
+			array(NULL, 8), // Issue #3256
 		);
 	}
 
@@ -262,6 +263,11 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 */
 	public function test_random($type, $length)
 	{
+		if ($type === NULL)
+		{
+			$type = 'alnum';
+		}
+
 		$pool = (string) $type;
 
 		switch ($pool)
