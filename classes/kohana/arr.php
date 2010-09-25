@@ -38,6 +38,35 @@ class Kohana_Arr {
 	}
 
 	/**
+	 * Test if a value is an array with an additional check for array-like objects.
+	 *
+	 *     // Returns TRUE
+	 *     Arr::is_array(array());
+	 *     Arr::is_array(new ArrayObject);
+	 *
+	 *     // Returns FALSE
+	 *     Arr::is_array(FALSE);
+	 *     Arr::is_array('not an array!');
+	 *     Arr::is_array(Database::instance());
+	 *
+	 * @param   mixed    value to check
+	 * @return  boolean
+	 */
+	public static function is_array($value)
+	{
+		if (is_array($value))
+		{
+			// Definitely an array
+			return TRUE;
+		}
+		else
+		{
+			// Possibly a Traversable object, functionally the same as an array
+			return (is_object($value) AND $value instanceof Traversable);
+		}
+	}
+
+	/**
 	 * Gets a value from an array using a dot separated path.
 	 *
 	 *     // Get the value of $array['foo']['bar']
