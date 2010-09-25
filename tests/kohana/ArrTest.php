@@ -265,7 +265,9 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 			'users'  => array(
 				1 => array('name' => 'matt'),
 				2 => array('name' => 'john', 'interests' => array('hocky' => array('length' => 2), 'football' => array())),
+				3 => 'frank', // Issue #3194
 			),
+			'object' => new ArrayObject(array('iterator' => TRUE)), // Iterable object should work exactly the same
 		);
 
 		return array(
@@ -294,6 +296,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 			array(array('matt', 'john'), $array['users'], '*.name'),
 			// Path as array, issue #3260
 			array($array['users'][2]['name'], $array, array('users', 2, 'name')),
+			array($array['object']['iterator'], $array, 'object.iterator'),
 		);
 	}
 
