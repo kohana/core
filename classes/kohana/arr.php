@@ -88,6 +88,12 @@ class Kohana_Arr {
 	 */
 	public static function path($array, $path, $default = NULL, $delimiter = NULL)
 	{
+		if ( ! Arr::is_array($array))
+		{
+			// This is not an array!
+			return $default;
+		}
+
 		if (is_array($path))
 		{
 			// The path has already been separated into keys
@@ -131,7 +137,7 @@ class Kohana_Arr {
 			{
 				if ($keys)
 				{
-					if (is_array($array[$key]))
+					if (Arr::is_array($array[$key]))
 					{
 						// Dig down into the next part of the path
 						$array = $array[$key];
