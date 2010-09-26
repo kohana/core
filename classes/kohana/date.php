@@ -190,11 +190,15 @@ class Kohana_Date {
 		{
 			case 'am':
 				if ($hour == 12)
+				{
 					$hour = 0;
+				}
 			break;
 			case 'pm':
 				if ($hour < 12)
+				{
 					$hour += 12;
+				}
 			break;
 		}
 
@@ -300,7 +304,7 @@ class Kohana_Date {
 	public static function span($remote, $local = NULL, $output = 'years,months,weeks,days,hours,minutes,seconds')
 	{
 		// Normalize output
-		$output = trim(strtolower((string) $output));
+		$output = trim(strtolower( (string) $output));
 
 		if ( ! $output)
 		{

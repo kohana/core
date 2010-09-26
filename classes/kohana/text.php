@@ -262,9 +262,9 @@ class Kohana_Text {
 	 */
 	public static function censor($str, $badwords, $replacement = '#', $replace_partial_words = TRUE)
 	{
-		foreach ((array) $badwords as $key => $badword)
+		foreach ( (array) $badwords as $key => $badword)
 		{
-			$badwords[$key] = str_replace('\*', '\S*?', preg_quote((string) $badword));
+			$badwords[$key] = str_replace('\*', '\S*?', preg_quote( (string) $badword));
 		}
 
 		$regex = '('.implode('|', $badwords).')';
@@ -538,7 +538,7 @@ class Kohana_Text {
 
 				// In the situation that we need to make a composite number (i.e. twenty-three)
 				// then we need to modify the previous entry
-				if(empty($item))
+				if (empty($item))
 				{
 					array_pop($text);
 
@@ -550,14 +550,14 @@ class Kohana_Text {
 			}
 		}
 
-		if(count($text) > 1)
+		if (count($text) > 1)
 		{
 			$and = array_pop($text);
 		}
 
 		$text = implode(', ', $text);
 
-		if(isset($and))
+		if (isset($and))
 		{
 			$text .= ' and '.$and;
 		}

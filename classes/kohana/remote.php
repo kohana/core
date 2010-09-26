@@ -116,16 +116,16 @@ class Kohana_Remote {
 			return FALSE;
 
 		// Set CRLF
-		$CRLF = "\r\n";
+		$line_feed = "\r\n";
 
 		// Send request
-		fwrite($remote, 'HEAD '.$url['path'].' HTTP/1.0'.$CRLF);
-		fwrite($remote, 'Host: '.$url['host'].$CRLF);
-		fwrite($remote, 'Connection: close'.$CRLF);
-		fwrite($remote, 'User-Agent: Kohana Framework (+http://kohanaphp.com/)'.$CRLF);
+		fwrite($remote, 'HEAD '.$url['path'].' HTTP/1.0'.$line_feed);
+		fwrite($remote, 'Host: '.$url['host'].$line_feed);
+		fwrite($remote, 'Connection: close'.$line_feed);
+		fwrite($remote, 'User-Agent: Kohana Framework (+http://kohanaphp.com/)'.$line_feed);
 
 		// Send one more CRLF to terminate the headers
-		fwrite($remote, $CRLF);
+		fwrite($remote, $line_feed);
 
 		// Remote is offline
 		$response = FALSE;

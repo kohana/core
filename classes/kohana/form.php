@@ -270,7 +270,7 @@ class Kohana_Form {
 			else
 			{
 				// Convert the selected options to an array
-				$selected = array((string) $selected);
+				$selected = array( (string) $selected);
 			}
 		}
 

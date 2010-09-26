@@ -74,13 +74,13 @@ class Kohana_UTF8 {
 			if ( ! self::is_ascii($var))
 			{
 				// Disable notices
-				$ER = error_reporting(~E_NOTICE);
+				$error_reporting = error_reporting(~E_NOTICE);
 
 				// iconv is expensive, so it is only used when needed
 				$var = iconv($charset, $charset.'//IGNORE', $var);
 
 				// Turn notices back on
-				error_reporting($ER);
+				error_reporting($error_reporting);
 			}
 		}
 

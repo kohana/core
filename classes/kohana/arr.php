@@ -357,7 +357,7 @@ class Kohana_Arr {
 			{
 				if (isset($result[$key]))
 				{
-					if (is_array($val) && is_array($result[$key]))
+					if (is_array($val) AND is_array($result[$key]))
 					{
 						if (Arr::is_assoc($val))
 						{
