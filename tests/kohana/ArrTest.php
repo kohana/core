@@ -161,6 +161,38 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 		);
 	}
 
+	/**
+	 * Provides test data for test_is_array()
+	 *
+	 * @return array
+	 */
+	public function provider_is_array()
+	{
+		return array(
+			array($a = array('one', 'two', 'three'), TRUE),
+			array(new ArrayObject($a), TRUE),
+			array(new ArrayIterator($a), TRUE),
+			array('not an array', FALSE),
+			array(new stdClass, FALSE),
+		);
+	}
+
+	/**
+	 * Tests Arr::is_array()
+	 *
+	 * @test
+	 * @dataProvider provider_is_array
+	 * @param mixed   $value     Value to check
+	 * @param boolean $expected  Is $value an array?
+	 */
+	public function test_is_array($array, $expected)
+	{
+		$this->assertSame(
+			$expected,
+			Arr::is_array($array)
+		);
+	}
+
 	public function provider_merge()
 	{
 		return array(
@@ -226,7 +258,7 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for test_get()
+	 * Provides test data for test_path()
 	 *
 	 * @return array
 	 */
@@ -238,7 +270,9 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 			'users'  => array(
 				1 => array('name' => 'matt'),
 				2 => array('name' => 'john', 'interests' => array('hocky' => array('length' => 2), 'football' => array())),
+				3 => 'frank', // Issue #3194
 			),
+			'object' => new ArrayObject(array('iterator' => TRUE)), // Iterable object should work exactly the same
 		);
 
 		return array(
@@ -263,11 +297,16 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 			array(array(0 => array(0 => 2)), $array, 'users.*.interests.*.length'),
 			// See what happens when it can't dig any deeper from a wildcard
 			array(NULL, $array, 'users.*.fans'),
+			// Starting wildcards, issue #3269
+			array(array('matt', 'john'), $array['users'], '*.name'),
+			// Path as array, issue #3260
+			array($array['users'][2]['name'], $array, array('users', 2, 'name')),
+			array($array['object']['iterator'], $array, 'object.iterator'),
 		);
 	}
 
 	/**
-	 * Tests Arr::get()
+	 * Tests Arr::path()
 	 *
 	 * @test
 	 * @dataProvider provider_path

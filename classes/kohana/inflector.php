@@ -208,6 +208,21 @@ class Kohana_Inflector {
 	}
 
 	/**
+	 * Converts a camel case phrase into a spaced phrase.
+	 *
+	 *     $str = Inflector::decamelize('houseCat');    // "house cat"
+	 *     $str = Inflector::decamelize('kingAllyCat'); // "king ally cat"
+	 *
+	 * @param   string   phrase to camelize
+	 * @param   string   word separator
+	 * @return  string
+	 */
+	public static function decamelize($str, $sep = ' ')
+	{
+		return strtolower(preg_replace('/([a-z])([A-Z])/', '$1'.$sep.'$2', trim($str)));
+	}
+
+	/**
 	 * Makes a phrase underscored instead of spaced.
 	 *
 	 *     $str = Inflector::underscore('five cats'); // "five_cats";

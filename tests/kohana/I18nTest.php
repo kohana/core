@@ -14,6 +14,7 @@
  */
 class Kohana_I18nTest extends Kohana_Unittest_TestCase
 {
+
 	/**
 	 * Provides test data for test_lang()
 	 * 
@@ -69,5 +70,10 @@ class Kohana_I18nTest extends Kohana_Unittest_TestCase
 	{
 		I18n::lang($lang);
 		$this->assertSame($expected, I18n::get($input));
+
+		// Test immediate translation, issue #3085
+		I18n::lang('en-us');
+		$this->assertSame($expected, I18n::get($input, $lang));
 	}
+
 }

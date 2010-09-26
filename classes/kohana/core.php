@@ -1202,7 +1202,7 @@ class Kohana_Core {
 			// Clean invalid multibyte characters. iconv is only invoked
 			// if there are non ASCII characters in the string, so this
 			// isn't too much of a hit.
-			$var = UTF8::clean($var);
+			$var = UTF8::clean($var, Kohana::$charset);
 
 			if (UTF8::strlen($var) > $length)
 			{

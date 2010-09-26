@@ -243,6 +243,8 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 			array('numeric', 14),
 			array('distinct', 12),
 			array('aeiou', 4),
+			array('‹¡›«¿»', 8), // UTF8 characters
+			array(NULL, 8), // Issue #3256
 		);
 	}
 
@@ -261,6 +263,11 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 	 */
 	function test_random($type, $length)
 	{
+		if ($type === NULL)
+		{
+			$type = 'alnum';
+		}
+
 		$pool = (string) $type;
 
 		switch ($pool)
@@ -285,7 +292,7 @@ Class Kohana_TextTest extends Kohana_Unittest_TestCase
 			break;
 		}
 		
-		$this->assertRegExp('/^['.$pool.']{'.$length.'}$/', Text::random($type, $length));
+		$this->assertRegExp('/^['.$pool.']{'.$length.'}$/u', Text::random($type, $length));
 	}
 
 	/**

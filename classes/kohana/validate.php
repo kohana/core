@@ -474,7 +474,7 @@ class Kohana_Validate extends ArrayObject {
 		if ($digits > 0)
 		{
 			// Specific number of digits
-			$digits = '{'.(int) $digits.'}';
+			$digits = '{'. (int) $digits.'}';
 		}
 		else
 		{
@@ -485,7 +485,7 @@ class Kohana_Validate extends ArrayObject {
 		// Get the decimal point for the current locale
 		list($decimal) = array_values(localeconv());
 
-		return (bool) preg_match('/^[0-9]'.$digits.preg_quote($decimal).'[0-9]{'.(int) $places.'}$/D', $str);
+		return (bool) preg_match('/^[0-9]'.$digits.preg_quote($decimal).'[0-9]{'. (int) $places.'}$/D', $str);
 	}
 
 	/**
@@ -653,7 +653,7 @@ class Kohana_Validate extends ArrayObject {
 			$this->_labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
 		}
 
-		if('matches' === $rule AND ! isset($this->_labels[$params[0]]))
+		if ('matches' === $rule AND ! isset($this->_labels[$params[0]]))
 		{
 			$match_field = $params[0];
 			$this->_labels[$match_field] = preg_replace('/[^\pL]+/u', ' ', $match_field);

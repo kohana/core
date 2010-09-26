@@ -38,6 +38,35 @@ class Kohana_Arr {
 	}
 
 	/**
+	 * Test if a value is an array with an additional check for array-like objects.
+	 *
+	 *     // Returns TRUE
+	 *     Arr::is_array(array());
+	 *     Arr::is_array(new ArrayObject);
+	 *
+	 *     // Returns FALSE
+	 *     Arr::is_array(FALSE);
+	 *     Arr::is_array('not an array!');
+	 *     Arr::is_array(Database::instance());
+	 *
+	 * @param   mixed    value to check
+	 * @return  boolean
+	 */
+	public static function is_array($value)
+	{
+		if (is_array($value))
+		{
+			// Definitely an array
+			return TRUE;
+		}
+		else
+		{
+			// Possibly a Traversable object, functionally the same as an array
+			return (is_object($value) AND $value instanceof Traversable);
+		}
+	}
+
+	/**
 	 * Gets a value from an array using a dot separated path.
 	 *
 	 *     // Get the value of $array['foo']['bar']
@@ -48,31 +77,51 @@ class Kohana_Arr {
 	 *     // Get the values of "color" in theme
 	 *     $colors = Arr::path($array, 'theme.*.color');
 	 *
+	 *     // Using an array of keys
+	 *     $colors = Arr::path($array, array('theme', '*', 'color'));
+	 *
 	 * @param   array   array to search
-	 * @param   string  key path, delimiter separated
+	 * @param   mixed   key path string (delimiter separated) or array of keys
 	 * @param   mixed   default value if the path is not set
 	 * @param   string  key path delimiter
 	 * @return  mixed
 	 */
 	public static function path($array, $path, $default = NULL, $delimiter = NULL)
 	{
-		if (array_key_exists($path, $array))
+		if ( ! Arr::is_array($array))
 		{
-			// No need to do extra processing
-			return $array[$path];
+			// This is not an array!
+			return $default;
 		}
 
-		if ($delimiter === NULL)
+		if (is_array($path))
 		{
-			// Use the default delimiter
-			$delimiter = Arr::$delimiter;
+			// The path has already been separated into keys
+			$keys = $path;
 		}
+		else
+		{
+			if (array_key_exists($path, $array))
+			{
+				// No need to do extra processing
+				return $array[$path];
+			}
 
-		// Remove outer delimiters, wildcards, or spaces
-		$path = trim($path, "{$delimiter}* ");
+			if ($delimiter === NULL)
+			{
+				// Use the default delimiter
+				$delimiter = Arr::$delimiter;
+			}
 
-		// Split the keys by delimiter
-		$keys = explode($delimiter, $path);
+			// Remove starting delimiters and spaces
+			$path = ltrim($path, "{$delimiter} ");
+
+			// Remove ending delimiters, spaces, and wildcards
+			$path = rtrim($path, "{$delimiter} *");
+
+			// Split the keys by delimiter
+			$keys = explode($delimiter, $path);
+		}
 
 		do
 		{
@@ -88,7 +137,7 @@ class Kohana_Arr {
 			{
 				if ($keys)
 				{
-					if (is_array($array[$key]))
+					if (Arr::is_array($array[$key]))
 					{
 						// Dig down into the next part of the path
 						$array = $array[$key];
@@ -308,7 +357,7 @@ class Kohana_Arr {
 			{
 				if (isset($result[$key]))
 				{
-					if (is_array($val) && is_array($result[$key]))
+					if (is_array($val) AND is_array($result[$key]))
 					{
 						if (Arr::is_assoc($val))
 						{

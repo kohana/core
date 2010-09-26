@@ -110,20 +110,24 @@ class Kohana_URL {
 	 *
 	 * [!!] Parameters with a NULL value are left out.
 	 *
-	 * @param   array   array of GET parameters
+	 * @param   array    array of GET parameters
+	 * @param   boolean  include current request GET parameters
 	 * @return  string
 	 */
-	public static function query(array $params = NULL)
+	public static function query(array $params = NULL, $use_get = TRUE)
 	{
-		if ($params === NULL)
+		if ($use_get)
 		{
-			// Use only the current parameters
-			$params = $_GET;
-		}
-		else
-		{
-			// Merge the current and new parameters
-			$params = array_merge($_GET, $params);
+			if ($params === NULL)
+			{
+				// Use only the current parameters
+				$params = $_GET;
+			}
+			else
+			{
+				// Merge the current and new parameters
+				$params = array_merge($_GET, $params);
+			}
 		}
 
 		if (empty($params))
@@ -132,10 +136,8 @@ class Kohana_URL {
 			return '';
 		}
 
-		$query = http_build_query($params, '', '&');
-
-		// Don't prepend '?' to an empty string
-		return ($query === '') ? '' : '?'.$query;
+		// ? is added for simple string concatenation
+		return '?'.http_build_query($params, '', '&');
 	}
 
 	/**

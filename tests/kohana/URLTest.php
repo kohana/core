@@ -195,10 +195,11 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	public function provider_Query()
 	{
 		return array(
-			array(NULL, '', array()),
-			array(NULL, '?test=data', array('_GET' => array('test' => 'data'))),
-			array(array('test' => 'data'), '?test=data', array()),
-			array(array('test' => 'data'), '?more=data&test=data', array('_GET' => array('more' => 'data')))
+			array(array(), '', NULL),
+			array(array('_GET' => array('test' => 'data')), '?test=data', NULL),
+			array(array(), '?test=data', array('test' => 'data')),
+			array(array('_GET' => array('more' => 'data')), '?more=data&test=data', array('test' => 'data')),
+			array(array('_GET' => array('sort' => 'down')), '?test=data', array('test' => 'data'), FALSE),
 		);
 	}
 
@@ -207,17 +208,18 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_query
-	 * @param array $params Query string
-	 * @param string $expected Expected result
 	 * @param array $enviroment Set environment
+	 * @param string $expected Expected result
+	 * @param array $params Query string
+	 * @param boolean $use_get Combine with GET parameters
 	 */
-	public function test_query($params, $expected, $enviroment)
+	public function test_query($enviroment, $expected, $params, $use_get = TRUE)
 	{
 		$this->setEnvironment($enviroment);
 
 		$this->assertSame(
 			$expected,
-			URL::query($params)
+			URL::query($params, $use_get)
 		);
 	}
 }
