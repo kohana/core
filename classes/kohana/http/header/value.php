@@ -1,10 +1,10 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Kohana_Http_Header_Value represents a value assigned to an HTTP header, i.e.
- * 
+ *
  *      Accept: [key=]value[; property[=property_value][; ...]]
- * 
- * Values are either single values, 
+ *
+ * Values are either single values,
  *
  * @package    Kohana
  * @category   Http
@@ -76,7 +76,7 @@ class Kohana_Http_Header_Value {
 					$this->$k = $v;
 				}
 			}
-			
+
 		}
 		// If value is a string
 		else if (is_string($value))
@@ -183,7 +183,7 @@ class Kohana_Http_Header_Value {
 	/**
 	 * Magic method to handle object being cast to
 	 * string. Produces the following header value syntax
-	 * 
+	 *
 	 *      [key=]value[; property[=property_value][; ... ]]
 	 *
 	 * @return  string
@@ -191,12 +191,12 @@ class Kohana_Http_Header_Value {
 	public function __toString()
 	{
 
-		$string = ($this->key === NULL) ? $this->key.'='.$this->$value : $this->$value;
+		$string = ($this->key !== NULL) ? $this->key.'='.$this->value : $this->value;
 
 		if ($this->properties)
 		{
 			$props = array($string);
-			foreach ($this->_properties as $k => $v)
+			foreach ($this->properties as $k => $v)
 			{
 				$props[] = is_int($k) ? $v : $k.'='.$v;
 			}
