@@ -49,7 +49,24 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * If a file can't be found then find_file() should return FALSE if 
+	 * Passing FALSE for the file extension should prevent appending any extension.
+	 * See issue #3214
+	 *
+	 * @test
+	 * @covers  Kohana::find_file
+	 */
+	public function test_find_file_no_extension()
+	{
+		// EXT is manually appened to the _file name_, not passed as the extension
+		$path = Kohana::find_file('classes', $file = 'kohana/core'.EXT, FALSE);
+
+		$this->assertType('string', $path);
+
+		$this->assertStringEndsWith($file, $path);
+	}
+
+	/**
+	 * If a file can't be found then find_file() should return FALSE if
 	 * only a single file was requested, or an empty array if multiple files
 	 * (i.e. configuration files) were requested
 	 *
