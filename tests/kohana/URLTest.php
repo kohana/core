@@ -141,6 +141,46 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
+	 * Provides test data for test_site_url_encode_uri()
+	 * See issue #2680
+	 *
+	 * @return array
+	 */
+	public function provider_site_url_encode_uri()
+	{
+		$provider = array(
+			array('test', 'encode'),
+			array('test', 'éñçø∂ë∂'),
+			array('†éß†', 'encode'),
+			array('†éß†', 'éñçø∂ë∂', 'µåñ¥'),
+		);
+
+		foreach ($provider as $i => $params)
+		{
+			// Every non-ASCII character except for forward slash should be encoded...
+			$expected = implode('/', array_map('rawurlencode', $params));
+
+			// ... from a URI that is not encoded
+			$uri = implode('/', $params);
+
+			$provider[$i] = array("/kohana/index.php/{$expected}", $uri);
+		}
+
+		return $provider;
+	}
+
+	/**
+	 * Tests URL::site for proper URL encoding when working with non-ASCII characters.
+	 *
+	 * @test
+	 * @dataProvider provider_site_url_encode_uri
+	 */
+	public function test_site_url_encode_uri($expected, $uri)
+	{
+		$this->assertSame($expected, URL::site($uri, FALSE));
+	}
+
+	/**
 	 * Provides test data for test_title()
 	 * @return array
 	 */
