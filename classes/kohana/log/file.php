@@ -6,7 +6,7 @@
  * @category   Logging
  * @author     Kohana Team
  * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Log_File extends Kohana_Log_Writer {
 
