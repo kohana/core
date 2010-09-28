@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Session
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
+ * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 abstract class Kohana_Session {

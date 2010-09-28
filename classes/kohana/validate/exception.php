@@ -3,7 +3,7 @@
  * @package    Kohana
  * @category   Exceptions
  * @author     Kohana Team
- * @copyright  (c) 2009 Kohana Team
+ * @copyright  (c) 2009-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Validate_Exception extends Kohana_Exception {
