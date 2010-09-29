@@ -1047,7 +1047,7 @@ class Kohana_Core {
 			echo Kohana::exception_text($e), "\n";
 
 			// Exit with an error status
-			// exit(1);
+			exit(1);
 		}
 	}
 
