@@ -22,6 +22,7 @@
 - Basic Usage
    - [Debugging](debugging)
    - [Loading Classes](autoloading)
+   - [Transparent Extension](extension)
    - [Helpers](helpers)
    - [Requests](requests)
    - [Sessions & Cookies](sessions)
