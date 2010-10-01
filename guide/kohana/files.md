@@ -47,7 +47,7 @@ views/
 :  Views are plain PHP files which are used to generate HTML or other output. The view file is loaded into a [View] object and assigned variables, which it then converts into an HTML fragment. Multiple views can be used within each other. See [views](mvc/views) for more information.
 
 *other*
-:  You can include any other folders in your cascading filesystem.  Examples include, but are not limited to, `guide`, `vendor`, `media`, etc.  For example, to find `media/logo.png` in the cascading filesystem you would call `Kohana::find_file('media','logo','png')`.
+:  You can include any other folders in your cascading filesystem.  Examples include, but are not limited to, `guide`, `vendor`, `media`, whatever you want.  For example, to find `media/logo.png` in the cascading filesystem you would call `Kohana::find_file('media','logo','png')`.
 
 ## Finding Files
 
