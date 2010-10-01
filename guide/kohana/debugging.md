@@ -1,5 +1,3 @@
-<http://kohanaframework.org/guide/debugging.code>
-
 # Debugging
 
 Kohana includes several tools to help you debug your application.
