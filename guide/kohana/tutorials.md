@@ -1,6 +1,10 @@
-Have a list of the tutorials in this guide, as well as link to other tutorials written by other people.
+# Tutorials
 
-#### Ellisgl's KO3 tutorial on dealtaker.com:
+## Tutorials in this guide
+
+## Tutorials written elsewhere
+
+### Ellisgl's KO3 tutorial on dealtaker.com:
 
 1. [Install and Basic Usage](http://www.dealtaker.com/blog/2009/11/20/kohana-php-3-0-ko3-tutorial-part-1/)
 2. [Views](http://www.dealtaker.com/blog/2009/12/07/kohana-php-3-0-ko3-tutorial-part-2/)
