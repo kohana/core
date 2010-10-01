@@ -42,5 +42,6 @@
    - [Custom Error Pages](tutorials/error-pages)
    - [Content Translation](tutorials/translation)
    - [Clean URLs](tutorials/clean-urls)
+   - [Sharing Kohana](tutorials/sharing-kohana)
    - [Template Driven Site](tutorials/templates)
    - [Working with Git](tutorials/git)
