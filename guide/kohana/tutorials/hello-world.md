@@ -14,7 +14,7 @@ Create the file `application/classes/controller/hello.php` in your application f
 
 	Class Controller_Hello extends Controller
 	{
-		function action_index()
+		public function action_index()
 		{
 			echo 'hello, world!';
 		}
@@ -29,7 +29,7 @@ Lets see what's going on here:
 :	This line declares our controller,  each controller class has to be prefixed with `Controller_` and an underscore delimited path to the folder the controller is in (see [Conventions and styles](about.conventions) for more info).  Each controller should also extend the base `Controller` class which provides a standard structure for controllers.
 
 
-`function action_index()`
+`public function action_index()`
 :	This defines the "index" action of our controller.  Kohana will attempt to call this action if the user hasn't specified an action. (See [Routes, URLs and Links](tutorials.urls))
 
 `echo 'hello, world!';`
@@ -55,7 +55,7 @@ Lets change our original controller slightly:
 	{
 		public $template = 'site';
 
-		function action_index()
+		public function action_index()
 		{
 			$this->template->message = 'hello, world!';
 		}
