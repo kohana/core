@@ -58,18 +58,18 @@ To understand how this works, let's look at what happens normally.  When you use
 
 When you add your transparently extended cookie class at `application/classes/cookie.php` this file essentially "replaces" the file at `system/classes/cookie.php` without actually touching it.  This happens because this time when we use the Cookie class [Kohana::autoload] looks for `classes/cookie.php` and finds the file in `application` and includes that one, instead of the one in system.
 
-## Multiple Levels of Extension {#multiple-extensions}
+## Multiple Levels of Extension
 
-If you are extending a Kohana class in a module, you should maintain transparent extensions. Instead of making the [Cookie] extension extend Kohana, you can create `MODPATH/mymod/encrypted/cookie.php`:
+If you are extending a Kohana class in a module, you should maintain transparent extensions. In other words, do not include any variables or function in the "base" class (eg. Cookie). Instead make your own namespaced class, and have the "base" class extend that one. With our Encrypted cookie example we can create `MODPATH/mymod/encrypted/cookie.php`:
 
-    class Encrypted_Cookie extends Kohana_Cookie {
+	class Encrypted_Cookie extends Kohana_Cookie {
 
-        // Use the same encrypt() and decrypt() methods as above
+		// Use the same encrypt() and decrypt() methods as above
 
-    }
+	}
 
 And create `MODPATH/mymod/cookie.php`:
 
-    class Cookie extends Encrypted_Cookie {}
+	class Cookie extends Encrypted_Cookie {}
 
-This will still allow users to add their own extension to [Cookie] while leaving your extensions intact. However, the next extension of [Cookie] will have to extend `Encrypted_Cookie` instead of `Kohana_Cookie`.
+This will still allow users to add their own extension to [Cookie] while leaving your extensions intact. To do that they would make a cookie class that extends `Encrypted_Cookie` (rather than `Kohana_Cookie`) in their application folder.
