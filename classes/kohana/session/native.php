@@ -62,7 +62,16 @@ class Kohana_Session_Native extends Session {
 		// Destroy the current session
 		session_destroy();
 
-		return ! session_id();
+		// Did destruction work?
+		$status = ! session_id();
+
+		if ($status)
+		{
+			// Make sure the session cannot be restarted
+			Cookie::delete($this->_name);
+		}
+
+		return $status;
 	}
 
 } // End Session_Native
