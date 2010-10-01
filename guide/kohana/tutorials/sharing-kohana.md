@@ -1,10 +1,12 @@
-# Moving application and system out of the docroot
+# Sharing Kohana
 
-Kohana follows a [front controller] pattern, which means that all requests are sent to `index.php`. This allows a very clean [filesystem](about.filesystem) design. In `index.php`, there are some very basic configuration options available. You can change the `$application`, `$modules`, and `$system` paths and set the error reporting level.
+Because Kohana follows a [front controller] pattern, which means that all requests are sent to `index.php`, the filesystem is very configurable.  Inside of `index.php` you can change the `$application`, `$modules`, and `$system` paths.
 
-The `$application` variable lets you set the directory that contains your application files. By default, this is `application`. The `$modules` variable lets you set the directory that contains module files. The `$system` variable lets you set the directory that contains the default Kohana files.
+[!!] There is a security check at the top of every Kohana file to prevent it from being accessed without using the front controller.  Also, the `.htaccess` file should protect those folders as well.  Moving the application, modules, and system directories to a location that cannot be accessed vie web can add another layer of security, but is optional.   
 
-You can move these three directories anywhere. For instance, if your directories are set up like this:
+The `$application` variable lets you set the directory that contains your application files. By default, this is `application`. The `$modules` variable lets you set the directory that contains module files. The `$system` variable lets you set the directory that contains the default Kohana files. You can move these three directories anywhere.
+
+For instance, by default the directories are set up like this:
 
     www/
         index.php
@@ -12,7 +14,7 @@ You can move these three directories anywhere. For instance, if your directories
         modules/
         system/
 
-You could move the directories out of the web root:
+You could move the directories out of the web root so they look like this:
 
     application/
     modules/
@@ -20,12 +22,33 @@ You could move the directories out of the web root:
     www/
         index.php
 
-Then you would change the settings in `index.php` to be:
+Then you would need to change the settings in `index.php` to be:
 
     $application = '../application';
     $modules     = '../modules';
     $system      = '../system';
 
-Now none of the directories can be accessed by the web server. It is not necessary to make this change, but does make it possible to share the directories with multiple applications, among other things.
+## Sharing system and modules
 
-[!!] There is a security check at the top of every Kohana file to prevent it from being accessed without using the front controller. However, it is more secure to move the application, modules, and system directories to a location that cannot be accessed via the web. 
+To take this a step further, we could point several kohana apps to the same system and modules folders.  For example (and this is just an example, you could arrange these anyway you want):
+
+	apps/
+		foobar/
+			application/
+			www/
+		bazbar/
+			application/
+			www/
+	kohana/
+		3.0.6/
+		3.0.7/
+		3.0.8/
+	modules/
+
+And you would need to change the settings in `index.php` to be:
+
+	$application = '../application';
+	$system      = '../../../kohana/3.0.6';
+	$modules     = '../../../kohana/modules';
+
+Using this method each app can point to a central copy of kohana, and you can add a new version, and quickly update your apps to point to the new version by editing their `index.php` files.
