@@ -32,16 +32,12 @@ class Kohana_Num {
 		{
 			case 1:
 				return 'st';
-			break;
 			case 2:
 				return 'nd';
-			break;
 			case 3:
 				return 'rd';
-			break;
 			default:
 				return 'th';
-			break;
 		}
 	}
 
