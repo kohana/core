@@ -5,8 +5,8 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2007-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_URL {
 
@@ -62,7 +62,7 @@ class Kohana_URL {
 			}
 			else
 			{
-				// Attempt ot use HTPP_HOST and fallback to SERVER_NAME
+				// Attempt to use HTTP_HOST and fallback to SERVER_NAME
 				$domain = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME'];
 			}
 

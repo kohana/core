@@ -5,15 +5,15 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Remote {
 
 	// Default curl options
 	public static $default_options = array
 	(
-		CURLOPT_USERAGENT      => 'Mozilla/5.0 (compatible; Kohana v3.0 +http://kohanaphp.com/)',
+		CURLOPT_USERAGENT      => 'Mozilla/5.0 (compatible; Kohana v3.0 +http://kohanaframework.org/)',
 		CURLOPT_CONNECTTIMEOUT => 5,
 		CURLOPT_TIMEOUT        => 5,
 	);
@@ -122,7 +122,7 @@ class Kohana_Remote {
 		fwrite($remote, 'HEAD '.$url['path'].' HTTP/1.0'.$line_feed);
 		fwrite($remote, 'Host: '.$url['host'].$line_feed);
 		fwrite($remote, 'Connection: close'.$line_feed);
-		fwrite($remote, 'User-Agent: Kohana Framework (+http://kohanaphp.com/)'.$line_feed);
+		fwrite($remote, 'User-Agent: Kohana Framework (+http://kohanaframework.org/)'.$line_feed);
 
 		// Send one more CRLF to terminate the headers
 		fwrite($remote, $line_feed);

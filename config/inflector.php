@@ -19,6 +19,7 @@ return array(
 		'information',
 		'knowledge',
 		'luggage',
+		'media',
 		'money',
 		'music',
 		'news',
