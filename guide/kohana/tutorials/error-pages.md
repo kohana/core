@@ -1,4 +1,4 @@
-<h1>Friendly Error Pages <small>written by <a href="http://mathew-davies.co.uk./">Mathew Davies</a></small></h2>
+<h1>Friendly Error Pages <small>written by <a href="http://mathew-davies.co.uk./">Mathew Davies</a></small></h1>
 
 By default Kohana 3 doesn't have a method to display friendly error pages like that 
 seen in Kohana 2; In this short guide I will teach you how it is done.
