@@ -13,7 +13,7 @@ errors into exceptions which are easier to handle.
 First off, we are going to need a custom exception. This is so we can perform different
 actions based on it in the exception handler. I will talk more about this later.
 
-_classes\__http\_response\_exception.php_
+_classes\_http\_response\_exception.php_
 
 	<?php defined('SYSPATH') or die('No direct access');
 
@@ -109,6 +109,7 @@ would display an error 500 page.
 3. Otherwise use the 404 action. Users could otherwise craft their own error messages, eg:
    error/404/email%20your%20login%20information%20to%20hacker%40google.com
 
+
 	public function action_404()
 	{
 		$this->template->title = '404 Not Found';
@@ -136,6 +137,7 @@ would display an error 500 page.
 		$this->template->title = 'Internal Server Error';
 		$this->request->status = 500;
 	}
+
 
 You will notice that each example method is named after the HTTP response code 
 and sets the request response code.
