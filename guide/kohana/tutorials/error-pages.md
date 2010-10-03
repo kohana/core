@@ -107,37 +107,38 @@ would display an error 500 page.
 2. If an internal request, then set a template variable "message" to be shown to 
    the user.
 3. Otherwise use the 404 action. Users could otherwise craft their own error messages, eg:
-   error/404/email%20your%20login%20information%20to%20hacker%40google.com
+   `error/404/email%20your%20login%20information%20to%20hacker%40google.com`
 
 
-	public function action_404()
+~~~
+public function action_404()
+{
+	$this->template->title = '404 Not Found';
+	
+	// Here we check to see if a 404 came from our website. This allows the
+	// webmaster to find broken links and update them in a shorter amount of time.
+	if (isset ($_SERVER['HTTP_REFERER']) AND strstr($_SERVER['HTTP_REFERER'], $_SERVER['SERVER_NAME']) !== FALSE)
 	{
-		$this->template->title = '404 Not Found';
-		
-		// Here we check to see if a 404 came from our website. This allows the
-		// webmaster to find broken links and update them in a shorter amount of time.
-		if (isset ($_SERVER['HTTP_REFERER']) AND strstr($_SERVER['HTTP_REFERER'], $_SERVER['SERVER_NAME']) !== FALSE)
-		{
-			// Set a local flag so we can display different messages in our template.
-			$this->template->local = TRUE;
-		}
-		
-		// HTTP Status code.
-		$this->request->status = 404;
+		// Set a local flag so we can display different messages in our template.
+		$this->template->local = TRUE;
 	}
+	
+	// HTTP Status code.
+	$this->request->status = 404;
+}
 
-	public function action_503()
-	{
-		$this->template->title = 'Maintenance Mode';
-		$this->request->status = 503;
-	}
+public function action_503()
+{
+	$this->template->title = 'Maintenance Mode';
+	$this->request->status = 503;
+}
 
-	public function action_500()
-	{
-		$this->template->title = 'Internal Server Error';
-		$this->request->status = 500;
-	}
-
+public function action_500()
+{
+	$this->template->title = 'Internal Server Error';
+	$this->request->status = 500;
+}
+~~~
 
 You will notice that each example method is named after the HTTP response code 
 and sets the request response code.
