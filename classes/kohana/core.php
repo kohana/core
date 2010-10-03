@@ -1488,7 +1488,7 @@ class Kohana_Core {
 				else
 				{
 					// Sanitize the file path
-					$args = array($step['args'][0]);
+					$args = array(Kohana::debug_path($step['args'][0]));
 				}
 			}
 			elseif (isset($step['args']))
