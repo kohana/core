@@ -55,6 +55,12 @@ class Kohana_URL {
 
 		if (is_string($protocol))
 		{
+			if ($port = parse_url($base_url, PHP_URL_PORT))
+			{
+				// Found a port, make it usable for the URL
+				$port = ":{$port}";
+			}
+
 			if ($domain = parse_url($base_url, PHP_URL_HOST))
 			{
 				// Remove everything but the path from the URL
@@ -67,7 +73,7 @@ class Kohana_URL {
 			}
 
 			// Add the protocol and domain to the base URL
-			$base_url = $protocol.'://'.$domain.$base_url;
+			$base_url = "{$protocol}://{$domain}{$port}{$base_url}";
 		}
 
 		return $base_url;
