@@ -32,6 +32,7 @@ return array(
 		'series',
 		'sheep',
 		'sms',
+		'spam',
 		'species',
 		'staff',
 		'toothpaste',
