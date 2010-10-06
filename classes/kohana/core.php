@@ -566,7 +566,7 @@ class Kohana_Core {
 	 * If no extension is given, the default EXT extension will be used.
 	 *
 	 * When searching the "config" or "i18n" directories, or when the
-	 * $aggregate_files flag is set to true, an array of files
+	 * $array flag is set to true, an array of files
 	 * will be returned. These files will return arrays which must be
 	 * merged together.
 	 *
