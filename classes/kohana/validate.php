@@ -1053,7 +1053,12 @@ class Kohana_Validate extends ArrayObject {
 			// Get the label for this field
 			$label = $this->_labels[$field];
 
-			if ($translate)
+			if (is_string($translate))
+			{
+				// Translate the label using specified language
+				$label = __($label, null, $translate);
+			}
+			else
 			{
 				// Translate the label
 				$label = __($label);
@@ -1086,7 +1091,12 @@ class Kohana_Validate extends ArrayObject {
 					{
 						$value = $this->_labels[$value];
 
-						if ($translate)
+						if (is_string($translate))
+						{
+							// Translate the value using specified language
+							$value = __($value, null, $translate);
+						}
+						else
 						{
 							// Translate the label
 							$value = __($value);
@@ -1125,6 +1135,7 @@ class Kohana_Validate extends ArrayObject {
 				if (is_string($translate))
 				{
 					// Translate the message using specified language
+					die(Kohana::debug(__($message, $values,'es')));
 					$message = __($message, $values, $translate);
 				}
 				else

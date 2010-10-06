@@ -36,7 +36,7 @@ function __($string, array $values = NULL, $lang = 'en-us')
 	{
 		// The message and target languages are different
 		// Get the translation for this message
-		$string = I18n::get($string);
+		$string = I18n::get($string, $lang);
 	}
 
 	return empty($values) ? $string : strtr($string, $values);
