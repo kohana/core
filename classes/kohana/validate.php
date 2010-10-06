@@ -87,6 +87,18 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
+	 * CHecks that a field is exactly the value required.
+	 *
+	 * @param   string   value
+	 * @param   string   required value
+	 * @return  boolean
+	 */
+	public static function equals($value, $required)
+	{
+		return ($value === $required);
+	}
+
+	/**
 	 * Check an email address for correct format.
 	 *
 	 * @link  http://www.iamcal.com/publish/articles/php/parsing_email/
