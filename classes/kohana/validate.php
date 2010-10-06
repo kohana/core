@@ -1112,7 +1112,7 @@ class Kohana_Validate extends ArrayObject {
 							if (is_string($translate))
 							{
 								// Translate the value using the specified language
-								$value = __($value);
+								$value = __($value, NULL, $translate);
 							}
 							else
 							{
