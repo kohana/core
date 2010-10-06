@@ -1055,8 +1055,16 @@ class Kohana_Validate extends ArrayObject {
 
 			if ($translate)
 			{
-				// Translate the label
-				$label = __($label);
+				if (is_string($translate))
+				{
+					// Translate the label using the specified language
+					$label = __($label, NULL, $translate);
+				}
+				else
+				{
+					// Translate the label
+					$label = __($label);
+				}
 			}
 
 			// Start the translation values list
@@ -1084,12 +1092,21 @@ class Kohana_Validate extends ArrayObject {
 					// Check if a label for this parameter exists
 					if (isset($this->_labels[$value]))
 					{
+						// Use the label as the value, eg: related field name for "matches"
 						$value = $this->_labels[$value];
 
 						if ($translate)
 						{
-							// Translate the label
-							$value = __($value);
+							if (is_string($translate))
+							{
+								// Translate the value using the specified language
+								$value = __($value);
+							}
+							else
+							{
+								// Translate the value
+								$value = __($value);
+							}
 						}
 					}
 
