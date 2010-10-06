@@ -72,7 +72,7 @@ class Kohana_Text {
 
 		// Only attach the end character if the matched string is shorter
 		// than the starting string.
-		return rtrim($matches[0]).(strlen($matches[0]) === strlen($str) ? '' : $end_char);
+		return rtrim($matches[0]).((strlen($matches[0]) === strlen($str)) ? '' : $end_char);
 	}
 
 	/**
@@ -107,7 +107,7 @@ class Kohana_Text {
 		if ( ! preg_match('/^.{0,'.$limit.'}\s/us', $str, $matches))
 			return $end_char;
 
-		return rtrim($matches[0]).(strlen($matches[0]) === strlen($str) ? '' : $end_char);
+		return rtrim($matches[0]).((strlen($matches[0]) === strlen($str)) ? '' : $end_char);
 	}
 
 	/**

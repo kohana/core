@@ -311,7 +311,7 @@ class Kohana_Validate extends ArrayObject {
 			$double = substr($number, $i, 1) * 2;
 
 			// Subtract 9 from the double where value is greater than 10
-			$checksum += ($double >= 10) ? $double - 9 : $double;
+			$checksum += ($double >= 10) ? ($double - 9) : $double;
 		}
 
 		// If the checksum is a multiple of 10, the number is valid

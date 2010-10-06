@@ -274,8 +274,8 @@ class Kohana_Date {
 	public static function years($start = FALSE, $end = FALSE)
 	{
 		// Default values
-		$start = ($start === FALSE) ? date('Y') - 5 : (int) $start;
-		$end   = ($end   === FALSE) ? date('Y') + 5 : (int) $end;
+		$start = ($start === FALSE) ? (date('Y') - 5) : (int) $start;
+		$end   = ($end   === FALSE) ? (date('Y') + 5) : (int) $end;
 
 		$years = array();
 
@@ -393,7 +393,7 @@ class Kohana_Date {
 	 */
 	public static function fuzzy_span($timestamp, $local_timestamp = NULL)
 	{
-		$local_timestamp = $local_timestamp === NULL ? time() : (int) $local_timestamp;
+		$local_timestamp = ($local_timestamp === NULL) ? time() : (int) $local_timestamp;
 
 		// Determine the difference in seconds
 		$offset = abs($local_timestamp - $timestamp);
@@ -553,8 +553,8 @@ class Kohana_Date {
 	 */
 	public static function formatted_time($datetime_str = 'now', $timestamp_format = NULL, $timezone = NULL)
 	{
-		$timestamp_format = $timestamp_format == NULL ? Date::$timestamp_format : $timestamp_format;
-		$timezone         = $timezone === NULL ? Date::$timezone : $timezone;
+		$timestamp_format = ($timestamp_format == NULL) ? Date::$timestamp_format : $timestamp_format;
+		$timezone         = ($timezone === NULL) ? Date::$timezone : $timezone;
 
 		$time = new DateTime($datetime_str, new DateTimeZone(
 			$timezone ? $timezone : date_default_timezone_get()
