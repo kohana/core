@@ -1135,7 +1135,6 @@ class Kohana_Validate extends ArrayObject {
 				if (is_string($translate))
 				{
 					// Translate the message using specified language
-					die(Kohana::debug(__($message, $values,'es')));
 					$message = __($message, $values, $translate);
 				}
 				else
