@@ -286,13 +286,13 @@ class Kohana_Request {
 			if (strpos($uri, $base_url) === 0)
 			{
 				// Remove the base URL from the URI
-				$uri = substr($uri, strlen($base_url));
+				$uri = (string) substr($uri, strlen($base_url));
 			}
 
 			if (Kohana::$index_file AND strpos($uri, Kohana::$index_file) === 0)
 			{
 				// Remove the index file from the URI
-				$uri = substr($uri, strlen(Kohana::$index_file));
+				$uri = (string) substr($uri, strlen(Kohana::$index_file));
 			}
 		}
 
