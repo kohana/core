@@ -1556,5 +1556,14 @@ class Kohana_Core {
 
 		return $output;
 	}
+	
+	/**
+	 * Show various kohana info, useful for debugging.
+	 *
+	 */
+	public static function info()
+	{
+		return View::factory('kohana/info');
+	}
 
 } // End Kohana
