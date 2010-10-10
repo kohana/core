@@ -10,10 +10,11 @@
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
  * @copyright  (c) 2008-2010 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_I18nTest extends Kohana_Unittest_TestCase
 {
+
 	/**
 	 * Provides test data for test_lang()
 	 * 
@@ -69,5 +70,10 @@ class Kohana_I18nTest extends Kohana_Unittest_TestCase
 	{
 		I18n::lang($lang);
 		$this->assertSame($expected, I18n::get($input));
+
+		// Test immediate translation, issue #3085
+		I18n::lang('en-us');
+		$this->assertSame($expected, I18n::get($input, $lang));
 	}
+
 }

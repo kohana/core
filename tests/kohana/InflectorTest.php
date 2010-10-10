@@ -10,7 +10,7 @@
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
  * @copyright  (c) 2008-2010 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 {
@@ -138,5 +138,40 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 	public function test_camelize($input, $method, $expected)
 	{
 		$this->assertSame($expected, Inflector::$method($input));
+	}
+
+	/**
+	 * Provides data for test_decamelize()
+	 *
+	 * @return array
+	 */
+	public function provider_decamelize()
+	{
+		return array(
+			array('getText', '_', 'get_text'),
+			array('getJSON', '_', 'get_json'),
+			array('getLongText', '_', 'get_long_text'),
+			array('getI18N', '_', 'get_i18n'),
+			array('getL10n', '_', 'get_l10n'),
+			array('getTe5t1ng', '_', 'get_te5t1ng'),
+			array('OpenFile', '_', 'open_file'),
+			array('CloseIoSocket', '_', 'close_io_socket'),
+			array('fooBar', ' ', 'foo bar'),
+			array('camelCase', '+', 'camel+case'),
+		);
+	}
+
+	/**
+	 * Tests Inflector::decamelize()
+	 *
+	 * @test
+	 * @dataProvider provider_decamelize
+	 * @param string Camelized string
+	 * @param string Glue
+	 * @param string Expected string
+	 */
+	public function test_decamelize($input, $glue, $expected)
+	{
+		$this->assertSame($expected, Inflector::decamelize($input, $glue));
 	}
 }
