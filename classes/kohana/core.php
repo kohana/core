@@ -477,20 +477,28 @@ class Kohana_Core {
 	 */
 	public static function auto_load($class)
 	{
-		// Transform the class name into a path
-		$file = str_replace('_', '/', strtolower($class));
-
-		if ($path = Kohana::find_file('classes', $file))
+		try
 		{
-			// Load the class file
-			require $path;
+			// Transform the class name into a path
+			$file = str_replace('_', '/', strtolower($class));
 
-			// Class has been found
-			return TRUE;
+			if ($path = Kohana::find_file('classes', $file))
+			{
+				// Load the class file
+				require $path;
+
+				// Class has been found
+				return TRUE;
+			}
+
+			// Class is not in the filesystem
+			return FALSE;
 		}
-
-		// Class is not in the filesystem
-		return FALSE;
+		catch (Exception $e)
+		{
+			Kohana::exception_handler($e);
+			die;
+		}
 	}
 
 	/**
