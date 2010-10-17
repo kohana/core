@@ -955,8 +955,6 @@ class Kohana_Request {
 				$this->status = 206;
 			}
 			
-			Kohana::$log->add(Kohana::ERROR, $start);
-			
 			// Range of bytes being sent
 			$this->headers['Content-Range'] = 'bytes '.$start.'-'.$end.'/'.$size;
 			$this->headers['Accept-Ranges'] = 'bytes';
@@ -1053,13 +1051,13 @@ class Kohana_Request {
 		exit;
 	}
   
-  /**
-   * Parse the byte ranges from the HTTP_RANGE header used for 
-   * resumable downloads.
-   * 
+	/**
+	 * Parse the byte ranges from the HTTP_RANGE header used for 
+	 * resumable downloads.
+	 * 
 	 * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
-   * @return array|FALSE 
-   */
+	 * @return array|FALSE 
+	 */
 	protected function _parse_byte_range()
 	{
 		if ( ! isset($_SERVER['HTTP_RANGE']))
