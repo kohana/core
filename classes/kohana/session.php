@@ -177,7 +177,7 @@ abstract class Kohana_Session {
 	/**
 	 * Get the current session cookie name.
 	 *
-	 *     $name = $session->id();
+	 *     $name = $session->name();
 	 *
 	 * @return  string
 	 * @since   3.0.8
