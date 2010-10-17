@@ -258,6 +258,34 @@ class Kohana_Arr {
 	}
 
 	/**
+	 * Retrieves muliple single-key values from a list of arrays.
+	 *
+	 *     // Get all of the "id" values from a result
+	 *     $ids = Arr::pluck($result, 'id');
+	 *
+	 * [!!] A list of arrays is an array that contains arrays, eg: array(array $a, array $b, array $c, ...)
+	 *
+	 * @param   array   list of arrays to check
+	 * @param   string  key to pluck
+	 * @return  array
+	 */
+	public static function pluck($array, $key)
+	{
+		$values = array();
+
+		foreach ($array as $row)
+		{
+			if (isset($row[$key]))
+			{
+				// Found a value in this row
+				$values[] = $row[$key];
+			}
+		}
+
+		return $values;
+	}
+
+	/**
 	 * Binary search algorithm.
 	 *
 	 * @deprecated  Use [array_search](http://php.net/array_search) instead

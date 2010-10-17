@@ -473,6 +473,41 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
+	 * Provides data for test_equals()
+	 *
+	 * @return array
+	 */
+	public function provider_equals()
+	{
+		return array(
+			array('foo', 'foo', TRUE),
+			array('1', '1', TRUE),
+			array(1, '1', FALSE),
+			array('011', 011, FALSE),
+		);
+	}
+
+	/**
+	 * Tests Validate::equals()
+	 *
+	 * @test
+	 * @group kohana.validation.helpers
+	 * @dataProvider provider_equals
+	 * @param   string   $string    value to check
+	 * @param   integer  $required  required value
+	 * @param   boolean  $correct   is $string the same as $required?
+	 * @return  boolean
+	 */
+	public function test_equals($string, $required, $correct)
+	{
+		return $this->assertSame(
+			$correct,
+			Validate::equals($string, $required),
+			'Values are not equal'
+		);
+	}
+
+	/**
 	 * Tests Validate::factory()
 	 *
 	 * Makes sure that the factory method returns an instance of Validate lib
