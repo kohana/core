@@ -23,7 +23,7 @@
  * @copyright  (c) 2007-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Encrypt {
+abstract class Kohana_Encrypt {
 
 	/**
 	 * @var  string  default instance name
@@ -52,80 +52,31 @@ class Kohana_Encrypt {
 		if ($name === NULL)
 		{
 			// Use the default instance name
-			$name = Encrypt::$default;
+			$name = Kohana::config('encrypt.default_group');
+
 		}
 
 		if ( ! isset(Encrypt::$instances[$name]))
 		{
 			// Load the configuration data
 			$config = Kohana::config('encrypt')->$name;
-
-			if ( ! isset($config['key']))
-			{
-				// No default encryption key is provided!
-				throw new Kohana_Exception('No encryption key is defined in the encryption configuration group: :group',
-					array(':group' => $name));
-			}
-
-			if ( ! isset($config['mode']))
-			{
-				// Add the default mode
-				$config['mode'] = MCRYPT_MODE_NOFB;
-			}
-
-			if ( ! isset($config['cipher']))
-			{
-				// Add the default cipher
-				$config['cipher'] = MCRYPT_RIJNDAEL_128;
-			}
+			$config['name'] = $name;
+			$class = 'Encrypt_'.ucfirst($config['driver']);
 
 			// Create a new instance
-			Encrypt::$instances[$name] = new Encrypt($config['key'], $config['mode'], $config['cipher']);
+			Encrypt::$instances[$name] = new $class($config);
 		}
 
+		Encrypt::$instances[$name]->random_source();
 		return Encrypt::$instances[$name];
 	}
 
 	/**
-	 * Creates a new mcrypt wrapper.
+	 * Returns the type of random number generator
 	 *
-	 * @param   string   encryption key
-	 * @param   string   mcrypt mode
-	 * @param   string   mcrypt cipher
+	 *
 	 */
-	public function __construct($key, $mode, $cipher)
-	{
-		// Find the max length of the key, based on cipher and mode
-		$size = mcrypt_get_key_size($cipher, $mode);
-
-		if (isset($key[$size]))
-		{
-			// Shorten the key to the maximum size
-			$key = substr($key, 0, $size);
-		}
-
-		// Store the key, mode, and cipher
-		$this->_key    = $key;
-		$this->_mode   = $mode;
-		$this->_cipher = $cipher;
-
-		// Store the IV size
-		$this->_iv_size = mcrypt_get_iv_size($this->_cipher, $this->_mode);
-	}
-
-	/**
-	 * Encrypts a string and returns an encrypted string that can be decoded.
-	 *
-	 *     $data = $encrypt->encode($data);
-	 *
-	 * The encrypted binary data is encoded using [base64](http://php.net/base64_encode)
-	 * to convert it to a string. This string can be stored in a database,
-	 * displayed, and passed using most other means without corruption.
-	 *
-	 * @param   string  data to be encrypted
-	 * @return  string
-	 */
-	public function encode($data)
+	public static function random_source()
 	{
 		// Set the rand type if it has not already been set
 		if (Encrypt::$_rand === NULL)
@@ -162,15 +113,23 @@ class Kohana_Encrypt {
 			mt_srand();
 		}
 
-		// Create a random initialization vector of the proper size for the current cipher
-		$iv = mcrypt_create_iv($this->_iv_size, Encrypt::$_rand);
-
-		// Encrypt the data using the configured options and generated iv
-		$data = mcrypt_encrypt($this->_cipher, $this->_key, $data, $this->_mode, $iv);
-
-		// Use base64 encoding to convert to a string
-		return base64_encode($iv.$data);
+		return Encrypt::$_rand;
 	}
+
+
+	/**
+	 * Encrypts a string and returns an encrypted string that can be decoded.
+	 *
+	 *     $data = $encrypt->encode($data);
+	 *
+	 * The encrypted binary data is encoded using [base64](http://php.net/base64_encode)
+	 * to convert it to a string. This string can be stored in a database,
+	 * displayed, and passed using most other means without corruption.
+	 *
+	 * @param   string  data to be encrypted
+	 * @return  string
+	 */
+	abstract public function encode($data);
 
 	/**
 	 * Decrypts an encoded string back to its original value.
@@ -181,31 +140,46 @@ class Kohana_Encrypt {
 	 * @return  FALSE   if decryption fails
 	 * @return  string
 	 */
-	public function decode($data)
-	{
-		// Convert the data back to binary
-		$data = base64_decode($data, TRUE);
+	abstract public function decode($data);
 
-		if ( ! $data)
-		{
-			// Invalid base64 data
-			return FALSE;
-		}
+	public function get_iv_size(){
+		return $this->_iv_size;
+	}
+	
+	public function get_key_size(){
+		return $this->_key_size;
+	}
+	
+	public function algo(){
+		return $this->_cipher;
+	}
+	
+	public function mode(){
+		return $this->_mode;
+	}
+	
+	public function set_key($key){
+		$this->_key = $key;
+	}
+	
+	public function get_key(){
+		return $this->_key;
+	}
 
-		// Extract the initialization vector from the data
-		$iv = substr($data, 0, $this->_iv_size);
+	abstract public function compare_hash($data, $hash);
+	
+	abstract public function hash($data, $salt = null, $cycles = null);
+	
+	public function generate_key(){
+		return Encrypt::random_data($this->_key_size);
+	}
 
-		if ($this->_iv_size !== strlen($iv))
-		{
-			// The iv is not the expected size
-			return FALSE;
-		}
-
-		// Remove the iv from the data
-		$data = substr($data, $this->_iv_size);
-
-		// Return the decrypted data, trimming the \0 padding bytes from the end of the data
-		return rtrim(mcrypt_decrypt($this->_cipher, $this->_key, $data, $this->_mode, $iv), "\0");
+	public function generate_iv(){
+		return Encrypt::random_data($this->_iv_size);
+	}
+	
+	public static function random_data($len){
+		return mcrypt_create_iv($len, Encrypt::random_source());
 	}
 
 } // End Encrypt

@@ -175,34 +175,26 @@ class Kohana_Text {
 
 		$utf8 = FALSE;
 
-		switch ($type)
-		{
-			case 'alnum':
-				$pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-			break;
-			case 'alpha':
-				$pool = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-			break;
-			case 'hexdec':
-				$pool = '0123456789abcdef';
-			break;
-			case 'numeric':
-				$pool = '0123456789';
-			break;
-			case 'nozero':
-				$pool = '123456789';
-			break;
-			case 'distinct':
-				$pool = '2345679ACDEFHJKLMNPRSTUVWXYZ';
-			break;
-			default:
-				$pool = (string) $type;
-				$utf8 = ! UTF8::is_ascii($pool);
-			break;
+
+		$types = array()
+		$types['alnum']    = array('0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+		$types['alpha']    = array('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+		$types['alphau']   = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+		$types['alphal']   = array('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
+		$types['hexdec']   = array('0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f');
+		$types['numeric']  = array('0','1','2','3','4','5','6','7','8','9');
+		$types['nozero']   = array('1','2','3','4','5','6','7','8','9');
+		$types['distinct'] = array('2','3','4','5','6','7','9','A','C','D','E','F','H','J','K','L','M','N','P','R','S','T','U','V','W','X','Y','Z');
+
+		$pool = null;
+		if(array_key_exists($type, $types)){
+			$pool = $types[$type];
+		}else{
+			$pool = (string) $type;
+			$utf8 = ! UTF8::is_ascii($pool);
+			$pool = ($utf8 === TRUE) ? UTF8::str_split($pool, 1) : str_split($pool, 1);
 		}
 
-		// Split the pool into an array of characters
-		$pool = ($utf8 === TRUE) ? UTF8::str_split($pool, 1) : str_split($pool, 1);
 
 		// Largest pool key
 		$max = count($pool) - 1;
@@ -220,12 +212,12 @@ class Kohana_Text {
 			if (ctype_alpha($str))
 			{
 				// Add a random digit
-				$str[mt_rand(0, $length - 1)] = chr(mt_rand(48, 57));
+				$str[mt_rand(0, $length - 1)] = $types['numeric'][mt_rand(0, count($types['numeric'])-1)];
 			}
 			elseif (ctype_digit($str))
 			{
 				// Add a random letter
-				$str[mt_rand(0, $length - 1)] = chr(mt_rand(65, 90));
+				$str[mt_rand(0, $length - 1)] = $types['alpha'][mt_rand(0, count($types['alpha'])-1)];
 			}
 		}
 

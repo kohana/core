@@ -1,17 +1,21 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct access allowed.');
 
-return array(
-
-	'default' => array(
-		/**
-		 * The following options must be set:
-		 *
-		 * string   key     secret passphrase
-		 * integer  mode    encryption mode, one of MCRYPT_MODE_*
-		 * integer  cipher  encryption cipher, one of the Mcrpyt cipher constants
-		 */
-		'cipher' => MCRYPT_RIJNDAEL_128,
-		'mode'   => MCRYPT_MODE_NOFB,
+return array
+(
+	'default_group' => 'default',
+	'default'=>array(
+		'driver'=>'extended',
+		'hash_function' => 'whirlpool',
+		'cipher'=>'blowfish',
+		'mode' => MCRYPT_MODE_NOFB,
 	),
-
+	'password'=>array(
+		'driver'=>'extended',
+		'cipher'=>'blowfish',
+		'mode' => MCRYPT_MODE_NOFB,
+		'hash_function' => 'blowfish',
+		'blowfish'=>array(
+			'cost' => '15'
+		)
+	),
 );
