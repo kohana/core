@@ -1102,16 +1102,36 @@ class Kohana_Request {
 			// Create a new instance of the controller
 			$controller = $class->newInstance($this);
 
-			// Execute the "before action" method
+			// Execute the "before" method
 			$class->getMethod('before')->invoke($controller);
 
 			// Determine the action to use
 			$action = empty($this->action) ? Route::$default_action : $this->action;
 
+			// Execute the "before_$action" method
+			try
+			{
+				$class->getMethod('before_'.$action)->invoke($controller);
+			}
+			catch (ReflectionException $e)
+			{
+				// Its okay to ignore this - It simply means there is no action specific before method
+			}
+
 			// Execute the main action with the parameters
 			$class->getMethod('action_'.$action)->invokeArgs($controller, $this->_params);
 
-			// Execute the "after action" method
+			// Execute the "after_$action" method
+			try
+			{
+				$class->getMethod('after_'.$action)->invoke($controller);
+			}
+			catch (ReflectionException $e)
+			{
+				// Its okay to ignore this - It simply means there is no action specific after method
+			}
+
+			// Execute the "after" method
 			$class->getMethod('after')->invoke($controller);
 		}
 		catch (Exception $e)
