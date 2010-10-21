@@ -207,12 +207,13 @@ class Kohana_Request {
 					Request::$client_ip = $_SERVER['REMOTE_ADDR'];
 				}
 
-				if (Request::$method !== 'GET' AND Request::$method !== 'POST')
-				{
-					// Methods besides GET and POST do not properly parse the form-encoded
-					// query string into the $_POST array, so we overload it manually.
-					parse_str(file_get_contents('php://input'), $_POST);
-				}
+				// This code has always left me confused over why it was ever written! Removed...
+//				if (Request::$method !== 'GET' AND Request::$method !== 'POST')
+//				{
+//					// Methods besides GET and POST do not properly parse the form-encoded
+//					// query string into the $_POST array, so we overload it manually.
+//					parse_str(file_get_contents('php://input'), $_POST);
+//				}
 
 				if ($uri === TRUE)
 				{
