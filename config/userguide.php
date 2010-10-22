@@ -11,10 +11,10 @@ return array(
 			'enabled' => TRUE,
 			
 			// The name that should show up on the userguide index page
-			'name' => 'Kohana 3',
+			'name' => 'Kohana',
 
 			// A short description of this module, shown on the index page
-			'description' => 'Official Documentation for Kohana 3.',
+			'description' => 'Documentation for Kohana core/system.',
 			
 			// Copyright message, shown in the footer for this module
 			'copyright' => '&copy; 2008–2010 Kohana Team',
