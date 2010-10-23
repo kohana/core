@@ -187,6 +187,11 @@ class Kohana_Route {
 	protected $_route_regex;
 
 	/**
+	 * @var  boolean  use next route if not found
+	 */
+	public $fall_through = FALSE;
+
+	/**
 	 * Creates a new route. Sets the URI and regular expressions for keys.
 	 * Routes should always be created with [Route::set] or they will not
 	 * be properly stored.
@@ -234,6 +239,21 @@ class Kohana_Route {
 	{
 		$this->_defaults = $defaults;
 
+		return $this;
+	}
+
+	/**
+	 * Sets the "fall-through" property of this route. A fall-through route
+	 * will be skipped if either the controller or action do not exist.
+	 *
+	 *     $route->fall_through(TRUE);
+	 *
+	 * @param   boolean  Fall-through setting
+	 * @return  $this
+	 */
+	public function fall_through($fall_through=TRUE)
+	{
+		$this->fall_through = $fall_through;
 		return $this;
 	}
 

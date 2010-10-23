@@ -632,31 +632,67 @@ class Kohana_Request {
 		{
 			if ($params = $route->matches($uri))
 			{
+				// Save defaults as temporary (in case we fall-through)
+				$controller = $this->controller;
+				$directory = $this->directory;
+				$action = $this->action;
+
+				if (isset($params['directory']))
+				{
+					// Controllers are in a sub-directory
+					$directory = $params['directory'];
+				}
+
+				// Store the controller
+				$controller = $params['controller'];
+
+				if (isset($params['action']))
+				{
+					// Store the action
+					$action = $params['action'];
+				}
+				else
+				{
+					// Use the default action
+					$action = Route::$default_action;
+				}
+
+				if ($route->fall_through)
+				{
+					try
+					{
+						// Perform same substitution found in execute()
+						$prefix = 'controller_';
+						if ($directory) 
+						{
+							$prefix .= str_replace(array('\\', '/'), '_', trim($directory, '/')).'_';
+						}
+						$class = new ReflectionClass($prefix.$controller);
+
+
+						if ( ! $class->getMethod('action_'.$action)) {
+							// Action not found -- on to next route
+							continue;
+						}
+					} 
+					catch (ReflectionException $e)
+					{
+						// failed to load controller class -- skip to next route
+						continue;
+					}
+					// Controller and method exist: continue with processing
+				}
+				
+				// Commit
+				$this->controller = $controller;
+				$this->directory = $directory;
+				$this->action = $action;
+
 				// Store the URI
 				$this->uri = $uri;
 
 				// Store the matching route
 				$this->route = $route;
-
-				if (isset($params['directory']))
-				{
-					// Controllers are in a sub-directory
-					$this->directory = $params['directory'];
-				}
-
-				// Store the controller
-				$this->controller = $params['controller'];
-
-				if (isset($params['action']))
-				{
-					// Store the action
-					$this->action = $params['action'];
-				}
-				else
-				{
-					// Use the default action
-					$this->action = Route::$default_action;
-				}
 
 				// These are accessible as public vars and can be overloaded
 				unset($params['controller'], $params['action'], $params['directory']);
