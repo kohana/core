@@ -667,17 +667,25 @@ class Kohana_Request {
 						{
 							$prefix .= str_replace(array('\\', '/'), '_', trim($directory, '/')).'_';
 						}
+						// Fetch controller and method
 						$class = new ReflectionClass($prefix.$controller);
-
-
-						if ( ! $class->getMethod('action_'.$action)) {
-							// Action not found -- on to next route
+						$method = $class->getMethod('action_'.$action);
+						// check to make sure there are enough arguments
+						$number_of_args = count(array_diff_key($params,
+							array(
+								'directory'=>NULL,
+								'controller'=>NULL,
+								'action'=>NULL
+							)));
+						if ($number_of_args < $method->getNumberOfRequiredParameters())
+						{
+							// Not enough args passed to run method
 							continue;
 						}
 					} 
 					catch (ReflectionException $e)
 					{
-						// failed to load controller class -- skip to next route
+						// failed to load controller or method -- skip to next route
 						continue;
 					}
 					// Controller and method exist: continue with processing
