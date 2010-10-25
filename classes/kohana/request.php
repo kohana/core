@@ -636,11 +636,13 @@ class Kohana_Request {
 				$controller = $this->controller;
 				$directory = $this->directory;
 				$action = $this->action;
+				$non_func_args = 1;
 
 				if (isset($params['directory']))
 				{
 					// Controllers are in a sub-directory
 					$directory = $params['directory'];
+					++$non_func_args;
 				}
 
 				// Store the controller
@@ -650,6 +652,7 @@ class Kohana_Request {
 				{
 					// Store the action
 					$action = $params['action'];
+					++$non_func_args;
 				}
 				else
 				{
@@ -659,25 +662,21 @@ class Kohana_Request {
 
 				if ($route->fall_through)
 				{
+					// Perform same substitution found in execute()
+					$prefix = 'controller_';
+					if ($directory) 
+					{
+						$prefix .= str_replace(array('\\', '/'), '_', trim($directory, '/')).'_';
+					}
+
 					try
 					{
-						// Perform same substitution found in execute()
-						$prefix = 'controller_';
-						if ($directory) 
-						{
-							$prefix .= str_replace(array('\\', '/'), '_', trim($directory, '/')).'_';
-						}
 						// Fetch controller and method
 						$class = new ReflectionClass($prefix.$controller);
+						
 						$method = $class->getMethod('action_'.$action);
-						// check to make sure there are enough arguments
-						$number_of_args = count(array_diff_key($params,
-							array(
-								'directory'=>NULL,
-								'controller'=>NULL,
-								'action'=>NULL
-							)));
-						if ($number_of_args < $method->getNumberOfRequiredParameters())
+						
+						if ((count($params) - $non_func_args) < $method->getNumberOfRequiredParameters())
 						{
 							// Not enough args passed to run method
 							continue;
