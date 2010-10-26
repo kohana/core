@@ -258,22 +258,6 @@ class Kohana_Arr {
 	}
 
 	/**
-	 * Binary search algorithm.
-	 *
-	 * @deprecated  Use [array_search](http://php.net/array_search) instead
-	 *
-	 * @param   mixed    the value to search for
-	 * @param   array    an array of values to search in
-	 * @param   boolean  sort the array now
-	 * @return  integer  the index of the match
-	 * @return  FALSE    no matching index found
-	 */
-	public static function binary_search($needle, $haystack, $sort = FALSE)
-	{
-		return array_search($needle, $haystack);
-	}
-
-	/**
 	 * Adds a value to the beginning of an associative array.
 	 *
 	 *     // Add an empty value to the start of a select list

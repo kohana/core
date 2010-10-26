@@ -428,31 +428,6 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for test_binary_search
-	 *
-	 * @return array Test Data
-	 */
-	public function provider_binary_search()
-	{
-		return array(
-			array(2, 'john', array('mary', 'louise', 'john', 'kent'))
-		);
-	}
-
-	/**
-	 *
-	 * @test
-	 * @dataProvider provider_binary_search
-	 */
-	public function test_binary_search($expected, $needle, $haystack, $sort = FALSE)
-	{
-		$this->assertSame(
-			$expected,
-			Arr::binary_search($needle, $haystack, $sort)
-		);
-	}
-
-	/**
 	 * Provides test data for test_map
 	 *
 	 * @return array Test Data
