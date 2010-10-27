@@ -25,10 +25,10 @@ class Kohana_Core {
 	const INFO  = 'INFO';
 
 	// Common environment type constants for consistency and convenience
-	const PRODUCTION  = 'production';
-	const STAGING     = 'staging';
-	const TESTING     = 'testing';
-	const DEVELOPMENT = 'development';
+	const PRODUCTION  = 1;
+	const STAGING     = 2;
+	const TESTING     = 3;
+	const DEVELOPMENT = 4;
 
 	// Security check that is added to all generated PHP files
 	const FILE_SECURITY = '<?php defined(\'SYSPATH\') or die(\'No direct script access.\');';
