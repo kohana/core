@@ -186,7 +186,7 @@ class Kohana_Encrypt_Extended extends Kohana_Encrypt{
 		# metadata will never end in \0
 		$metadata = rtrim($this->decrypt($metadata, $metadata_iv, $this->_key), "\0");
 
-		
+		var_dump($metadata);
 		list($data_len, $data_iv_b64, $data_hash) = explode(":", $metadata, 3);
 		$data_iv = base64_decode($data_iv_b64);
 		if ($iv_size !== strlen($data_iv))
