@@ -165,9 +165,9 @@ class Kohana_Encrypt_Extended extends Kohana_Encrypt{
 			throw new Kohana_Exception('No encryption key is defined');
 		}
 		
-		if ( ! $data)
+		if (empty($data))
 		{
-			return FALSE;
+			throw new Kohana_Exception('Cannot decrypt no data');
 		}
 
 		$old_cipher = $this->_cipher;
@@ -180,7 +180,7 @@ class Kohana_Encrypt_Extended extends Kohana_Encrypt{
 		
 		if ($iv_size !== strlen($metadata_iv))
 		{
-			return FALSE;
+			throw new Kohana_Exception('IV is the wrong size');
 		}		
 		
 		# metadata will never end in \0
@@ -191,13 +191,13 @@ class Kohana_Encrypt_Extended extends Kohana_Encrypt{
 		$data_iv = base64_decode($data_iv_b64);
 		if ($iv_size !== strlen($data_iv))
 		{
-			return FALSE;
+			throw new Kohana_Exception('IV is the wrong size');
 		}		
 		
 		$data = substr($this->decrypt($data, $data_iv, $this->_key), 0, $data_len);
 		
 		if(! $this->compare_hash($data, $data_hash)){
-			$data = FALSE;
+			throw new Kohana_Exception('Hashes do not match');
 		}
 		
 		$this->_cipher = $old_cipher;
