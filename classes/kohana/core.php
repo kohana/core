@@ -126,6 +126,11 @@ class Kohana_Core {
 	public static $shutdown_errors = array(E_PARSE, E_ERROR, E_USER_ERROR, E_COMPILE_ERROR);
 
 	/**
+	 * @var  boolean  set the X-Powered-By header
+	 */
+	public static $expose = TRUE;
+
+	/**
 	 * @var  object  logging object
 	 */
 	public static $log;
@@ -242,6 +247,11 @@ class Kohana_Core {
 		{
 			// Reverse the effects of register_globals
 			Kohana::globals();
+		}
+
+		if (isset($settings['expose']))
+		{
+			self::$expose = (bool) $settings['expose'];
 		}
 
 		// Determine if we are running in a command line environment

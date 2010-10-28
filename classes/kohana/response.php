@@ -16,10 +16,10 @@ class Kohana_Response implements Serializable {
 	/**
 	 * Factory method to create a new [Response]. Pass properties
 	 * in using an associative array.
-	 * 
+	 *
 	 *      // Create a new response
 	 *      $response = Response::factory();
-	 * 
+	 *
 	 *      // Create a new response with headers
 	 *      $response = Response::factory(array('status' => 200));
 	 *
@@ -34,14 +34,14 @@ class Kohana_Response implements Serializable {
 	/**
 	 * Generates a [Cache-Control HTTP](http://en.wikipedia.org/wiki/List_of_HTTP_headers)
 	 * header based on the supplied array.
-	 * 
+	 *
 	 *     // Set the cache control headers you want to use
 	 *     $cache_control = array(
 	 *         'max-age'          => 3600,
 	 *         'must-revalidate'  => NULL,
 	 *         'public'           => NULL
 	 *     );
-	 *     
+	 *
 	 *     // Create the cache control header, creates :
 	 *     // Cache-Control: max-age=3600, must-revalidate, public
 	 *     $response->headers['Cache-Control'] = Response::create_cache_control($cache_control);
@@ -70,7 +70,7 @@ class Kohana_Response implements Serializable {
 	 *
 	 *     // Create the cache control header
 	 *     $response->headers['Cache-Control'] = 'max-age=3600, must-revalidate, public';
-	 *     
+	 *
 	 *     // Parse the cache control header
 	 *     if($cache_control = Request::parse_cache_control($response->headers))
 	 *     {
@@ -78,7 +78,7 @@ class Kohana_Response implements Serializable {
 	 *          $maxage = $cache_control['max-age'];
 	 *     }
 	 *
-	 * @param   array    headers 
+	 * @param   array    headers
 	 * @return  boolean|array
 	 * @since   3.1.0
 	 */
@@ -194,7 +194,7 @@ class Kohana_Response implements Serializable {
 	/**
 	 * Sets up the response object
 	 *
-	 * @param   array $config 
+	 * @param   array $config
 	 * @return  void
 	 */
 	public function __construct(array $config = array())
@@ -209,6 +209,12 @@ class Kohana_Response implements Serializable {
 
 		// Add the default Content-Type header if required
 		$this->headers += array('Content-Type' => 'text/html; charset='.Kohana::$charset);
+
+		// Add the X-Powered-By header
+		if (Kohana::$expose)
+		{
+			$this->headers += array('X-Powered-By' => 'Kohana Framework '.Kohana::VERSION);
+		}
 	}
 
 	/**
@@ -233,11 +239,11 @@ class Kohana_Response implements Serializable {
 
 	/**
 	 * Sets or gets the HTTP status from this response.
-	 * 
+	 *
 	 *      // Set the HTTP status to 404 Not Found
 	 *      $response = Response::factory()
 	 *              ->status(404);
-	 * 
+	 *
 	 *      // Get the current status
 	 *      $status = $response->status();
 	 *
@@ -265,21 +271,21 @@ class Kohana_Response implements Serializable {
 	 * Gets and sets headers to the [Response], allowing chaining
 	 * of response methods. If chaining isn't required, direct
 	 * access to the property should be used instead.
-	 * 
+	 *
 	 *       // Get a header
 	 *       $accept = $response->headers('Content-Type');
-	 * 
+	 *
 	 *       // Set a header
 	 *       $response->headers('Content-Type', 'text/html');
-	 * 
+	 *
 	 *       // Get all headers
 	 *       $headers = $response->headers();
-	 * 
+	 *
 	 *       // Set multiple headers
 	 *       $response->headers(array('Content-Type' => 'text/html', 'Cache-Control' => 'no-cache'));
 	 *
-	 * @param string $key 
-	 * @param string $value 
+	 * @param string $key
+	 * @param string $value
 	 * @return void
 	 */
 	public function headers($key = NULL, $value = NULL)
@@ -307,9 +313,9 @@ class Kohana_Response implements Serializable {
 	/**
 	 * Sets a cookie to the response
 	 *
-	 * @param   string   name 
-	 * @param   string   value 
-	 * @param   int      expiration 
+	 * @param   string   name
+	 * @param   string   value
+	 * @param   int      expiration
 	 * @return  self
 	 */
 	public function set_cookie($name, $value, $expiration = NULL)
@@ -334,8 +340,8 @@ class Kohana_Response implements Serializable {
 	/**
 	 * Returns a cookie by name
 	 *
-	 * @param   string $name 
-	 * @param   string $default 
+	 * @param   string $name
+	 * @param   string $default
 	 * @return  mixed
 	 */
 	public function get_cookie($name, $default = NULL)
@@ -356,7 +362,7 @@ class Kohana_Response implements Serializable {
 	/**
 	 * Deletes a cookie set to the response
 	 *
-	 * @param   string   name 
+	 * @param   string   name
 	 * @return  self
 	 */
 	public function delete_cookie($name)
