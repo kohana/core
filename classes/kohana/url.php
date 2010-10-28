@@ -58,7 +58,7 @@ class Kohana_URL {
 			if ($port = parse_url($base_url, PHP_URL_PORT))
 			{
 				// Found a port, make it usable for the URL
-				$port = ":{$port}";
+				$port = ':'.$port;
 			}
 
 			if ($domain = parse_url($base_url, PHP_URL_HOST))
