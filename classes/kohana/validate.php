@@ -747,7 +747,7 @@ class Kohana_Validate extends ArrayObject {
 	 * @param   boolean   allow empty array?
 	 * @return  boolean
 	 */
-	public function check($allow_empty = FALSE)
+	public function check($allow_empty = TRUE)
 	{
 		if (Kohana::$profiling === TRUE)
 		{
