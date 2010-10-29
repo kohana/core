@@ -127,7 +127,7 @@ class Kohana_Encrypt_Extended extends Kohana_Encrypt{
 	 */
 	public function encode($data)
 	{
-		var_dump($this->_key);
+
 		if(is_null($this->_key)){
 			throw new Kohana_Exception('No encryption key is defined');
 		}
@@ -161,7 +161,6 @@ class Kohana_Encrypt_Extended extends Kohana_Encrypt{
 	 */
 	public function decode($data)
 	{
-		var_dump($this->_key);
 		if(is_null($this->_key)){
 			throw new Kohana_Exception('No encryption key is defined');
 		}
