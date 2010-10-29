@@ -239,6 +239,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	{
 		return array(
 			array(array(), '', NULL),
+			array(array(), '', array('page' => NULL)),
 			array(array('_GET' => array('test' => 'data')), '?test=data', NULL),
 			array(array(), '?test=data', array('test' => 'data')),
 			array(array('_GET' => array('more' => 'data')), '?more=data&test=data', array('test' => 'data')),
