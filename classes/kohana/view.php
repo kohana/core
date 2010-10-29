@@ -137,7 +137,7 @@ class Kohana_View {
 			$this->set_filename($file);
 		}
 
-		if ( $data !== NULL)
+		if ($data !== NULL)
 		{
 			// Add the values to the current data
 			$this->_data = $data + $this->_data;

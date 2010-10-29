@@ -129,8 +129,8 @@ class Kohana_Route {
 	}
 
 	/**
-	 * Saves or loads the route cache. If you routes will remain the same for
-	 * an long period of time, use this to reload the routes from the cache
+	 * Saves or loads the route cache. If your routes will remain the same for
+	 * a long period of time, use this to reload the routes from the cache
 	 * rather than redefining them on every page load.
 	 *
 	 *     if ( ! Route::cache())
@@ -166,6 +166,24 @@ class Kohana_Route {
 				return FALSE;
 			}
 		}
+	}
+
+	/**
+	 * Create a URL from a route name. This is a shortcut for:
+	 *
+	 *     echo URL::site(Route::get($name)->uri($params), $protocol);
+	 *
+	 * @param   string   route name
+	 * @param   array    URI parameters
+	 * @param   mixed   protocol string or boolean, adds protocol and domain
+	 * @return  string
+	 * @since   3.0.7
+	 * @uses    URL::site
+	 */
+	public static function url($name, array $params = NULL, $protocol = NULL)
+	{
+		// Create a URI with the route and convert it to a URL
+		return URL::site(Route::get($name)->uri($params), $protocol);
 	}
 
 	// Route URI string
@@ -325,7 +343,7 @@ class Kohana_Route {
 			// Remove the parenthesis from the match as the replace
 			$replace = substr($match[0], 1, -1);
 
-			while(preg_match('#'.Route::REGEX_KEY.'#', $replace, $match))
+			while (preg_match('#'.Route::REGEX_KEY.'#', $replace, $match))
 			{
 				list($key, $param) = $match;
 
@@ -349,15 +367,16 @@ class Kohana_Route {
 			$uri = str_replace($search, $replace, $uri);
 		}
 
-		while(preg_match('#'.Route::REGEX_KEY.'#', $uri, $match))
+		while (preg_match('#'.Route::REGEX_KEY.'#', $uri, $match))
 		{
 			list($key, $param) = $match;
 
 			if ( ! isset($params[$param]))
 			{
 				// Ungrouped parameters are required
-				throw new Kohana_Exception('Required route parameter not passed: :param',
-					array(':param' => $param));
+				throw new Kohana_Exception('Required route parameter not passed: :param', array(
+					':param' => $param,
+				));
 			}
 
 			$uri = str_replace($key, $params[$param], $uri);

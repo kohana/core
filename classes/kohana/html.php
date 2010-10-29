@@ -63,7 +63,7 @@ class Kohana_HTML {
 	 */
 	public static function chars($value, $double_encode = TRUE)
 	{
-		return htmlspecialchars((string) $value, ENT_QUOTES, Kohana::$charset, $double_encode);
+		return htmlspecialchars( (string) $value, ENT_QUOTES, Kohana::$charset, $double_encode);
 	}
 
 	/**
@@ -79,7 +79,7 @@ class Kohana_HTML {
 	 */
 	public static function entities($value, $double_encode = TRUE)
 	{
-		return htmlentities((string) $value, ENT_QUOTES, Kohana::$charset, $double_encode);
+		return htmlentities( (string) $value, ENT_QUOTES, Kohana::$charset, $double_encode);
 	}
 
 	/**
@@ -181,11 +181,18 @@ class Kohana_HTML {
 			switch (rand(1, 3))
 			{
 				// HTML entity code
-				case 1: $safe .= '&#'.ord($letter).';'; break;
+				case 1:
+					$safe .= '&#'.ord($letter).';';
+				break;
+
 				// Hex character code
-				case 2: $safe .= '&#x'.dechex(ord($letter)).';'; break;
+				case 2:
+					$safe .= '&#x'.dechex(ord($letter)).';';
+				break;
+
 				// Raw (no) encoding
-				case 3: $safe .= $letter;
+				case 3:
+					$safe .= $letter;
 			}
 		}
 
@@ -358,15 +365,10 @@ class Kohana_HTML {
 			}
 
 			// Add the attribute value
-			$compiled .= ' '.$key.'="'.htmlspecialchars($value, ENT_QUOTES, Kohana::$charset).'"';
+			$compiled .= ' '.$key.'="'.HTML::chars($value).'"';
 		}
 
 		return $compiled;
-	}
-
-	final private function __construct()
-	{
-		// This is a static class
 	}
 
 } // End html

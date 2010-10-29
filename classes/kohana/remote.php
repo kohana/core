@@ -105,7 +105,7 @@ class Kohana_Remote {
 		// Get the response information
 		$code = curl_getinfo($remote, CURLINFO_HTTP_CODE);
 
-		if ($code < 200 OR $code > 299)
+		if ($code AND $code < 200 OR $code > 299)
 		{
 			$error = $response;
 		}
@@ -158,19 +158,19 @@ class Kohana_Remote {
 			return FALSE;
 
 		// Set CRLF
-		$CRLF = "\r\n";
+		$line_feed = "\r\n";
 
 		// Send request
-		fwrite($remote, 'HEAD '.$url['path'].' HTTP/1.0'.$CRLF);
-		fwrite($remote, 'Host: '.$url['host'].$CRLF);
-		fwrite($remote, 'Connection: close'.$CRLF);
-		fwrite($remote, 'User-Agent: Kohana Framework (+http://kohanaphp.com/)'.$CRLF);
+		fwrite($remote, 'HEAD '.$url['path'].' HTTP/1.0'.$line_feed);
+		fwrite($remote, 'Host: '.$url['host'].$line_feed);
+		fwrite($remote, 'Connection: close'.$line_feed);
+		fwrite($remote, 'User-Agent: Kohana Framework (+http://kohanaphp.com/)'.$line_feed);
 
 		foreach ($http_headers as $name => $value)
 			fwrite($remote, $name.': '.$value.$CRLF);
 
 		// Send one more CRLF to terminate the headers
-		fwrite($remote, $CRLF);
+		fwrite($remote, $line_feed);
 
 		// Remote is offline
 		$response = FALSE;
@@ -192,11 +192,6 @@ class Kohana_Remote {
 		fclose($remote);
 
 		return $response;
-	}
-
-	final private function __construct()
-	{
-		// This is a static class
 	}
 
 } // End remote

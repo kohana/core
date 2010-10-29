@@ -150,14 +150,4 @@ class Kohana_Config {
 		return $this;
 	}
 
-	final private function __construct()
-	{
-		// Enforce singleton behavior
-	}
-
-	final private function __clone()
-	{
-		// Enforce singleton behavior
-	}
-
 } // End Kohana_Config

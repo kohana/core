@@ -11,6 +11,11 @@
  */
 class Kohana_Num {
 
+	const ROUND_HALF_UP		= 1;
+	const ROUND_HALF_DOWN	= 2;
+	const ROUND_HALF_EVEN	= 3;
+	const ROUND_HALF_ODD	= 4;
+
 	/**
 	 * Returns the English ordinal suffix (th, st, nd, etc) of a number.
 	 *
@@ -32,12 +37,16 @@ class Kohana_Num {
 		{
 			case 1:
 				return 'st';
+			break;
 			case 2:
 				return 'nd';
+			break;
 			case 3:
 				return 'rd';
+			break;
 			default:
 				return 'th';
+			break;
 		}
 	}
 
@@ -78,9 +87,69 @@ class Kohana_Num {
 		return number_format($number, $places, $decimal, $thousands);
 	}
 
-	final private function __construct()
+	/**
+	 * Round a number to a specified precision, using a specified tie breaking technique
+	 * 
+	 * @param float $value Number to round
+	 * @param integer $precision Desired precision
+	 * @param integer $mode Tie breaking mode, accepts the PHP_ROUND_HALF_* constants
+	 * @param boolean $native Set to false to force use of the userland implementation
+	 * @return float Rounded number
+	 */
+	public static function round($value, $precision = 0, $mode = self::ROUND_HALF_UP, $native = true)
 	{
-		// This is a static class
+		if (version_compare(PHP_VERSION, '5.3', '>=') && $native)
+		{
+			return round($value, $precision, $mode);
+		}
+
+		if ($mode === self::ROUND_HALF_UP)
+		{
+			return round($value, $precision);
+		}
+		else
+		{
+			$factor = ($precision === 0) ? 1 : pow(10, $precision);
+			
+			switch ($mode)
+			{
+				case self::ROUND_HALF_DOWN:
+				case self::ROUND_HALF_EVEN:
+				case self::ROUND_HALF_ODD:
+					// Check if we have a rounding tie, otherwise we can just call round()
+					if (($value * $factor) - floor($value * $factor) === 0.5)
+					{
+						if ($mode === self::ROUND_HALF_DOWN)
+						{
+							// Round down operation, so we round down unless the value
+							// is -ve because up is down and down is up down there. ;)
+							$up = ($value < 0);
+						}
+						else
+						{
+							// Round up if the integer is odd and the round mode is set to even
+							// or the integer is even and the round mode is set to odd.
+							// Any other instance round down.
+							$up = (!!(floor($value * $factor) & 1) === ($mode === self::ROUND_HALF_EVEN));
+						}
+
+						if ($up)
+						{
+							$value = ceil($value * $factor);
+						}
+						else
+						{
+							$value = floor($value * $factor);
+						}
+						return $value / $factor;
+					}
+					else
+					{
+						return round($value, $precision);
+					}
+				break;
+			}
+		}
 	}
 
 } // End num

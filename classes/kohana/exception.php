@@ -16,25 +16,19 @@ class Kohana_Exception extends Exception {
 	 *     throw new Kohana_Exception('Something went terrible wrong, :user',
 	 *         array(':user' => $user));
 	 *
-	 * @param   string   error message
-	 * @param   array    translation variables
-	 * @param   integer  the exception code
-	 * @param   boolean  escape variables?
+	 * @param   string     error message
+	 * @param   array      translation variables
+	 * @param   integer    the exception code
+	 * @param   Exception  previous exception
 	 * @return  void
 	 */
-	public function __construct($message, array $variables = NULL, $code = 0, $escape = TRUE)
+	public function __construct($message, array $variables = NULL, $code = 0, Exception $previous = NULL)
 	{
-		if ($escape AND $variables)
-		{
-			// Prevent XSS by escaping all of the variables, some of which may be user-generated
-			$variables = array_map(array('HTML', 'chars'), $variables);
-		}
-
 		// Set the message
 		$message = __($message, $variables);
 
 		// Pass the message to the parent
-		parent::__construct($message, $code);
+		parent::__construct($message, $code, $previous);
 	}
 
 	/**
