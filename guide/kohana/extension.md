@@ -52,11 +52,37 @@ For instance, if you wanted to create method that sets encrypted cookies using t
 
 Now calling `Cookie::encrypt('secret', $data)` will create an encrypted cookie which we can decrypt with `$data = Cookie::decrypt('secret')`.
 
-### How it works
+## How it works
 
 To understand how this works, let's look at what happens normally.  When you use the Cookie class, [Kohana::autoload] looks for `classes/cookie.php` in the [cascading filesystem](files).  It looks in `application`, then each module, then `system`. The file is found in `system` and is included.  Of coures, `system/classes/cookie.php` is just an empty class which extends `Kohana_Cookie`.  Again, [Kohana::autoload] is called this time looking for `classes/kohana/cookie.php` which it finds in `system`.
 
 When you add your transparently extended cookie class at `application/classes/cookie.php` this file essentially "replaces" the file at `system/classes/cookie.php` without actually touching it.  This happens because this time when we use the Cookie class [Kohana::autoload] looks for `classes/cookie.php` and finds the file in `application` and includes that one, instead of the one in system.
+
+## Example: changing [Cookie] settings
+
+If you are using the [Cookie](cookies) class, and want to change a setting, you should do so using transparent extension, rather than editing the file in the system folder.  If you edit it directly, and in the future you upgrade your Kohana version by replacing the system folder, your changes will be reverted and your cookies will probably be invalid.  Instead, create a cookie.php file either in `application/classes/cookie.php` or a module (`MODPATH/<modulename>/classes/cookie.php`).
+
+	class Cookie extends Kohana_Cookie {
+	
+		// Set a new salt
+		public $salt = "some new better random salt phrase";
+		
+		// Don't allow javascript access to cookies
+		public $httponly = TRUE;
+		
+	}
+
+## Example: TODO: an example
+
+Just post the code and breif descript of what function it adds, you don't have to do the "How it works" like above.
+
+## Example: TODO: something else
+
+Just post the code and breif descript of what function it adds, you don't have to do the "How it works" like above.
+
+## More examples
+
+TODO: Provide some links to modules on github, etc that have examples of transparent extension in use.
 
 ## Multiple Levels of Extension
 

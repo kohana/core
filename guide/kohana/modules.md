@@ -25,6 +25,14 @@ Modules are enabled by calling [Kohana::modules] and passing an array of `'name'
 		'userguide'  => MODPATH.'userguide',  // User guide and API documentation
 		));
 
+## Init.php
+
+When a module is activated, if an `init.php` file exists in the modules directory, it is included.  This is the ideal place to have a module include routes or other initilazation necesarry for the module to function.  The Userguide and Codebunch modules have init.php files you can look at.
+
+## How modules work
+
+A file in an enabled module is virtually the same as having that exact file in the same place in the application folder.  The main difference being that it can be overwriten by a file of the same name in a higher location (a module enabled after it, or the application folder) via the [Cascading Filesystem](files).
+
 ## Creating your own module
 
 To create a module simply create a folder (usually in `DOCROOT/modules`) and place the files you want to be in the module there, and activate that module in your bootstrap.  To share your module, you can upload it to [Github](http://github.com).  You can look at examples of modules made by [Kohana](http://github.com/kohana) or [other users](#where-to-find-modules).
