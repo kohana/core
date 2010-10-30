@@ -37,7 +37,7 @@ You can easily gain access to other libraries if they include an autoloader.  Fo
 - Move the decompressed Zend folder containing Zend Framework to `application/vendor/Zend`.
 
 
-#### Extend Kohana's autoloader to work with `Zend_` prefixed classes.
+#### Include Zend's Autoloader in your bootstrap
 
 Somewhere in `application/bootstrap.php`, copy the following code:
 
