@@ -58,7 +58,7 @@ class Kohana_URL {
 			if ($port = parse_url($base_url, PHP_URL_PORT))
 			{
 				// Found a port, make it usable for the URL
-				$port = ":{$port}";
+				$port = ':'.$port;
 			}
 
 			if ($domain = parse_url($base_url, PHP_URL_HOST))
@@ -142,8 +142,11 @@ class Kohana_URL {
 			return '';
 		}
 
-		// ? is added for simple string concatenation
-		return '?'.http_build_query($params, '', '&');
+		// Note: http_build_query returns an empty string for a params array with only NULL values
+		$query = http_build_query($params, '', '&');
+
+		// Don't prepend '?' to an empty string
+		return ($query === '') ? '' : '?'.$query;
 	}
 
 	/**
