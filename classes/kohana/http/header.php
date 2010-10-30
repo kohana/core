@@ -93,7 +93,7 @@ class Kohana_Http_Header extends ArrayObject {
 	 * @param   int      flags
 	 * @param   string   the iterator class to use
 	 */
-	public function __construct($input, $flags, $iterator_class)
+	public function __construct($input, $flags = NULL, $iterator_class = 'ArrayIterator')
 	{
 		/**
 		 * @see http://www.w3.org/Protocols/rfc2616/rfc2616.html
@@ -139,8 +139,43 @@ class Kohana_Http_Header extends ArrayObject {
 		// Get a copy of this ArrayObject
 		$values = $this->getArrayCopy();
 
-		// Sort the values of the header
-		$sorted_values = array_map(array($this, '_sort_values'), $values, array_keys($values));
+		foreach ($values as $key => $value)
+		{
+			if ( ! is_array($value) or ! in_array($key, Http_Header::$default_sort_filter))
+				continue;
+
+			// Sort them by comparisom
+			uasort($value, function ($value_a, $value_b) {
+				// Test for correct instance type
+				if ( ! $value_a instanceof Kohana_Http_Header_Value or ! $value_b instanceof Kohana_Http_Header_Value)
+				{
+					// Return neutral if cannot test value
+					return 0;
+				}
+
+				// Extract the qualities
+				$a = (float) Arr::get($value_a->properties, 'q', Http_Header_Value::$default_quality);
+				$b = (float) Arr::get($value_b->properties, 'q', Http_Header_Value::$default_quality);
+
+				// If a == b
+				if ($a == $b)
+				{
+					return (int) 0; // Return neutral (0)
+				}
+				// If a < b
+				else if ($a < $b)
+				{
+					return (int) -1; // Return negative (-1)
+				}
+				// If a > b
+				else if ($a > $b)
+				{
+					return (int) 1; // Return positive (1)
+				}
+			});
+
+			$values[$key] = $value;
+		}
 
 		// Return filter to previous state if required
 		if ($filter)
@@ -149,85 +184,9 @@ class Kohana_Http_Header extends ArrayObject {
 		}
 
 		// Exchange the array for the sorted values
-		$this->exchangeArray($sorted_values);
+		$this->exchangeArray($values);
 
 		// Return this
 		return $this;
-	}
-
-	/**
-	 * Sort the values supplied in the argument
-	 *
-	 * @param   mixed    value to sort
-	 * @param   mixed    key identifier
-	 * @return  array|Kohana_Http_Value
-	 * @throws  Kohana_Http_Exception
-	 */
-	protected function _sort_values($value, $key)
-	{
-		if ( ! is_array($value) or ! in_array($key, Http_Header::$default_sort_filter))
-		{
-			return $value;
-		}
-
-		// Get the current value
-		$current = current($value);
-
-		// If the values are header values
-		if ($current instanceof Kohana_Http_Header_Value)
-		{
-			// Sort them by comparisom
-			uasort($value, array($this, '_compare'));
-		}
-		// If the values is an array
-		else if (is_array($current))
-		{
-			$value = array_map(array($this, '_sort_values'), $value, array_keys($value));
-		}
-		else
-		{
-			// Unknown value type
-			throw new Kohana_Http_Exception(__METHOD__.' unknown values type: :type', array(':type' => gettype($values)));
-		}
-
-		// Return parsed values
-		return $value;
-	}
-
-	/**
-	 * Provides sorting logic for `uksort()` by quality in [Kohana_Http_Header::_sort_values]
-	 *
-	 * @param   Kohana_Http_Header_Value   first value to compare
-	 * @param   Kohana_Http_Header_Value   second value to compare
-	 * @return  int
-	 */
-	protected function _compare($value_a, $value_b)
-	{
-		// Test for correct instance type
-		if ( ! $value_a instanceof Kohana_Http_Header_Value or ! $value_b instanceof Kohana_Http_Header_Value)
-		{
-			// Return neutral if cannot test value
-			return 0;
-		}
-
-		// Extract the qualities
-		$a = (float) Arr::get($value_a->properties, 'q', Http_Header_Value::$default_quality);
-		$b = (float) Arr::get($value_b->properties, 'q', Http_Header_Value::$default_quality);
-
-		// If a == b
-		if ($a == $b)
-		{
-			return (int) 0; // Return neutral (0)
-		}
-		// If a < b
-		else if ($a < $b)
-		{
-			return (int) -1; // Return negative (-1)
-		}
-		// If a > b
-		else if ($a > $b)
-		{
-			return (int) 1; // Return positive (1)
-		}
 	}
 }
