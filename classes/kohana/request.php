@@ -1107,8 +1107,19 @@ class Kohana_Request {
 
 			// Get all the method objects before invoking them
 			$before = $class->getMethod('before');
-			$method = $class->getMethod('action_'.$action);
-			$after = $class->getMethod('after');
+			$after  = $class->getMethod('after');
+
+			if( ! $class->hasMethod('action_'.$action) AND $class->hasMethod('__call'))
+			{
+				$params = array($action, $this->_params);
+				$method = $class->getMethod('__call');
+			}
+			else
+			{
+				$params = $this->_params;
+				$method = $class->getMethod('action_'.$action);
+			}
+
 		}
 		catch (Exception $e)
 		{
@@ -1137,7 +1148,7 @@ class Kohana_Request {
 			$before->invoke($controller);
 
 			// Execute the main action with the parameters
-			$method->invokeArgs($controller, $this->_params);
+			$method->invokeArgs($controller, $params);
 
 			// Execute the "after action" method
 			$after->invoke($controller);
