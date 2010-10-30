@@ -8,7 +8,7 @@ You can make your own helpers by simply making a class and putting it in the `cl
 
  - **[CLI]** - Parse command line options.
 
- - **[Cookie]** - Covered in more detail on the [Sessions & Cookies](sessions) page.
+ - **[Cookie]** - Covered in more detail on the [Cookies](cookies) page.
 
  - **[Date]** - Useful date functions and constants. Time between two dates, convert between am/pm and military, date offset, etc.
  
@@ -42,7 +42,7 @@ You can make your own helpers by simply making a class and putting it in the `cl
  
  - **[Security]** - Covered in more detail on the [Security](security) page.
  
- - **[Session]** - Covered in more detail on the [Sessions & Cookies](sessions) page.
+ - **[Session]** - Covered in more detail on the [Sessions](sessions) page.
  
  - **[Text]** - Autolink, prevent window words, convert a number to text, etc.
  
