@@ -1,1 +1,30 @@
-This should really reinforce how the cascading filesystem works in relation to modules (in seems like a lot of new users don't understand this very well).  Also talk about installing/activating modules and creating your own modules.
+# Modules
+
+Modules are simply an addition to the [Cascading Filesystem](files).  A module can add any kind of file (controllers, views, classes, config files, etc.) to the filesystem available to Kohana (via [Kohana::find_file]).  This is useful to make any part of your application more transportable or shareable between different apps.  For example, creating a new modeling system, a search engine, a css/js manager, etc.
+
+## Where to find modules
+
+Kolanos has created [kohana-universe](http://github.com/kolanos/kohana-universe/tree/master/modules/), a fairly comprehensive list of modules that are available on github. To get your module listed there, send him a message via github.
+
+Mon Geslani created a [very nice site](http://kohana.mongeslani.com/) that allows you to sort by activity, watchers, forks, etc.  It seems to not be as comprehensive as kohana-universe.
+
+## Enabling modules
+
+Modules are enabled by calling [Kohana::modules] and passing an array of `'name' => 'path'`.  The name isn't important, but the path obviously is.  A module's path does not have to be in `MODPATH`, but usually is.
+
+	Kohana::modules(array(
+		'auth'       => MODPATH.'auth',       // Basic authentication
+		'cache'      => MODPATH.'cache',      // Caching with multiple backends
+		'codebench'  => MODPATH.'codebench',  // Benchmarking tool
+		'database'   => MODPATH.'database',   // Database access
+		'image'      => MODPATH.'image',      // Image manipulation
+		'orm'        => MODPATH.'orm',        // Object Relationship Mapping
+		'oauth'      => MODPATH.'oauth',      // OAuth authentication
+		'pagination' => MODPATH.'pagination', // Paging of results
+		'unittest'   => MODPATH.'unittest',   // Unit testing
+		'userguide'  => MODPATH.'userguide',  // User guide and API documentation
+		));
+
+## Creating your own module
+
+To create a module simply create a folder (usually in `DOCROOT/modules`) and place the files you want to be in the module there, and activate that module in your bootstrap.  To share your module, you can upload it to [Github](http://github.com).  You can look at examples of modules made by [Kohana](http://github.com/kohana) or [other users](#where-to-find-modules).

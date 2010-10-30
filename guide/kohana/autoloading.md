@@ -24,4 +24,46 @@ Kohana's default autoloader is enabled in `application/bootstrap.php` using [spl
 
     spl_autoload_register(array('Kohana', 'auto_load'));
 
-This allows [Kohana::auto_load] to attempt to load any class that does not yet exist when the class is first used.
+This allows [Kohana::auto_load] to attempt to find and include any class that does not yet exist when the class is first used.
+
+### Example: Zend
+
+You can easily gain access to other libraries if they include an autoloader.  For example, here is how to enable Zend's autoloader so you can use Zend libraries in your Kohana application.
+
+#### Download and install the Zend Framework files
+
+- [Download the latest Zend Framework files](http://framework.zend.com/download/latest).
+- Create a `vendor` directory at `application/vendor`. This keeps third party software separate from your application classes.
+- Move the decompressed Zend folder containing Zend Framework to `application/vendor/Zend`.
+
+
+#### Extend Kohana's autoloader to work with `Zend_` prefixed classes.
+
+Somewhere in `application/bootstrap.php`, copy the following code:
+
+	/**
+	 * Enable Zend Framework autoloading
+	 */
+	if ($path = Kohana::find_file('vendor', 'Zend/Loader'))
+	{
+	    ini_set('include_path',
+	    ini_get('include_path').PATH_SEPARATOR.dirname(dirname($path)));
+	
+	    require_once 'Zend/Loader/Autoloader.php';
+	    Zend_Loader_Autoloader::getInstance();
+	}
+	
+#### Usage example
+
+You can now autoload any Zend Framework classes from inside your Kohana application.
+
+	if ($validate($_POST))
+	{
+		$mailer = new Zend_Mail;
+		
+		$mailer->setBodyHtml($view)
+			->setFrom(Kohana::config('site')->email_from)
+			->addTo($email)
+			->setSubject($message)
+			->send();
+	}
