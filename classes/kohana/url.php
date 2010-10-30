@@ -136,9 +136,6 @@ class Kohana_URL {
 			}
 		}
 
-		// Filter any false (when cast) values from the array.
-		$params = array_filter($params);
-
 		if (empty($params))
 		{
 			// No query parameters
