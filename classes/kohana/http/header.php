@@ -1,6 +1,9 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * 
+ * The Kohana_Http_Header class provides an Object-Orientated interface
+ * to HTTP headers. This can parse header arrays returned from the
+ * PHP functions `apache_request_headers()` or the `http_parse_headers()`
+ * function available within the PECL HTTP library.
  *
  * @package    Kohana
  * @category   Http
@@ -24,6 +27,8 @@ class Kohana_Http_Header extends ArrayObject {
 	/**
 	 * Parses Http Header values and creating an appropriate object
 	 * depending on type; i.e. accept-type, accept-char, cache-control etc.
+	 * 
+	 *     $header_values_array = Http_Header::parse_header_values(array('cache-control' => 'max-age=200; public'));
 	 *
 	 * @param   string   values to parse
 	 * @return  array
@@ -87,7 +92,10 @@ class Kohana_Http_Header extends ArrayObject {
 	}
 
 	/**
-	 * Constructor method for Kohana_Http_Header.
+	 * Constructor method for [Kohana_Http_Header]. Uses the standard constructor
+	 * of the parent `ArrayObject` class.
+	 * 
+	 *     $header_object = new Http_Header(array('x-powered-by' => 'Kohana 3.1.x', 'expires' => '...'));
 	 *
 	 * @param   mixed    input array
 	 * @param   int      flags
