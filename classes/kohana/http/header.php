@@ -152,7 +152,7 @@ class Kohana_Http_Header extends ArrayObject {
 			if ( ! is_array($value) or ! in_array($key, Http_Header::$default_sort_filter))
 				continue;
 
-			// Sort them by comparisom
+			// Sort them by comparison
 			uasort($value, function ($value_a, $value_b) {
 				// Test for correct instance type
 				if ( ! $value_a instanceof Kohana_Http_Header_Value or ! $value_b instanceof Kohana_Http_Header_Value)
