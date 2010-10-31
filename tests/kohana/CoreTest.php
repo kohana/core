@@ -283,66 +283,6 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for test_debug()
-	 * 
-	 * @return array
-	 */
-	public function provider_debug()
-	{
-		return array(
-			// $exception_type, $message, $is_cli, $expected
-			array(array('foobar'), "<pre class=\"debug\"><small>array</small><span>(1)</span> <span>(\n    0 => <small>string</small><span>(6)</span> \"foobar\"\n)</span></pre>"),
-		);
-	}
-
-	/**
-	 * Tests Kohana::debug()
-	 *
-	 * @test
-	 * @dataProvider provider_debug
-	 * @covers Kohana::debug
-	 * @param boolean $thing    The thing to debug
-	 * @param boolean $expected Output for Kohana::debug
-	 */
-	public function testdebug($thing, $expected)
-	{
-		$this->assertEquals($expected, Kohana::debug($thing));
-	}
-
-	/**
-	 * Provides test data for testDebugPath()
-	 * 
-	 * @return array
-	 */
-	public function provider_debug_path()
-	{
-		return array(
-			array(
-				Kohana::find_file('classes', 'kohana'), 
-				'SYSPATH'.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'kohana.php'
-			),
-			array(
-				Kohana::find_file('classes', $this->dirSeparator('kohana/unittest/runner')), 
-				$this->dirSeparator('MODPATH/unittest/classes/kohana/unittest/runner.php')
-			),
-		);
-	}
-
-	/**
-	 * Tests Debug::path()
-	 *
-	 * @test
-	 * @dataProvider provider_debug_path
-	 * @covers Debug::path
-	 * @param boolean $path     Input for Debug::path
-	 * @param boolean $expected Output for Debug::path
-	 */
-	public function testDebugPath($path, $expected)
-	{
-		$this->assertEquals($expected, Debug::path($path));
-	}
-
-	/**
 	 * Provides test data for test_modules_sets_and_returns_valid_modules()
 	 * 
 	 * @return array
@@ -474,6 +414,6 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 */
 	public function test_dump($input, $length, $expected)
 	{
-		$this->assertEquals($expected, Kohana::dump($input, $length));
+		$this->assertEquals($expected, Debug::dump($input, $length));
 	}
 }

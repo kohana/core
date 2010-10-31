@@ -154,7 +154,7 @@ class Kohana_Debug {
 					if ($key === $marker) continue;
 					if ( ! is_int($key))
 					{
-						$key = '"'.htmlspecialchars($key, ENT_NOQUOTES, self::$charset).'"';
+						$key = '"'.htmlspecialchars($key, ENT_NOQUOTES, Kohana::$charset).'"';
 					}
 
 					$output[] = "$space$s$key => ".Debug::_dump($val, $length, $level + 1);

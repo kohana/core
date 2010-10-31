@@ -53,7 +53,7 @@ function koggle(elem)
 		<p><span class="file"><?php echo Debug::path($file) ?> [ <?php echo $line ?> ]</span></p>
 		<?php echo Debug::source($file, $line) ?>
 		<ol class="trace">
-		<?php foreach (Kohana::trace($trace) as $i => $step): ?>
+		<?php foreach (Debug::trace($trace) as $i => $step): ?>
 			<li>
 				<p>
 					<span class="file">
@@ -72,7 +72,7 @@ function koggle(elem)
 					<?php foreach ($step['args'] as $name => $arg): ?>
 						<tr>
 							<td><code><?php echo $name ?></code></td>
-							<td><pre><?php echo Kohana::dump($arg) ?></pre></td>
+							<td><pre><?php echo Debug::dump($arg) ?></pre></td>
 						</tr>
 					<?php endforeach ?>
 					</table>

@@ -41,7 +41,7 @@ class Kohana_DebugTest extends Kohana_Unittest_TestCase
 	 */
 	public function testdebug($thing, $expected)
 	{
-		$this->assertEquals($expected, Kohana::debug($thing));
+		$this->assertEquals($expected, Debug::vars($thing));
 	}
 
 	/**
@@ -78,108 +78,6 @@ class Kohana_DebugTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for test_modules_sets_and_returns_valid_modules()
-	 * 
-	 * @return array
-	 */
-	public function provider_modules_sets_and_returns_valid_modules()
-	{
-		return array(
-			array(array(), array()),
-			array(array('unittest' => MODPATH.'fo0bar'), array()),
-			array(array('unittest' => MODPATH.'unittest'), array('unittest' => $this->dirSeparator(MODPATH.'unittest/'))),
-		);
-	}
-
-	/**
-	 * Tests Kohana::modules()
-	 *
-	 * @test
-	 * @dataProvider provider_modules_sets_and_returns_valid_modules
-	 * @covers Kohana::modules
-	 * @param boolean $source   Input for Kohana::modules
-	 * @param boolean $expected Output for Kohana::modules
-	 */
-	public function test_modules_sets_and_returns_valid_modules($source, $expected)
-	{
-		$modules = Kohana::modules();
-
-		$this->assertEquals($expected, Kohana::modules($source));
-
-		Kohana::modules($modules);
-	}
-
-	/**
-	 * To make the tests as portable as possible this just tests that 
-	 * you get an array of modules when you can Kohana::modules() and that
-	 * said array contains unittest
-	 *
-	 * @test
-	 * @covers Kohana::modules
-	 */
-	public function test_modules_returns_array_of_modules()
-	{
-		$modules = Kohana::modules();
-
-		$this->assertType('array', $modules);
-
-		$this->assertArrayHasKey('unittest', $modules);
-	}
-
-	/**
-	 * Tests Kohana::include_paths()
-	 *
-	 * The include paths must contain the apppath and syspath
-	 * @test
-	 * @covers Kohana::include_paths
-	 */
-	public function test_include_paths()
-	{
-		$include_paths = Kohana::include_paths();
-		$modules       = Kohana::modules();
-
-		$this->assertType('array', $include_paths);
-
-		// We must have at least 2 items in include paths (APP / SYS)
-		$this->assertGreaterThan(2, count($include_paths));
-		// Make sure said paths are in the include paths
-		// And make sure they're in the correct positions
-		$this->assertSame(APPPATH, reset($include_paths));
-		$this->assertSame(SYSPATH, end($include_paths));
-		
-		foreach($modules as $module)
-		{
-			$this->assertContains($module, $include_paths);
-		}
-	}
-
-	/**
-	 * Provides test data for test_exception_text()
-	 * 
-	 * @return array
-	 */
-	public function provider_exception_text()
-	{
-		return array(
-			array(new Kohana_Exception('foobar'), $this->dirSeparator('Kohana_Exception [ 0 ]: foobar ~ SYSPATH/tests/kohana/CoreTest.php [ '.__LINE__.' ]')),
-		);
-	}
-
-	/**
-	 * Tests Kohana::exception_text()
-	 *
-	 * @test
-	 * @dataProvider provider_exception_text
-	 * @covers Kohana::exception_text
-	 * @param object $exception exception to test
-	 * @param string $expected  expected output
-	 */
-	public function test_exception_text($exception, $expected)
-	{
-		$this->assertEquals($expected, Kohana::exception_text($exception));
-	}
-
-	/**
 	 * Provides test data for test_dump()
 	 * 
 	 * @return array
@@ -209,6 +107,6 @@ class Kohana_DebugTest extends Kohana_Unittest_TestCase
 	 */
 	public function test_dump($input, $length, $expected)
 	{
-		$this->assertEquals($expected, Kohana::dump($input, $length));
+		$this->assertEquals($expected, Debug::dump($input, $length));
 	}
 }
