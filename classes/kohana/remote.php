@@ -15,41 +15,8 @@ class Kohana_Remote {
 	(
 		CURLOPT_CONNECTTIMEOUT => 5,
 		CURLOPT_TIMEOUT        => 5,
-		CURLOPT_HEADERFUNCTION => array('Remote', '_parse_headers'),
-		CURLOPT_HEADER         => FALSE,
+		CURLOPT_HEADER         => FALSE
 	);
-
-	/**
-	 * @var     array  Headers from the request
-	 */
-	protected static $_headers = array();
-
-	/**
-	 * Parses the returned headers from the remote
-	 * request
-	 *
-	 * @param   resource the curl resource
-	 * @param   string   the full header string
-	 * @return  int
-	 */
-	protected static function _parse_headers($remote, $header)
-	{
-		$headers = array();
-
-		if (preg_match_all('/(\w[^\s:]*):[ ]*([^\r\n]*(?:\r\n[ \t][^\r\n]*)*)/', $header, $matches))
-		{
-			foreach ($matches[0] as $key => $value)
-				$headers[$matches[1][$key]] = $matches[2][$key];
-		}
-
-		// If there are headers to apply
-		if ($headers)
-		{
-			Remote::$_headers += $headers;
-		}
-
-		return strlen($header);
-	}
 
 	/**
 	 * Returns the output of a remote URL.
@@ -67,12 +34,12 @@ class Kohana_Remote {
 	 * @param   string   remote URL
 	 * @param   array    curl options
 	 * @return  [Kohana_Response]
-	 * @throws  [Kohana_Exception]
+	 * @throws  [Kohana_Remote_Exception]
 	 */
 	public static function get($url, array $options = NULL)
 	{
-		// Reset the headers
-		Remote::$_headers = array();
+		if ( ! extension_loaded('curl'))
+			throw new Kohana_Remote_Exception('This method requires the CURL php extension to be loaded, check CURL documentation: :url', array(':url' => 'http://uk3.php.net/manual/en/book.curl.php'));
 
 		if ($options === NULL)
 		{
@@ -85,9 +52,29 @@ class Kohana_Remote {
 			$options = $options + Remote::$default_options;
 		}
 
-		// The transfer must always be returned
 		$options[CURLOPT_RETURNTRANSFER] = TRUE;
 		$options[CURLOPT_USERAGENT]      = 'Mozilla/5.0 (compatible; Kohana v'.Kohana::VERSION.' +http://kohanaphp.com/)';
+
+		$headers = array();
+
+		// Parse the headers
+		$options[CURLOPT_HEADERFUNCTION] = function ($remote, $header) use ( & $headers) {
+			$parsed_headers = array();
+
+			if (preg_match_all('/(\w[^\s:]*):[ ]*([^\r\n]*(?:\r\n[ \t][^\r\n]*)*)/', $header, $matches))
+			{
+				foreach ($matches[0] as $key => $value)
+					$parsed_headers[$matches[1][$key]] = $matches[2][$key];
+			}
+
+			// If there are headers to apply
+			if ($parsed_headers)
+			{
+				$headers += $parsed_headers;
+			}
+
+			return strlen($header);
+		};
 
 		// Open a new remote connection
 		$remote = curl_init($url);
@@ -95,7 +82,8 @@ class Kohana_Remote {
 		// Set connection options
 		if ( ! curl_setopt_array($remote, $options))
 		{
-			throw new Kohana_Exception('Failed to set CURL options, check CURL documentation: :url',
+			curl_close($remote);
+			throw new Kohana_Remote_Exception('Failed to set CURL options, check CURL documentation: :url',
 				array(':url' => 'http://php.net/curl_setopt_array'));
 		}
 
@@ -106,13 +94,9 @@ class Kohana_Remote {
 		$code = curl_getinfo($remote, CURLINFO_HTTP_CODE);
 
 		if ($code AND $code < 200 OR $code > 299)
-		{
 			$error = $response;
-		}
 		elseif ($response === FALSE)
-		{
 			$error = curl_error($remote);
-		}
 
 		// Close the connection
 		curl_close($remote);
@@ -125,7 +109,7 @@ class Kohana_Remote {
 
 		return new Response(array(
 			'status'     => $code,
-			'headers'    => Remote::$_headers,
+			'headers'    => $headers,
 			'body'       => $response,
 		));
 	}

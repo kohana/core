@@ -35,6 +35,40 @@
  */
 class Kohana_Route {
 
+	// Detects whether a host has been included with the route definition
+	const REGEX_DETECT_HOST = '~^
+
+	# scheme
+	(?:(?<protocol>[-a-z0-9+.]+)+://)?
+
+	# username:password (optional)
+	(?:
+		    (?<user>[-a-z0-9$_.+!*\'(),;?&=%]++   # username
+		(?::[-a-z0-9$_.+!*\'(),;?&=%]++)?) # password (optional)
+		@
+	)?
+
+	(?:
+		# ip address
+		(?<host>\d{1,3}+(?:\.\d{1,3}+){3}+
+
+		| # or
+
+		# hostname (captured)
+		(
+			     (?!-)[-a-z0-9]{1,63}+(?<!-)
+			(?:\.(?!-)[-a-z0-9]{1,63}+(?<!-)){0,126}+
+		))
+	)
+
+	# port (optional)
+	(?:(?<port>:\d{1,5}+))?
+
+	# path (optional)
+	(?:(?<route>[\/|\(].*))?
+
+	$~iDx';
+
 	// Defines the pattern of a <segment>
 	const REGEX_KEY     = '<([a-zA-Z0-9_]++)>';
 
@@ -49,12 +83,7 @@ class Kohana_Route {
 	 * 
 	 * @example  'http://'
 	 */
-	public static $default_protocol = 'http://';
-
-	/**
-	 * @var  array   list of valid localhost entries
-	 */
-	public static $localhosts = array(FALSE, '', 'local', 'localhost');
+	public static $default_protocol = 'http';
 
 	/**
 	 * @var  string  default action for all routes
@@ -182,21 +211,57 @@ class Kohana_Route {
 	 */
 	public static function url($name, array $params = NULL, $protocol = NULL)
 	{
-		// Create a URI with the route and convert it to a URL
-		return URL::site(Route::get($name)->uri($params), $protocol);
+		// Get the route by name
+		$route = Route::get($name);
+
+		// Return the route url depending on route type
+		return $route->external() ? $route->uri($params) : URL::site($route->uri($params), $protocol);
 	}
 
-	// Route URI string
+	/**
+	 * @var  string  Route URI
+	 */
 	protected $_uri = '';
 
-	// Regular expressions for route keys
+	/**
+	 * @var  string  http, https or ftp
+	 */
+	protected $_protocol;
+
+	/**
+	 * @var  string  the host of this route definition
+	 */
+	protected $_hostname;
+
+	/**
+	 * @var  string  the username:password parameter of this route definition
+	 */
+	protected $_user;
+
+	/**
+	 * @var  integer the port number parameter of the route
+	 */
+	protected $_port;
+
+	/**
+	 * @var  array   Regular expressions for route keys
+	 */
 	protected $_regex = array();
 
-	// Default values for route keys
+	/**
+	 * @var  array   Default values for route keys
+	 */
 	protected $_defaults = array('action' => 'index');
 
-	// Compiled regex cache
+	/**
+	 * @var  Compiled regex cache
+	 */
 	protected $_route_regex;
+
+	/**
+	 * @var  boolean  route is for external resource
+	 */
+	protected $_external;
 
 	/**
 	 * Creates a new route. Sets the URI and regular expressions for keys.
@@ -223,11 +288,59 @@ class Kohana_Route {
 			$this->_regex = $regex;
 		}
 
+		// If there is a protocol://(user:password@)host/route detected
+		if (preg_match(Route::REGEX_DETECT_HOST, $uri, $matches) == 1)
+		{
+			// Apply the protocol, host, user and port to this route
+			$this->_protocol = $matches['protocol'];
+			$this->_hostname = $matches['host'];
+			$this->_user = Arr::get($matches, 'user', NULL);
+			if (($port = Arr::get($matches, 'port', NULL)) !== NULL)
+				$this->_port = (int) $port;
+
+			// Extract the route
+			$uri = $matches['route'][0];
+
+			// Detect internal/external state of this route
+			$this->_external = ! in_array($this->_hostname, Kohana::$hostnames);
+		}
+		// Otherwise
+		else
+		{
+			// Set the hostname and protocol to defaults
+			$this->_hostname = Kohana::$server_name;
+			$this->_protocol = Route::$default_protocol;
+
+			// Set to internal request
+			$this->_external = FALSE;
+		}
+
 		// Store the URI that this route will match
 		$this->_uri = $uri;
 
 		// Store the compiled regex locally
 		$this->_route_regex = $this->_compile();
+	}
+
+	/**
+	 * Provides readonly access to the external status of this Route. External
+	 * Routes are not hosted on this domain (including subdomains).
+	 * 
+	 *  [!!] For external hosts, ensure to pass full valid url with host protocol. E.g. `http://yourhost.com`. `yourhost.com` will be considered a _path_.
+	 * 
+	 *      // Get external host setting
+	 *      if ($route->external())
+	 *      {
+	 *           // do something
+	 *      }
+	 *
+	 * @param   string   uri to test
+	 * @return  boolean
+	 * @since   3.1.0
+	 */
+	public function external()
+	{
+		return $this->_external;
 	}
 
 	/**
@@ -312,6 +425,7 @@ class Kohana_Route {
 	 * @return  string
 	 * @throws  Kohana_Exception
 	 * @uses    Route::REGEX_Key
+	 * @uses    Kohana::$hostnames
 	 */
 	public function uri(array $params = NULL)
 	{
@@ -385,19 +499,19 @@ class Kohana_Route {
 		// Trim all extra slashes from the URI
 		$uri = preg_replace('#//+#', '/', rtrim($uri, '/'));
 
-		// If the localhost setting matches a local route, return the uri as is
-		if ( ! isset($params['host']) OR in_array($params['host'], Route::$localhosts))
+		// If this is an internal route or the host is local, return the uri
+		if ( ! $this->_external)
 			return $uri;
-
-		// If the localhost setting does not have a protocol
-		if (strpos($params['host'], '://') === FALSE)
+		else
 		{
-			// Use the default defined protocol
-			$params['host'] = Route::$default_protocol.$params['host'];
-		}
+			if ( ! empty($this->_user))
+				$user = $this->_user.'@';
+			else
+				$user = '';
 
-		// Compile the final uri and return it
-		return rtrim($params['host'], '/').'/'.$uri;
+			// Compile the final uri and return it
+			return $this->_protocol.'://'.$user.$this->_hostname.'/'.$uri;
+		}
 	}
 
 	/**

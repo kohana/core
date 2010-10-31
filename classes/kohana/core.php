@@ -80,6 +80,16 @@ class Kohana_Core {
 	public static $charset = 'utf-8';
 
 	/**
+	 * @var  string  the name of the server Kohana is hosted upon
+	 */
+	public static $server_name = '';
+
+	/**
+	 * @var  array   list of valid host names for this instance
+	 */
+	public static $hostnames = array();
+
+	/**
 	 * @var  string  base URL to the application
 	 */
 	public static $base_url = '/';
