@@ -50,15 +50,15 @@ function koggle(elem)
 <div id="kohana_error">
 	<h1><span class="type"><?php echo $type ?> [ <?php echo $code ?> ]:</span> <span class="message"><?php echo html::chars($message) ?></span></h1>
 	<div id="<?php echo $error_id ?>" class="content">
-		<p><span class="file"><?php echo Kohana::debug_path($file) ?> [ <?php echo $line ?> ]</span></p>
-		<?php echo Kohana::debug_source($file, $line) ?>
+		<p><span class="file"><?php echo Debug::path($file) ?> [ <?php echo $line ?> ]</span></p>
+		<?php echo Debug::source($file, $line) ?>
 		<ol class="trace">
 		<?php foreach (Kohana::trace($trace) as $i => $step): ?>
 			<li>
 				<p>
 					<span class="file">
 						<?php if ($step['file']): $source_id = $error_id.'source'.$i; ?>
-							<a href="#<?php echo $source_id ?>" onclick="return koggle('<?php echo $source_id ?>')"><?php echo Kohana::debug_path($step['file']) ?> [ <?php echo $step['line'] ?> ]</a>
+							<a href="#<?php echo $source_id ?>" onclick="return koggle('<?php echo $source_id ?>')"><?php echo Debug::path($step['file']) ?> [ <?php echo $step['line'] ?> ]</a>
 						<?php else: ?>
 							{<?php echo __('PHP internal call') ?>}
 						<?php endif ?>
@@ -94,7 +94,7 @@ function koggle(elem)
 			<table cellspacing="0">
 				<?php foreach ($included as $file): ?>
 				<tr>
-					<td><code><?php echo Kohana::debug_path($file) ?></code></td>
+					<td><code><?php echo Debug::path($file) ?></code></td>
 				</tr>
 				<?php endforeach ?>
 			</table>
@@ -105,7 +105,7 @@ function koggle(elem)
 			<table cellspacing="0">
 				<?php foreach ($included as $file): ?>
 				<tr>
-					<td><code><?php echo Kohana::debug_path($file) ?></code></td>
+					<td><code><?php echo Debug::path($file) ?></code></td>
 				</tr>
 				<?php endforeach ?>
 			</table>

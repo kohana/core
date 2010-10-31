@@ -329,17 +329,17 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Tests Kohana::debug_path()
+	 * Tests Debug::path()
 	 *
 	 * @test
 	 * @dataProvider provider_debug_path
-	 * @covers Kohana::debug_path
-	 * @param boolean $path     Input for Kohana::debug_path
-	 * @param boolean $expected Output for Kohana::debug_path
+	 * @covers Debug::path
+	 * @param boolean $path     Input for Debug::path
+	 * @param boolean $expected Output for Debug::path
 	 */
 	public function testDebugPath($path, $expected)
 	{
-		$this->assertEquals($expected, Kohana::debug_path($path));
+		$this->assertEquals($expected, Debug::path($path));
 	}
 
 	/**

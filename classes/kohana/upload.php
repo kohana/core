@@ -78,7 +78,7 @@ class Kohana_Upload {
 		if ( ! is_dir($directory) OR ! is_writable(realpath($directory)))
 		{
 			throw new Kohana_Exception('Directory :dir must be writable',
-				array(':dir' => Kohana::debug_path($directory)));
+				array(':dir' => Debug::path($directory)));
 		}
 
 		// Make the filename into a complete path
