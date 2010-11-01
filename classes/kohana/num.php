@@ -148,4 +148,47 @@ class Kohana_Num {
 		}
 	}
 
+	/**
+	 * Converts a file size number to an integer in bytes. File sizes are
+	 * defined in the format: SB, where S is the size (1, 15, 300, etc) and B
+	 * is the byte modifier: (B)ytes, (K)ilobytes, (M)egabytes, (G)igabytes.
+	 *
+	 *     Num::bytes('5M'); // 5242880
+	 *
+	 * @param   string   file size in SB format
+	 * @return  integer
+	 */
+	public static function bytes($size)
+	{
+		// Sanitize the size number
+		$size = strtoupper(trim($size));
+
+		// Check if the size is in the correct format
+		if ( ! preg_match('/^[0-9]++[BKMG]$/', $size))
+		{
+			throw new Kohana_Exception('Size does not contain a digit and a byte value: :size', array(
+				':size' => $size,
+			));
+		}
+
+		// Make the size into a power of 1024
+		switch (substr($size, -1))
+		{
+			case 'G':
+				$size = intval($size) * pow(1024, 3);
+			break;
+			case 'M':
+				$size = intval($size) * pow(1024, 2);
+			break;
+			case 'K':
+				$size = intval($size) * pow(1024, 1);
+			break;
+			default:
+				$size = intval($size);
+			break;
+		}
+
+		return $size;
+	}
+
 } // End num
