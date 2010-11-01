@@ -5,8 +5,8 @@
  * @package    Kohana
  * @category   Security
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Validate extends ArrayObject {
 
@@ -84,6 +84,18 @@ class Kohana_Validate extends ArrayObject {
 	public static function exact_length($value, $length)
 	{
 		return UTF8::strlen($value) === $length;
+	}
+
+	/**
+	 * CHecks that a field is exactly the value required.
+	 *
+	 * @param   string   value
+	 * @param   string   required value
+	 * @return  boolean
+	 */
+	public static function equals($value, $required)
+	{
+		return ($value === $required);
 	}
 
 	/**
@@ -311,7 +323,7 @@ class Kohana_Validate extends ArrayObject {
 			$double = substr($number, $i, 1) * 2;
 
 			// Subtract 9 from the double where value is greater than 10
-			$checksum += ($double >= 10) ? $double - 9 : $double;
+			$checksum += ($double >= 10) ? ($double - 9) : $double;
 		}
 
 		// If the checksum is a multiple of 10, the number is valid
@@ -1055,8 +1067,16 @@ class Kohana_Validate extends ArrayObject {
 
 			if ($translate)
 			{
-				// Translate the label
-				$label = __($label);
+				if (is_string($translate))
+				{
+					// Translate the label using the specified language
+					$label = __($label, NULL, $translate);
+				}
+				else
+				{
+					// Translate the label
+					$label = __($label);
+				}
 			}
 
 			// Start the translation values list
@@ -1084,12 +1104,21 @@ class Kohana_Validate extends ArrayObject {
 					// Check if a label for this parameter exists
 					if (isset($this->_labels[$value]))
 					{
+						// Use the label as the value, eg: related field name for "matches"
 						$value = $this->_labels[$value];
 
 						if ($translate)
 						{
-							// Translate the label
-							$value = __($value);
+							if (is_string($translate))
+							{
+								// Translate the value using the specified language
+								$value = __($value, NULL, $translate);
+							}
+							else
+							{
+								// Translate the value
+								$value = __($value);
+							}
 						}
 					}
 

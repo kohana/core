@@ -5,8 +5,8 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2007-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Arr {
 
@@ -255,6 +255,50 @@ class Kohana_Arr {
 		}
 
 		return $found;
+	}
+
+	/**
+	 * Retrieves muliple single-key values from a list of arrays.
+	 *
+	 *     // Get all of the "id" values from a result
+	 *     $ids = Arr::pluck($result, 'id');
+	 *
+	 * [!!] A list of arrays is an array that contains arrays, eg: array(array $a, array $b, array $c, ...)
+	 *
+	 * @param   array   list of arrays to check
+	 * @param   string  key to pluck
+	 * @return  array
+	 */
+	public static function pluck($array, $key)
+	{
+		$values = array();
+
+		foreach ($array as $row)
+		{
+			if (isset($row[$key]))
+			{
+				// Found a value in this row
+				$values[] = $row[$key];
+			}
+		}
+
+		return $values;
+	}
+
+	/**
+	 * Binary search algorithm.
+	 *
+	 * @deprecated  Use [array_search](http://php.net/array_search) instead
+	 *
+	 * @param   mixed    the value to search for
+	 * @param   array    an array of values to search in
+	 * @param   boolean  sort the array now
+	 * @return  integer  the index of the match
+	 * @return  FALSE    no matching index found
+	 */
+	public static function binary_search($needle, $haystack, $sort = FALSE)
+	{
+		return array_search($needle, $haystack);
 	}
 
 	/**

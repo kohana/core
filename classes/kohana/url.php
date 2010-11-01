@@ -5,8 +5,8 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2007-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_URL {
 
@@ -55,6 +55,12 @@ class Kohana_URL {
 
 		if (is_string($protocol))
 		{
+			if ($port = parse_url($base_url, PHP_URL_PORT))
+			{
+				// Found a port, make it usable for the URL
+				$port = ':'.$port;
+			}
+
 			if ($domain = parse_url($base_url, PHP_URL_HOST))
 			{
 				// Remove everything but the path from the URL
@@ -62,12 +68,12 @@ class Kohana_URL {
 			}
 			else
 			{
-				// Attempt ot use HTPP_HOST and fallback to SERVER_NAME
+				// Attempt to use HTTP_HOST and fallback to SERVER_NAME
 				$domain = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME'];
 			}
 
 			// Add the protocol and domain to the base URL
-			$base_url = $protocol.'://'.$domain.$base_url;
+			$base_url = $protocol.'://'.$domain.$port.$base_url;
 		}
 
 		return $base_url;
@@ -136,8 +142,11 @@ class Kohana_URL {
 			return '';
 		}
 
-		// ? is added for simple string concatenation
-		return '?'.http_build_query($params, '', '&');
+		// Note: http_build_query returns an empty string for a params array with only NULL values
+		$query = http_build_query($params, '', '&');
+
+		// Don't prepend '?' to an empty string
+		return ($query === '') ? '' : '?'.$query;
 	}
 
 	/**

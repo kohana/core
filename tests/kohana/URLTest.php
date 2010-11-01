@@ -9,8 +9,8 @@
  * @package    Unittest
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 Class Kohana_URLTest extends Kohana_Unittest_TestCase
 {
@@ -53,6 +53,9 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 
 			// Change base url'
 			array(FALSE, 'https', 'https://example.com/kohana/', array('Kohana::$base_url' => 'omglol://example.com/kohana/')),
+
+			// Use port in base url, issue #3307
+			array(FALSE, TRUE, 'http://example.com:8080/', array('Kohana::$base_url' => 'example.com:8080/')),
 
 			// Use protocol from base url if none specified
 			array(FALSE, FALSE,   'http://www.example.com/', array('Kohana::$base_url' => 'http://www.example.com/')),
