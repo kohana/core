@@ -153,7 +153,9 @@ class Kohana_Num {
 	 * defined in the format: SB, where S is the size (1, 15, 300, etc) and B
 	 * is the byte modifier: (B)ytes, (K)ilobytes, (M)egabytes, (G)igabytes.
 	 *
-	 *     Num::bytes('5M'); // 5242880
+	 *     echo Num::bytes('1000'); // 1000
+	 *     echo Num::bytes('5M');   // 5242880
+	 *     echo Num::bytes('200K'); // 204800
 	 *
 	 * @param   string   file size in SB format
 	 * @return  integer
@@ -163,32 +165,27 @@ class Kohana_Num {
 		// Sanitize the size number
 		$size = strtoupper(trim($size));
 
-		// Check if the size is in the correct format
-		if ( ! preg_match('/^[0-9]++[BKMG]$/', $size))
-		{
-			throw new Kohana_Exception('Size does not contain a digit and a byte value: :size', array(
+		// Verify the that the format is correct
+		if ( ! preg_match('/^[0-9]++[BKMG]?$/', $size))
+			throw new Kohana_Exception('The size, ":size", is improperly formatted.', array(
 				':size' => $size,
 			));
-		}
 
-		// Make the size into a power of 1024
-		switch (substr($size, -1))
-		{
-			case 'G':
-				$size = intval($size) * pow(1024, 3);
-			break;
-			case 'M':
-				$size = intval($size) * pow(1024, 2);
-			break;
-			case 'K':
-				$size = intval($size) * pow(1024, 1);
-			break;
-			default:
-				$size = intval($size);
-			break;
-		}
+		// Get the unit from the end of the number
+		$unit = substr($size, -1);
 
-		return $size;
+		// Setup conversions: each unit maps to an exponent
+		$conversions = array
+		(
+			'K' => 1,
+			'M' => 2,
+			'G' => 3,
+		);
+
+		// Convert the number into bytes
+		$bytes = intval($size) * pow(1024, Arr::get($conversions, $unit, 0));
+
+		return $bytes;
 	}
 
 } // End num
