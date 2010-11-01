@@ -5,7 +5,7 @@
 3. Upload the contents of this folder to your webserver.
 4. Open `application/bootstrap.php` and make the following changes:
 	- Set the default [timezone](http://php.net/timezones) for your application.
-	- Set the `base_url` in the [Kohana::init] call to reflect the location of the kohana folder on your server.
+	- Set the `base_url` in the [Kohana::init] call to reflect the location of the kohana folder on your server relative to the document root.
 6. Make sure the `application/cache` and `application/logs` directories are writable by the web server.
 7. Test your installation by opening the URL you set as the `base_url` in your favorite browser.
 
@@ -15,19 +15,19 @@ You should see the installation page. If it reports any errors, you will need to
 
 ![Install Page](install.png "Example of install page")
 
-Once your install page reports that your environment is set up correctly you need to either rename or delete `install.php` in the root directory. You should then see the Kohana welcome page:
+Once your install page reports that your environment is set up correctly you need to either rename or delete `install.php` in the root directory. Kohana is now installed and you should see the output of the welcome controller:
 
 ![Welcome Page](welcome.png "Example of welcome page")
 
 ## Installing Kohana 3.0 From GitHub
 
-The [source](http://github.com/kohana/kohana) code for Kohana 3.0 is hosted with [GitHub](http://github.com).  To install Kohana using the github source code first you need to install git.
+The [source code](http://github.com/kohana/kohana) for Kohana 3.0 is hosted with [GitHub](http://github.com).  To install Kohana using the github source code first you need to install git.  Visit [http://help.github.com](http://help.github.com) for details on how to install git on your platform.
 
-### Quick Start
-
-Visit [http://help.github.com](http://help.github.com) for details on how to install git on your platform then follow these steps:
+To install the last stable release of Kohana using git run these commands:
 
     git clone git://github.com/kohana/kohana.git
     cd kohana/
     git submodule init
     git submodule update
+
+[!!] For more information on using Git and Kohana see the [Working with Git](tutorials/git) tutorial.

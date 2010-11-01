@@ -9,7 +9,7 @@ The bootstrap is located at `application/bootstrap.php`.  It is responsible for 
 First the bootstrap sets the timezone and the locale, and adds Kohana's autoloader so the [cascading filesystem](files) works.  You could add any other settings that all your application needed here.
 
 ~~~
-// [Sample excerpt from bootstrap.php with comments trimmed down]
+// Sample excerpt from bootstrap.php with comments trimmed down
 
 // Set the default time zone.
 date_default_timezone_set('America/Chicago');
@@ -43,9 +43,7 @@ Kohana::$log->attach(new Kohana_Log_File(APPPATH.'logs'));
 Kohana::$config->attach(new Kohana_Config_File);
 ~~~
 
-You can add conditional statements to make the bootstrap have different values based on certain settings.  For example, detect whether we are live by checking `$_SERVER['HTTP_HOST'] and if so caching should be on, and profiling disabled. This is just an example, there are many different ways to accomplish the same thing.
-
-[!!] Note: The default bootstrap will set Kohana::$environment = $_ENV['KOHANA_ENV'] if set. Docs on how to supply this variable are available in your web server's documentation (e.g. [Apache](http://httpd.apache.org/docs/1.3/mod/mod_env.html#setenv), [Lighttpd](http://redmine.lighttpd.net/wiki/1/Docs:ModSetEnv#Options)). This is considered better practice than many alternative methods to set Kohana::$enviroment.
+You can add conditional statements to make the bootstrap have different values based on certain settings.  For example, detect whether we are live by checking `$_SERVER['HTTP_HOST']` and set caching, profiling, etc. accordingly.  This is just an example, there are many different ways to accomplish the same thing.
 
 ~~~
 // Excerpt from http://github.com/isaiahdw/kohanaphp.com/blob/f2afe8e28b/application/bootstrap.php
@@ -90,11 +88,11 @@ catch (Exception $e)
 ...[trimmed]
 ~~~
 
-
+[!!] Note: The default bootstrap will set `Kohana::$environment = $_ENV['KOHANA_ENV']` if set. Docs on how to supply this variable are available in your web server's documentation (e.g. [Apache](http://httpd.apache.org/docs/1.3/mod/mod_env.html#setenv), [Lighttpd](http://redmine.lighttpd.net/wiki/1/Docs:ModSetEnv#Options)). This is considered better practice than many alternative methods to set `Kohana::$enviroment`, as you can change the setting per server, without having to rely on config options or hostnames.
 
 ## Modules
 
-Read the [Modules](modules) page for a more detailed description.
+**Read the [Modules](modules) page for a more detailed description.**
 
 [Modules](modules) are then loaded using [Kohana::modules()].  Including modules is optional.  
 
@@ -111,9 +109,9 @@ Kohana::modules(array(
 
 ## Routes
 
-Read the [Routes](routes) page for a more detailed description and more examples.
+**Read the [Routing](routing) page for a more detailed description and more examples.**
 
-[Routes](routes) are then defined via [Route::set()].  
+[Routes](routing) are then defined via [Route::set()].  
 
 ~~~
 // The default route that comes with Kohana 3
@@ -140,7 +138,7 @@ echo Request::instance()
 
 ### Catching Exceptions
 
-See [Error Handling](errors) for a more detailed description and more examples.
+**See [Error Handling](errors) for a more detailed description and more examples.**
 
 The previous example provides no error catching, which means if an error occurs a stack trace would be shown which could show sensitive info, as well as be unfriendly for the user.  One way to solve this is to add a `try catch` block.  If we get an exception, we will show the view located at `views/errors/404.php`.  **Note: Because we catch the exception, Kohana will not log the error!  It is your responsibility to log the error.**
 

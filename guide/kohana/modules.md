@@ -4,13 +4,13 @@ Modules are simply an addition to the [Cascading Filesystem](files).  A module c
 
 ## Where to find modules
 
-Kolanos has created [kohana-universe](http://github.com/kolanos/kohana-universe/tree/master/modules/), a fairly comprehensive list of modules that are available on github. To get your module listed there, send him a message via github.
+Kolanos has created [kohana-universe](http://github.com/kolanos/kohana-universe/tree/master/modules/), a fairly comprehensive list of modules that are available on Github. To get your module listed there, send him a message via Github.
 
-Mon Geslani created a [very nice site](http://kohana.mongeslani.com/) that allows you to sort by activity, watchers, forks, etc.  It seems to not be as comprehensive as kohana-universe.
+Mon Geslani created a [very nice site](http://kohana.mongeslani.com/) that allows you to sort Github modules by activity, watchers, forks, etc.  It seems to not be as comprehensive as kohana-universe.
 
 ## Enabling modules
 
-Modules are enabled by calling [Kohana::modules] and passing an array of `'name' => 'path'`.  The name isn't important, but the path obviously is.  A module's path does not have to be in `MODPATH`, but usually is.
+Modules are enabled by calling [Kohana::modules] and passing an array of `'name' => 'path'`.  The name isn't important, but the path obviously is.  A module's path does not have to be in `MODPATH`, but usually is.  You can only call [Kohana::modules] once.
 
 	Kohana::modules(array(
 		'auth'       => MODPATH.'auth',       // Basic authentication
@@ -27,11 +27,11 @@ Modules are enabled by calling [Kohana::modules] and passing an array of `'name'
 
 ## Init.php
 
-When a module is activated, if an `init.php` file exists in the modules directory, it is included.  This is the ideal place to have a module include routes or other initilazation necesarry for the module to function.  The Userguide and Codebunch modules have init.php files you can look at.
+When a module is activated, if an `init.php` file exists in that module's directory, it is included.  This is the ideal place to have a module include routes or other initialization necessary for the module to function.  The Userguide and Codebench modules have init.php files you can look at.
 
 ## How modules work
 
-A file in an enabled module is virtually the same as having that exact file in the same place in the application folder.  The main difference being that it can be overwriten by a file of the same name in a higher location (a module enabled after it, or the application folder) via the [Cascading Filesystem](files).
+A file in an enabled module is virtually the same as having that exact file in the same place in the application folder.  The main difference being that it can be overwritten by a file of the same name in a higher location (a module enabled after it, or the application folder) via the [Cascading Filesystem](files).  It also provides an easy way to organize and share your code.
 
 ## Creating your own module
 
