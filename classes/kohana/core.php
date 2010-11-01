@@ -250,6 +250,9 @@ class Kohana_Core {
 		// Determine if we are running in a Windows environment
 		Kohana::$is_windows = (DIRECTORY_SEPARATOR === '\\');
 
+		// Determine if we are running in safe mode
+		Kohana::$safe_mode = (bool) ini_get('safe_mode');
+
 		if (isset($settings['cache_dir']))
 		{
 			if ( ! is_dir($settings['cache_dir']))
