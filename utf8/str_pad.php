@@ -42,7 +42,7 @@ function _str_pad($str, $final_str_length, $pad_str = ' ', $pad_type = STR_PAD_R
 		$repeat_right = ceil($pad_length_right / $pad_str_length);
 
 		$pad_left = UTF8::substr(str_repeat($pad_str, $repeat_left), 0, $pad_length_left);
-		$pad_right = UTF8::substr(str_repeat($pad_str, $repeat_right), 0, $pad_length_left);
+		$pad_right = UTF8::substr(str_repeat($pad_str, $repeat_right), 0, $pad_length_right);
 		return $pad_left.$str.$pad_right;
 	}
 
