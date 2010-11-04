@@ -76,6 +76,11 @@ class Kohana_Core {
 	public static $log_errors = FALSE;
 
 	/**
+	 * @var  boolean  safe mode enabled?
+	 */
+	public static $safe_mode = FALSE;
+
+	/**
 	 * @var  string  character set of input and output
 	 */
 	public static $charset = 'utf-8';
