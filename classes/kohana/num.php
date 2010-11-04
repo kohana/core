@@ -17,6 +17,46 @@ class Kohana_Num {
 	const ROUND_HALF_ODD	= 4;
 
 	/**
+	 * @var  array  Valid byte units => power of 2 that defines the unit's size
+	 */
+	public static $byte_units = array
+	(
+		'B'   => 0,
+		'K'   => 10,
+		'Ki'  => 10,
+		'KB'  => 10,
+		'KiB' => 10,
+		'M'   => 20,
+		'Mi'  => 20,
+		'MB'  => 20,
+		'MiB' => 20,
+		'G'   => 30,
+		'Gi'  => 30,
+		'GB'  => 30,
+		'GiB' => 30,
+		'T'   => 40,
+		'Ti'  => 40,
+		'TB'  => 40,
+		'TiB' => 40,
+		'P'   => 50,
+		'Pi'  => 50,
+		'PB'  => 50,
+		'PiB' => 50,
+		'E'   => 60,
+		'Ei'  => 60,
+		'EB'  => 60,
+		'EiB' => 60,
+		'Z'   => 70,
+		'Zi'  => 70,
+		'ZB'  => 70,
+		'ZiB' => 70,
+		'Y'   => 80,
+		'Yi'  => 80,
+		'YB'  => 80,
+		'YiB' => 80,
+	);
+
+	/**
 	 * Returns the English ordinal suffix (th, st, nd, etc) of a number.
 	 *
 	 *     echo 2, Num::ordinal(2);   // "2nd"
@@ -85,7 +125,7 @@ class Kohana_Num {
 
 	/**
 	 * Round a number to a specified precision, using a specified tie breaking technique
-	 * 
+	 *
 	 * @param float $value Number to round
 	 * @param integer $precision Desired precision
 	 * @param integer $mode Tie breaking mode, accepts the PHP_ROUND_HALF_* constants
@@ -106,7 +146,7 @@ class Kohana_Num {
 		else
 		{
 			$factor = ($precision === 0) ? 1 : pow(10, $precision);
-			
+
 			switch ($mode)
 			{
 				case self::ROUND_HALF_DOWN:
@@ -149,41 +189,47 @@ class Kohana_Num {
 	}
 
 	/**
-	 * Converts a file size number to an integer in bytes. File sizes are
-	 * defined in the format: SB, where S is the size (1, 15, 300, etc) and B
-	 * is the byte modifier: (B)ytes, (K)ilobytes, (M)egabytes, (G)igabytes.
+	 * Converts a file size number to a byte value. File sizes are defined in
+	 * the format: SB, where S is the size (1, 8.5, 300, etc.) and B is the
+	 * byte unit (K, MiB, GB, etc.). All valid byte units are defined in
+	 * Num::$byte_units
 	 *
-	 *     echo Num::bytes('1000'); // 1000
-	 *     echo Num::bytes('5M');   // 5242880
-	 *     echo Num::bytes('200K'); // 204800
+	 *     echo Num::bytes('200K');  // 204800
+	 *     echo Num::bytes('5MiB');  // 5242880
+	 *     echo Num::bytes('1000');  // 1000
+	 *     echo Num::bytes('2.5GB'); // 2684354560
 	 *
 	 * @param   string   file size in SB format
 	 * @return  integer
 	 */
 	public static function bytes($size)
 	{
-		// Sanitize the size number
-		$size = strtoupper(trim($size));
+		// Prepare the size
+		$size = trim($size);
 
-		// Verify the that the format is correct
-		if ( ! preg_match('/^[0-9]++[BKMG]?$/', $size))
-			throw new Kohana_Exception('The size, ":size", is improperly formatted.', array(
+		// Get the decimal point for the current locale
+		list($decimal) = array_values(localeconv());
+
+		// Construct an OR list of byte units for the regex
+		$accepted = implode('|', array_keys(Num::$byte_units));
+
+		// Construct the regex pattern for verifying the size format
+		$pattern = '/^([0-9]+(?:'.preg_quote($decimal).'[0-9]+)?)('.$accepted.')?$/Di';
+
+		// Verify the size format and store the matching parts
+		if ( ! preg_match($pattern, $size, $matches))
+			throw new Kohana_Exception('The byte unit size, ":size", is improperly formatted.', array(
 				':size' => $size,
 			));
 
-		// Get the unit from the end of the number
-		$unit = substr($size, -1);
+		// Find the float value of the size
+		$size = (float) $matches[1];
 
-		// Setup conversions: each unit maps to an exponent
-		$conversions = array
-		(
-			'K' => 1,
-			'M' => 2,
-			'G' => 3,
-		);
+		// Find the actual unit, assume B if no unit specified
+		$unit = Arr::get($matches, 2, 'B');
 
-		// Convert the number into bytes
-		$bytes = intval($size) * pow(1024, Arr::get($conversions, $unit, 0));
+		// Convert the size into bytes
+		$bytes = $size * pow(2, Num::$byte_units[$unit]);
 
 		return $bytes;
 	}
