@@ -207,14 +207,11 @@ class Kohana_Num {
 		// Prepare the size
 		$size = trim($size);
 
-		// Get the decimal point for the current locale
-		list($decimal) = array_values(localeconv());
-
 		// Construct an OR list of byte units for the regex
 		$accepted = implode('|', array_keys(Num::$byte_units));
 
 		// Construct the regex pattern for verifying the size format
-		$pattern = '/^([0-9]+(?:'.preg_quote($decimal).'[0-9]+)?)('.$accepted.')?$/Di';
+		$pattern = '/^([0-9]+(?:\.[0-9]+)?)('.$accepted.')?$/Di';
 
 		// Verify the size format and store the matching parts
 		if ( ! preg_match($pattern, $size, $matches))
