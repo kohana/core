@@ -10,8 +10,8 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Core {
 
@@ -76,6 +76,11 @@ class Kohana_Core {
 	public static $log_errors = FALSE;
 
 	/**
+	 * @var  boolean  TRUE if PHP safe mode is on
+	 */
+	public static $safe_mode = FALSE;
+
+	/**
 	 * @var  string  Character set of input and output
 	 */
 	public static $charset = 'utf-8';
@@ -94,6 +99,11 @@ class Kohana_Core {
 	 * @var  string  Cache directory
 	 */
 	public static $cache_dir;
+
+	/**
+	 * @var  integer  default lifetime for caching, in seconds
+	 */
+	public static $cache_life = 60;
 
 	/**
 	 * @var  boolean  Whether to use internal caching for [Kohana::find_file], set by [Kohana::init]
@@ -254,6 +264,9 @@ class Kohana_Core {
 		// Determine if we are running in a Windows environment
 		Kohana::$is_windows = (DIRECTORY_SEPARATOR === '\\');
 
+		// Determine if we are running in safe mode
+		Kohana::$safe_mode = (bool) ini_get('safe_mode');
+
 		if (isset($settings['cache_dir']))
 		{
 			if ( ! is_dir($settings['cache_dir']))
@@ -286,6 +299,12 @@ class Kohana_Core {
 		{
 			throw new Kohana_Exception('Directory :dir must be writable',
 				array(':dir' => Kohana::debug_path(Kohana::$cache_dir)));
+		}
+
+		if (isset($settings['cache_life']))
+		{
+			// Set the default cache lifetime
+			Kohana::$cache_life = (int) $settings['cache_life'];
 		}
 
 		if (isset($settings['caching']))
@@ -475,20 +494,28 @@ class Kohana_Core {
 	 */
 	public static function auto_load($class)
 	{
-		// Transform the class name into a path
-		$file = str_replace('_', '/', strtolower($class));
-
-		if ($path = Kohana::find_file('classes', $file))
+		try
 		{
-			// Load the class file
-			require $path;
+			// Transform the class name into a path
+			$file = str_replace('_', '/', strtolower($class));
 
-			// Class has been found
-			return TRUE;
+			if ($path = Kohana::find_file('classes', $file))
+			{
+				// Load the class file
+				require $path;
+
+				// Class has been found
+				return TRUE;
+			}
+
+			// Class is not in the filesystem
+			return FALSE;
 		}
-
-		// Class is not in the filesystem
-		return FALSE;
+		catch (Exception $e)
+		{
+			Kohana::exception_handler($e);
+			die;
+		}
 	}
 
 	/**
@@ -564,7 +591,7 @@ class Kohana_Core {
 	 * If no extension is given, the default EXT extension will be used.
 	 *
 	 * When searching the "config" or "i18n" directories, or when the
-	 * $aggregate_files flag is set to true, an array of files
+	 * $array flag is set to true, an array of files
 	 * will be returned. These files will return arrays which must be
 	 * merged together.
 	 *
@@ -788,7 +815,7 @@ class Kohana_Core {
 
 		if (isset($path))
 		{
-			return Arr::path($config[$group], $path);
+			return Arr::path($config[$group], $path, NULL, '.');
 		}
 		else
 		{
@@ -818,13 +845,19 @@ class Kohana_Core {
 	 * @return  mixed    for getting
 	 * @return  boolean  for setting
 	 */
-	public static function cache($name, $data = NULL, $lifetime = 60)
+	public static function cache($name, $data = NULL, $lifetime = NULL)
 	{
 		// Cache file is a hash of the name
 		$file = sha1($name).'.txt';
 
 		// Cache directories are split by keys to prevent filesystem overload
 		$dir = Kohana::$cache_dir.DIRECTORY_SEPARATOR.$file[0].$file[1].DIRECTORY_SEPARATOR;
+
+		if ($lifetime === NULL)
+		{
+			// Use the default lifetime
+			$lifetime = Kohana::$cache_life;
+		}
 
 		if ($data === NULL)
 		{
@@ -1039,7 +1072,7 @@ class Kohana_Core {
 			echo Kohana::exception_text($e), "\n";
 
 			// Exit with an error status
-			// exit(1);
+			exit(1);
 		}
 	}
 
@@ -1194,7 +1227,7 @@ class Kohana_Core {
 			// Clean invalid multibyte characters. iconv is only invoked
 			// if there are non ASCII characters in the string, so this
 			// isn't too much of a hit.
-			$var = UTF8::clean($var);
+			$var = UTF8::clean($var, Kohana::$charset);
 
 			if (UTF8::strlen($var) > $length)
 			{
@@ -1292,7 +1325,7 @@ class Kohana_Core {
 					if ($key[0] === "\x00")
 					{
 						// Determine if the access is protected or protected
-						$access = '<small>'.($key[1] === '*' ? 'protected' : 'private').'</small>';
+						$access = '<small>'.(($key[1] === '*') ? 'protected' : 'private').'</small>';
 
 						// Remove the access level from the variable name
 						$key = substr($key, strrpos($key, "\x00") + 1);
@@ -1480,7 +1513,7 @@ class Kohana_Core {
 				else
 				{
 					// Sanitize the file path
-					$args = array($step['args'][0]);
+					$args = array(Kohana::debug_path($step['args'][0]));
 				}
 			}
 			elseif (isset($step['args']))

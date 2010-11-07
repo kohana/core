@@ -17,8 +17,8 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_I18n {
 
@@ -26,6 +26,11 @@ class Kohana_I18n {
 	 * @var  string   target language: en-us, es-es, zh-cn, etc
 	 */
 	public static $lang = 'en-us';
+
+	/**
+	 * @var  string  source language: en-us, es-es, zh-cn, etc
+	 */
+	public static $source = 'en-us';
 
 	// Cache of loaded languages
 	protected static $_cache = array();

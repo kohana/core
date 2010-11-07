@@ -5,8 +5,8 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2007-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Feed {
 
@@ -20,14 +20,14 @@ class Kohana_Feed {
 	public static function parse($feed, $limit = 0)
 	{
 		// Check if SimpleXML is installed
-		if( ! function_exists('simplexml_load_file'))
+		if ( ! function_exists('simplexml_load_file'))
 			throw new Kohana_Exception('SimpleXML must be installed!');
 
 		// Make limit an integer
 		$limit = (int) $limit;
 
 		// Disable error reporting while opening the feed
-		$ER = error_reporting(0);
+		$error_level = error_reporting(0);
 
 		// Allow loading by filename or raw XML string
 		$load = (is_file($feed) OR validate::url($feed)) ? 'simplexml_load_file' : 'simplexml_load_string';
@@ -36,7 +36,7 @@ class Kohana_Feed {
 		$feed = $load($feed, 'SimpleXMLElement', LIBXML_NOCDATA);
 
 		// Restore error reporting
-		error_reporting($ER);
+		error_reporting($error_level);
 
 		// Feed could not be loaded
 		if ($feed === FALSE)

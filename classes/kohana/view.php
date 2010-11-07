@@ -7,8 +7,8 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_View {
 
@@ -137,7 +137,7 @@ class Kohana_View {
 			$this->set_filename($file);
 		}
 
-		if ( $data !== NULL)
+		if ($data !== NULL)
 		{
 			// Add the values to the current data
 			$this->_data = $data + $this->_data;
@@ -158,11 +158,11 @@ class Kohana_View {
 	 */
 	public function & __get($key)
 	{
-		if (isset($this->_data[$key]))
+		if (array_key_exists($key, $this->_data))
 		{
 			return $this->_data[$key];
 		}
-		elseif (isset(View::$_global_data[$key]))
+		elseif (array_key_exists($key, View::$_global_data))
 		{
 			return View::$_global_data[$key];
 		}

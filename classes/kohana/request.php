@@ -6,8 +6,8 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Request {
 
@@ -286,13 +286,13 @@ class Kohana_Request {
 			if (strpos($uri, $base_url) === 0)
 			{
 				// Remove the base URL from the URI
-				$uri = substr($uri, strlen($base_url));
+				$uri = (string) substr($uri, strlen($base_url));
 			}
 
 			if (Kohana::$index_file AND strpos($uri, Kohana::$index_file) === 0)
 			{
 				// Remove the index file from the URI
-				$uri = substr($uri, strlen(Kohana::$index_file));
+				$uri = (string) substr($uri, strlen(Kohana::$index_file));
 			}
 		}
 
@@ -335,14 +335,32 @@ class Kohana_Request {
 	 *     // Returns "Chrome" when using Google Chrome
 	 *     $browser = Request::user_agent('browser');
 	 *
-	 * @param   string  value to return: browser, version, robot, mobile, platform
-	 * @return  string  requested information
-	 * @return  FALSE   no information found
+	 * Multiple values can be returned at once by using an array:
+	 *
+	 *     // Get the browser and platform with a single call
+	 *     $info = Request::user_agent(array('browser', 'platform'));
+	 *
+	 * When using an array for the value, an associative array will be returned.
+	 *
+	 * @param   mixed   string to return: browser, version, robot, mobile, platform; or array of values
+	 * @return  mixed   requested information, FALSE if nothing is found
 	 * @uses    Kohana::config
 	 * @uses    Request::$user_agent
 	 */
 	public static function user_agent($value)
 	{
+		if (is_array($value))
+		{
+			$agent = array();
+			foreach ($value as $v)
+			{
+				// Add each key to the set
+				$agent[$v] = Request::user_agent($v);
+			}
+
+			return $agent;
+		}
+
 		static $info;
 
 		if (isset($info[$value]))
@@ -877,7 +895,7 @@ class Kohana_Request {
 				$mime = File::mime_by_ext(strtolower(pathinfo($download, PATHINFO_EXTENSION)));
 			}
 
-			// Force the data to be rendered if 
+			// Force the data to be rendered if
 			$file_data = (string) $this->response;
 
 			// Get the content size
@@ -888,9 +906,6 @@ class Kohana_Request {
 
 			// Write the current response into the file
 			fwrite($file, $file_data);
-
-			// Prepare the file for reading
-			fseek($file, 0);
 
 			// File data is no longer needed
 			unset($file_data);
@@ -929,14 +944,41 @@ class Kohana_Request {
 		// Inline or download?
 		$disposition = empty($options['inline']) ? 'attachment' : 'inline';
 
-		// Set the headers for a download
-		$this->headers['Content-Disposition'] = $disposition.'; filename="'.$download.'"';
-		$this->headers['Content-Type']        = $mime;
-		$this->headers['Content-Length']      = $size;
+		// Calculate byte range to download.
+		list($start, $end) = $this->_calculate_byte_range($size);
 
 		if ( ! empty($options['resumable']))
 		{
-			// @todo: ranged download processing
+			if($start > 0 OR $end < ($size - 1))
+			{
+				// Partial Content
+				$this->status = 206;
+			}
+
+			// Range of bytes being sent
+			$this->headers['Content-Range'] = 'bytes '.$start.'-'.$end.'/'.$size;
+			$this->headers['Accept-Ranges'] = 'bytes';
+		}
+
+		// Set the headers for a download
+		$this->headers['Content-Disposition'] = $disposition.'; filename="'.$download.'"';
+		$this->headers['Content-Type']        = $mime;
+		$this->headers['Content-Length']      = ($end - $start) + 1;
+
+		if (Request::user_agent('browser') === 'Internet Explorer')
+		{
+			// Naturally, IE does not act like a real browser...
+			if (Request::$protocol === 'https')
+			{
+				// http://support.microsoft.com/kb/316431
+				$this->headers['Pragma'] = $this->headers['Cache-Control'] = 'public';
+			}
+
+			if (version_compare(Request::user_agent('version'), '8.0', '>='))
+			{
+				// http://ajaxian.com/archives/ie-8-security
+				$this->headers['X-Content-Type-Options'] = 'nosniff';
+			}
 		}
 
 		// Send all headers now
@@ -951,16 +993,27 @@ class Kohana_Request {
 		// Manually stop execution
 		ignore_user_abort(TRUE);
 
-		// Keep the script running forever
-		set_time_limit(0);
+		if ( ! Kohana::$safe_mode)
+		{
+			// Keep the script running forever
+			set_time_limit(0);
+		}
 
 		// Send data in 16kb blocks
 		$block = 1024 * 16;
 
-		while ( ! feof($file))
+		fseek($file, $start);
+
+		while ( ! feof($file) AND ($pos = ftell($file)) <= $end)
 		{
 			if (connection_aborted())
 				break;
+
+			if ($pos + $block > $end)
+			{
+				// Don't read past the buffer.
+				$block = $end - $pos + 1;
+			}
 
 			// Output a block of the file
 			echo fread($file, $block);
@@ -999,6 +1052,70 @@ class Kohana_Request {
 
 		// Stop execution
 		exit;
+	}
+
+	/**
+	 * Parse the byte ranges from the HTTP_RANGE header used for
+	 * resumable downloads.
+	 *
+	 * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
+	 * @return array|FALSE
+	 */
+	protected function _parse_byte_range()
+	{
+		if ( ! isset($_SERVER['HTTP_RANGE']))
+		{
+			return FALSE;
+		}
+
+		// TODO, speed this up with the use of string functions.
+		preg_match_all('/(-?[0-9]++(?:-(?![0-9]++))?)(?:-?([0-9]++))?/', $_SERVER['HTTP_RANGE'], $matches, PREG_SET_ORDER);
+
+		return $matches[0];
+	}
+
+	/**
+	 * Calculates the byte range to use with send_file. If HTTP_RANGE doesn't
+	 * exist then the complete byte range is returned
+	 *
+	 * @param  integer $size
+	 * @return array
+	 */
+	protected function _calculate_byte_range($size)
+	{
+		// Defaults to start with when the HTTP_RANGE header doesn't exist.
+		$start = 0;
+		$end = $size - 1;
+
+		if($range = $this->_parse_byte_range())
+		{
+			// We have a byte range from HTTP_RANGE
+			$start = $range[1];
+
+			if ($start[0] === '-')
+			{
+				// A negative value means we start from the end, so -500 would be the
+				// last 500 bytes.
+				$start = $size - abs($start);
+			}
+
+			if (isset($range[2]))
+			{
+				// Set the end range
+				$end = $range[2];
+			}
+		}
+
+		// Normalize values.
+		$start = abs(intval($start));
+
+		// Keep the the end value in bounds and normalize it.
+		$end = min(abs(intval($end)), $size - 1);
+
+		// Keep the start in bounds.
+		$start = $end < $start ? 0 : max($start, 0);
+
+		return array($start, $end);
 	}
 
 	/**
@@ -1123,7 +1240,7 @@ class Kohana_Request {
 	 * request response.
 	 *
 	 *     $etag = $request->generate_etag();
-	 * 
+	 *
 	 * [!!] If the request response is empty when this method is called, an
 	 * exception will be thrown!
 	 *
