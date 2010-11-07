@@ -37,7 +37,7 @@ class Kohana_Core {
 	const FILE_CACHE = ":header \n\n// :name\n\n:data\n";
 
 	/**
-	 * @var  array  PHP error code => human readable name
+	 * @var  array  Codes to turn PHP error codes into readable names.
 	 */
 	public static $php_errors = array(
 		E_ERROR              => 'Fatal Error',
@@ -51,98 +51,108 @@ class Kohana_Core {
 	);
 
 	/**
-	 * @var  string  current environment name
+	 * @var  string  Current environment name
 	 */
 	public static $environment = Kohana::DEVELOPMENT;
 
 	/**
-	 * @var  boolean  command line environment?
+	 * @var  boolean  True if Kohana is running from the command line
 	 */
 	public static $is_cli = FALSE;
 
 	/**
-	 * @var  boolean  Windows environment?
+	 * @var  boolean  True if Kohana is running on windows
 	 */
 	public static $is_windows = FALSE;
 
 	/**
-	 * @var  boolean  magic quotes enabled?
+	 * @var  boolean  True if [magic quotes](http://php.net/manual/en/security.magicquotes.php) is enabled.
 	 */
 	public static $magic_quotes = FALSE;
 
 	/**
-	 * @var  boolean  log errors and exceptions?
+	 * @var  boolean  Should errors and exceptions be logged
 	 */
 	public static $log_errors = FALSE;
 
 	/**
-	 * @var  string  character set of input and output
+	 * @var  string  Character set of input and output
 	 */
 	public static $charset = 'utf-8';
 
 	/**
-	 * @var  string  base URL to the application
+	 * @var  string  Base URL to the application
 	 */
 	public static $base_url = '/';
 
 	/**
-	 * @var  string  application index file
+	 * @var  string  Application index file
 	 */
 	public static $index_file = 'index.php';
 
 	/**
-	 * @var  string  cache directory
+	 * @var  string  Cache directory
 	 */
 	public static $cache_dir;
 
 	/**
-	 * @var  boolean  enabling internal caching?
+	 * @var  boolean  Whether to use internal caching for [Kohana::find_file], set by [Kohana::init]
 	 */
 	public static $caching = FALSE;
 
 	/**
-	 * @var  boolean  enable core profiling?
+	 * @var  boolean  Whether to enable [profiling](kohana/profiling), set by [Kohana::init]
 	 */
 	public static $profiling = TRUE;
 
 	/**
-	 * @var  boolean  enable error handling?
+	 * @var  boolean  Enable Kohana catching and displaying PHP errors and exceptions
 	 */
 	public static $errors = TRUE;
 
 	/**
-	 * @var  string  error rendering view
+	 * @var  string  Error rendering view when Kohana catches PHP errors and exceptions
 	 */
 	public static $error_view = 'kohana/error';
 
 	/**
-	 * @var  array  types of errors to display at shutdown
+	 * @var  array  Types of errors to display at shutdown
 	 */
 	public static $shutdown_errors = array(E_PARSE, E_ERROR, E_USER_ERROR, E_COMPILE_ERROR);
 
 	/**
-	 * @var  object  logging object
+	 * @var  object  Kohana Logging object
 	 */
 	public static $log;
 
 	/**
-	 * @var  object  config object
+	 * @var  object  Kohana Config object
 	 */
 	public static $config;
 
-	// Is the environment initialized?
+	/**
+	 * @var  boolean  Has [Kohana::init] been called?
+	 */
 	protected static $_init = FALSE;
 
-	// Currently active modules
+	/**
+	 * @var  array   Currently active modules
+	 */
 	protected static $_modules = array();
 
-	// Include paths that are used to find files
+	/**
+	 * @var  array   Include paths that are used to find files
+	 */
 	protected static $_paths = array(APPPATH, SYSPATH);
 
-	// File path cache
+	/**
+	 * @var  array   File path cache, used when caching is true in [Kohana::init]
+	 */
 	protected static $_files = array();
 
-	// Has the file cache changed?
+	/**
+	 * @var  boolean  Has the file path cache changed during this execution?
+	 */
 	protected static $_files_changed = FALSE;
 
 	/**
@@ -154,21 +164,21 @@ class Kohana_Core {
 	 * - Sanitizes GET, POST, and COOKIE variables
 	 * - Converts GET, POST, and COOKIE variables to the global character set
 	 *
-	 * Any of the global settings can be set here:
+	 * The following settings can be set:
 	 *
 	 * Type      | Setting    | Description                                    | Default Value
 	 * ----------|------------|------------------------------------------------|---------------
-	 * `boolean` | errors     | use internal error and exception handling?     | `TRUE`
-	 * `boolean` | profile    | do internal benchmarking?                      | `TRUE`
-	 * `boolean` | caching    | cache the location of files between requests?  | `FALSE`
-	 * `string`  | charset    | character set used for all input and output    | `"utf-8"`
-	 * `string`  | base_url   | set the base URL for the application           | `"/"`
-	 * `string`  | index_file | set the index.php file name                    | `"index.php"`
-	 * `string`  | cache_dir  | set the cache directory path                   | `APPPATH."cache"`
-	 * `string`  | error_view | set the error rendering view                   | `"kohana/error"`
+	 * `string`  | base_url   | The base URL for your application.  This should be the *relative* path from your DOCROOT to your `index.php` file, in other words, if Kohana is in a subfolder, set this to the subfolder name, otherwise leave it as the default.  **The leading slash is required**, trailing slash is optional.   | `"/"`
+	 * `string`  | index_file | The name of the [front controller](http://en.wikipedia.org/wiki/Front_Controller_pattern).  This is usually `index.php`.  To [remove index.php from your urls](http://192.168.70.2/userguide/guide/kohana/tutorials/clean-urls), set this to `FALSE`. | `"index.php"`
+	 * `string`  | charset    | Character set used for all input and output    | `"utf-8"`
+	 * `string`  | cache_dir  | Kohana's cache directory.  Used by [Kohana::cache] for simple internal caching, like [Fragments](kohana/fragments) and **\[caching database queries](this should link somewhere)**.  This has nothing to do with the [Cache module](cache). | `APPPATH."cache"`
+	 * `boolean` | errors     | Should Kohana catch PHP errors and uncaught Exceptions and show the `error_view`. <br /> <br /> **Recommended setting**: `TRUE` while developing, `FALSE` on production servers. | `TRUE`
+	 * `string`  | error_view | The view to use to display errors.  Only used when `errors` is `TRUE`. | `"kohana/error"`
+	 * `boolean` | profile    | Whether to enable the [Profiler](kohana/profiling). <br /> <br />**Recommended setting**: `TRUE` while developing, `FALSE` on production servers. | `TRUE`
+	 * `boolean` | caching    | Cache file locations to speed up [Kohana::find_file].  This has nothing to do with other caching methods like [Fragments](kohana/fragments) and the [Cache module](cache).  <br /> <br />  **Recommended setting**: `FALSE` while developing, `TRUE` on production servers. | `FALSE`
 	 *
 	 * @throws  Kohana_Exception
-	 * @param   array   global settings
+	 * @param   array   Array of settings.  See above.
 	 * @return  void
 	 * @uses    Kohana::globals
 	 * @uses    Kohana::sanitize
