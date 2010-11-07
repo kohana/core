@@ -96,12 +96,12 @@ class Kohana_Core {
 	public static $index_file = 'index.php';
 
 	/**
-	 * @var  string  Cache directory, used by [Kohana::cache]
+	 * @var  string  Cache directory, used by [Kohana::cache]. Set by [Kohana::init]
 	 */
 	public static $cache_dir;
 
 	/**
-	 * @var  integer  Default lifetime for caching, in seconds, used by [Kohana::cache]
+	 * @var  integer  Default lifetime for caching, in seconds, used by [Kohana::cache]. Set by [Kohana::init]
 	 */
 	public static $cache_life = 60;
 
@@ -161,7 +161,7 @@ class Kohana_Core {
 	protected static $_files = array();
 
 	/**
-	 * @var  boolean  Has the file path cache changed during this execution?
+	 * @var  boolean  Has the file path cache changed during this execution?  Used internally when when caching is true in [Kohana::init]
 	 */
 	protected static $_files_changed = FALSE;
 
