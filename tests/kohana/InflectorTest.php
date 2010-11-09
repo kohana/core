@@ -95,6 +95,8 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 			array('meter', 1.6, 'meters'),
 			array('meter', 1.0, 'meter'),
 			array('hero', NULL, 'heroes'),
+			array('Dog', NULL, 'Dogs'), // Titlecase
+			array('DOG', NULL, 'DOGS'), // Uppercase
 		);
 	}
 
