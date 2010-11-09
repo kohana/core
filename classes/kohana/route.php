@@ -177,6 +177,9 @@ class Kohana_Route {
 	// Route URI string
 	protected $_uri = '';
 
+	// Nested routing
+	protected $_nest = NULL;
+
 	// Regular expressions for route keys
 	protected $_regex = array();
 
@@ -216,6 +219,29 @@ class Kohana_Route {
 
 		// Store the compiled regex locally
 		$this->_route_regex = $this->_compile();
+	}
+
+	/**
+	 * Nest another route within the current route. Nested routes are passed
+	 * the "uri" parameter and their matches are combined with the parent.
+	 *
+	 * [!!] All routes that use nesting must define a "uri" parameter for
+	 * nesting to work properly.
+	 *
+	 *     // Use the "default" route for any URI starting with "admin/"
+	 *     Route::set('admin', 'admin(/<uri>)', array(
+	 *             'uri' => '.+',
+	 *         ))
+	 *         ->nest('default');
+	 *
+	 * @param   mixed   route name or object
+	 * @return  $this
+	 */
+	public function nest($route)
+	{
+		$this->_nest = $route;
+
+		return $this;
 	}
 
 	/**
@@ -283,6 +309,23 @@ class Kohana_Route {
 			}
 		}
 
+		if ($this->_nest AND isset($params['uri']))
+		{
+			$route = $this->_nest;
+
+			if ( ! is_object($route))
+			{
+				// Load the route
+				$route = Route::get($route);
+			}
+
+			if ($_params = $route->matches($params['uri']))
+			{
+				// Append parameters without overwriting existing parameters
+				$params += $_params;
+			}
+		}
+
 		return $params;
 	}
 
@@ -321,6 +364,20 @@ class Kohana_Route {
 		{
 			// This is a static route, no need to replace anything
 			return $uri;
+		}
+
+		if ($this->_nest AND ! isset($params['uri']))
+		{
+			$route = $this->_nest;
+
+			if ( ! is_object($route))
+			{
+				// Load the route
+				$route = Route::get($route);
+			}
+
+			// Rerouting
+			$params['uri'] = $route->uri($params);
 		}
 
 		while (preg_match('#\([^()]++\)#', $uri, $match))
