@@ -243,6 +243,13 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 			array(array(), '?test=data', array('test' => 'data')),
 			array(array('_GET' => array('more' => 'data')), '?more=data&test=data', array('test' => 'data')),
 			array(array('_GET' => array('sort' => 'down')), '?test=data', array('test' => 'data'), FALSE),
+
+			// http://dev.kohanaframework.org/issues/3362
+			array(array(), '', array('key' => NULL)),
+			array(array(), '?key=0', array('key' => FALSE)),
+			array(array(), '?key=1', array('key' => TRUE)),
+			array(array('_GET' => array('sort' => 'down')), '?sort=down&key=1', array('key' => TRUE)),
+			array(array('_GET' => array('sort' => 'down')), '?sort=down&key=0', array('key' => FALSE)),
 		);
 	}
 

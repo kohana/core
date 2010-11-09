@@ -151,10 +151,13 @@ class Kohana_Inflector {
 			return $str;
 
 		// Remove garbage
-		$str = strtolower(trim($str));
+		$str = trim($str);
 
 		// Cache key name
 		$key = 'plural_'.$str.$count;
+
+		// Check uppercase
+		$is_uppercase = ctype_upper($str);
 
 		if (isset(Inflector::$cache[$key]))
 			return Inflector::$cache[$key];
@@ -184,6 +187,12 @@ class Kohana_Inflector {
 		else
 		{
 			$str .= 's';
+		}
+
+		// Convert to uppsecase if nessasary
+		if($is_uppercase)
+		{
+			$str = strtoupper($str);
 		}
 
 		// Set the cache and return
