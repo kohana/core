@@ -10,16 +10,6 @@
  */
 class Kohana_Remote {
 
-	// Default curl options
-	public static $default_options = array
-	(
-		CURLOPT_USERAGENT      => 'Mozilla/5.0 (compatible; Kohana v3.0 +http://kohanaframework.org/)',
-		CURLOPT_CONNECTTIMEOUT => 5,
-		CURLOPT_TIMEOUT        => 5,
-		CURLOPT_HEADERFUNCTION => array('Remote', '_parse_headers'),
-		CURLOPT_HEADER         => FALSE,
-	);
-
 	/**
 	 * @var     array  Headers from the request
 	 */
@@ -75,20 +65,22 @@ class Kohana_Remote {
 		// Reset the headers
 		Remote::$_headers = array();
 
+		// Load the default remote settings
+		$defaults = Kohana::config('remote')->as_array();
+
 		if ($options === NULL)
 		{
 			// Use default options
-			$options = Remote::$default_options;
+			$options = $defaults;
 		}
 		else
 		{
 			// Add default options
-			$options = $options + Remote::$default_options;
+			$options = $options + $defaults;
 		}
 
 		// The transfer must always be returned
 		$options[CURLOPT_RETURNTRANSFER] = TRUE;
-		$options[CURLOPT_USERAGENT]      = 'Mozilla/5.0 (compatible; Kohana v'.Kohana::VERSION.' +http://kohanaphp.com/)';
 
 		// Open a new remote connection
 		$remote = curl_init($url);
