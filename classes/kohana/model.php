@@ -30,7 +30,7 @@ abstract class Kohana_Model {
 	}
 
 	// Database instance
-	protected $_db = 'default';
+	protected $_db;
 
 	/**
 	 * Loads the database.
@@ -42,10 +42,15 @@ abstract class Kohana_Model {
 	 */
 	public function __construct($db = NULL)
 	{
-		if ($db !== NULL)
+		if ($db)
 		{
-			// Set the database instance name
+			// Set the database instance to use
 			$this->_db = $db;
+		}
+		elseif ( ! $this->_db)
+		{
+			// Use the global database
+			$this->_db = Database::$default;
 		}
 
 		if (is_string($this->_db))
