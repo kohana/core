@@ -69,7 +69,7 @@ You can also use a less restrictive regex to match unlimited parameters, or to i
 	  ));
 
 
-### Defaults
+### Default values
 
 If a key in a route is optional (or not present in the route), you can provide a default value for that key by passing an associated array of keys and default values to [Route::defaults], chained after your [Route::set].  This can be useful to provide a default controller or action for your site, among other things.
 
@@ -83,7 +83,7 @@ You can also use defaults to set a key that isn't in the route at all.
 
 TODO: example of either using directory or controller where it isn't in the route, but set by defaults
 
-### Directories
+### Directory
 
 ## Examples
 
