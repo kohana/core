@@ -39,13 +39,13 @@ abstract class Kohana_Controller {
 	 * @param   object  Request that created the controller
 	 * @return  void
 	 */
-	public function __construct(Kohana_Request $request)
+	public function __construct(Kohana_Request $request, Kohana_Response $response)
 	{
 		// Assign the request to the controller
 		$this->request = $request;
 		
 		// Assign a response to the controller
-		$this->response = new Response;
+		$this->response = $response;
 	}
 
 	/**

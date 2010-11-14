@@ -34,13 +34,13 @@ interface Kohana_Http_Request extends Kohana_Http_Interaction {
 	public function uri(array $params = NULL);
 
 	/**
-	 * Gets or sets HTTP GET parameters to the request.
+	 * Gets or sets HTTP query string.
 	 *
 	 * @param   string|array key or key value pairs to set
 	 * @param   string   value to set to a key
 	 * @return  self|mixed
 	 */
-	public function get($key = NULL, $value = NULL);
+	public function query($key = NULL, $value = NULL);
 
 	/**
 	 * Gets or sets HTTP POST parameters to the request.

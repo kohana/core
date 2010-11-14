@@ -37,36 +37,36 @@ class Kohana_Route {
 
 	// Detects whether a host has been included with the route definition
 	const REGEX_DETECT_HOST = '~^
-
+	
 	# scheme
 	(?:(?<protocol>[-a-z0-9+.]+)+://)?
-
+	
 	# username:password (optional)
 	(?:
 		    (?<user>[-a-z0-9$_.+!*\'(),;?&=%]++   # username
 		(?::[-a-z0-9$_.+!*\'(),;?&=%]++)?) # password (optional)
 		@
 	)?
-
+	
 	(?:
 		# ip address
 		(?<host>\d{1,3}+(?:\.\d{1,3}+){3}+
-
+	
 		| # or
-
+	
 		# hostname (captured)
 		(
 			     (?!-)[-a-z0-9]{1,63}+(?<!-)
 			(?:\.(?!-)[-a-z0-9]{1,63}+(?<!-)){0,126}+
 		))
 	)
-
+	
 	# port (optional)
-	(?:(?<port>:\d{1,5}+))?
-
+	(?:(?<port>:\d{1,6}+))?
+	
 	# path (optional)
-	(?:(?<route>[\/|\(].*))?
-
+	(?:(?<route>[/\(.*]))?
+	
 	$~iDx';
 
 	// Defines the pattern of a <segment>

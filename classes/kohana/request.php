@@ -761,50 +761,6 @@ class Kohana_Request {
 	}
 
 	/**
-	 * Sends the response status and all set headers. The current server
-	 * protocol (HTTP/1.0 or HTTP/1.1) will be used when available. If not
-	 * available, HTTP/1.1 will be used.
-	 *
-	 *     $request->send_headers();
-	 *
-	 * @return  $this
-	 * @uses    Request::$messages
-	 */
-	public function send_headers()
-	{
-		if ( ! headers_sent())
-		{
-			if (isset($_SERVER['SERVER_PROTOCOL']))
-			{
-				// Use the default server protocol
-				$protocol = $_SERVER['SERVER_PROTOCOL'];
-			}
-			else
-			{
-				// Default to using newer protocol
-				$protocol = 'HTTP/1.1';
-			}
-
-			// HTTP status line
-			header($protocol.' '.$this->status.' '.Request::$messages[$this->status]);
-
-			foreach ($this->headers as $name => $value)
-			{
-				if (is_string($name))
-				{
-					// Combine the name and value to make a raw header
-					$value = "{$name}: {$value}";
-				}
-
-				// Send the raw header
-				header($value, TRUE);
-			}
-		}
-
-		return $this;
-	}
-
-	/**
 	 * Redirects as the request response. If the URL does not include a
 	 * protocol, it will be converted into a complete URL.
 	 *
@@ -903,7 +859,7 @@ class Kohana_Request {
 			}
 
 			// Create a new instance of the controller
-			$controller = $class->newInstance($this);
+			$controller = $class->newInstance($this, $this->create_response());
 
 			// Determine the action to use
 			$action = empty($this->action) ? Route::$default_action : $this->action;
@@ -1000,6 +956,21 @@ class Kohana_Request {
 		return '"'.sha1($this->response).'"';
 	}
 
+	/**
+	 * Creates a response based on the type of request, i.e. an
+	 * Request_Http will produce a Response_Http, and the same applies
+	 * to CLI.
+	 * 
+	 *      // Create a response to the request
+	 *      $response = $request->create_response();
+	 * 
+	 * @return  Kohana_Response
+	 * @since   3.1.0
+	 */
+	public function create_response()
+	{
+		return new Response;
+	}
 
 	/**
 	 * Checks the browser cache to see the response needs to be returned.
