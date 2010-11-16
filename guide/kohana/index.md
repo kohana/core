@@ -1,4 +1,4 @@
-[!!] **We are currently donig a documentation revamp.  Please check the [forums](http://forum.kohanaframework.org/discussions/tagged/documentation), and if you want to contribute read the [userguide readme](http://github.com/bluehawk/userguide/blob/docs/README.md) and fork [bluehawk's forks](http://github.com/bluehawk) of the modules.**
+[!!] **We are currently in the middle of a documentation revamp.  Please check the [forums](http://forum.kohanaframework.org/discussions/tagged/documentation), and if you want to contribute read the [userguide readme](http://github.com/bluehawk/userguide/blob/docs/README.md) and fork [bluehawk's forks](http://github.com/bluehawk) of the modules.**
 
 (This page should probably be rewritten by one of the devs)
 

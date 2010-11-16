@@ -24,6 +24,8 @@ If you look in `APPPATH/bootstrap.php` you will see the "default" route as follo
 		'controller' => 'welcome',
 		'action'     => 'index',
 	));
+	
+[!!] The default route is simply provided as a sample, you can remove it and replace it with your own routes.
 
 So this creates a route with the name `default` that will match urls in the format of `(<controller>(/<action>(/<id>)))`.  
 
@@ -176,9 +178,37 @@ All other keys specified in a route can be accessed via [Request::param()]:
 
 The [Request::param] method takes an optional second argument to specify a default return value in case the key is not set by the route. If no arguments are given, all keys are returned as an associative array.  In addition, `action`, `controller` and `directory` are not accessible via [Request::param()].
 
-## Where do routes go?
+For example, with the following route:
 
-The established convention is to either place your custom routes in the `MODPATH/<module>/init.php` file of your module if the routes belong to a module, or simply insert them into the `APPPATH/bootstrap.php` file (**above** the default route) if they are specific to the application. Of course, they could also be included from an external file, a database, or even generated dynamically.
+	Route::set('ads','ad/<ad>(/<affiliate>)')
+	->defaults(array(
+		'controller' => 'ads',
+		'action'     => 'index',
+	));
+	
+If a url matches the route, then `Controller_Ads::index()` will be called.  You could access the parameters in two ways:
+
+First, any non-special parameters (parameters other than controller, action, and directory) in a route are passed as parameters to the action method in the order they appear in the route.  Be sure to define a default value for optional parameters if you don't define them in the route's `->defaults()`.
+
+	class Controller_Ads extends Controller {
+		public function action_index($ad, $affiliate = NULL)
+		{
+			
+		}
+
+Secondly, you can access the parameters using the `param()` method of the [Request] class. Again, remember to define a default value (via the second, optional parameter of [Request::param]) if you didn't in `->defaults()`.
+
+	class Controller_Ads extends Controller {
+		public function action_index()
+		{
+			$ad = $this->request->param('ad');
+			$affiliate = $this->request->param('affiliate',NULL);
+		}
+	
+
+## Where should routes be defined?
+
+The established convention is to either place your custom routes in the `MODPATH/<module>/init.php` file of your module if the routes belong to a module, or simply insert them into the `APPPATH/bootstrap.php` file (be sure to put them **above** the default route) if they are specific to the application. Of course, nothing stops you from including them from an external file, or even generating them dynamically.
 
 ## A deeper look at how routes work
 
