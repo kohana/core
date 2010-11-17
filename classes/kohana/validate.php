@@ -519,9 +519,6 @@ class Kohana_Validate extends ArrayObject {
 	// Field rules
 	protected $_rules = array();
 
-	// Field callbacks
-	protected $_callbacks = array();
-
 	// Field labels
 	protected $_labels = array();
 
@@ -544,7 +541,7 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
-	 * Copies the current rule/callback to a new array.
+	 * Copies the current rule to a new array.
 	 *
 	 *     $copy = $array->copy($new_data);
 	 *
@@ -652,59 +649,6 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
-	 * Adds a callback to a field. Each callback will be executed only once.
-	 *
-	 *     // The "username" must be checked with a custom method
-	 *     $validation->callback('username', array($this, 'check_username'));
-	 *
-	 * To add a callback to every field already set, use TRUE for the field name.
-	 *
-	 * @param   string  field name
-	 * @param   mixed   callback to add
-	 * @param   array   extra parameters for the callback
-	 * @return  $this
-	 */
-	public function callback($field, $callback, array $params = array())
-	{
-		if ( ! isset($this->_callbacks[$field]))
-		{
-			// Create the list for this field
-			$this->_callbacks[$field] = array();
-		}
-
-		if ($field !== TRUE AND ! isset($this->_labels[$field]))
-		{
-			// Set the field label to the field name
-			$this->_labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
-		}
-
-		if ( ! in_array($callback, $this->_callbacks[$field], TRUE))
-		{
-			// Store the callback
-			$this->_callbacks[$field][] = array($callback, $params);
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Add callbacks using an array.
-	 *
-	 * @param   string  field name
-	 * @param   array   list of callbacks
-	 * @return  $this
-	 */
-	public function callbacks($field, array $callbacks)
-	{
-		foreach ($callbacks as $callback)
-		{
-			$this->callback($field, $callback);
-		}
-
-		return $this;
-	}
-
-	/**
 	 * Bind a value to a parameter definition.
 	 * 
 	 *     // This allows you to use :model in the parameter definition of rules
@@ -733,7 +677,7 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
-	 * Executes all validation rules and callbacks. This should
+	 * Executes all validation rules. This should
 	 * typically be called within an if/else block.
 	 *
 	 *     if ($validation->check())
@@ -758,9 +702,8 @@ class Kohana_Validate extends ArrayObject {
 		// Get a list of the expected fields
 		$expected = array_keys($this->_labels);
 
-		// Import the rules and callbacks locally
+		// Import the rules locally
 		$rules     = $this->_rules;
-		$callbacks = $this->_callbacks;
 
 		foreach ($expected as $field)
 		{
@@ -786,25 +729,13 @@ class Kohana_Validate extends ArrayObject {
 				// Append the rules
 				$rules[$field] += $rules[TRUE];
 			}
-
-			if (isset($callbacks[TRUE]))
-			{
-				if ( ! isset($callbacks[$field]))
-				{
-					// Initialize the callbacks for this field
-					$callbacks[$field] = array();
-				}
-
-				// Append the callbacks
-				$callbacks[$field] += $callbacks[TRUE];
-			}
 		}
 
 		// Overload the current array with the new one
 		$this->exchangeArray($data);
 
-		// Remove the rules and callbacks that apply to every field
-		unset($rules[TRUE], $callbacks[TRUE]);
+		// Remove the rules that apply to every field
+		unset($rules[TRUE]);
 
 		// Bind the validation object to :validate
 		$this->bind(':validate', $this);
@@ -890,60 +821,6 @@ class Kohana_Validate extends ArrayObject {
 					$this->error($field, $rule, $params);
 
 					// This field has an error, stop executing rules
-					break;
-				}
-			}
-		}
-
-		// Execute the callbacks
-
-		foreach ($callbacks as $field => $set)
-		{
-			if (isset($this->_errors[$field]))
-			{
-				// Skip any field that already has an error
-				continue;
-			}
-
-			foreach ($set as $callback_array)
-			{
-				list($callback, $params) = $callback_array;
-
-				if (is_string($callback) AND strpos($callback, '::') !== FALSE)
-				{
-					// Make the static callback into an array
-					$callback = explode('::', $callback, 2);
-				}
-
-				if (is_array($callback))
-				{
-					// Separate the object and method
-					list ($object, $method) = $callback;
-
-					// Use a method in the given object
-					$method = new ReflectionMethod($object, $method);
-
-					if ( ! is_object($object))
-					{
-						// The object must be NULL for static calls
-						$object = NULL;
-					}
-
-					// Call $object->$method($this, $field, $errors) with Reflection
-					$method->invoke($object, $this, $field, $params);
-				}
-				else
-				{
-					// Use a function call
-					$function = new ReflectionFunction($callback);
-
-					// Call $function($this, $field, $errors) with Reflection
-					$function->invoke($this, $field, $params);
-				}
-
-				if (isset($this->_errors[$field]))
-				{
-					// An error was added, stop processing callbacks
 					break;
 				}
 			}
