@@ -914,7 +914,7 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 
 		$this->assertNotSame($validate, $copy);
 		
-		foreach(array('_filters', '_rules', '_callbacks', '_labels', '_empty_rules', '_errors') as $attribute)
+		foreach(array('_rules', '_callbacks', '_labels', '_empty_rules', '_errors') as $attribute)
 		{
 			// This is just an easy way to check that the attributes are identical
 			// Without hardcoding the expected values
@@ -1062,48 +1062,6 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 		$this->assertAttributeSame(
 			array('fast' => 'lightning', 'kung fu' => 'fighting'),
 			'_labels',
-			$validate
-		);
-	}
-
-	/**
-	 * We should be able to add a filter to the queue by calling filter()
-	 *
-	 * @test
-	 * @covers Validate::filter
-	 */
-	public function test_filter_adds_a_filter_and_returns_this()
-	{
-		$validate = new Validate(array());
-
-		$this->assertSame($validate, $validate->filter('name', 'trim'));
-
-		$this->assertAttributeSame(
-			array('name' => array('trim' => array())),
-			'_filters',
-			$validate
-		);
-	}
-
-	/**
-	 * filters() should be able to add multiple filters for a field and return
-	 * $this when done
-	 *
-	 * @test
-	 * @covers Validate::filters
-	 */
-	public function test_filters_adds_multiple_filters_and_returns_this()
-	{
-		$validate = new Validate(array());
-
-		$this->assertSame(
-			$validate,
-			$validate->filters('id', array('trim' => NULL, 'some_func' => array('yes', 'no')))
-		);
-
-		$this->assertAttributeSame(
-			array('id' => array('trim' => array(), 'some_func' => array('yes', 'no'))),
-			'_filters',
 			$validate
 		);
 	}
