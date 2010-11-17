@@ -906,15 +906,13 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 
 		$validate->rule('num', 'is_int')->rule('foo', 'is_string');
 
-		$validate->callback('foo', 'heh', array('ding'));
-
 		$copy_data = array('foo' => 'no', 'fud' => 'maybe', 'num' => 42);
 
 		$copy = $validate->copy($copy_data);
 
 		$this->assertNotSame($validate, $copy);
 		
-		foreach(array('_rules', '_callbacks', '_labels', '_empty_rules', '_errors') as $attribute)
+		foreach(array('_rules', '_bound', '_labels', '_empty_rules', '_errors') as $attribute)
 		{
 			// This is just an easy way to check that the attributes are identical
 			// Without hardcoding the expected values
@@ -926,77 +924,6 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 		}
 
 		$this->assertSame($copy_data, $copy->as_array());
-	}
-
-	/**
-	 * By default there should be no callbacks registered with validate
-	 *
-	 * @test
-	 */
-	public function test_initially_there_are_no_callbacks()
-	{
-		$validate = new Validate(array());
-
-		$this->assertAttributeSame(array(), '_callbacks', $validate);
-	}
-
-	/**
-	 * This is just a quick check that callback() returns a reference to $this
-	 *
-	 * @test
-	 * @covers Validate::callback
-	 */
-	public function test_callback_returns_chainable_this()
-	{
-		$validate = new Validate(array());
-
-		$this->assertSame($validate, $validate->callback('field', 'something'));
-	}
-
-	/**
-	 * Check that callback() is storign callbacks in the correct manner
-	 *
-	 * @test
-	 * @covers Validate::callback
-	 */
-	public function test_callback_stores_callback()
-	{
-		$validate = new Validate(array('id' => 355));
-
-		$validate->callback('id', 'misc_callback');
-
-		$this->assertAttributeSame(
-			array(
-				'id' => array(array('misc_callback', array())),
-			), 
-			'_callbacks',
-			$validate
-		);
-	}
-
-	/**
-	 * Calling Validate::callbacks() should store multiple callbacks for the specified field
-	 *
-	 * @test
-	 * @covers Validate::callbacks
-	 * @covers Validate::callback
-	 */
-	public function test_callbacks_stores_multiple_callbacks()
-	{
-		$validate = new Validate(array('year' => 1999));
-
-		$validate->callbacks('year', array('misc_callback', 'another_callback'));
-
-		$this->assertAttributeSame(
-			array(
-				'year' => array( 
-					array('misc_callback', array()),
-					array('another_callback', array()),
-				),
-			), 
-			'_callbacks', 
-			$validate
-		);
 	}
 
 	/**
@@ -1073,26 +1000,17 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 */
 	public function provider_check()
 	{
-		$mock = $this->getMock('Crazy_Test', array('unit_test_callback'));
-		// TODO: enchance this / make params more specific
-		$mock
-			->expects($this->once())
-			->method('unit_test_callback')
-			->withAnyParameters();
-
 		// $first_array, $second_array, $rules, $first_expected, $second_expected
 		return array(
 			array(
 				array('foo' => 'bar'),
 				array('foo' => array('not_empty', NULL)),
-				array('foo' => array($mock, 'unit_test_callback')),
 				TRUE,
 				array(),
 			),
 			array(
 				array('unit' => 'test'),
 				array('foo' => array('not_empty', NULL), 'unit' => array('min_length', 6)),
-				array(),
 				FALSE,
 				array('foo' => 'foo must not be empty', 'unit' => 'unit must be at least 6 characters long'),
 			),
@@ -1104,8 +1022,6 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 * @covers Validate::check
-	 * @covers Validate::callbacks
-	 * @covers Validate::callback
 	 * @covers Validate::rule
 	 * @covers Validate::rules
 	 * @covers Validate::errors
@@ -1114,14 +1030,12 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 * @param string  $url       The url to test
 	 * @param boolean $expected  Is it valid?
 	 */
-	public function test_check($array, $rules, $callbacks, $expected, $expected_errors)
+	public function test_check($array, $rules, $expected, $expected_errors)
 	{
 		$validate = new Validate($array);
 
 		foreach ($rules as $field => $rule)
 			$validate->rule($field, $rule[0], array($rule[1]));
-		foreach ($callbacks as $field => $callback)
-			$validate->callback($field, $callback);
 
 		$status = $validate->check();
 		$errors = $validate->errors(TRUE);
@@ -1132,56 +1046,6 @@ Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 		foreach ($rules as $field => $rule)
 			$validate->rules($field, array($rule[0] => array($rule[1])));
 		$this->assertSame($expected, $validate->check());
-	}
-
-	/**
-	 * This test asserts that Validate::check will call callbacks with all of the 
-	 * parameters supplied when the callback was specified
-	 *
-	 * @test
-	 * @covers Validate::callback
-	 */
-	public function test_object_callback_with_parameters()
-	{
-		$params = array(42, 'kohana' => 'rocks');
-
-		$validate = new Validate(array('foo' => 'bar'));
-
-		// Generate an isolated callback
-		$mock = $this->getMock('Random_Class_That_DNX', array('unit_test_callback'));
-
-		$mock->expects($this->once())
-			->method('unit_test_callback')
-			->with($validate, 'foo', $params);
-
-		$validate->callback('foo', array($mock, 'unit_test_callback'), $params);
-
-		$validate->check();
-	}
-
-	/**
-	 * In some cases (such as when validating search params in GET) it is necessary for
-	 * an empty array to validate successfully
-	 *
-	 * This test checks that Validate::check() allows the user to specify this setting when 
-	 * calling check()
-	 *
-	 * @test
-	 * @ticket 3059
-	 * @covers Validate::check
-	 */
-	public function test_check_allows_option_for_empty_data_array_to_validate()
-	{
-		$validate = new Validate(array());
-
-		$this->assertFalse($validate->check(FALSE));
-
-		$this->assertTrue($validate->check(TRUE));
-
-		$validate->rule('name', 'not_empty');
-
-		$this->assertFalse($validate->check(TRUE));
-		$this->assertFalse($validate->check());
 	}
 
 	/**
