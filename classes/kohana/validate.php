@@ -513,9 +513,6 @@ class Kohana_Validate extends ArrayObject {
 		return (bool) preg_match('/^#?+[0-9a-f]{3}(?:[0-9a-f]{3})?$/iD', $str);
 	}
 
-	// Field filters
-	protected $_filters = array();
-
 	// Field rules
 	protected $_rules = array();
 
@@ -544,7 +541,7 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
-	 * Copies the current filter/rule/callback to a new array.
+	 * Copies the current rule/callback to a new array.
 	 *
 	 *     $copy = $array->copy($new_data);
 	 *
@@ -597,49 +594,6 @@ class Kohana_Validate extends ArrayObject {
 	public function labels(array $labels)
 	{
 		$this->_labels = $labels + $this->_labels;
-
-		return $this;
-	}
-
-	/**
-	 * Overwrites or appends filters to a field. Each filter will be executed once.
-	 * All rules must be valid PHP callbacks.
-	 *
-	 *     // Run trim() on all fields
-	 *     $validation->filter(TRUE, 'trim');
-	 *
-	 * @param   string  field name
-	 * @param   mixed   valid PHP callback
-	 * @param   array   extra parameters for the filter
-	 * @return  $this
-	 */
-	public function filter($field, $filter, array $params = NULL)
-	{
-		if ($field !== TRUE AND ! isset($this->_labels[$field]))
-		{
-			// Set the field label to the field name
-			$this->_labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
-		}
-
-		// Store the filter and params for this rule
-		$this->_filters[$field][$filter] = (array) $params;
-
-		return $this;
-	}
-
-	/**
-	 * Add filters using an array.
-	 *
-	 * @param   string  field name
-	 * @param   array   list of functions or static method name
-	 * @return  $this
-	 */
-	public function filters($field, array $filters)
-	{
-		foreach ($filters as $filter => $params)
-		{
-			$this->filter($field, $filter, $params);
-		}
 
 		return $this;
 	}
@@ -748,7 +702,7 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
-	 * Executes all validation filters, rules, and callbacks. This should
+	 * Executes all validation rules and callbacks. This should
 	 * typically be called within an if/else block.
 	 *
 	 *     if ($validation->check())
@@ -776,8 +730,7 @@ class Kohana_Validate extends ArrayObject {
 		// Get a list of the expected fields
 		$expected = array_keys($this->_labels);
 
-		// Import the filters, rules, and callbacks locally
-		$filters   = $this->_filters;
+		// Import the rules and callbacks locally
 		$rules     = $this->_rules;
 		$callbacks = $this->_callbacks;
 
@@ -795,18 +748,6 @@ class Kohana_Validate extends ArrayObject {
 			{
 				// No data exists for this field
 				$data[$field] = NULL;
-			}
-
-			if (isset($filters[TRUE]))
-			{
-				if ( ! isset($filters[$field]))
-				{
-					// Initialize the filters for this field
-					$filters[$field] = array();
-				}
-
-				// Append the filters
-				$filters[$field] += $filters[TRUE];
 			}
 
 			if (isset($rules[TRUE]))
@@ -843,45 +784,8 @@ class Kohana_Validate extends ArrayObject {
 			return FALSE;
 		}
 
-		// Remove the filters, rules, and callbacks that apply to every field
-		unset($filters[TRUE], $rules[TRUE], $callbacks[TRUE]);
-
-		// Execute the filters
-
-		foreach ($filters as $field => $set)
-		{
-			// Get the field value
-			$value = $this[$field];
-
-			foreach ($set as $filter => $params)
-			{
-				// Add the field value to the parameters
-				array_unshift($params, $value);
-
-				if (strpos($filter, '::') === FALSE)
-				{
-					// Use a function call
-					$function = new ReflectionFunction($filter);
-
-					// Call $function($this[$field], $param, ...) with Reflection
-					$value = $function->invokeArgs($params);
-				}
-				else
-				{
-					// Split the class and method of the rule
-					list($class, $method) = explode('::', $filter, 2);
-
-					// Use a static method call
-					$method = new ReflectionMethod($class, $method);
-
-					// Call $Class::$method($this[$field], $param, ...) with Reflection
-					$value = $method->invokeArgs(NULL, $params);
-				}
-			}
-
-			// Set the filtered value
-			$this[$field] = $value;
-		}
+		// Remove the rules and callbacks that apply to every field
+		unset($rules[TRUE], $callbacks[TRUE]);
 
 		// Execute the rules
 
