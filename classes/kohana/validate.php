@@ -834,9 +834,6 @@ class Kohana_Validate extends ArrayObject {
 					continue;
 				}
 
-				// Add the field value to the parameters
-				array_unshift($params, $value);
-
 				foreach ($params as $key => $param)
 				{
 					if (is_string($param) AND array_key_exists($param, $this->_bound))
@@ -889,9 +886,6 @@ class Kohana_Validate extends ArrayObject {
 
 				if ($passed === FALSE)
 				{
-					// Remove the field value from the parameters
-					array_shift($params);
-
 					// Add the rule to the errors
 					$this->error($field, $rule, $params);
 
