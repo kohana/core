@@ -513,6 +513,9 @@ class Kohana_Validate extends ArrayObject {
 		return (bool) preg_match('/^#?+[0-9a-f]{3}(?:[0-9a-f]{3})?$/iD', $str);
 	}
 
+	// Bound values
+	protected $_bound = array();
+
 	// Field rules
 	protected $_rules = array();
 
@@ -702,6 +705,34 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
+	 * Bind a value to a parameter definition.
+	 * 
+	 *     // This allows you to use :model in the parameter definition of rules
+	 *     $validate->bind(':model', $model)
+	 *         ->rule('status', 'valid_status', array(':model'));
+	 * 
+	 * @param   string  variable name or an array of variables
+	 * @param   mixed   value
+	 * @return  $this
+	 */
+	public function bind($key, $value = NULL)
+	{
+		if (is_array($key))
+		{
+			foreach ($key as $name => $value)
+			{
+				$this->_bound[$name] = $value;
+			}
+		}
+		else
+		{
+			$this->_bound[$key] = $value;
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Executes all validation rules and callbacks. This should
 	 * typically be called within an if/else block.
 	 *
@@ -775,12 +806,22 @@ class Kohana_Validate extends ArrayObject {
 		// Remove the rules and callbacks that apply to every field
 		unset($rules[TRUE], $callbacks[TRUE]);
 
+		// Bind the validation object to :validate
+		$this->bind(':validate', $this);
+
 		// Execute the rules
 
 		foreach ($rules as $field => $set)
 		{
 			// Get the field value
 			$value = $this[$field];
+
+			// Bind the field name and value to :field and :value respectively
+			$this->bind(array
+			(
+				':field' => $field,
+				':value' => $value,
+			));
 
 			foreach ($set as $array)
 			{
@@ -795,6 +836,15 @@ class Kohana_Validate extends ArrayObject {
 
 				// Add the field value to the parameters
 				array_unshift($params, $value);
+
+				foreach ($params as $key => $param)
+				{
+					if (is_string($param) AND array_key_exists($param, $this->_bound))
+					{
+						// Replace with bound value
+						$params[$key] = $this->_bound[$param];
+					}
+				}
 
 				if (is_array($rule) OR ! is_string($rule))
 				{
