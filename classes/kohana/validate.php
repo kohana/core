@@ -713,7 +713,7 @@ class Kohana_Validate extends ArrayObject {
 	 * @param   boolean   allow empty array?
 	 * @return  boolean
 	 */
-	public function check($allow_empty = TRUE)
+	public function check()
 	{
 		if (Kohana::$profiling === TRUE)
 		{
@@ -723,9 +723,6 @@ class Kohana_Validate extends ArrayObject {
 
 		// New data set
 		$data = $this->_errors = array();
-
-		// Assume nothing has been submitted
-		$submitted = FALSE;
 
 		// Get a list of the expected fields
 		$expected = array_keys($this->_labels);
@@ -738,9 +735,6 @@ class Kohana_Validate extends ArrayObject {
 		{
 			if (isset($this[$field]))
 			{
-				// Some data has been submitted, continue validation
-				$submitted = TRUE;
-
 				// Use the submitted value
 				$data[$field] = $this[$field];
 			}
@@ -777,12 +771,6 @@ class Kohana_Validate extends ArrayObject {
 
 		// Overload the current array with the new one
 		$this->exchangeArray($data);
-
-		if ($submitted === FALSE AND ! $allow_empty)
-		{
-			// Because no data was submitted, validation will not be forced
-			return FALSE;
-		}
 
 		// Remove the rules and callbacks that apply to every field
 		unset($rules[TRUE], $callbacks[TRUE]);
