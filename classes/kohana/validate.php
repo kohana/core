@@ -606,9 +606,9 @@ class Kohana_Validate extends ArrayObject {
 	 *     $validation->rule('username', 'not_empty')
 	 *                ->rule('username', 'min_length', array(4));
 	 *
-	 * @param   string  field name
-	 * @param   string  function or static method name
-	 * @param   array   extra parameters for the rule
+	 * @param   string    field name
+	 * @param   callback  valid PHP callback
+	 * @param   array     extra parameters for the rule
 	 * @return  $this
 	 */
 	public function rule($field, $rule, array $params = NULL)
@@ -626,7 +626,7 @@ class Kohana_Validate extends ArrayObject {
 		}
 
 		// Store the rule and params for this rule
-		$this->_rules[$field][$rule] = (array) $params;
+		$this->_rules[$field][] = array($rule, (array) $params);
 
 		return $this;
 	}
@@ -635,14 +635,14 @@ class Kohana_Validate extends ArrayObject {
 	 * Add rules using an array.
 	 *
 	 * @param   string  field name
-	 * @param   array   list of functions or static method name
+	 * @param   array   list of callbacks
 	 * @return  $this
 	 */
 	public function rules($field, array $rules)
 	{
-		foreach ($rules as $rule => $params)
+		foreach ($rules as $rule)
 		{
-			$this->rule($field, $rule, $params);
+			$this->rule($field, $rule[0], Arr::get($rule, 1, array()));
 		}
 
 		return $this;
@@ -794,8 +794,11 @@ class Kohana_Validate extends ArrayObject {
 			// Get the field value
 			$value = $this[$field];
 
-			foreach ($set as $rule => $params)
+			foreach ($set as $array)
 			{
+				// Rules are defined as array($rule, $params)
+				list($rule, $params) = $array;
+
 				if ( ! in_array($rule, $this->_empty_rules) AND ! Validate::not_empty($value))
 				{
 					// Skip this rule for empty fields
@@ -805,7 +808,12 @@ class Kohana_Validate extends ArrayObject {
 				// Add the field value to the parameters
 				array_unshift($params, $value);
 
-				if (method_exists($this, $rule))
+				if (is_array($rule) OR ! is_string($rule))
+				{
+					// This is either a callback as an array or a lambda
+					$passed = call_user_func_array($rule, $params);
+				}
+				elseif (method_exists($this, $rule))
 				{
 					// Use a method in this object
 					$method = new ReflectionMethod($this, $rule);
