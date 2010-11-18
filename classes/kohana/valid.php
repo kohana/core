@@ -505,13 +505,14 @@ class Kohana_Valid {
 	/**
 	 * Checks if a field matches the value of another field.
 	 *
-	 * @param   string   field value
+	 * @param   array    array of values
+	 * @param   string   field name
 	 * @param   string   field name to match
 	 * @return  boolean
 	 */
-	public static function matches($value, $match)
+	public static function matches($array, $field, $match)
 	{
-		return ($value === $this[$match]);
+		return ($array[$field] === $array[$match]);
 	}
 
 } // End Valid
