@@ -619,12 +619,6 @@ class Kohana_Validate extends ArrayObject {
 			$this->_labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
 		}
 
-		if ('matches' === $rule AND ! isset($this->_labels[$params[0]]))
-		{
-			$match_field = $params[0];
-			$this->_labels[$match_field] = preg_replace('/[^\pL]+/u', ' ', $match_field);
-		}
-
 		// Store the rule and params for this rule
 		$this->_rules[$field][] = array($rule, (array) $params);
 
