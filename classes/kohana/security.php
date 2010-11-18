@@ -25,7 +25,7 @@ class Kohana_Security {
 	 *
 	 *     echo Form::hidden('csrf', Security::token());
 	 *
-	 * And then check it when using [Validate]:
+	 * And then check it when using [Validation]:
 	 *
 	 *     $array->rules('csrf', array(
 	 *         'not_empty'       => NULL,

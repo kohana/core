@@ -151,7 +151,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	{
 		return array(
 			// $value, $result
-			array(':field must not be empty', 'validate', 'not_empty'),
+			array(':field must not be empty', 'validation', 'not_empty'),
 			array(
 				array(
 					'alpha'         => ':field must contain only letters',
@@ -176,7 +176,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 					'regex'         => ':field does not match the required format',
 					'url'           => ':field must be a url',
 				),
-				'validate', NULL, 
+				'validation', NULL, 
 			),
 		);
 	}
