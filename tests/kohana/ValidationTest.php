@@ -1049,42 +1049,6 @@ Class Kohana_ValidationTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * If you add a rule that says a field should match another field then
-	 * a label should be added for the field to match against to ensure that
-	 * it will be available when check() is called 
-	 *
-	 * @test
-	 * @ticket 3158
-	 * @covers Validation::rule
-	 */
-	public function test_rule_adds_label_if_rule_is_match_and_label_dnx()
-	{
-		$data   = array('password' => 'lolcats',  'password_confirm' => 'lolcats');
-		$labels = array('password' => 'password', 'password_confirm' => 'password confirm');
-
-		$validation = new Validation($data);
-		
-		$validation->rule('password', 'matches', array('password_confirm'));
-
-		$this->assertAttributeSame($labels, '_labels', $validation);
-
-		$this->assertTrue($validation->check());
-
-		// Now we do the dnx check 
-
-		$validation = new Validation($data);
-
-		$labels = array('password_confirm' => 'TEH PASS') + $labels;
-		$validation->label('password_confirm', $labels['password_confirm']);
-
-		$validation->rule('password', 'matches', array('password_confirm'));
-
-		$this->assertAttributeSame($labels, '_labels', $validation);
-
-		$this->assertTrue($validation->check());
-	}
-
-	/**
 	 * Provides test data for test_errors()
 	 *
 	 * @return array
