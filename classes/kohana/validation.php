@@ -150,7 +150,7 @@ class Kohana_Validation extends ArrayObject {
 	{
 		foreach ($rules as $rule)
 		{
-			$this->rule($field, $rule[0], Arr::get($rule, 1, array()));
+			$this->rule($field, $rule[0], Arr::get($rule, 1));
 		}
 
 		return $this;
