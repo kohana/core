@@ -994,6 +994,29 @@ Class Kohana_ValidationTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
+	 * Using bind() we should be able to add / overwrite multiple bound variables
+	 *
+	 * The function should also return $this for chaining purposes
+	 *
+	 * @test
+	 * @covers Validation::bind
+	 */
+	public function test_bind_adds_and_overwrites_multiple_variables_and_returns_this()
+	{
+		$validation = new Validation(array());
+		$data = array('kung fu' => 'fighting', 'fast' => 'cheetah');
+		$bound = array(':foo' => 'some value');
+
+		// Test binding an array of values
+		$this->assertSame($validation, $validation->bind($bound));
+		$this->assertAttributeSame($bound, '_bound', $validation);
+
+		// Test binding one value
+		$this->assertSame($validation, $validation->bind(':foo', 'some other value'));
+		$this->assertAttributeSame(array(':foo' => 'some other value'), '_bound', $validation);
+	}
+
+	/**
 	 * Provides test data for test_check
 	 *
 	 * @return array
