@@ -121,6 +121,12 @@ class Kohana_Validation extends ArrayObject {
 	 */
 	public function rule($field, $rule, array $params = NULL)
 	{
+		if ($params === NULL)
+		{
+			// Default to array(':value')
+			$params = array(':value');
+		}
+
 		if ($field !== TRUE AND ! isset($this->_labels[$field]))
 		{
 			// Set the field label to the field name
@@ -134,7 +140,7 @@ class Kohana_Validation extends ArrayObject {
 		}
 
 		// Store the rule and params for this rule
-		$this->_rules[$field][] = array($rule, (array) $params);
+		$this->_rules[$field][] = array($rule, $params);
 
 		return $this;
 	}
