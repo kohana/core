@@ -1041,9 +1041,9 @@ Class Kohana_ValidationTest extends Kohana_Unittest_TestCase
 	{
 		$validation = new Validation($array);
 
-		foreach ($rules as $field => $rules)
+		foreach ($rules as $field => $field_rules)
 		{
-			foreach ($rules as $rule)
+			foreach ($field_rules as $rule)
 				$validation->rule($field, $rule[0], $rule[1]);
 		}
 
@@ -1054,7 +1054,7 @@ Class Kohana_ValidationTest extends Kohana_Unittest_TestCase
 
 		$validation = new validation($array);
 		foreach ($rules as $field => $rules)
-			$validation->rules($field, array($rule[0] => $rule[1]));
+			$validation->rules($field, $rules);
 		$this->assertSame($expected, $validation->check());
 	}
 
