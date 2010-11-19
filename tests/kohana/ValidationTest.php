@@ -1000,19 +1000,26 @@ Class Kohana_ValidationTest extends Kohana_Unittest_TestCase
 	 */
 	public function provider_check()
 	{
-		// $first_array, $second_array, $rules, $first_expected, $second_expected
+		// $data_array, $rules, $first_expected, $expected_error
 		return array(
 			array(
 				array('foo' => 'bar'),
-				array('foo' => array('not_empty', NULL)),
+				array('foo' => array(array('not_empty', NULL))),
 				TRUE,
 				array(),
 			),
 			array(
 				array('unit' => 'test'),
-				array('foo' => array('not_empty', NULL), 'unit' => array('min_length', 6)),
+				array(
+					'foo'  => array(array('not_empty', NULL)),
+					'unit' => array(array('min_length', array(':value', 6))
+					),
+				),
 				FALSE,
-				array('foo' => 'foo must not be empty', 'unit' => 'unit must be at least 6 characters long'),
+				array(
+					'foo' => 'foo must not be empty',
+					'unit' => 'unit must be at least 6 characters long'
+				),
 			),
 		);
 	}
@@ -1034,8 +1041,11 @@ Class Kohana_ValidationTest extends Kohana_Unittest_TestCase
 	{
 		$validation = new Validation($array);
 
-		foreach ($rules as $field => $rule)
-			$validation->rule($field, $rule[0], array($rule[1]));
+		foreach ($rules as $field => $rules)
+		{
+			foreach ($rules as $rule)
+				$validation->rule($field, $rule[0], $rule[1]);
+		}
 
 		$status = $validation->check();
 		$errors = $validation->errors(TRUE);
@@ -1043,8 +1053,8 @@ Class Kohana_ValidationTest extends Kohana_Unittest_TestCase
 		$this->assertSame($expected_errors, $errors);
 
 		$validation = new validation($array);
-		foreach ($rules as $field => $rule)
-			$validation->rules($field, array($rule[0] => array($rule[1])));
+		foreach ($rules as $field => $rules)
+			$validation->rules($field, array($rule[0] => $rule[1]));
 		$this->assertSame($expected, $validation->check());
 	}
 
@@ -1059,12 +1069,12 @@ Class Kohana_ValidationTest extends Kohana_Unittest_TestCase
 		return array(
 			array(
 				array('username' => 'frank'),
-				array('username' => array('not_empty' => NULL)),
+				array('username' => array(array('not_empty', NULL))),
 				array(),
 			),
 			array(
 				array('username' => ''),
-				array('username' => array('not_empty' => NULL)),
+				array('username' => array(array('not_empty', NULL))),
 				array('username' => 'username must not be empty'),
 			),
 		);
