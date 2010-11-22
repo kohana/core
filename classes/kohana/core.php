@@ -857,7 +857,14 @@ class Kohana_Core {
 				if ((time() - filemtime($dir.$file)) < $lifetime)
 				{
 					// Return the cache
-					return unserialize(file_get_contents($dir.$file));
+					try
+					{
+						return unserialize(file_get_contents($dir.$file));
+					}
+					catch (Exception $e)
+					{
+						// Cache is corrupt, let return happen normally.
+					}
 				}
 				else
 				{
