@@ -10,11 +10,20 @@
  */
 class Kohana_Session_Native extends Session {
 
+	/**
+	 * @access  protected
+	 * @return  string
+	 */
 	public function id()
 	{
 		return session_id();
 	}
 
+	/**
+	 * @access  protected
+	 * @param   string     $id  session id
+	 * @return  null
+	 */
 	protected function _read($id = NULL)
 	{
 		// Sync up the session cookie with Cookie parameters
@@ -41,6 +50,10 @@ class Kohana_Session_Native extends Session {
 		return NULL;
 	}
 
+	/**
+	 * @access  protected
+	 * @return  string
+	 */
 	protected function _regenerate()
 	{
 		// Regenerate the session id
@@ -49,6 +62,10 @@ class Kohana_Session_Native extends Session {
 		return session_id();
 	}
 
+	/**
+	 * @access  protected
+	 * @return  bool
+	 */
 	protected function _write()
 	{
 		// Write and close the session
@@ -57,6 +74,10 @@ class Kohana_Session_Native extends Session {
 		return TRUE;
 	}
 
+	/**
+	 * @access  protected
+	 * @return  bool
+	 */
 	protected function _destroy()
 	{
 		// Destroy the current session

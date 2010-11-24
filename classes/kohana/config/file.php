@@ -11,10 +11,16 @@
  */
 class Kohana_Config_File extends Kohana_Config_Reader {
 
-	// Configuration group name
+	/**
+	 * @access  protected
+	 * @var     string     Configuration group name
+	 */
 	protected $_configuration_group;
 
-	// Has the config group changed?
+	/**
+	 * @access  protected
+	 * @var     bool       Has the config group changed?
+	 */
 	protected $_configuration_modified = FALSE;
 
 	public function __construct($directory = 'config')

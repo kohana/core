@@ -11,7 +11,10 @@
  */
 class Kohana_Config {
 
-	// Singleton static instance
+	/**
+	 * @access  protected
+	 * @var     Kohana_Config  Singleton static instance
+	 */
 	protected static $_instance;
 
 	/**
@@ -32,7 +35,10 @@ class Kohana_Config {
 		return self::$_instance;
 	}
 
-	// Configuration readers
+	/**
+	 * @access  protected
+	 * @var     array      Configuration readers
+	 */
 	protected $_readers = array();
 
 	/**

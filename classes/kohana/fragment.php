@@ -29,7 +29,11 @@ class Kohana_Fragment {
 	 */
 	public static $i18n = FALSE;
 
-	// List of buffer => cache key
+	/**
+	 * List of buffer => cache key
+	 * @access  protected
+	 * @var     array
+	 */
 	protected static $_caches = array();
 
 	/**

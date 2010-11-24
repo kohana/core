@@ -15,7 +15,11 @@ abstract class Kohana_Session {
 	 */
 	public static $default = 'native';
 
-	// Session instances
+	/**
+	 * Session instances
+	 * @access  protected
+	 * @var     array
+	 */
 	protected static $instances = array();
 
 	/**
@@ -58,19 +62,39 @@ abstract class Kohana_Session {
 		return Session::$instances[$type];
 	}
 
-	// Cookie name
+	/**
+	 * Cookie name
+	 * @access  protected
+	 * @var     string
+	 */
 	protected $_name = 'session';
 
-	// Cookie lifetime
+	/**
+	 * Cookie lifetime
+	 * @access  protected
+	 * @var     int
+	 */
 	protected $_lifetime = 0;
 
-	// Encrypt session data?
+	/**
+	 * Encrypt session data?
+	 * @access  protected
+	 * @var     bool
+	 */
 	protected $_encrypted = FALSE;
 
-	// Session data
+	/**
+	 * Session data
+	 * @access  protected
+	 * @var     array
+	 */
 	protected $_data = array();
 
-	// Is the session destroyed?
+	/**
+	 * Is the session destroyed?
+	 * @access  protected
+	 * @var     bool
+	 */
 	protected $_destroyed = FALSE;
 
 	/**

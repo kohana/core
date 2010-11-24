@@ -53,10 +53,18 @@ class Kohana_Log {
 		return self::$_instance;
 	}
 
-	// List of added messages
+	/**
+	 * List of added messages
+	 * @access  protected
+	 * @var     array
+	 */
 	private $_messages = array();
 
-	// List of log writers
+	/**
+	 * List of log writers
+	 * @access  protected
+	 * @var     array
+	 */
 	private $_writers = array();
 
 	/**

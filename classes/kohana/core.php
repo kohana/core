@@ -131,28 +131,45 @@ class Kohana_Core {
 	public static $shutdown_errors = array(E_PARSE, E_ERROR, E_USER_ERROR, E_COMPILE_ERROR);
 
 	/**
-	 * @var  object  logging object
+	 * @var  Kohana_Log  logging object
 	 */
 	public static $log;
 
 	/**
-	 * @var  object  config object
+	 * @var  Kohana_Config  config object
 	 */
 	public static $config;
 
-	// Is the environment initialized?
+	/**
+	 * Is the environment initialized?
+	 * @access  protected
+	 * @var     bool
+	 */
 	protected static $_init = FALSE;
 
-	// Currently active modules
+	/**
+	 * @access protected
+	 * @var    array      Currently active modules
+	 */
 	protected static $_modules = array();
 
-	// Include paths that are used to find files
+	/**
+	 * @access  protected
+	 * @var     array      Include paths that are used to find files
+	 */
 	protected static $_paths = array(APPPATH, SYSPATH);
 
-	// File path cache
+	/**
+	 * @access  protected
+	 * @var     array      File path cache
+	 */
 	protected static $_files = array();
 
-	// Has the file cache changed?
+	/**
+	 * Has the file cache changed?
+	 * @access  protected
+	 * @var     bool
+	 */
 	protected static $_files_changed = FALSE;
 
 	/**

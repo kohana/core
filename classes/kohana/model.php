@@ -29,7 +29,11 @@ abstract class Kohana_Model {
 		return new $class($db);
 	}
 
-	// Database instance
+	/**
+	 * Database instance
+	 * @access  protected
+	 * @var     Database
+	 */
 	protected $_db;
 
 	/**
