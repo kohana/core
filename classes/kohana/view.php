@@ -12,7 +12,10 @@
  */
 class Kohana_View {
 
-	// Array of global variables
+	/**
+	 * @access protected
+	 * @var    array      Array of global variables
+	 */
 	protected static $_global_data = array();
 
 	/**
@@ -113,10 +116,16 @@ class Kohana_View {
 		View::$_global_data[$key] =& $value;
 	}
 
-	// View filename
-	protected $_file;
+	/**
+	 * @access protected
+	 * @var    string     View filename
+	 */
+	protected $_file = '';
 
-	// Array of local variables
+	/**
+	 * @access protected
+	 * @var    array      Array of local variables
+	 */
 	protected $_data = array();
 
 	/**

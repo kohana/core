@@ -10,7 +10,9 @@
  */
 class Kohana_Remote {
 
-	// Default curl options
+	/**
+	 * @var  array  Default curl options
+	 */
 	public static $default_options = array
 	(
 		CURLOPT_USERAGENT      => 'Mozilla/5.0 (compatible; Kohana v3.0 +http://kohanaframework.org/)',

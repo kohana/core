@@ -30,6 +30,10 @@
  */
 abstract class Kohana_Controller_REST extends Controller {
 
+	/**
+	 * @access  protected
+	 * @var     array      array of REST types
+	 */
 	protected $_action_map = array
 	(
 		'GET'    => 'index',
@@ -38,6 +42,10 @@ abstract class Kohana_Controller_REST extends Controller {
 		'DELETE' => 'delete',
 	);
 
+	/**
+	 * @access  protected
+	 * @var     string     the requested action
+	 */
 	protected $_action_requested = '';
 
 	/**

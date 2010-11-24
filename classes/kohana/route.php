@@ -49,7 +49,10 @@ class Kohana_Route {
 	 */
 	public static $default_action = 'index';
 
-	// List of route objects
+	/**
+	 * @access protected
+	 * @var    array      List of route objects
+	 */
 	protected static $_routes = array();
 
 	/**
@@ -141,7 +144,7 @@ class Kohana_Route {
 		}
 		else
 		{
-			if ($routes = Kohana::cache('Route::cache()'))
+			if (($routes = Kohana::cache('Route::cache()')) != FALSE)
 			{
 				Route::$_routes = $routes;
 

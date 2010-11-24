@@ -413,7 +413,7 @@ class Kohana_Text {
 		$str = preg_replace('~[ \t]+$~m', '', $str);
 
 		// The following regexes only need to be executed if the string contains html
-		if ($html_found = (strpos($str, '<') !== FALSE))
+		if (($html_found = (strpos($str, '<')) !== FALSE))
 		{
 			// Elements that should not be surrounded by p tags
 			$no_p = '(?:p|div|h[1-6r]|ul|ol|li|blockquote|d[dlt]|pre|t[dhr]|t(?:able|body|foot|head)|c(?:aption|olgroup)|form|s(?:elect|tyle)|a(?:ddress|rea)|ma(?:p|th))';

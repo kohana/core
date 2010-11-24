@@ -11,7 +11,9 @@
  */
 class Kohana_Request {
 
-	// HTTP status codes and messages
+	/**
+	 * @var  array  HTTP status codes and messages
+	 */
 	public static $messages = array(
 		// Informational 1xx
 		100 => 'Continue',
@@ -102,12 +104,12 @@ class Kohana_Request {
 	public static $is_ajax = FALSE;
 
 	/**
-	 * @var  object  main request instance
+	 * @var  Request  main request instance
 	 */
 	public static $instance;
 
 	/**
-	 * @var  object  currently executing request instance
+	 * @var  Request  currently executing request instance
 	 */
 	public static $current;
 
@@ -566,7 +568,7 @@ class Kohana_Request {
 	}
 
 	/**
-	 * @var  object  route matched for this request
+	 * @var  Route  route matched for this request
 	 */
 	public $route;
 
@@ -605,7 +607,10 @@ class Kohana_Request {
 	 */
 	public $uri;
 
-	// Parameters extracted from the route
+	/**
+	 * @access protected
+	 * @var    string|array  Parameters extracted from the route
+	 */
 	protected $_params;
 
 	/**
@@ -630,7 +635,7 @@ class Kohana_Request {
 
 		foreach ($routes as $name => $route)
 		{
-			if ($params = $route->matches($uri))
+			if (($params = $route->matches($uri)) != FALSE)
 			{
 				// Store the URI
 				$this->uri = $uri;
@@ -1087,7 +1092,7 @@ class Kohana_Request {
 		$start = 0;
 		$end = $size - 1;
 
-		if($range = $this->_parse_byte_range())
+		if(($range = $this->_parse_byte_range()) != FALSE)
 		{
 			// We have a byte range from HTTP_RANGE
 			$start = $range[1];

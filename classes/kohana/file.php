@@ -40,7 +40,8 @@ class Kohana_File {
 
 		if (class_exists('finfo', FALSE))
 		{
-			if ($info = new finfo(defined('FILEINFO_MIME_TYPE') ? FILEINFO_MIME_TYPE : FILEINFO_MIME))
+			$info = new finfo(defined('FILEINFO_MIME_TYPE'));
+			if ($info ? FILEINFO_MIME_TYPE : FILEINFO_MIME)
 			{
 				return $info->file($filename);
 			}

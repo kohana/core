@@ -11,7 +11,10 @@
  */
 class Kohana_Config {
 
-	// Singleton static instance
+	/**
+	 * @access  protected
+	 * @var     Kohana_Config  Singleton static instance
+	 */
 	protected static $_instance;
 
 	/**
@@ -32,7 +35,10 @@ class Kohana_Config {
 		return self::$_instance;
 	}
 
-	// Configuration readers
+	/**
+	 * @access  protected
+	 * @var     array     Configuration readers
+	 */
 	protected $_readers = array();
 
 	/**
@@ -45,7 +51,7 @@ class Kohana_Config {
 	 *
 	 * @param   object   Kohana_Config_Reader instance
 	 * @param   boolean  add the reader as the first used object
-	 * @return  $this
+	 * @return  Kohana_Config
 	 */
 	public function attach(Kohana_Config_Reader $reader, $first = TRUE)
 	{
@@ -69,7 +75,7 @@ class Kohana_Config {
 	 *     $config->detach($reader);
 	 *
 	 * @param   object  Kohana_Config_Reader instance
-	 * @return  $this
+	 * @return  Kohana_Config
 	 */
 	public function detach(Kohana_Config_Reader $reader)
 	{
@@ -90,14 +96,17 @@ class Kohana_Config {
 	 *     $array = $config->load($name);
 	 *
 	 * @param   string  configuration group name
-	 * @return  object  Kohana_Config_Reader
+	 * @return  Kohana_Config_Reader
 	 * @throws  Kohana_Exception
 	 */
 	public function load($group)
 	{
+		/**
+		 * @var  Kohana_Config_Reader  $reader
+		 */
 		foreach ($this->_readers as $reader)
 		{
-			if ($config = $reader->load($group))
+			if (($config = $reader->load($group)) != FALSE)
 			{
 				// Found a reader for this configuration group
 				return $config;
@@ -122,13 +131,16 @@ class Kohana_Config {
 	 *     $config->copy($name);
 	 *
 	 * @param   string   configuration group name
-	 * @return  $this
+	 * @return  Kohana_Config
 	 */
 	public function copy($group)
 	{
 		// Load the configuration group
 		$config = $this->load($group);
 
+		/**
+		 * @var  Kohana_Config_Reader  $reader
+		 */
 		foreach ($this->_readers as $reader)
 		{
 			if ($config instanceof $reader)
@@ -137,7 +149,11 @@ class Kohana_Config {
 				continue;
 			}
 
-			// Load the configuration object
+			/**
+			 * Load the configuration object
+			 *
+			 * @var Kohana_Config_Reader $object
+			 */
 			$object = $reader->load($group, array());
 
 			foreach ($config as $key => $value)

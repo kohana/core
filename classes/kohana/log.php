@@ -53,10 +53,16 @@ class Kohana_Log {
 		return self::$_instance;
 	}
 
-	// List of added messages
+	/**
+	 * @access  private
+	 * @var     array    List of added messages
+	 */
 	private $_messages = array();
 
-	// List of log writers
+	/**
+	 * @access  private
+	 * @var     array    List of log writers
+	 */
 	private $_writers = array();
 
 	/**
@@ -107,7 +113,7 @@ class Kohana_Log {
 	 * @param   string  type of message
 	 * @param   string  message body
 	 * @param   array   values to replace in the message
-	 * @return  $this
+	 * @return  Kohana_Log
 	 */
 	public function add($type, $message, array $values = NULL)
 	{

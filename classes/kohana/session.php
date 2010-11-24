@@ -15,7 +15,10 @@ abstract class Kohana_Session {
 	 */
 	public static $default = 'native';
 
-	// Session instances
+	/**
+	 * @access protected
+	 * @var    array      Session instances
+	 */
 	protected static $instances = array();
 
 	/**

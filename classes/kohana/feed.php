@@ -30,7 +30,7 @@ class Kohana_Feed {
 		$error_level = error_reporting(0);
 
 		// Allow loading by filename or raw XML string
-		$load = (is_file($feed) OR validate::url($feed)) ? 'simplexml_load_file' : 'simplexml_load_string';
+		$load = (is_file($feed) OR Validate::url($feed)) ? 'simplexml_load_file' : 'simplexml_load_string';
 
 		// Load the feed
 		$feed = $load($feed, 'SimpleXMLElement', LIBXML_NOCDATA);

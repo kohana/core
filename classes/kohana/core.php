@@ -131,12 +131,12 @@ class Kohana_Core {
 	public static $shutdown_errors = array(E_PARSE, E_ERROR, E_USER_ERROR, E_COMPILE_ERROR);
 
 	/**
-	 * @var  object  logging object
+	 * @var  Kohana_Log  logging object
 	 */
 	public static $log;
 
 	/**
-	 * @var  object  config object
+	 * @var  Kohana_Config  config object
 	 */
 	public static $config;
 
@@ -490,7 +490,8 @@ class Kohana_Core {
 			// Transform the class name into a path
 			$file = str_replace('_', '/', strtolower($class));
 
-			if ($path = Kohana::find_file('classes', $file))
+			$path = Kohana::find_file('classes', $file);
+			if (!empty($path))
 			{
 				// Load the class file
 				require $path;
@@ -721,6 +722,9 @@ class Kohana_Core {
 				// Create a new directory iterator
 				$dir = new DirectoryIterator($path.$directory);
 
+				/**
+				 * @var  DirectoryIterator  $file
+				 */
 				foreach ($dir as $file)
 				{
 					// Get the file name
@@ -737,7 +741,8 @@ class Kohana_Core {
 
 					if ($file->isDir())
 					{
-						if ($sub_dir = Kohana::list_files($key, $paths))
+						$sub_dir = Kohana::list_files($key, $paths);
+						if (!empty($sub_dir))
 						{
 							if (isset($found[$key]))
 							{
@@ -934,7 +939,8 @@ class Kohana_Core {
 			// Create a new message list
 			$messages[$file] = array();
 
-			if ($files = Kohana::find_file('messages', $file))
+			$files = Kohana::find_file('messages', $file);
+			if (!empty($files))
 			{
 				foreach ($files as $f)
 				{

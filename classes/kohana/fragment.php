@@ -80,7 +80,7 @@ class Kohana_Fragment {
 		// Get the cache key name
 		$cache_key = Fragment::_cache_key($name, $i18n);
 
-		if ($fragment = Kohana::cache($cache_key, NULL, $lifetime))
+		if (($fragment = Kohana::cache($cache_key, NULL, $lifetime) != FALSE))
 		{
 			// Display the cached fragment now
 			echo $fragment;

@@ -161,7 +161,7 @@ class Kohana_Arr {
 				$values = array();
 				foreach ($array as $arr)
 				{
-					if ($value = Arr::path($arr, implode('.', $keys)))
+					if (($value = Arr::path($arr, implode('.', $keys))) != FALSE)
 					{
 						$values[] = $value;
 					}

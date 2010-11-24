@@ -111,7 +111,8 @@ class Kohana_I18n {
 			// Create a path for this set of parts
 			$path = implode(DIRECTORY_SEPARATOR, $parts);
 
-			if ($files = Kohana::find_file('i18n', $path, NULL, TRUE))
+			$files = Kohana::find_file('i18n', $path, NULL, TRUE);
+			if (!empty($files))
 			{
 				$t = array();
 				foreach ($files as $file)

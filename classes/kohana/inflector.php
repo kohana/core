@@ -13,12 +13,23 @@
  */
 class Kohana_Inflector {
 
-	// Cached inflections
+	/**
+	 * @access protected
+	 * @var    array  Cached inflections
+	 */
 	protected static $cache = array();
 
-	// Uncountable and irregular words
-	protected static $uncountable;
-	protected static $irregular;
+	/**
+	 * @access  protected
+	 * @var     array  uncountable words
+	 */
+	protected static $uncountable = array();
+
+	/**
+	 * @access  protected
+	 * @var     array  irregular words
+	 */
+	protected static $irregular = array();
 
 	/**
 	 * Checks if a word is defined as uncountable. An uncountable word has a
@@ -94,7 +105,7 @@ class Kohana_Inflector {
 			Inflector::$irregular = Kohana::config('inflector')->irregular;
 		}
 
-		if ($irregular = array_search($str, Inflector::$irregular))
+		if (($irregular = array_search($str, Inflector::$irregular)) != FALSE)
 		{
 			$str = $irregular;
 		}

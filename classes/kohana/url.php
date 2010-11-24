@@ -55,13 +55,13 @@ class Kohana_URL {
 
 		if (is_string($protocol))
 		{
-			if ($port = parse_url($base_url, PHP_URL_PORT))
+			if (($port = parse_url($base_url, PHP_URL_PORT)) != FALSE)
 			{
 				// Found a port, make it usable for the URL
 				$port = ':'.$port;
 			}
 
-			if ($domain = parse_url($base_url, PHP_URL_HOST))
+			if (($domain = parse_url($base_url, PHP_URL_HOST)) != FALSE)
 			{
 				// Remove everything but the path from the URL
 				$base_url = parse_url($base_url, PHP_URL_PATH);
