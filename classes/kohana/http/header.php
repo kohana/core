@@ -30,13 +30,18 @@ class Kohana_Http_Header extends ArrayObject {
 	 * 
 	 *     $header_values_array = Http_Header::parse_header_values(array('cache-control' => 'max-age=200; public'));
 	 *
-	 * @param   string   values to parse
+	 * @param   array    values to parse
+	 * @param   array    header values where commas are not delimiters (usually date)
 	 * @return  array
 	 */
-	public static function parse_header_values(array $header_values)
+	public static function parse_header_values(array $header_values, array $header_commas_allowed = array('user-agent', 'date', 'expires'))
 	{
-		// Controls whether commas are allowed in the header string, e.g. user-agent should allow commas
-		$header_commas_allowed = array('user-agent');
+		/**
+		 * @see http://www.w3.org/Protocols/rfc2616/rfc2616.html
+		 * 
+		 * HTTP header declarations should be treated as case-insensitive
+		 */
+		$header_values = array_change_key_case($header_values, CASE_LOWER);
 
 		// Foreach of the header values applied
 		foreach ($header_values as $key => $value)
@@ -54,9 +59,9 @@ class Kohana_Http_Header extends ArrayObject {
 			}
 
 			// If the key allows commas or no commas are found
-			if (in_array($key, $header_commas_allowed) or strpos($value, ',') === FALSE)
+			if (in_array($key, $header_commas_allowed) or (strpos($value, ',') === FALSE))
 			{
-				$header_value[$key] = new Http_Header_Value($value);
+				$header_values[$key] = new Http_Header_Value($value);
 
 				// Move to next header
 				continue;
@@ -103,13 +108,6 @@ class Kohana_Http_Header extends ArrayObject {
 	 */
 	public function __construct($input, $flags = NULL, $iterator_class = 'ArrayIterator')
 	{
-		/**
-		 * @see http://www.w3.org/Protocols/rfc2616/rfc2616.html
-		 * 
-		 * HTTP header declarations should be treated as case-insensitive
-		 */
-		$input = array_change_key_case($input, CASE_LOWER);
-
 		// Parse the values into [Http_Header_Values]
 		parent::__construct(Http_Header::parse_header_values($input), $flags, $iterator_class);
 
@@ -118,6 +116,67 @@ class Kohana_Http_Header extends ArrayObject {
 		{
 			$this->sort_values_by_quality();
 		}
+	}
+
+	/**
+	 * Returns the header object as a string, including
+	 * the terminating new line
+	 * 
+	 *     // Return the header as a string
+	 *     echo (string) $request->headers;
+	 *
+	 * @return  string
+	 */
+	public function __toString()
+	{
+		$header = '';
+
+		foreach ($this as $key => $value)
+		{
+			if (is_array($value))
+				$header .= $key.': '.(implode(', ', $value))."\n";
+			else
+				$header .= $key.': '.((string) $value)."\n";
+		}
+
+		return $header."\n";
+	}
+
+	/**
+	 * Overloads the `ArrayObject::exchangeArray()` method to ensure all
+	 * values passed are parsed correctly into a [Kohana_Http_Header_Value].
+	 * 
+	 *     // Input new headers
+	 *     $headers->exchangeArray(array(
+	 *          'date'          => 'Wed, 24 Nov 2010 21:09:23 GMT',
+	 *          'cache-control' => 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
+	 *     ));
+	 *
+	 * @param   array    array to exchange
+	 * @return  array
+	 */
+	public function exchangeArray($array)
+	{
+		return parent::exchangeArray(Http_Header::parse_header_values($array));
+	}
+
+	/**
+	 * Overloads the `ArrayObject::offsetSet` method to ensure any
+	 * access is correctly converted to the correct object type.
+	 * 
+	 *     // Add a new header from encoded string
+	 *     $headers['cache-control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
+	 *
+	 * @param   mixed    key 
+	 * @param   mixed    value 
+	 * @return  void
+	 */
+	public function offsetSet($index, $newval)
+	{
+		if ( ! $newval instanceof Kohana_Http_Header_Value)
+			$newval = new Http_Header_Value($newval);
+
+		parent::offsetSet($index, $newval);
 	}
 
 	/**
@@ -153,34 +212,7 @@ class Kohana_Http_Header extends ArrayObject {
 				continue;
 
 			// Sort them by comparison
-			uasort($value, function ($value_a, $value_b) {
-				// Test for correct instance type
-				if ( ! $value_a instanceof Kohana_Http_Header_Value or ! $value_b instanceof Kohana_Http_Header_Value)
-				{
-					// Return neutral if cannot test value
-					return 0;
-				}
-
-				// Extract the qualities
-				$a = (float) Arr::get($value_a->properties, 'q', Http_Header_Value::$default_quality);
-				$b = (float) Arr::get($value_b->properties, 'q', Http_Header_Value::$default_quality);
-
-				// If a == b
-				if ($a == $b)
-				{
-					return (int) 0; // Return neutral (0)
-				}
-				// If a < b
-				else if ($a < $b)
-				{
-					return (int) -1; // Return negative (-1)
-				}
-				// If a > b
-				else if ($a > $b)
-				{
-					return (int) 1; // Return positive (1)
-				}
-			});
+			uasort($value, array($this, '_sort_by_comparison'));
 
 			$values[$key] = $value;
 		}
@@ -197,4 +229,34 @@ class Kohana_Http_Header extends ArrayObject {
 		// Return this
 		return $this;
 	}
-}
+
+	protected function _sort_by_comparison($value_a, $value_b)
+	{
+		// Test for correct instance type
+		if ( ! $value_a instanceof Kohana_Http_Header_Value or ! $value_b instanceof Kohana_Http_Header_Value)
+		{
+			// Return neutral if cannot test value
+			return 0;
+		}
+
+		// Extract the qualities
+		$a = (float) Arr::get($value_a->properties, 'q', Http_Header_Value::$default_quality);
+		$b = (float) Arr::get($value_b->properties, 'q', Http_Header_Value::$default_quality);
+
+		// If a == b
+		if ($a == $b)
+		{
+			return (int) 0; // Return neutral (0)
+		}
+		// If a < b
+		else if ($a < $b)
+		{
+			return (int) -1; // Return negative (-1)
+		}
+		// If a > b
+		else if ($a > $b)
+		{
+			return (int) 1; // Return positive (1)
+		}
+	}
+} // End Kohana_Http_Header

@@ -11,7 +11,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaphp.com/license
  */
-interface Kohana_Http_Request extends Kohana_Http_Interaction {
+interface Kohana_Http_Request extends Http_Interaction {
 
 	/**
 	 * Gets or sets the Http method. Usually GET, POST, PUT or DELETE in
