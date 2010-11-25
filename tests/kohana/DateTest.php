@@ -248,22 +248,98 @@ Class Kohana_DateTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Tests Date::months()
-	 * 
+	 * Provider for test_months()
+	 *
+	 * @return array Test data
+	 */
+	public function provider_months()
+	{
+		return array(
+			array(
+				array(
+					1 => "1", 
+					2 => "2", 
+					3 => "3", 
+					4 => "4", 
+					5 => "5", 
+					6 => "6", 
+					7 => "7", 
+					8 => "8", 
+					9 => "9", 
+					10 => "10",
+					11 => "11",
+					12 => "12"
+				),
+				NULL
+			),
+			array(
+				array(
+					1 => "1", 
+					2 => "2", 
+					3 => "3", 
+					4 => "4", 
+					5 => "5", 
+					6 => "6", 
+					7 => "7", 
+					8 => "8", 
+					9 => "9", 
+					10 => "10",
+					11 => "11",
+					12 => "12"
+				),
+				'Guinness'
+			),
+			array(
+				array(
+					1 => "January", 
+					2 => "February", 
+					3 => "March", 
+					4 => "April", 
+					5 => "May", 
+					6 => "June", 
+					7 => "July", 
+					8 => "August", 
+					9 => "September", 
+					10 => "October",
+					11 => "November",
+					12 => "December"
+				),
+				Date::MONTHS_LONG
+			),
+			array(
+				array(
+					1 => "Jan", 
+					2 => "Feb",
+					3 => "Mar", 
+					4 => "Apr", 
+					5 => "May", 
+					6 => "Jun", 
+					7 => "Jul", 
+					8 => "Aug", 
+					9 => "Sep", 
+					10 => "Oct",
+					11 => "Nov",
+					12 => "Dec"
+				),
+				Date::MONTHS_SHORT
+			)
+
+		);
+	}
+
+	/**
+	 * Date::months() should allow the user to specify different format types, defaulting
+	 * to a mirrored month number => month number array if format is NULL or unrecognised
+	 *
 	 * @test
+	 * @dataProvider provider_months
 	 * @covers Date::months
 	 */
-	public function test_months()
+	public function test_months($expected, $format)
 	{
-		$months = Date::months();
+		$months = Date::months($format);
 
-		$this->assertSame(12, count($months));
-
-		for($i = 1; $i <= 12; ++$i)
-		{
-			$this->assertArrayHasKey($i, $months);
-			$this->assertSame((string) $i, $months[$i]);
-		}
+		$this->assertSame($expected, $months);
 	}
 
 	/**
