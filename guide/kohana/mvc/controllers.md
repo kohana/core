@@ -72,25 +72,59 @@ Property/method | What it does
 
 You create actions for your controller by defining a public function with an `action_` prefix.  Any method that is not declared as `public` and prefixed with `action_` can NOT be called via routing.
 
-An action method will decide what should be done based on the current request (save a blog post, create a user, etc.) and can call other classes or models to accomplish this.  Then a view is returned to the browser by setting `$this->request->response` to the [view file](mvc/views) you want sent. 
+An action method will decide what should be done based on the current request, it *controls* the application.  Did the user want to save a blog post?  Did they provide the necesarry fields?   Do they have permission to da that?  The controller will call other classes, including models, to accomplish this.  Every action should set `$this->request->response` to the [view file](mvc/views) to be sent to the browser, unless it [redirected](../api/Request#redirect) or otherwise ended the script earlier.
 
+A very basic action method that simply loads a [view](mvc/views) file.
 
+	public function action_hello()
+	{
+		$this->request->response = View::factory('hello/world'); // This will load views/hello/world.php
+	}
 
 ### Parameters
 
-Paremeters can either be accessed using `$this->request->param('name')` where name is the name defined in the route, or accessed from the function definition.  Any extra params in your route (besids directory, controller, and action) as passed as parameters to your action *in the order they appear in the route*.  This is quick and easy and saves on `$this->request->param()` calls, but keep in mind that changes to your routes could change the parameter order.
+Parameters can be accessed in two ways.  The first is by calling `$this->request->param('name')` where `name` is the name defined in the route.
 
-For example, with the route:
-
-	Route::set('example','<controller>(/<action>(/<id>(/<new>))))
-
-If you called the uri:
-
-	example/foobar/4/bobcat
+	// Assuming Route::set('example','<controller>(/<action>(/<id>(/<new>)))');
 	
-You could access the parameters in two ways:
+	public function action_foobar()
+	{
+		$id = $this->request->param('id');
+		$new = $this->request->param('new');
 
-	public function action_foobar($id,$new)
+If that parameter is not set it will be returned as NULL.  You can provide a second parameter to set a default value if that param is not set.
+
+	public function action_foobar()
+	{
+		// $id will be false if it was not supplied in the url
+		$id = $this->request->param('user',FALSE);
+
+The second way you can access route parameters is from the actions function definition.  Any extra keys in your route (keys besides `<directory>`, `<controller>`, and `<action>`) are passed as parameters to your action *in the order they appear in the route*.  
+
+	// Assuming Route::set('example','<controller>(/<action>(/<id>(/<new>)))');
+	
+	public function action_foobar($id, $new)
+	{
+
+Note that the names do not actually matter, *only the order*.  You could name the parameters anything you want in both the route and the function definition, they don't even need to match.  The following code is identical in function to the previous example.
+
+	// Assuming Route::set('example','<controller>(/<action>(/<num>(/<word>)))');
+	
+	public function action_foobar($foo, $bar)
+	{
+
+You can provide default values in the same way you do for any php function.
+
+	public function action_foobar($id = 0, $new = NULL)
+	{
+
+You can use whichever method you prefer.  Using function params is quick and easy and saves on `$this->request->param()` calls, but keep in mind that if your routes ever change it could change the paramater order and break things.  Therefore, it is recommended you use `$this->request->param()`.  For example, assuming the following route
+
+	Route::set('example','<controller>(/<action>(/<id>(/<new>)))');
+	
+If you called "example/foobar/4/bobcat" you could access the parameters by either:
+
+	public function action_foobar($id, $new) 
 	{
 	
 	// OR
@@ -100,12 +134,12 @@ You could access the parameters in two ways:
 		$id = $this->request->param('id');
 		$new = $this->request->param('new');
 
-And if you ever changed your route to:
+Then, let's say sometime in the future you change your url schemes and your routes.  The new route is:
 
 	// Note that id and new are switched
-	Route::set('example','<controller>(/<action>(/<new>(/<id>))))
+	Route::set('example','<controller>(/<action>(/<new>(/<id>)))');
 
-The first example would need to be updated, but the second example would not.
+Because the `<new>` and `<id>` keys are in a different order, you will need to fix your function definition to be `action_foobar($new, $id)` whereas the function that used `$this->request->param()` calls would continue to function as desired.
 	
 ### Examples
 
@@ -152,4 +186,4 @@ In general, you should not have to change the `__construct()` function, as anyth
 
 ## Extending other controllers
 
-TODO: More description and examples of extending other controllers
+TODO: More description and examples of extending other controllers, multiple extension, etc.
