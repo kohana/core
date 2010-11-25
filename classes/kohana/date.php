@@ -19,8 +19,8 @@ class Kohana_Date {
 	const MINUTE = 60;
 
 	// Available formats for Date::months()
-	const MONTHS_LONG  = 'F';
-	const MONTHS_SHORT = 'M';
+	const MONTHS_LONG  = '%B';
+	const MONTHS_SHORT = '%b';
 
 	/**
 	 * Default timestamp format for formatted_time
@@ -281,7 +281,7 @@ class Kohana_Date {
 		{
 			for($i = 1; $i <= 12; ++$i)
 			{
-				$months[$i] = date($format, mktime(0, 0, 0, $i));
+				$months[$i] = strftime($format, mktime(0, 0, 0, $i));
 			}
 		}
 		else
