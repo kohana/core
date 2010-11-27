@@ -200,12 +200,12 @@ class Kohana_Num {
 	 *     echo Num::bytes('2.5GB'); // 2684354560
 	 *
 	 * @param   string   file size in SB format
-	 * @return  integer
+	 * @return  float
 	 */
 	public static function bytes($size)
 	{
 		// Prepare the size
-		$size = trim($size);
+		$size = trim((string) $size);
 
 		// Construct an OR list of byte units for the regex
 		$accepted = implode('|', array_keys(Num::$byte_units));
