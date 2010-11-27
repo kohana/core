@@ -11,7 +11,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_RouteTest extends Kohana_Unittest_TestCase
+class Kohana_RouteTest extends Unittest_TestCase
 {
 	/**
 	 * Remove all caches

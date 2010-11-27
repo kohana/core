@@ -6,7 +6,7 @@
  * @group kohana
  */
 
-Class Kohana_SecurityTest extends Kohana_Unittest_TestCase
+Class Kohana_SecurityTest extends Unittest_TestCase
 {
 	/**
 	 * Provides test data for test_envode_php_tags()
