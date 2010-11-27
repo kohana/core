@@ -21,11 +21,7 @@ Class Kohana_DateTest extends Unittest_TestCase
 	public function provider_offset()
 	{
 		return array(
-			array(
-				-18000,
-				'America/Chicago',
-				'GMT',
-			),
+			array(30600, 'Asia/Calcutta', 'America/Argentina/Buenos_Aires'),
 		);
 	}
 
