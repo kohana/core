@@ -33,6 +33,35 @@ Class Kohana_NumTest extends Unittest_TestCase
 
 		setlocale(LC_ALL, $this->default_locale);
 	}
+
+	/**
+	 * Provides test data for test_bytes()
+	 *
+	 * @return array
+	 */
+	public function provider_bytes()
+	{
+		return array(
+			array(204800.0, '200K'),
+			array(5242880.0, '5MiB'),
+			array(1000.0, 1000),
+			array(2684354560.0, '2.5GB'),
+		);
+	}
+	
+	/**
+	 * Tests Num::bytes()
+	 *
+	 * @test
+	 * @covers Num::bytes
+	 * @dataProvider provider_bytes
+	 * @param integer Expected Value
+	 * @param string  Input value
+	 */
+	public function test_bytes($expected, $size)
+	{
+		$this->assertSame($expected, Num::bytes($size));
+	}
 	
 	/**
 	 * Provides test data for test_ordinal()
