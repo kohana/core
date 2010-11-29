@@ -18,7 +18,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 {
 	/**
 	 * Provides test data for test_sanitize()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_sanitize()
@@ -92,7 +92,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 		$this->assertType('array', $files);
 		$this->assertGreaterThan(3, count($files));
-		
+
 		$this->assertSame(array(), Kohana::list_files('geshmuck'));
 	}
 
@@ -113,7 +113,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for testCache()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_cache()
@@ -144,7 +144,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for test_message()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_message()
@@ -160,25 +160,25 @@ class Kohana_CoreTest extends Unittest_TestCase
 					'color'         => ':field must be a color',
 					'credit_card'   => ':field must be a credit card number',
 					'date'          => ':field must be a date',
-					'decimal'       => ':field must be a decimal with :param1 places',
+					'decimal'       => ':field must be a decimal with :param2 places',
 					'digit'         => ':field must be a digit',
 					'email'         => ':field must be a email address',
 					'email_domain'  => ':field must contain a valid email domain',
-					'equals'        => ':field must equal :param1',
-					'exact_length'  => ':field must be exactly :param1 characters long',
+					'equals'        => ':field must equal :param2',
+					'exact_length'  => ':field must be exactly :param2 characters long',
 					'in_array'      => ':field must be one of the available options',
 					'ip'            => ':field must be an ip address',
-					'matches'       => ':field must be the same as :param1',
-					'min_length'    => ':field must be at least :param1 characters long',
-					'max_length'    => ':field must be less than :param1 characters long',
+					'matches'       => ':field must be the same as :param2',
+					'min_length'    => ':field must be at least :param2 characters long',
+					'max_length'    => ':field must be less than :param2 characters long',
 					'not_empty'     => ':field must not be empty',
 					'numeric'       => ':field must be numeric',
 					'phone'         => ':field must be a phone number',
-					'range'         => ':field must be within the range of :param1 to :param2',
+					'range'         => ':field must be within the range of :param2 to :param3',
 					'regex'         => ':field does not match the required format',
 					'url'           => ':field must be a url',
 				),
-				'validation', NULL, 
+				'validation', NULL,
 			),
 		);
 	}
@@ -200,7 +200,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for test_error_handler()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_error_handler()
@@ -239,7 +239,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for testExceptionHandler()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_exception_handler()
@@ -286,7 +286,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for test_modules_sets_and_returns_valid_modules()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_modules_sets_and_returns_valid_modules()
@@ -317,7 +317,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 	}
 
 	/**
-	 * To make the tests as portable as possible this just tests that 
+	 * To make the tests as portable as possible this just tests that
 	 * you get an array of modules when you can Kohana::modules() and that
 	 * said array contains unittest
 	 *
@@ -353,7 +353,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 		// And make sure they're in the correct positions
 		$this->assertSame(APPPATH, reset($include_paths));
 		$this->assertSame(SYSPATH, end($include_paths));
-		
+
 		foreach($modules as $module)
 		{
 			$this->assertContains($module, $include_paths);
@@ -362,7 +362,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for test_exception_text()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_exception_text()
@@ -388,7 +388,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for test_dump()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_dump()
