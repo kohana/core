@@ -1,8 +1,8 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 /**
- * Upload helper class for working with uploaded files and [Validate].
+ * Upload helper class for working with uploaded files and [Validation].
  *
- *     $array = Validate::factory($_FILES);
+ *     $array = Validation::factory($_FILES);
  *
  * [!!] Remember to define your form with "enctype=multipart/form-data" or file
  * uploading will not work!

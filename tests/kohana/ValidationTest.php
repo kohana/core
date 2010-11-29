@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') OR die('Kohana bootstrap needs to be included before tests run');
 
 /**
- * Tests the Validate lib that's shipped with Kohana
+ * Tests the Validation lib that's shipped with Kohana
  *
  * @group kohana
  * @group kohana.validation
@@ -12,7 +12,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_ValidateTest extends Unittest_TestCase
+Class Kohana_ValidationTest extends Kohana_Unittest_TestCase
 {
 
 	/**
@@ -31,10 +31,10 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 			array('¥', FALSE, TRUE)
 		);
 	}
-	
+
 	/**
-	 * Tests Validate::alpha()
-	 * 
+	 * Tests Valid::alpha()
+	 *
 	 * Checks whether a string consists of alphabetical characters only.
 	 *
 	 * @test
@@ -47,7 +47,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		$this->assertSame(
 			$expected,
-			Validate::alpha($string, $utf8)
+			Valid::alpha($string, $utf8)
 		);
 	}
 
@@ -61,15 +61,15 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 		    array('abcd',      TRUE),
 		    array('1234',      TRUE),
 		    array('abc123&^/-', FALSE),
-				// UTF-8 tests
-				array('あいうえお', TRUE, TRUE),
-				array('零一二三四五', TRUE, TRUE),
-				array('あい四五£^£^', FALSE, TRUE),
+			// UTF-8 tests
+			array('あいうえお', TRUE, TRUE),
+			array('零一二三四五', TRUE, TRUE),
+			array('あい四五£^£^', FALSE, TRUE),
 		);
 	}
 
 	/**
-	 * Tests Validate::alpha_numberic()
+	 * Tests Valid::alpha_numberic()
 	 *
 	 * Checks whether a string consists of alphabetical characters and numbers only.
 	 *
@@ -83,7 +83,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		$this->assertSame(
 			$expected,
-			Validate::alpha_numeric($input, $utf8)
+			Valid::alpha_numeric($input, $utf8)
 		);
 	}
 
@@ -102,7 +102,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::alpha_dash()
+	 * Tests Valid::alpha_dash()
 	 *
 	 * Checks whether a string consists of alphabetical characters, numbers, underscores and dashes only.
 	 *
@@ -115,17 +115,17 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	 */
 	public function test_alpha_dash($input, $expected, $contains_utf8 = FALSE)
 	{
-		if( ! $contains_utf8)
+		if ( ! $contains_utf8)
 		{
 			$this->assertSame(
 				$expected,
-				Validate::alpha_dash($input)
+				Valid::alpha_dash($input)
 			);
-		}		
+		}
 
 		$this->assertSame(
 			$expected,
-			Validate::alpha_dash($input, TRUE)
+			Valid::alpha_dash($input, TRUE)
 		);
 	}
 
@@ -150,7 +150,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::date()
+	 * Tests Valid::date()
 	 *
 	 * @test
 	 * @group kohana.validation.helpers
@@ -162,7 +162,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		$this->assertSame(
 			$expected,
-			Validate::date($date, $expected)
+			Valid::date($date, $expected)
 		);
 	}
 
@@ -179,7 +179,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::decimal()
+	 * Tests Valid::decimal()
 	 *
 	 * @test
 	 * @group kohana.validation.helpers
@@ -193,7 +193,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		$this->assertSame(
 			$expected,
-			Validate::decimal($decimal, $places, $digits),
+			Valid::decimal($decimal, $places, $digits),
 			'Decimal: "'.$decimal.'" to '.$places.' places and '.$digits.' digits (preceeding period)'
 		);
 	}
@@ -215,7 +215,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::digit()
+	 * Tests Valid::digit()
 	 *
 	 * @test
 	 * @group kohana.validation.helpers
@@ -225,17 +225,17 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	 */
 	public function test_digit($input, $expected, $contains_utf8 = FALSE)
 	{
-		if( ! $contains_utf8)
+		if ( ! $contains_utf8)
 		{
 			$this->assertSame(
 				$expected,
-				Validate::digit($input)
+				Valid::digit($input)
 			);
 		}
 
 		$this->assertSame(
 			$expected,
-			Validate::digit($input, TRUE)
+			Valid::digit($input, TRUE)
 		);
 
 	}
@@ -261,7 +261,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::color()
+	 * Tests Valid::color()
 	 *
 	 * @test
 	 * @group kohana.validation.helpers
@@ -273,7 +273,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		$this->assertSame(
 			$expected,
-			Validate::color($color)
+			Valid::color($color)
 		);
 	}
 
@@ -296,10 +296,10 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::credit_card()
+	 * Tests Valid::credit_card()
 	 *
 	 * @test
-	 * @covers Validate::credit_card
+	 * @covers Valid::credit_card
 	 * @group kohana.validation.helpers
 	 * @dataProvider  provider_credit_card()
 	 * @param string  $number   Credit card number
@@ -310,7 +310,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		$this->assertSame(
 			$expected,
-			Validate::credit_card($number, $type)
+			Valid::credit_card($number, $type)
 		);
 	}
 
@@ -332,10 +332,10 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::luhn()
+	 * Tests Valid::luhn()
 	 *
 	 * @test
-	 * @covers Validate::luhn
+	 * @covers Valid::luhn
 	 * @group kohana.validation.helpers
 	 * @dataProvider  provider_luhn()
 	 * @param string  $number   Credit card number
@@ -345,7 +345,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		$this->assertSame(
 			$expected,
-			Validate::luhn($number)
+			Valid::luhn($number)
 		);
 	}
 
@@ -371,7 +371,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::email()
+	 * Tests Valid::email()
 	 *
 	 * Check an email address for correct format.
 	 *
@@ -386,7 +386,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		$this->assertSame(
 			$correct,
-			Validate::email($email, $strict)
+			Valid::email($email, $strict)
 		);
 	}
 
@@ -405,7 +405,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::email_domain()
+	 * Tests Valid::email_domain()
 	 *
 	 * Validate the domain of an email address by checking if the domain has a
 	 * valid MX record.
@@ -427,7 +427,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 		{
 			$this->assertSame(
 				$correct,
-				Validate::email_domain($email)
+				Valid::email_domain($email)
 			);
 		}
 		else
@@ -451,7 +451,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 
 	/**
 	 *
-	 * Tests Validate::exact_length()
+	 * Tests Valid::exact_length()
 	 *
 	 * Checks that a field is exactly the right length.
 	 *
@@ -467,7 +467,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		return $this->assertSame(
 			$correct,
-			Validate::exact_length($string, $length),
+			Valid::exact_length($string, $length),
 			'Reported string length is not correct'
 		);
 	}
@@ -488,7 +488,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::equals()
+	 * Tests Valid::equals()
 	 *
 	 * @test
 	 * @group kohana.validation.helpers
@@ -502,15 +502,15 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		return $this->assertSame(
 			$correct,
-			Validate::equals($string, $required),
+			Valid::equals($string, $required),
 			'Values are not equal'
 		);
 	}
 
 	/**
-	 * Tests Validate::factory()
+	 * Tests Validation::factory()
 	 *
-	 * Makes sure that the factory method returns an instance of Validate lib
+	 * Makes sure that the factory method returns an instance of Validation lib
 	 * and that it uses the variables passed
 	 *
 	 * @test
@@ -523,9 +523,9 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 			'why the hell'	=> 'amIDoingThis',
 		);
 
-		$instance = Validate::factory($values);
+		$instance = Validation::factory($values);
 
-		$this->assertTrue($instance instanceof Validate);
+		$this->assertTrue($instance instanceof Validation);
 
 		$this->assertSame(
 			$values,
@@ -550,7 +550,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::ip()
+	 * Tests Valid::ip()
 	 *
 	 * @test
 	 * @group kohana.validation.helpers
@@ -563,7 +563,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		$this->assertEquals(
 			$expected_result,
-			Validate::ip($input_ip, $allow_private)
+			Valid::ip($input_ip, $allow_private)
 		);
 	}
 
@@ -585,10 +585,10 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::max_length()
+	 * Tests Valid::max_length()
 	 *
 	 * Checks that a field is short enough.
-	 * 
+	 *
 	 * @test
 	 * @group kohana.validation.helpers
 	 * @dataProvider provider_max_length
@@ -600,7 +600,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		 $this->assertSame(
 			$correct,
-			Validate::max_length($string, $maxlength)
+			Valid::max_length($string, $maxlength)
 		);
 	}
 
@@ -619,7 +619,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::min_length()
+	 * Tests Valid::min_length()
 	 *
 	 * Checks that a field is long enough.
 	 *
@@ -634,7 +634,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		$this->assertSame(
 			$correct,
-			Validate::min_length($string, $minlength)
+			Valid::min_length($string, $minlength)
 		);
 	}
 
@@ -651,7 +651,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 		// arrayObject with value
 		$ao1 = new ArrayObject;
 		$ao1['test'] = 'value';
-		
+
 		return array(
 			array(array(),      FALSE),
 			array(NULL,         FALSE),
@@ -666,7 +666,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::not_empty()
+	 * Tests Valid::not_empty()
 	 *
 	 * Checks if a field is not empty.
 	 *
@@ -680,12 +680,12 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		return $this->assertSame(
 			$empty,
-			Validate::not_empty($value)
+			Valid::not_empty($value)
 		);
 	}
 
 	/**
-	 * DataProvider for the Validate::numeric() test
+	 * DataProvider for the Valid::numeric() test
 	 */
 	public function provider_numeric()
 	{
@@ -711,7 +711,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::numeric()
+	 * Tests Valid::numeric()
 	 *
 	 * @test
 	 * @group kohana.validation.helpers
@@ -723,7 +723,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		$this->assertSame(
 			$expected,
-			Validate::numeric($input)
+			Valid::numeric($input)
 		);
 	}
 
@@ -748,7 +748,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::phone()
+	 * Tests Valid::phone()
 	 *
 	 * @test
 	 * @group kohana.validation.helpers
@@ -760,7 +760,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		$this->assertSame(
 			$expected,
-			Validate::phone($phone, $lengths)
+			Valid::phone($phone, $lengths)
 		);
 	}
 
@@ -778,7 +778,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::range()
+	 * Tests Valid::range()
 	 *
 	 * Tests if a number is within a range.
 	 *
@@ -793,7 +793,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		$this->AssertSame(
 			$expected,
-			Validate::regex($value, $regex)
+			Valid::regex($value, $regex)
 		);
 	}
 
@@ -813,7 +813,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::range()
+	 * Tests Valid::range()
 	 *
 	 * Tests if a number is within a range.
 	 *
@@ -829,7 +829,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		$this->AssertSame(
 			$expected,
-			Validate::range($number, $min, $max)
+			Valid::range($number, $min, $max)
 		);
 	}
 
@@ -876,7 +876,7 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Validate::url()
+	 * Tests Valid::url()
 	 *
 	 * @test
 	 * @group kohana.validation.helpers
@@ -888,38 +888,36 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	{
 		$this->assertSame(
 			$expected,
-			Validate::url($url)
+			Valid::url($url)
 		);
 	}
 
 	/**
-	 * When we copy() a validate object, we should have a new validate object
-	 * with the exact same attributes, apart from the data, which should be the 
+	 * When we copy() a validation object, we should have a new validation object
+	 * with the exact same attributes, apart from the data, which should be the
 	 * same as the array we pass to copy()
 	 *
 	 * @test
-	 * @covers Validate::copy
+	 * @covers Validation::copy
 	 */
 	public function test_copy_copies_all_attributes_except_data()
 	{
-		$validate = new Validate(array('foo' => 'bar', 'fud' => 'fear, uncertainty, doubt', 'num' => 9));
+		$validation = new Validation(array('foo' => 'bar', 'fud' => 'fear, uncertainty, doubt', 'num' => 9));
 
-		$validate->rule('num', 'is_int')->rule('foo', 'is_string');
-
-		$validate->callback('foo', 'heh', array('ding'));
+		$validation->rule('num', 'is_int')->rule('foo', 'is_string');
 
 		$copy_data = array('foo' => 'no', 'fud' => 'maybe', 'num' => 42);
 
-		$copy = $validate->copy($copy_data);
+		$copy = $validation->copy($copy_data);
 
-		$this->assertNotSame($validate, $copy);
-		
-		foreach(array('_filters', '_rules', '_callbacks', '_labels', '_empty_rules', '_errors') as $attribute)
+		$this->assertNotSame($validation, $copy);
+
+		foreach(array('_rules', '_bound', '_labels', '_empty_rules', '_errors') as $attribute)
 		{
 			// This is just an easy way to check that the attributes are identical
 			// Without hardcoding the expected values
 			$this->assertAttributeSame(
-				self::readAttribute($validate, $attribute),
+				self::readAttribute($validation, $attribute),
 				$attribute,
 				$copy
 			);
@@ -929,87 +927,16 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	}
 
 	/**
-	 * By default there should be no callbacks registered with validate
-	 *
-	 * @test
-	 */
-	public function test_initially_there_are_no_callbacks()
-	{
-		$validate = new Validate(array());
-
-		$this->assertAttributeSame(array(), '_callbacks', $validate);
-	}
-
-	/**
-	 * This is just a quick check that callback() returns a reference to $this
-	 *
-	 * @test
-	 * @covers Validate::callback
-	 */
-	public function test_callback_returns_chainable_this()
-	{
-		$validate = new Validate(array());
-
-		$this->assertSame($validate, $validate->callback('field', 'something'));
-	}
-
-	/**
-	 * Check that callback() is storign callbacks in the correct manner
-	 *
-	 * @test
-	 * @covers Validate::callback
-	 */
-	public function test_callback_stores_callback()
-	{
-		$validate = new Validate(array('id' => 355));
-
-		$validate->callback('id', 'misc_callback');
-
-		$this->assertAttributeSame(
-			array(
-				'id' => array(array('misc_callback', array())),
-			), 
-			'_callbacks',
-			$validate
-		);
-	}
-
-	/**
-	 * Calling Validate::callbacks() should store multiple callbacks for the specified field
-	 *
-	 * @test
-	 * @covers Validate::callbacks
-	 * @covers Validate::callback
-	 */
-	public function test_callbacks_stores_multiple_callbacks()
-	{
-		$validate = new Validate(array('year' => 1999));
-
-		$validate->callbacks('year', array('misc_callback', 'another_callback'));
-
-		$this->assertAttributeSame(
-			array(
-				'year' => array( 
-					array('misc_callback', array()),
-					array('another_callback', array()),
-				),
-			), 
-			'_callbacks', 
-			$validate
-		);
-	}
-
-	/**
-	 * When the validate object is initially created there should be no labels
+	 * When the validation object is initially created there should be no labels
 	 * specified
 	 *
 	 * @test
 	 */
 	public function test_initially_there_are_no_labels()
 	{
-		$validate = new Validate(array());
+		$validation = new Validation(array());
 
-		$this->assertAttributeSame(array(), '_labels', $validate);
+		$this->assertAttributeSame(array(), '_labels', $validation);
 	}
 
 	/**
@@ -1019,24 +946,24 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	 * In both cases thefunction should return a reference to $this
 	 *
 	 * @test
-	 * @covers Validate::label
+	 * @covers Validation::label
 	 */
 	public function test_label_adds_and_overwrites_label_and_returns_this()
 	{
-		$validate = new Validate(array());
+		$validation = new Validation(array());
 
-		$this->assertSame($validate, $validate->label('email', 'Email Address'));
+		$this->assertSame($validation, $validation->label('email', 'Email Address'));
 
-		$this->assertAttributeSame(array('email' => 'Email Address'), '_labels', $validate);
+		$this->assertAttributeSame(array('email' => 'Email Address'), '_labels', $validation);
 
-		$this->assertSame($validate, $validate->label('email', 'Your Email'));
+		$this->assertSame($validation, $validation->label('email', 'Your Email'));
 
-		$validate->label('name', 'Your Name');
+		$validation->label('name', 'Your Name');
 
 		$this->assertAttributeSame(
 			array('email' => 'Your Email', 'name' => 'Your Name'),
 			'_labels',
-			$validate
+			$validation
 		);
 	}
 
@@ -1046,66 +973,47 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	 * The function should also return $this for chaining purposes
 	 *
 	 * @test
-	 * @covers Validate::labels
+	 * @covers Validation::labels
 	 */
 	public function test_labels_adds_and_overwrites_multiple_labels_and_returns_this()
 	{
-		$validate = new Validate(array());
+		$validation = new Validation(array());
 		$initial_data = array('kung fu' => 'fighting', 'fast' => 'cheetah');
 
-		$this->assertSame($validate, $validate->labels($initial_data));
+		$this->assertSame($validation, $validation->labels($initial_data));
 
-		$this->assertAttributeSame($initial_data, '_labels', $validate);
+		$this->assertAttributeSame($initial_data, '_labels', $validation);
 
-		$this->assertSame($validate, $validate->labels(array('fast' => 'lightning')));
+		$this->assertSame($validation, $validation->labels(array('fast' => 'lightning')));
 
 		$this->assertAttributeSame(
 			array('fast' => 'lightning', 'kung fu' => 'fighting'),
 			'_labels',
-			$validate
+			$validation
 		);
 	}
 
 	/**
-	 * We should be able to add a filter to the queue by calling filter()
+	 * Using bind() we should be able to add / overwrite multiple bound variables
+	 *
+	 * The function should also return $this for chaining purposes
 	 *
 	 * @test
-	 * @covers Validate::filter
+	 * @covers Validation::bind
 	 */
-	public function test_filter_adds_a_filter_and_returns_this()
+	public function test_bind_adds_and_overwrites_multiple_variables_and_returns_this()
 	{
-		$validate = new Validate(array());
+		$validation = new Validation(array());
+		$data = array('kung fu' => 'fighting', 'fast' => 'cheetah');
+		$bound = array(':foo' => 'some value');
 
-		$this->assertSame($validate, $validate->filter('name', 'trim'));
+		// Test binding an array of values
+		$this->assertSame($validation, $validation->bind($bound));
+		$this->assertAttributeSame($bound, '_bound', $validation);
 
-		$this->assertAttributeSame(
-			array('name' => array('trim' => array())),
-			'_filters',
-			$validate
-		);
-	}
-
-	/**
-	 * filters() should be able to add multiple filters for a field and return
-	 * $this when done
-	 *
-	 * @test
-	 * @covers Validate::filters
-	 */
-	public function test_filters_adds_multiple_filters_and_returns_this()
-	{
-		$validate = new Validate(array());
-
-		$this->assertSame(
-			$validate,
-			$validate->filters('id', array('trim' => NULL, 'some_func' => array('yes', 'no')))
-		);
-
-		$this->assertAttributeSame(
-			array('id' => array('trim' => array(), 'some_func' => array('yes', 'no'))),
-			'_filters',
-			$validate
-		);
+		// Test binding one value
+		$this->assertSame($validation, $validation->bind(':foo', 'some other value'));
+		$this->assertAttributeSame(array(':foo' => 'some other value'), '_bound', $validation);
 	}
 
 	/**
@@ -1115,151 +1023,62 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 	 */
 	public function provider_check()
 	{
-		$mock = $this->getMock('Crazy_Test', array('unit_test_callback'));
-		// TODO: enchance this / make params more specific
-		$mock
-			->expects($this->once())
-			->method('unit_test_callback')
-			->withAnyParameters();
-
-		// $first_array, $second_array, $rules, $first_expected, $second_expected
+		// $data_array, $rules, $first_expected, $expected_error
 		return array(
 			array(
 				array('foo' => 'bar'),
-				array('foo' => array('not_empty', NULL)),
-				array('foo' => array($mock, 'unit_test_callback')),
+				array('foo' => array(array('not_empty', NULL))),
 				TRUE,
 				array(),
 			),
 			array(
 				array('unit' => 'test'),
-				array('foo' => array('not_empty', NULL), 'unit' => array('min_length', 6)),
-				array(),
+				array(
+					'foo'  => array(array('not_empty', NULL)),
+					'unit' => array(array('min_length', array(':value', 6))
+					),
+				),
 				FALSE,
-				array('foo' => 'foo must not be empty', 'unit' => 'unit must be at least 6 characters long'),
+				array(
+					'foo' => 'foo must not be empty',
+					'unit' => 'unit must be at least 6 characters long'
+				),
 			),
 		);
 	}
 
 	/**
-	 * Tests Validate::check()
+	 * Tests Validation::check()
 	 *
 	 * @test
-	 * @covers Validate::check
-	 * @covers Validate::callbacks
-	 * @covers Validate::callback
-	 * @covers Validate::rule
-	 * @covers Validate::rules
-	 * @covers Validate::errors
-	 * @covers Validate::error
+	 * @covers Validation::check
+	 * @covers Validation::rule
+	 * @covers Validation::rules
+	 * @covers Validation::errors
+	 * @covers Validation::error
 	 * @dataProvider provider_check
 	 * @param string  $url       The url to test
 	 * @param boolean $expected  Is it valid?
 	 */
-	public function test_check($array, $rules, $callbacks, $expected, $expected_errors)
+	public function test_check($array, $rules, $expected, $expected_errors)
 	{
-		$validate = new Validate($array);
+		$validation = new Validation($array);
 
-		foreach ($rules as $field => $rule)
-			$validate->rule($field, $rule[0], array($rule[1]));
-		foreach ($callbacks as $field => $callback)
-			$validate->callback($field, $callback);
+		foreach ($rules as $field => $field_rules)
+		{
+			foreach ($field_rules as $rule)
+				$validation->rule($field, $rule[0], $rule[1]);
+		}
 
-		$status = $validate->check();
-		$errors = $validate->errors(TRUE);
+		$status = $validation->check();
+		$errors = $validation->errors(TRUE);
 		$this->assertSame($expected, $status);
 		$this->assertSame($expected_errors, $errors);
 
-		$validate = new Validate($array);
-		foreach ($rules as $field => $rule)
-			$validate->rules($field, array($rule[0] => array($rule[1])));
-		$this->assertSame($expected, $validate->check());
-	}
-
-	/**
-	 * This test asserts that Validate::check will call callbacks with all of the 
-	 * parameters supplied when the callback was specified
-	 *
-	 * @test
-	 * @covers Validate::callback
-	 */
-	public function test_object_callback_with_parameters()
-	{
-		$params = array(42, 'kohana' => 'rocks');
-
-		$validate = new Validate(array('foo' => 'bar'));
-
-		// Generate an isolated callback
-		$mock = $this->getMock('Random_Class_That_DNX', array('unit_test_callback'));
-
-		$mock->expects($this->once())
-			->method('unit_test_callback')
-			->with($validate, 'foo', $params);
-
-		$validate->callback('foo', array($mock, 'unit_test_callback'), $params);
-
-		$validate->check();
-	}
-
-	/**
-	 * In some cases (such as when validating search params in GET) it is necessary for
-	 * an empty array to validate successfully
-	 *
-	 * This test checks that Validate::check() allows the user to specify this setting when 
-	 * calling check()
-	 *
-	 * @test
-	 * @ticket 3059
-	 * @covers Validate::check
-	 */
-	public function test_check_allows_option_for_empty_data_array_to_validate()
-	{
-		$validate = new Validate(array());
-
-		$this->assertFalse($validate->check(FALSE));
-
-		$this->assertTrue($validate->check(TRUE));
-
-		$validate->rule('name', 'not_empty');
-
-		$this->assertFalse($validate->check(TRUE));
-		$this->assertFalse($validate->check());
-	}
-
-	/**
-	 * If you add a rule that says a field should match another field then
-	 * a label should be added for the field to match against to ensure that
-	 * it will be available when check() is called 
-	 *
-	 * @test
-	 * @ticket 3158
-	 * @covers Validate::rule
-	 */
-	public function test_rule_adds_label_if_rule_is_match_and_label_dnx()
-	{
-		$data   = array('password' => 'lolcats',  'password_confirm' => 'lolcats');
-		$labels = array('password' => 'password', 'password_confirm' => 'password confirm');
-
-		$validate = new Validate($data);
-		
-		$validate->rule('password', 'matches', array('password_confirm'));
-
-		$this->assertAttributeSame($labels, '_labels', $validate);
-
-		$this->assertTrue($validate->check());
-
-		// Now we do the dnx check 
-
-		$validate = new Validate($data);
-
-		$labels = array('password_confirm' => 'TEH PASS') + $labels;
-		$validate->label('password_confirm', $labels['password_confirm']);
-
-		$validate->rule('password', 'matches', array('password_confirm'));
-
-		$this->assertAttributeSame($labels, '_labels', $validate);
-
-		$this->assertTrue($validate->check());
+		$validation = new validation($array);
+		foreach ($rules as $field => $rules)
+			$validation->rules($field, $rules);
+		$this->assertSame($expected, $validation->check());
 	}
 
 	/**
@@ -1273,37 +1092,37 @@ Class Kohana_ValidateTest extends Unittest_TestCase
 		return array(
 			array(
 				array('username' => 'frank'),
-				array('username' => array('not_empty' => NULL)),
+				array('username' => array(array('not_empty', NULL))),
 				array(),
 			),
 			array(
 				array('username' => ''),
-				array('username' => array('not_empty' => NULL)),
+				array('username' => array(array('not_empty', NULL))),
 				array('username' => 'username must not be empty'),
 			),
 		);
 	}
 
 	/**
-	 * Tests Validate::errors()
+	 * Tests Validation::errors()
 	 *
 	 * @test
-	 * @covers Validate::errors
+	 * @covers Validation::errors
 	 * @dataProvider provider_errors
 	 * @param string  $url       The url to test
 	 * @param boolean $expected  Is it valid?
 	 */
 	public function test_errors($array, $rules, $expected)
 	{
-		$validate = Validate::factory($array);
+		$Validation = Validation::factory($array);
 
 		foreach($rules as $field => $field_rules)
 		{
-			$validate->rules($field, $field_rules);
+			$Validation->rules($field, $field_rules);
 		}
 
-		$validate->check();
+		$Validation->check();
 
-		$this->assertSame($expected, $validate->errors('validate', FALSE));
+		$this->assertSame($expected, $Validation->errors('Validation', FALSE));
 	}
 }
