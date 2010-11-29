@@ -385,37 +385,4 @@ class Kohana_CoreTest extends Unittest_TestCase
 	{
 		$this->assertEquals($expected, Kohana::exception_text($exception));
 	}
-
-	/**
-	 * Provides test data for test_dump()
-	 *
-	 * @return array
-	 */
-	public function provider_dump()
-	{
-		return array(
-			array('foobar', 128, '<small>string</small><span>(6)</span> "foobar"'),
-			array('foobar', 2, '<small>string</small><span>(6)</span> "fo&nbsp;&hellip;"'),
-			array(NULL, 128, '<small>NULL</small>'),
-			array(TRUE, 128, '<small>bool</small> TRUE'),
-			array(array('foobar'), 128, "<small>array</small><span>(1)</span> <span>(\n    0 => <small>string</small><span>(6)</span> \"foobar\"\n)</span>"),
-			array(new StdClass, 128, "<small>object</small> <span>stdClass(0)</span> <code>{\n}</code>"),
-			array("fo\x6F\xFF\x00bar\x8F\xC2\xB110", 128, '<small>string</small><span>(10)</span> "foobar±10"'),
-		);
-	}
-
-	/**
-	 * Tests Kohana::dump()
-	 *
-	 * @test
-	 * @dataProvider provider_dump
-	 * @covers Kohana::dump
-	 * @covers Kohana::_dump
-	 * @param object $exception exception to test
-	 * @param string $expected  expected output
-	 */
-	public function test_dump($input, $length, $expected)
-	{
-		$this->assertEquals($expected, Debug::dump($input, $length));
-	}
 }
