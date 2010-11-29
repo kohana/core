@@ -158,11 +158,11 @@ class Kohana_Validation extends ArrayObject {
 
 	/**
 	 * Bind a value to a parameter definition.
-	 * 
+	 *
 	 *     // This allows you to use :model in the parameter definition of rules
 	 *     $validation->bind(':model', $model)
 	 *         ->rule('status', 'valid_status', array(':model'));
-	 * 
+	 *
 	 * @param   string  variable name or an array of variables
 	 * @param   mixed   value
 	 * @return  $this
@@ -494,18 +494,6 @@ class Kohana_Validation extends ArrayObject {
 		}
 
 		return $messages;
-	}
-
-	/**
-	 * Checks if a field matches the value of another field.
-	 *
-	 * @param   string   field value
-	 * @param   string   field name to match
-	 * @return  boolean
-	 */
-	protected function matches($value, $match)
-	{
-		return ($value === $this[$match]);
 	}
 
 } // End Validation
