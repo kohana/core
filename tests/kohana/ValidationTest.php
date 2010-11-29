@@ -31,10 +31,10 @@ Class Kohana_ValidationTest extends Kohana_Unittest_TestCase
 			array('¥', FALSE, TRUE)
 		);
 	}
-	
+
 	/**
 	 * Tests Valid::alpha()
-	 * 
+	 *
 	 * Checks whether a string consists of alphabetical characters only.
 	 *
 	 * @test
@@ -61,10 +61,10 @@ Class Kohana_ValidationTest extends Kohana_Unittest_TestCase
 		    array('abcd',      TRUE),
 		    array('1234',      TRUE),
 		    array('abc123&^/-', FALSE),
-				// UTF-8 tests
-				array('あいうえお', TRUE, TRUE),
-				array('零一二三四五', TRUE, TRUE),
-				array('あい四五£^£^', FALSE, TRUE),
+			// UTF-8 tests
+			array('あいうえお', TRUE, TRUE),
+			array('零一二三四五', TRUE, TRUE),
+			array('あい四五£^£^', FALSE, TRUE),
 		);
 	}
 
@@ -115,13 +115,13 @@ Class Kohana_ValidationTest extends Kohana_Unittest_TestCase
 	 */
 	public function test_alpha_dash($input, $expected, $contains_utf8 = FALSE)
 	{
-		if( ! $contains_utf8)
+		if ( ! $contains_utf8)
 		{
 			$this->assertSame(
 				$expected,
 				Valid::alpha_dash($input)
 			);
-		}		
+		}
 
 		$this->assertSame(
 			$expected,
@@ -225,7 +225,7 @@ Class Kohana_ValidationTest extends Kohana_Unittest_TestCase
 	 */
 	public function test_digit($input, $expected, $contains_utf8 = FALSE)
 	{
-		if( ! $contains_utf8)
+		if ( ! $contains_utf8)
 		{
 			$this->assertSame(
 				$expected,
@@ -588,7 +588,7 @@ Class Kohana_ValidationTest extends Kohana_Unittest_TestCase
 	 * Tests Valid::max_length()
 	 *
 	 * Checks that a field is short enough.
-	 * 
+	 *
 	 * @test
 	 * @group kohana.validation.helpers
 	 * @dataProvider provider_max_length
@@ -651,7 +651,7 @@ Class Kohana_ValidationTest extends Kohana_Unittest_TestCase
 		// arrayObject with value
 		$ao1 = new ArrayObject;
 		$ao1['test'] = 'value';
-		
+
 		return array(
 			array(array(),      FALSE),
 			array(NULL,         FALSE),
@@ -894,7 +894,7 @@ Class Kohana_ValidationTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * When we copy() a validation object, we should have a new validation object
-	 * with the exact same attributes, apart from the data, which should be the 
+	 * with the exact same attributes, apart from the data, which should be the
 	 * same as the array we pass to copy()
 	 *
 	 * @test
@@ -911,7 +911,7 @@ Class Kohana_ValidationTest extends Kohana_Unittest_TestCase
 		$copy = $validation->copy($copy_data);
 
 		$this->assertNotSame($validation, $copy);
-		
+
 		foreach(array('_rules', '_bound', '_labels', '_empty_rules', '_errors') as $attribute)
 		{
 			// This is just an easy way to check that the attributes are identical
