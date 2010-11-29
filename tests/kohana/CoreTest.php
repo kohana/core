@@ -14,11 +14,11 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_CoreTest extends Unittest_TestCase
+class Kohana_CoreTest extends Kohana_Unittest_TestCase
 {
 	/**
 	 * Provides test data for test_sanitize()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_sanitize()
@@ -92,7 +92,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 		$this->assertType('array', $files);
 		$this->assertGreaterThan(3, count($files));
-		
+
 		$this->assertSame(array(), Kohana::list_files('geshmuck'));
 	}
 
@@ -113,7 +113,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for testCache()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_cache()
@@ -144,7 +144,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for test_message()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_message()
@@ -178,7 +178,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 					'regex'         => ':field does not match the required format',
 					'url'           => ':field must be a url',
 				),
-				'validation', NULL, 
+				'validation', NULL,
 			),
 		);
 	}
@@ -200,7 +200,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for test_error_handler()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_error_handler()
@@ -239,7 +239,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for testExceptionHandler()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_exception_handler()
@@ -286,7 +286,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for test_modules_sets_and_returns_valid_modules()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_modules_sets_and_returns_valid_modules()
@@ -317,7 +317,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 	}
 
 	/**
-	 * To make the tests as portable as possible this just tests that 
+	 * To make the tests as portable as possible this just tests that
 	 * you get an array of modules when you can Kohana::modules() and that
 	 * said array contains unittest
 	 *
@@ -353,7 +353,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 		// And make sure they're in the correct positions
 		$this->assertSame(APPPATH, reset($include_paths));
 		$this->assertSame(SYSPATH, end($include_paths));
-		
+
 		foreach($modules as $module)
 		{
 			$this->assertContains($module, $include_paths);
@@ -362,7 +362,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for test_exception_text()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_exception_text()
@@ -388,7 +388,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for test_dump()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_dump()

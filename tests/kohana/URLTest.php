@@ -12,7 +12,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_URLTest extends Unittest_TestCase
+Class Kohana_URLTest extends Kohana_Unittest_TestCase
 {
 	/**
 	 * Default values for the environment, see setEnvironment
@@ -28,7 +28,7 @@ Class Kohana_URLTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for test_base()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_base()
@@ -90,7 +90,7 @@ Class Kohana_URLTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for test_site()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_site()

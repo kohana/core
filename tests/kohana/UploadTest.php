@@ -12,11 +12,11 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_UploadTest extends Unittest_TestCase
+class Kohana_UploadTest extends Kohana_Unittest_TestCase
 {
 	/**
 	 * Provides test data for test_size()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_size()
@@ -24,20 +24,20 @@ class Kohana_UploadTest extends Unittest_TestCase
 		return array(
 			// $field, $bytes, $environment, $expected
 			array(
-				'unit_test', 
-				5, 
-				array('_FILES' => array('unit_test' => array('error' => UPLOAD_ERR_INI_SIZE))), 
+				'unit_test',
+				5,
+				array('_FILES' => array('unit_test' => array('error' => UPLOAD_ERR_INI_SIZE))),
 				FALSE
 			),
 			array(
-				'unit_test', 
-				5, 
-				array('_FILES' => array('unit_test' => array('error' => UPLOAD_ERR_NO_FILE))), 
+				'unit_test',
+				5,
+				array('_FILES' => array('unit_test' => array('error' => UPLOAD_ERR_NO_FILE))),
 				TRUE
 			),
 			array(
-				'unit_test', 
-				'6K', 
+				'unit_test',
+				'6K',
 				array('_FILES' => array(
 					'unit_test' => array(
 						'error' => UPLOAD_ERR_OK,
@@ -47,12 +47,12 @@ class Kohana_UploadTest extends Unittest_TestCase
 						'size' => filesize(Kohana::find_file('tests', 'test_data/github', 'png')),
 						)
 					)
-				), 
+				),
 				TRUE
 			),
 			array(
-				'unit_test', 
-				'1B', 
+				'unit_test',
+				'1B',
 				array('_FILES' => array(
 						'unit_test' => array(
 							'error' => UPLOAD_ERR_OK,
@@ -62,7 +62,7 @@ class Kohana_UploadTest extends Unittest_TestCase
 							'size' => filesize(Kohana::find_file('tests', 'test_data/github', 'png')),
 						)
 					)
-				), 
+				),
 				FALSE
 			),
 		);
@@ -174,7 +174,7 @@ class Kohana_UploadTest extends Unittest_TestCase
 					'tmp_name' => Kohana::find_file('tests', 'test_data/github', 'png'),
 				)
 			),
-			
+
 		);
 	}
 
@@ -215,7 +215,7 @@ class Kohana_UploadTest extends Unittest_TestCase
 				)
 			)
 		));
-		
+
 		$this->assertTrue(Upload::type($_FILES['unit_test'], array('jpg', 'png', 'gif')));
 
 		$this->assertFalse(Upload::type($_FILES['unit_test'], array('docx')));
