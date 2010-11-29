@@ -95,6 +95,42 @@ Class Kohana_ArrTest extends Unittest_TestCase
 		$this->assertSame($expected, $array);
 	}
 
+	/**
+	 * Provides test data for test_pluck
+	 *
+	 * @return array
+	 */
+	public function provider_pluck()
+	{
+		return array(
+			array(
+				array(
+					  array('id' => 20, 'name' => 'John Smith'),
+					  array('name' => 'Linda'),
+					  array('id' => 25, 'name' => 'Fred'),
+					 ),
+				'id',
+				array(20, 25)
+			),
+		);
+	}
+
+	/**
+	 * Tests Arr::pluck()
+	 *
+	 * @test
+	 * @dataProvider provider_pluck
+	 * @param array $array
+	 * @param string $key
+	 * @param array $expected
+	 */
+	public function test_pluck(array $array, $key, $expected)
+	{
+		$array = Arr::pluck($array, $key);
+
+		$this->assertSame(count($expected), count($array));
+		$this->assertSame($expected, $array);
+	}
 
 	/**
 	 * Provides test data for test_get()
