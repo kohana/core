@@ -12,11 +12,11 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_FileTest extends Kohana_Unittest_TestCase
+class Kohana_FileTest extends Unittest_TestCase
 {
 	/**
 	 * Provides test data for test_sanitize()
-	 *
+	 * 
 	 * @return array
 	 */
 	public function provider_mime()
@@ -43,7 +43,7 @@ class Kohana_FileTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * Provides test data for test_split_join()
-	 *
+	 * 
 	 * @return array
 	 */
 	public function provider_split_join()

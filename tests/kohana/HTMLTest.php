@@ -2,7 +2,7 @@
 
 /**
  * Tests HTML
- *
+ * 
  * @group kohana
  *
  * @package    Unittest
@@ -11,8 +11,8 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_HTMLTest extends Kohana_Unittest_TestCase
-{
+Class Kohana_HTMLTest extends Unittest_TestCase
+{	
 	protected $environmentDefault = array(
 		'Kohana::$base_url' => '/kohana/',
 		'HTTP_HOST'	=> 'www.kohanaframework.org',
@@ -20,7 +20,7 @@ Class Kohana_HTMLTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * Provides test data for test_attributes()
-	 *
+	 * 
 	 * @return array
 	 */
 	public function provider_attributes()

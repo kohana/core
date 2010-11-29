@@ -10,7 +10,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_NumTest extends Kohana_Unittest_TestCase
+Class Kohana_NumTest extends Unittest_TestCase
 {
 	protected $default_locale;
 
@@ -48,7 +48,7 @@ Class Kohana_NumTest extends Kohana_Unittest_TestCase
 			array(2684354560.0, '2.5GB'),
 		);
 	}
-
+	
 	/**
 	 * Tests Num::bytes()
 	 *
@@ -62,7 +62,7 @@ Class Kohana_NumTest extends Kohana_Unittest_TestCase
 	{
 		$this->assertSame($expected, Num::bytes($size));
 	}
-
+	
 	/**
 	 * Provides test data for test_ordinal()
 	 * @return array

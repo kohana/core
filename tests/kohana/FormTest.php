@@ -12,7 +12,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_FormTest extends Kohana_Unittest_TestCase
+class Kohana_FormTest extends Unittest_TestCase
 {
 	/**
 	 * Defaults for this test
@@ -25,7 +25,7 @@ class Kohana_FormTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * Provides test data for test_open()
-	 *
+	 * 
 	 * @return array
 	 */
 	public function provider_open()
@@ -58,10 +58,10 @@ class Kohana_FormTest extends Kohana_Unittest_TestCase
 				'accept-charset' => 'utf-8',
 			),
 		);
-
+		
 		if($attributes !== NULL)
 			$matcher['attributes'] = $attributes + $matcher['attributes'];
-
+		
 		$this->assertTag($matcher, $tag);
 	}
 
@@ -77,7 +77,7 @@ class Kohana_FormTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * Provides test data for test_input()
-	 *
+	 * 
 	 * @return array
 	 */
 	public function provider_input()
@@ -125,7 +125,7 @@ class Kohana_FormTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * Provides test data for test_file()
-	 *
+	 * 
 	 * @return array
 	 */
 	public function provider_file()
@@ -151,7 +151,7 @@ class Kohana_FormTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * Provides test data for test_check()
-	 *
+	 * 
 	 * @return array
 	 */
 	public function provider_check()
@@ -161,7 +161,7 @@ class Kohana_FormTest extends Kohana_Unittest_TestCase
 			array('checkbox', 'foo', NULL, FALSE, NULL),
 			array('checkbox', 'foo', NULL, TRUE, NULL),
 			array('checkbox', 'foo', 'bar', TRUE, NULL),
-
+			
 			array('radio', 'foo', NULL, FALSE, NULL),
 			array('radio', 'foo', NULL, TRUE, NULL),
 			array('radio', 'foo', 'bar', TRUE, NULL),
@@ -195,7 +195,7 @@ class Kohana_FormTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * Provides test data for test_text()
-	 *
+	 * 
 	 * @return array
 	 */
 	public function provider_text()
@@ -243,7 +243,7 @@ class Kohana_FormTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * Provides test data for test_select()
-	 *
+	 * 
 	 * @return array
 	 */
 	public function provider_select()
@@ -276,7 +276,7 @@ class Kohana_FormTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * Provides test data for test_submit()
-	 *
+	 * 
 	 * @return array
 	 */
 	public function provider_submit()
@@ -301,14 +301,14 @@ class Kohana_FormTest extends Kohana_Unittest_TestCase
 			'tag' => 'input',
 			'attributes' => array('name' => $name, 'type' => 'submit', 'value' => $value)
 		);
-
+			
 		$this->assertTag($matcher, Form::submit($name, $value));
 	}
 
 
 	/**
 	 * Provides test data for test_image()
-	 *
+	 * 
 	 * @return array
 	 */
 	public function provider_image()
@@ -336,7 +336,7 @@ class Kohana_FormTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * Provides test data for testLabel()
-	 *
+	 * 
 	 * @return array
 	 */
 	function providerLabel()

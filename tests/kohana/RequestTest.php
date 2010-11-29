@@ -11,7 +11,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_RequestTest extends Kohana_Unittest_TestCase
+class Kohana_RequestTest extends Unittest_TestCase
 {
 	/**
 	 * Route::matches() should return false if the route doesn't match against a uri
@@ -50,7 +50,7 @@ class Kohana_RequestTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * Provides test data for test_instance()
-	 *
+	 * 
 	 * @return array
 	 */
 	public function provider_instance()
@@ -87,7 +87,7 @@ class Kohana_RequestTest extends Kohana_Unittest_TestCase
 			'Kohana::$is_cli'    => $is_cli,
 			'Request::$instance' => NULL
 		));
-
+	
 		$request = Request::instance($route);
 
 		$this->assertEquals($status, $request->status);

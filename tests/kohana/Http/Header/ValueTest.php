@@ -14,7 +14,7 @@
  * @copyright  (c) 2008-2009 Kohana Team
  * @license    http://kohanaphp.com/license
  */
-Class Kohana_HTTP_Header_ValueTest extends Kohana_Unittest_TestCase
+Class Kohana_HTTP_Header_ValueTest extends Unittest_TestCase
 {
 	/**
 	 * If the header value is composed of a key value pair then the parser

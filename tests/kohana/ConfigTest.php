@@ -12,7 +12,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
+Class Kohana_ConfigTest extends Unittest_TestCase
 {
 
 	/**
@@ -124,7 +124,7 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 		// To get around this we have to specify a totally random name for the second mock object
 		$reader1 = $this->getMock('Kohana_Config_Reader');
 		$reader2 = $this->getMock('Kohana_Config_Reader', array(), array(), 'MY_AWESOME_READER');
-
+		
 		$config->attach($reader1);
 		$config->attach($reader2);
 
@@ -155,7 +155,7 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 	/**
 	 * If load() is called and there are no readers present then it should throw
 	 * a kohana exception
-	 *
+	 * 
 	 * @test
 	 * @covers Kohana_Config::load
 	 * @expectedException Kohana_Exception
@@ -187,7 +187,7 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 			->method('load')
 			->with($config_group)
 			->will($this->returnValue(FALSE));
-
+		
 		$reader2 = $this->getMock('Kohana_Config_Reader', array('load'));
 		$reader2
 			->expects($this->once())
@@ -228,7 +228,7 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 			->method('load')
 			->with($group)
 			->will($this->onConsecutiveCalls(
-				$this->returnValue(FALSE),
+				$this->returnValue(FALSE), 
 				$this->returnValue(clone $reader2)
 			));
 

@@ -11,7 +11,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_SessionTest extends Kohana_Unittest_TestCase
+Class Kohana_SessionTest extends Unittest_TestCase
 {
 
 	/**
@@ -25,7 +25,7 @@ Class Kohana_SessionTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for
+	 * Provides test data for 
 	 *
 	 * test_constructor_uses_name_from_config_and_casts()
 	 *
@@ -41,7 +41,7 @@ Class Kohana_SessionTest extends Kohana_Unittest_TestCase
 					'name'      => 'awesomeness',
 					'lifetime'  =>  1231456421,
 					'encrypted' =>  FALSE
-				),
+				), 
 				array(
 					'name'      => 'awesomeness',
 					'lifetime'  => '1231456421',
@@ -53,7 +53,7 @@ Class Kohana_SessionTest extends Kohana_Unittest_TestCase
 				array(
 					'name'       => '123',
 					'encrypted'  => 'default',
-				),
+				), 
 				array(
 					'name'       =>  123,
 					'encrypted'  =>  TRUE,
@@ -134,7 +134,7 @@ Class Kohana_SessionTest extends Kohana_Unittest_TestCase
 		$this->assertSame('foobar', $session->get('our_var'));
 	}
 
-
+	
 	/**
 	 * When a session is initially created it should have no data
 	 *
@@ -173,7 +173,7 @@ Class Kohana_SessionTest extends Kohana_Unittest_TestCase
 	public function test_default_session_is_unencrypted()
 	{
 		$session = $this->getMockSession();
-
+		
 		$this->assertAttributeSame(FALSE, '_encrypted', $session);
 	}
 
@@ -205,7 +205,7 @@ Class Kohana_SessionTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Make sure that get() is using the default value we provide and
+	 * Make sure that get() is using the default value we provide and 
 	 * isn't tampering with it
 	 *
 	 * @test
@@ -244,7 +244,7 @@ Class Kohana_SessionTest extends Kohana_Unittest_TestCase
 		$session = $this->getMockSession();
 
 		$session->set('arkward', NULL);
-
+		
 		$this->assertSame(NULL, $session->get('arkward', 'uh oh'));
 	}
 
@@ -288,7 +288,7 @@ Class Kohana_SessionTest extends Kohana_Unittest_TestCase
 		$this->assertSame($session, $session->set('pork', 'pie'));
 
 		$this->assertAttributeSame(
-			array('pork' => 'pie'),
+			array('pork' => 'pie'), 
 			'_data',
 			$session
 		);
@@ -321,7 +321,7 @@ Class Kohana_SessionTest extends Kohana_Unittest_TestCase
 			'c' => 'C',
 			'easy' => '123'
 		);
-
+		
 		// Make a copy of $data for testing purposes
 		$copy = $data;
 
@@ -353,8 +353,8 @@ Class Kohana_SessionTest extends Kohana_Unittest_TestCase
 		return array(
 			// If driver returns array then just load it up
 			array(
-				array(),
-				'wacka_wacka',
+				array(), 
+				'wacka_wacka', 
 				array()
 			),
 			array(
@@ -364,7 +364,7 @@ Class Kohana_SessionTest extends Kohana_Unittest_TestCase
 			),
 			// If it's a string an encrpytion is disabled (by default) base64decode and unserialize
 			array(
-				array('dead' => 'arrival'),
+				array('dead' => 'arrival'), 
 				'lolums',
 				'YToxOntzOjQ6ImRlYWQiO3M6NzoiYXJyaXZhbCI7fQ=='
 			),
@@ -374,7 +374,7 @@ Class Kohana_SessionTest extends Kohana_Unittest_TestCase
 	/**
 	 * This is one of the "big" tests for the session lib
 	 *
-	 * The test makes sure that
+	 * The test makes sure that 
 	 *
 	 * 1. Session asks the driver for the data relating to $session_id
 	 * 2. That it will load the returned data into the session
@@ -405,7 +405,7 @@ Class Kohana_SessionTest extends Kohana_Unittest_TestCase
 	public function test_regenerate_tells_driver_to_regenerate()
 	{
 		$session = $this->getMockSession();
-
+		
 		$new_session_id = 'asdnoawdnoainf';
 
 		$session->expects($this->once())

@@ -12,11 +12,11 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_InflectorTest extends Kohana_Unittest_TestCase
+class Kohana_InflectorTest extends Unittest_TestCase
 {
 	/**
 	 * Provides test data for test_lang()
-	 *
+	 * 
 	 * @return array
 	 */
 	public function provider_uncountable()
@@ -43,7 +43,7 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * Provides test data for test_lang()
-	 *
+	 * 
 	 * @return array
 	 */
 	public function provider_singular()
@@ -79,7 +79,7 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * Provides test data for test_lang()
-	 *
+	 * 
 	 * @return array
 	 */
 	public function provider_plural()
@@ -115,7 +115,7 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * Provides test data for test_camelize()
-	 *
+	 * 
 	 * @return array
 	 */
 	public function provider_camelize()
