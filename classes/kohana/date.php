@@ -256,7 +256,7 @@ class Kohana_Date {
 	 *
 	 * By default a mirrored array of $month_number => $month_number is returned
 	 *
-	 *     Date::months(); 
+	 *     Date::months();
 	 *     // aray(1 => 1, 2 => 2, 3 => 3, ..., 12 => 12)
 	 *
 	 * But you can customise this by passing in either Date::MONTHS_LONG
@@ -265,7 +265,7 @@ class Kohana_Date {
 	 *     // array(1 => 'January', 2 => 'February', ..., 12 => 'December')
 	 *
 	 * Or Date::MONTHS_SHORT
-	 * 
+	 *
 	 *     Date::months(Date::MONTHS_SHORT);
 	 *     // array(1 => 'Jan', 2 => 'Feb', ..., 12 => 'Dec')
 	 *
@@ -277,11 +277,11 @@ class Kohana_Date {
 	{
 		$months = array();
 
-		if($format === DATE::MONTHS_LONG OR $format === DATE::MONTHS_SHORT)
+		if ($format === DATE::MONTHS_LONG OR $format === DATE::MONTHS_SHORT)
 		{
-			for($i = 1; $i <= 12; ++$i)
+			for ($i = 1; $i <= 12; ++$i)
 			{
-				$months[$i] = strftime($format, mktime(0, 0, 0, $i));
+				$months[$i] = strftime($format, mktime(0, 0, 0, $i, 1));
 			}
 		}
 		else
