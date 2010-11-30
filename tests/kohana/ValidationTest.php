@@ -198,6 +198,8 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 				array(
 					TRUE => array(array('min_length', array(':value', 4))),
 					'foo'  => array(array('not_empty', NULL)),
+					// Makes sure empty fields do not validate unless the rule is in _empty_rules
+					'unit' => array(array('exact_length', array(':value', 4))),
 				),
 				FALSE,
 				array('foo' => 'foo must be at least 4 characters long'),
