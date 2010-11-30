@@ -46,7 +46,7 @@ class Kohana_Route {
 
 	/**
 	 * @var  string  default protocol for all routes
-	 * 
+	 *
 	 * @example  'http://'
 	 */
 	public static $default_protocol = 'http://';
@@ -190,7 +190,13 @@ class Kohana_Route {
 	 * Returns the compiled regular expression for the route. This translates
 	 * keys and optional groups to a proper PCRE regular expression.
 	 *
-	 *     $regex = $route->_compile();
+	 *     $compiled = Route::compile(
+	 *        '<controller>(/<action>(/<id>))',
+	 *         array(
+	 *           'controller' => '[a-z]+',
+	 *           'id' => '\d+',
+	 *         )
+	 *     );
 	 *
 	 * @return  string
 	 * @uses    Route::REGEX_ESCAPE
