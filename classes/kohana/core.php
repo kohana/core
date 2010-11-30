@@ -131,6 +131,11 @@ class Kohana_Core {
 	public static $shutdown_errors = array(E_PARSE, E_ERROR, E_USER_ERROR, E_COMPILE_ERROR);
 
 	/**
+	 * @var  boolean  escape quotes in Kohana::debug?
+	 */
+	public static $debug_escape_quotes = FALSE;
+
+	/**
 	 * @var  object  logging object
 	 */
 	public static $log;
@@ -1236,6 +1241,12 @@ class Kohana_Core {
 			{
 				// Encode the string
 				$str = htmlspecialchars($var, ENT_NOQUOTES, Kohana::$charset);
+			}
+
+			if (Kohana::$debug_escape_quotes)
+			{
+				// Escape strings (for syntax highlighters, mostly)
+				$str = str_replace('"', '\\"', $str);
 			}
 
 			return '<small>string</small><span>('.strlen($var).')</span> "'.$str.'"';
