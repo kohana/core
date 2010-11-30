@@ -192,6 +192,16 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 					'unit' => 'unit must be at least 6 characters long'
 				),
 			),
+			// We need to test wildcard rules
+			array(
+				array('foo' => 'bar'),
+				array(
+					TRUE => array(array('min_length', array(':value', 4))),
+					'foo'  => array(array('not_empty', NULL)),
+				),
+				FALSE,
+				array('foo' => 'foo must be at least 4 characters long'),
+			),
 		);
 	}
 
