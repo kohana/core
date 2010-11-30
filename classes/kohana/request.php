@@ -818,7 +818,7 @@ class Kohana_Request {
 	 * @uses    URL::site
 	 * @uses    Request::send_headers
 	 */
-	public function redirect($url, $code = 302)
+	public function redirect($url = '', $code = 302)
 	{
 		if (strpos($url, '://') === FALSE)
 		{
