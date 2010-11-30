@@ -864,4 +864,37 @@ Class Kohana_ValidTest extends Unittest_TestCase
 			Valid::url($url)
 		);
 	}
+
+	/**
+	 * DataProvider for the valid::matches() test
+	 */
+	public function provider_matches()
+	{
+		return array(
+			array(array('a' => 'hello', 'b' => 'hello'), 'a', 'b', TRUE),
+			array(array('a' => 'hello', 'b' => 'hello '), 'a', 'b', FALSE),
+			array(array('a' => '1', 'b' => 1), 'a', 'b', FALSE),
+		);
+	}
+
+	/**
+	 * Tests Valid::matches()
+	 *
+	 * Tests if a field matches another from an array of data
+	 *
+	 * @test
+	 * @group kohana.validation.helpers
+	 * @dataProvider provider_matches
+	 * @param array   $data      Array of fields
+	 * @param integer $field     First field name
+	 * @param integer $match     Field name that must match $field in $data
+	 * @param boolean $expected  Do the two fields match?
+	 */
+	public function test_matches($data, $field, $match, $expected)
+	{
+		$this->AssertSame(
+			$expected,
+			Valid::matches($data, $field, $match)
+		);
+	}
 }
