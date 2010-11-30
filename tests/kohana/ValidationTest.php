@@ -192,13 +192,24 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 					'unit' => 'unit must be at least 6 characters long'
 				),
 			),
-			// We need to test wildcard rules
 			array(
 				array('foo' => 'bar'),
 				array(
+					// Tests wildcard rules
 					TRUE => array(array('min_length', array(':value', 4))),
-					'foo'  => array(array('not_empty', NULL)),
-					// Makes sure empty fields do not validate unless the rule is in _empty_rules
+					'foo'  => array(
+						array('not_empty', NULL),
+						// Tests the array syntax for callbacks
+						array(array('Valid', 'exact_length'), array(':value', 3)),
+						// Tests the Class::method syntax for callbacks
+						array('Valid::exact_length', array(':value', 3)),
+						// Tests the lambda function syntax for callbacks
+						// Commented out for PHP 5.2 support
+						// array(function($value){return TRUE;}, array(':value')),
+						// Tests using a function as a rule
+						array('is_string', array(':value')),
+					),
+					// Tests that rules do not run on empty fields unless they are in _empty_rules
 					'unit' => array(array('exact_length', array(':value', 4))),
 				),
 				FALSE,
