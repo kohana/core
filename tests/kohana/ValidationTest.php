@@ -295,5 +295,7 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 		$Validation->check();
 
 		$this->assertSame($expected, $Validation->errors('Validation', FALSE));
+		// Should be able to get raw errors array
+		$this->assertAttributeSame($Validation->errors(NULL), '_errors', $Validation);
 	}
 }
