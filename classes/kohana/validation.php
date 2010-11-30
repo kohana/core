@@ -235,7 +235,7 @@ class Kohana_Validation extends ArrayObject {
 				}
 
 				// Append the rules
-				$rules[$field] += $rules[TRUE];
+				$rules[$field] = array_merge($rules[$field], $rules[TRUE]);
 			}
 		}
 
