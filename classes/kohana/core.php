@@ -37,20 +37,6 @@ class Kohana_Core {
 	const FILE_CACHE = ":header \n\n// :name\n\n:data\n";
 
 	/**
-	 * @var  array  PHP error code => human readable name
-	 */
-	public static $php_errors = array(
-		E_ERROR              => 'Fatal Error',
-		E_USER_ERROR         => 'User Error',
-		E_PARSE              => 'Parse Error',
-		E_WARNING            => 'Warning',
-		E_USER_WARNING       => 'User Warning',
-		E_STRICT             => 'Strict',
-		E_NOTICE             => 'Notice',
-		E_RECOVERABLE_ERROR  => 'Recoverable Error',
-	);
-
-	/**
 	 * @var  string  current environment name
 	 */
 	public static $environment = Kohana::DEVELOPMENT;
@@ -131,11 +117,6 @@ class Kohana_Core {
 	public static $errors = TRUE;
 
 	/**
-	 * @var  string  error rendering view
-	 */
-	public static $error_view = 'kohana/error';
-
-	/**
 	 * @var  array  types of errors to display at shutdown
 	 */
 	public static $shutdown_errors = array(E_PARSE, E_ERROR, E_USER_ERROR, E_COMPILE_ERROR);
@@ -191,7 +172,6 @@ class Kohana_Core {
 	 * `string`  | index_file | set the index.php file name                    | `"index.php"`
 	 * `string`  | cache_dir  | set the cache directory path                   | `APPPATH."cache"`
 	 * `integer` | cache_life | set the default cache lifetime                 | `60`
-	 * `string`  | error_view | set the error rendering view                   | `"kohana/error"`
 	 *
 	 * @throws  Kohana_Exception
 	 * @param   array   global settings
@@ -221,12 +201,6 @@ class Kohana_Core {
 		// Start an output buffer
 		ob_start();
 
-		if (defined('E_DEPRECATED'))
-		{
-			// E_DEPRECATED only exists in PHP >= 5.3.0
-			Kohana::$php_errors[E_DEPRECATED] = 'Deprecated';
-		}
-
 		if (isset($settings['errors']))
 		{
 			// Enable error handling
@@ -236,7 +210,7 @@ class Kohana_Core {
 		if (Kohana::$errors === TRUE)
 		{
 			// Enable Kohana exception handling, adds stack traces and error source.
-			set_exception_handler(array('Kohana', 'exception_handler'));
+			set_exception_handler(array('Kohana_Exception', 'handler'));
 
 			// Enable Kohana error handling, converts all PHP errors to exceptions.
 			set_error_handler(array('Kohana', 'error_handler'));
@@ -244,19 +218,6 @@ class Kohana_Core {
 
 		// Enable the Kohana shutdown handler, which catches E_FATAL errors.
 		register_shutdown_function(array('Kohana', 'shutdown_handler'));
-
-		if (isset($settings['error_view']))
-		{
-			if ( ! Kohana::find_file('views', $settings['error_view']))
-			{
-				throw new Kohana_Exception('Error view file does not exist: views/:file', array(
-					':file' => $settings['error_view'],
-				));
-			}
-
-			// Change the default error rendering
-			Kohana::$error_view = (string) $settings['error_view'];
-		}
 
 		if (ini_get('register_globals'))
 		{
@@ -266,7 +227,7 @@ class Kohana_Core {
 
 		if (isset($settings['expose']))
 		{
-			self::$expose = (bool) $settings['expose'];
+			Kohana::$expose = (bool) $settings['expose'];
 		}
 
 		// Determine if we are running in a command line environment
@@ -524,7 +485,7 @@ class Kohana_Core {
 		}
 		catch (Exception $e)
 		{
-			Kohana::exception_handler($e);
+			Kohana_Exception::handler($e);
 			die;
 		}
 	}
@@ -990,107 +951,9 @@ class Kohana_Core {
 	}
 
 	/**
-	 * Inline exception handler, displays the error message, source of the
-	 * exception, and the stack trace of the error.
-	 *
-	 * @uses    Kohana::exception_text
-	 * @param   object   exception object
-	 * @return  boolean
-	 */
-	public static function exception_handler(Exception $e)
-	{
-		try
-		{
-			// Get the exception information
-			$type    = get_class($e);
-			$code    = $e->getCode();
-			$message = $e->getMessage();
-			$file    = $e->getFile();
-			$line    = $e->getLine();
-
-			// Create a text version of the exception
-			$error = Kohana::exception_text($e);
-
-			if (is_object(Kohana::$log))
-			{
-				// Add this exception to the log
-				Kohana::$log->add(Kohana::ERROR, $error);
-
-				// Make sure the logs are written
-				Kohana::$log->write();
-			}
-
-			if (Kohana::$is_cli)
-			{
-				// Just display the text of the exception
-				echo "\n{$error}\n";
-
-				return TRUE;
-			}
-
-			// Get the exception backtrace
-			$trace = $e->getTrace();
-
-			if ($e instanceof ErrorException)
-			{
-				if (isset(Kohana::$php_errors[$code]))
-				{
-					// Use the human-readable error name
-					$code = Kohana::$php_errors[$code];
-				}
-
-				if (version_compare(PHP_VERSION, '5.3', '<'))
-				{
-					// Workaround for a bug in ErrorException::getTrace() that exists in
-					// all PHP 5.2 versions. @see http://bugs.php.net/bug.php?id=45895
-					for ($i = count($trace) - 1; $i > 0; --$i)
-					{
-						if (isset($trace[$i - 1]['args']))
-						{
-							// Re-position the args
-							$trace[$i]['args'] = $trace[$i - 1]['args'];
-
-							// Remove the args
-							unset($trace[$i - 1]['args']);
-						}
-					}
-				}
-			}
-
-			if ( ! headers_sent())
-			{
-				// Make sure the proper content type is sent with a 500 status
-				header('Content-Type: text/html; charset='.Kohana::$charset, TRUE, 500);
-			}
-
-			// Start an output buffer
-			ob_start();
-
-			// Include the exception HTML
-			include Kohana::find_file('views', Kohana::$error_view);
-
-			// Display the contents of the output buffer
-			echo ob_get_clean();
-
-			return TRUE;
-		}
-		catch (Exception $e)
-		{
-			// Clean the output buffer if one exists
-			ob_get_level() and ob_clean();
-
-			// Display the exception text
-			echo Kohana::exception_text($e), "\n";
-
-			// Exit with an error status
-			exit(1);
-		}
-	}
-
-	/**
 	 * Catches errors that are not caught by the error handler, such as E_PARSE.
 	 *
-	 * @uses    Kohana::exception_handler
+	 * @uses    Kohana_Exception::handler
 	 * @return  void
 	 */
 	public static function shutdown_handler()
@@ -1112,7 +975,7 @@ class Kohana_Core {
 		catch (Exception $e)
 		{
 			// Pass the exception to the handler
-			Kohana::exception_handler($e);
+			Kohana_Exception::handler($e);
 		}
 
 		if (Kohana::$errors AND $error = error_get_last() AND in_array($error['type'], Kohana::$shutdown_errors))
@@ -1121,25 +984,11 @@ class Kohana_Core {
 			ob_get_level() and ob_clean();
 
 			// Fake an exception for nice debugging
-			Kohana::exception_handler(new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']));
+			Kohana_Exception::handler(new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']));
 
 			// Shutdown now to avoid a "death loop"
 			exit(1);
 		}
-	}
-
-	/**
-	 * Get a single line of text representing the exception:
-	 *
-	 * Error [ Code ]: Message ~ File [ Line ]
-	 *
-	 * @param   object  Exception
-	 * @return  string
-	 */
-	public static function exception_text(Exception $e)
-	{
-		return sprintf('%s [ %s ]: %s ~ %s [ %d ]',
-			get_class($e), $e->getCode(), strip_tags($e->getMessage()), Debug::path($e->getFile()), $e->getLine());
 	}
 
 } // End Kohana

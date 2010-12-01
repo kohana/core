@@ -356,7 +356,7 @@ abstract class Kohana_Session {
 		catch (Exception $e)
 		{
 			// Log & ignore all errors when a write fails
-			Kohana::$log->add(Kohana::ERROR, Kohana::exception_text($e))->write();
+			Kohana::$log->add(Kohana::ERROR, Kohana_Exception::text($e))->write();
 
 			return FALSE;
 		}

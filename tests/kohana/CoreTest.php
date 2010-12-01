@@ -238,53 +238,6 @@ class Kohana_CoreTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for testExceptionHandler()
-	 *
-	 * @return array
-	 */
-	public function provider_exception_handler()
-	{
-		return array(
-			// $exception_type, $message, $is_cli, $expected
-			array('Kohana_Exception', 'hello, world!', TRUE, TRUE, 'hello, world!'),
-			array('ErrorException', 'hello, world!', TRUE, TRUE, 'hello, world!'),
-			// #3016
-			array('Kohana_Exception', '<hello, world!>', FALSE, TRUE, '&lt;hello, world!&gt;'),
-		);
-	}
-
-	/**
-	 * Tests Kohana::exception_handler()
-	 *
-	 * @test
-	 * @dataProvider provider_exception_handler
-	 * @covers Kohana::exception_handler
-	 * @param boolean $exception_type    Exception type to throw
-	 * @param boolean $message           Message to pass to exception
-	 * @param boolean $is_cli            Use cli mode?
-	 * @param boolean $expected          Output for Kohana::exception_handler
-	 * @param string  $expexcted_message What to look for in the output string
-	 */
-	public function teste_exception_handler($exception_type, $message, $is_cli, $expected, $expected_message)
-	{
-		try
-		{
-			Kohana::$is_cli = $is_cli;
-			throw new $exception_type($message);
-		}
-		catch (Exception $e)
-		{
-			ob_start();
-			$this->assertEquals($expected, Kohana::exception_handler($e));
-			$view = ob_get_contents();
-			ob_clean();
-			$this->assertContains($expected_message, $view);
-		}
-
-		Kohana::$is_cli = TRUE;
-	}
-
-	/**
 	 * Provides test data for test_modules_sets_and_returns_valid_modules()
 	 *
 	 * @return array
@@ -358,31 +311,5 @@ class Kohana_CoreTest extends Unittest_TestCase
 		{
 			$this->assertContains($module, $include_paths);
 		}
-	}
-
-	/**
-	 * Provides test data for test_exception_text()
-	 *
-	 * @return array
-	 */
-	public function provider_exception_text()
-	{
-		return array(
-			array(new Kohana_Exception('foobar'), $this->dirSeparator('Kohana_Exception [ 0 ]: foobar ~ SYSPATH/tests/kohana/CoreTest.php [ '.__LINE__.' ]')),
-		);
-	}
-
-	/**
-	 * Tests Kohana::exception_text()
-	 *
-	 * @test
-	 * @dataProvider provider_exception_text
-	 * @covers Kohana::exception_text
-	 * @param object $exception exception to test
-	 * @param string $expected  expected output
-	 */
-	public function test_exception_text($exception, $expected)
-	{
-		$this->assertEquals($expected, Kohana::exception_text($exception));
 	}
 }

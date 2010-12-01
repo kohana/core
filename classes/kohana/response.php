@@ -627,7 +627,7 @@ class Kohana_Response implements Serializable {
 			catch (Exception $e)
 			{
 				// Create a text version of the exception
-				$error = Kohana::exception_text($e);
+				$error = Kohana_Exception::text($e);
 
 				if (is_object(Kohana::$log))
 				{
