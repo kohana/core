@@ -17,6 +17,12 @@ Class Kohana_Config_File_Reader implements Kohana_Config_Reader {
 	 */
 	protected $_directory = '';
 
+	
+	/**
+	 * Creates a new file reader using the given directory as a config source
+	 *
+	 * @param string Configuration directory to search
+	 */
 	public function __construct($directory = 'config')
 	{
 		// Set the configuration directory name
@@ -29,8 +35,7 @@ Class Kohana_Config_File_Reader implements Kohana_Config_Reader {
 	 *     $config->load($name);
 	 *
 	 * @param   string  configuration group name
-	 * @param   array   configuration array
-	 * @return  $this   clone of the current object
+	 * @return  $this   current object
 	 * @uses    Kohana::load
 	 */
 	public function load($group)
