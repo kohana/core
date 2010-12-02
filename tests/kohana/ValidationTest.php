@@ -298,4 +298,49 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 		// Should be able to get raw errors array
 		$this->assertAttributeSame($Validation->errors(NULL), '_errors', $Validation);
 	}
+
+	/**
+	 * Provides test data for test_translated_errors()
+	 *
+	 * @return array
+	 */
+	public function provider_translated_errors()
+	{
+		// [data, rules, expected], ...
+		return array(
+			array(
+				array('Spanish' => ''),
+				array('Spanish' => array(array('not_empty', NULL))),
+				// Errors are not translated yet so only the label will translate
+				array('Spanish' => 'Español must not be empty'),
+				array('Spanish' => 'Spanish must not be empty'),
+			),
+		);
+	}
+
+	/**
+	 * Tests Validation::errors()
+	 *
+	 * @test
+	 * @covers Validation::errors
+	 * @dataProvider provider_translated_errors
+	 * @param array   $data      The array of data to test
+	 * @param array   $rules     The array of rules to add
+	 * @param array   $translated_expected  The array of expected errors when translated
+	 * @param array   $untranslated_expected  The array of expected errors when not translated
+	 */
+	public function test_translated_errors($data, $rules, $translated_expected, $untranslated_expected)
+	{
+		$validation = Validation::factory($data);
+
+		foreach($rules as $field => $field_rules)
+		{
+			$validation->rules($field, $field_rules);
+		}
+
+		$validation->check();
+
+		$this->assertSame($translated_expected, $validation->errors('Validation', 'es'));
+		$this->assertSame($untranslated_expected, $validation->errors('Validation', FALSE));
+	}
 }
