@@ -215,6 +215,13 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 				FALSE,
 				array('foo' => 'foo must be at least 4 characters long'),
 			),
+			// Switch things around and make :value an array
+			array(
+				array('foo' => array('test', 'data')),
+				array('foo' => array(array('in_array', array('kohana', ':value')))),
+				FALSE,
+				array('foo' => 'foo must be one of the available options'),
+			),
 		);
 	}
 
@@ -263,15 +270,23 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 	{
 		// [data, rules, expected], ...
 		return array(
+			// No Error
 			array(
 				array('username' => 'frank'),
 				array('username' => array(array('not_empty', NULL))),
 				array(),
 			),
+			// Error from message file
 			array(
 				array('username' => ''),
 				array('username' => array(array('not_empty', NULL))),
 				array('username' => 'username must not be empty'),
+			),
+			// No error message exists, display the path expected
+			array(
+				array('username' => 'John'),
+				array('username' => array(array('strpos', array(':value', 'Kohana')))),
+				array('username' => 'Validation.username.strpos'),
 			),
 		);
 	}
@@ -300,80 +315,6 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 		$this->assertSame($expected, $Validation->errors('Validation', FALSE));
 		// Should be able to get raw errors array
 		$this->assertAttributeSame($Validation->errors(NULL), '_errors', $Validation);
-	}
-
-	/**
-	 * Provides test data for test_translated_errors()
-	 *
-	 * @return array
-	 */
-	public function provider_translated_errors()
-	{
-		// [data, rules, expected], ...
-		return array(
-			array(
-				array('Spanish' => ''),
-				array('Spanish' => array(array('not_empty', NULL))),
-				// Errors are not translated yet so only the label will translate
-				array('Spanish' => 'Español must not be empty'),
-				array('Spanish' => 'Spanish must not be empty'),
-			),
-		);
-	}
-
-	/**
-	 * Tests Validation::errors()
-	 *
-	 * @test
-	 * @covers Validation::errors
-	 * @dataProvider provider_translated_errors
-	 * @param array   $data                   The array of data to test
-	 * @param array   $rules                  The array of rules to add
-	 * @param array   $translated_expected    The array of expected errors when translated
-	 * @param array   $untranslated_expected  The array of expected errors when not translated
-	 */
-	public function test_translated_errors($data, $rules, $translated_expected, $untranslated_expected)
-	{
-		$validation = Validation::factory($data);
-
-		foreach($rules as $field => $field_rules)
-		{
-			$validation->rules($field, $field_rules);
-		}
-
-		$validation->check();
-
-		$this->assertSame($translated_expected, $validation->errors('Validation', 'es'));
-		$this->assertSame($untranslated_expected, $validation->errors('Validation', FALSE));
-	}
-
-	/**
-	 * Tests Validation::errors()
-	 *
-	 * @test
-	 * @covers Validation::errors
-	 */
-	public function test_parameter_labels()
-	{
-		$validation = Validation::factory(array('foo' => 'bar'))
-			->rule('foo', 'equals', array(':value', 'something'))
-			->label('something', 'Spanish');
-
-		$validation->check();
-
-		$translated_expected = array('foo' => 'foo must equal Español');
-		$untranslated_expected = array('foo' => 'foo must equal Spanish');
-
-		$this->assertSame($translated_expected, $validation->errors('Validation', 'es'));
-		$this->assertSame($untranslated_expected, $validation->errors('Validation', FALSE));
-
-		// Test the translation with a boolean parameter
-		$current = I18n::lang();
-		I18n::lang('es');
-		$result = $validation->errors('Validation', TRUE);
-		I18n::lang($current);
-
-		$this->assertSame($translated_expected, $result);
 	}
 
 	/**
