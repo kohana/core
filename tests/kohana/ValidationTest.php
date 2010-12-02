@@ -171,11 +171,12 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 	 */
 	public function provider_check()
 	{
-		// $data_array, $rules, $first_expected, $expected_error
+		// $data_array, $rules, $labels, $first_expected, $expected_error
 		return array(
 			array(
 				array('foo' => 'bar'),
 				array('foo' => array(array('not_empty', NULL))),
+				array(),
 				TRUE,
 				array(),
 			),
@@ -186,6 +187,7 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 					'unit' => array(array('min_length', array(':value', 6))
 					),
 				),
+				array(),
 				FALSE,
 				array(
 					'foo' => 'foo must not be empty',
@@ -212,6 +214,7 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 					// Tests that rules do not run on empty fields unless they are in _empty_rules
 					'unit' => array(array('exact_length', array(':value', 4))),
 				),
+				array(),
 				FALSE,
 				array('foo' => 'foo must be at least 4 characters long'),
 			),
@@ -219,8 +222,17 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 			array(
 				array('foo' => array('test', 'data')),
 				array('foo' => array(array('in_array', array('kohana', ':value')))),
+				array(),
 				FALSE,
 				array('foo' => 'foo must be one of the available options'),
+			),
+			// Test wildcard rules with no other rules
+			array(
+				array('foo' => array('test')),
+				array(TRUE => array(array('is_string', array(':value')))),
+				array('foo' => 'foo'),
+				FALSE,
+				array('foo' => '1.foo.is_string'),
 			),
 		);
 	}
@@ -237,12 +249,18 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 	 * @dataProvider provider_check
 	 * @param array   $array            The array of data
 	 * @param array   $rules            The array of rules
+	 * @param array   $labels           The array of labels
 	 * @param boolean $expected         Is it valid?
 	 * @param boolean $expected_errors  Array of expected errors
 	 */
-	public function test_check($array, $rules, $expected, $expected_errors)
+	public function test_check($array, $rules, $labels, $expected, $expected_errors)
 	{
 		$validation = new Validation($array);
+
+		foreach ($labels as $field => $label)
+		{
+			$validation->label($field, $label);
+		}
 
 		foreach ($rules as $field => $field_rules)
 		{
@@ -257,7 +275,11 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 
 		$validation = new validation($array);
 		foreach ($rules as $field => $rules)
+		{
 			$validation->rules($field, $rules);
+		}
+		$validation->labels($labels);
+
 		$this->assertSame($expected, $validation->check());
 	}
 
@@ -396,7 +418,6 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 		$result_1 = $validation->errors('Validation', TRUE);
 		$result_2 = $validation->errors('Validation', 'en');
 		$result_3 = $validation->errors('Validation', FALSE);
-		
 
 		// Restore the current language
 		i18n::lang($current);
