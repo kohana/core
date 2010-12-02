@@ -346,4 +346,51 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 		$this->assertSame($translated_expected, $validation->errors('Validation', 'es'));
 		$this->assertSame($untranslated_expected, $validation->errors('Validation', FALSE));
 	}
+
+	/**
+	 * Tests Validation::errors()
+	 *
+	 * @test
+	 * @covers Validation::errors
+	 */
+	public function test_parameter_labels()
+	{
+		$validation = Validation::factory(array('foo' => 'bar'))
+			->rule('foo', 'equals', array(':value', 'something'))
+			->label('something', 'Spanish');
+
+		$validation->check();
+
+		$translated_expected = array('foo' => 'foo must equal Español');
+		$untranslated_expected = array('foo' => 'foo must equal Spanish');
+
+		$this->assertSame($translated_expected, $validation->errors('Validation', 'es'));
+		$this->assertSame($untranslated_expected, $validation->errors('Validation', FALSE));
+
+		// Test the translation with a boolean parameter
+		$current = i18n::lang();
+		i18n::lang('es');
+		$result = $validation->errors('Validation', TRUE);
+		i18n::lang($current);
+
+		$this->assertSame($translated_expected, $result);
+	}
+
+	/**
+	 * Tests Validation::errors()
+	 *
+	 * @test
+	 * @covers Validation::errors
+	 */
+	public function test_arrays_in_parameters()
+	{
+		$validation = Validation::factory(array('foo' => 'bar'))
+			->rule('foo', 'equals', array(':value', array('one', 'two')));
+
+		$validation->check();
+
+		$expected = array('foo' => 'foo must equal one, two');
+
+		$this->assertSame($expected, $validation->errors('Validation', FALSE));
+	}
 }
