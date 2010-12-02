@@ -228,8 +228,10 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 	 * @covers Validation::errors
 	 * @covers Validation::error
 	 * @dataProvider provider_check
-	 * @param string  $url       The url to test
-	 * @param boolean $expected  Is it valid?
+	 * @param array   $array            The array of data
+	 * @param array   $rules            The array of rules
+	 * @param boolean $expected         Is it valid?
+	 * @param boolean $expected_errors  Array of expected errors
 	 */
 	public function test_check($array, $rules, $expected, $expected_errors)
 	{
@@ -280,8 +282,9 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 	 * @test
 	 * @covers Validation::errors
 	 * @dataProvider provider_errors
-	 * @param string  $url       The url to test
-	 * @param boolean $expected  Is it valid?
+	 * @param array $array     The array of data
+	 * @param array $rules     The array of rules
+	 * @param array $expected  Array of expected errors
 	 */
 	public function test_errors($array, $rules, $expected)
 	{
@@ -324,9 +327,9 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 	 * @test
 	 * @covers Validation::errors
 	 * @dataProvider provider_translated_errors
-	 * @param array   $data      The array of data to test
-	 * @param array   $rules     The array of rules to add
-	 * @param array   $translated_expected  The array of expected errors when translated
+	 * @param array   $data                   The array of data to test
+	 * @param array   $rules                  The array of rules to add
+	 * @param array   $translated_expected    The array of expected errors when translated
 	 * @param array   $untranslated_expected  The array of expected errors when not translated
 	 */
 	public function test_translated_errors($data, $rules, $translated_expected, $untranslated_expected)
