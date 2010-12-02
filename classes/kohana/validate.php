@@ -806,7 +806,7 @@ class Kohana_Validate extends ArrayObject {
 				}
 
 				// Append the filters
-				$filters[$field] += $filters[TRUE];
+				$filters[$field] = array_merge($filters[$field], $filters[TRUE]);
 			}
 
 			if (isset($rules[TRUE]))
@@ -818,7 +818,7 @@ class Kohana_Validate extends ArrayObject {
 				}
 
 				// Append the rules
-				$rules[$field] += $rules[TRUE];
+				$rules[$field] = array_merge($rules[$field], $rules[TRUE]);
 			}
 
 			if (isset($callbacks[TRUE]))
@@ -830,7 +830,7 @@ class Kohana_Validate extends ArrayObject {
 				}
 
 				// Append the callbacks
-				$callbacks[$field] += $callbacks[TRUE];
+				$callbacks[$field] = array_merge($callbacks[$field], $callbacks[TRUE]);
 			}
 		}
 
