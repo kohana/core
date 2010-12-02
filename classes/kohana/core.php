@@ -20,9 +20,12 @@ class Kohana_Core {
 	const CODENAME = 'merle';
 
 	// Log message types
-	const ERROR = 'ERROR';
-	const DEBUG = 'DEBUG';
-	const INFO  = 'INFO';
+	const ERROR    = 'ERROR';
+	const DEBUG    = 'DEBUG';
+	const INFO     = 'INFO';
+	const CRITICAL = 'CRITICAL';
+	const STRACE   = 'STRACE';
+	const ALERT    = 'ALERT';
 
 	// Common environment type constants for consistency and convenience
 	const PRODUCTION  = 1;
