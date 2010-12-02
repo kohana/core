@@ -368,10 +368,10 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 		$this->assertSame($untranslated_expected, $validation->errors('Validation', FALSE));
 
 		// Test the translation with a boolean parameter
-		$current = i18n::lang();
-		i18n::lang('es');
+		$current = I18n::lang();
+		I18n::lang('es');
 		$result = $validation->errors('Validation', TRUE);
-		i18n::lang($current);
+		I18n::lang($current);
 
 		$this->assertSame($translated_expected, $result);
 	}

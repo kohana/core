@@ -391,7 +391,7 @@ class Kohana_Validation extends ArrayObject {
 				if (is_string($translate))
 				{
 					// Translate the label using the specified language
-					$label = i18n::get($label, $translate);
+					$label = I18n::get($label, $translate);
 				}
 				else
 				{
@@ -433,7 +433,7 @@ class Kohana_Validation extends ArrayObject {
 							if (is_string($translate))
 							{
 								// Translate the value using the specified language
-								$value = i18n::get($value, $translate);
+								$value = I18n::get($value, $translate);
 							}
 							else
 							{
@@ -475,7 +475,7 @@ class Kohana_Validation extends ArrayObject {
 				if (is_string($translate))
 				{
 					// Translate the message using specified language
-					$message = strtr(i18n::get($message, $translate), $values);
+					$message = strtr(I18n::get($message, $translate), $values);
 				}
 				else
 				{
