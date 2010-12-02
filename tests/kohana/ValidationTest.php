@@ -318,6 +318,95 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Provides test data for test_translated_errors()
+	 *
+	 * @return array
+	 */
+	public function provider_translated_errors()
+	{
+		// [data, rules, expected], ...
+		return array(
+			array(
+				array('Spanish' => ''),
+				array('Spanish' => array(array('not_empty', NULL))),
+				// Errors are not translated yet so only the label will translate
+				array('Spanish' => 'Español must not be empty'),
+				array('Spanish' => 'Spanish must not be empty'),
+			),
+		);
+	}
+
+	/**
+	 * Tests Validation::errors()
+	 *
+	 * @test
+	 * @covers Validation::errors
+	 * @dataProvider provider_translated_errors
+	 * @param array   $data                   The array of data to test
+	 * @param array   $rules                  The array of rules to add
+	 * @param array   $translated_expected    The array of expected errors when translated
+	 * @param array   $untranslated_expected  The array of expected errors when not translated
+	 */
+	public function test_translated_errors($data, $rules, $translated_expected, $untranslated_expected)
+	{
+		$validation = Validation::factory($data);
+
+		$current = i18n::lang();
+		i18n::lang('es');
+
+		foreach($rules as $field => $field_rules)
+		{
+			$validation->rules($field, $field_rules);
+		}
+
+		$validation->check();
+
+		$result_1 = $validation->errors('Validation', TRUE);
+		$result_2 = $validation->errors('Validation', 'en');
+		$result_3 = $validation->errors('Validation', FALSE);
+
+		// Restore the current language
+		i18n::lang($current);
+
+		$this->assertSame($translated_expected, $result_1);
+		$this->assertSame($translated_expected, $result_2);
+		$this->assertSame($untranslated_expected, $result_3);
+	}
+
+	/**
+	 * Tests Validation::errors()
+	 *
+	 * @test
+	 * @covers Validation::errors
+	 */
+	public function test_parameter_labels()
+	{
+		$validation = Validation::factory(array('foo' => 'bar'))
+			->rule('foo', 'equals', array(':value', 'something'))
+			->label('something', 'Spanish');
+
+		$current = i18n::lang();
+		i18n::lang('es');
+
+		$validation->check();
+
+		$translated_expected = array('foo' => 'foo must equal Español');
+		$untranslated_expected = array('foo' => 'foo must equal Spanish');
+
+		$result_1 = $validation->errors('Validation', TRUE);
+		$result_2 = $validation->errors('Validation', 'en');
+		$result_3 = $validation->errors('Validation', FALSE);
+		
+
+		// Restore the current language
+		i18n::lang($current);
+
+		$this->assertSame($translated_expected, $result_1);
+		$this->assertSame($translated_expected, $result_2);
+		$this->assertSame($untranslated_expected, $result_3);
+	}
+
+	/**
 	 * Tests Validation::errors()
 	 *
 	 * @test
