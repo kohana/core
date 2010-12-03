@@ -61,6 +61,11 @@ class Kohana_Route {
 	 */
 	public static $default_action = 'index';
 
+	/**
+	 * @var  bool Indicates whether routes are cached
+	 */
+	public static $cache = FALSE;
+
 	// List of route objects
 	protected static $_routes = array();
 
@@ -158,12 +163,12 @@ class Kohana_Route {
 				Route::$_routes = $routes;
 
 				// Routes were cached
-				return TRUE;
+				return Route::$cache = TRUE;
 			}
 			else
 			{
 				// Routes were not cached
-				return FALSE;
+				return Route::$cache = FALSE;
 			}
 		}
 	}

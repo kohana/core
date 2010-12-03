@@ -101,6 +101,9 @@ class Kohana_RouteTest extends Unittest_TestCase
 		// Then try and load said cache
 		$this->assertTrue(Route::cache());
 
+		// Check the route cache flag
+		$this->assertTrue(Route::$cache);
+
 		// And if all went ok the nonsensical route should be gone...
 		$this->assertEquals($routes, Route::all());
 	}
@@ -117,6 +120,9 @@ class Kohana_RouteTest extends Unittest_TestCase
 	public function test_cache_returns_false_if_cache_dnx()
 	{
 		$this->assertSame(FALSE, Route::cache(), 'Route cache was not empty');
+
+		// Check the route cache flag
+		$this->assertFalse(Route::$cache);
 	}
 
 	/**
