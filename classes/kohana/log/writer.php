@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Log writer abstract class. All [Kohana_Log] writers must extend this class.
+ * Log writer abstract class. All [Log] writers must extend this class.
  *
  * @package    Kohana
  * @category   Logging

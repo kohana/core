@@ -8,7 +8,7 @@
  * @copyright  (c) 2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Log_Syslog extends Kohana_Log_Writer {
+class Kohana_Log_Syslog extends Log_Writer {
 
 	// The syslog identifier
 	protected $_ident;

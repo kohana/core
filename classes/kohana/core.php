@@ -127,12 +127,12 @@ class Kohana_Core {
 	public static $expose = TRUE;
 
 	/**
-	 * @var  object  logging object
+	 * @var  Log  logging object
 	 */
 	public static $log;
 
 	/**
-	 * @var  object  config object
+	 * @var  Config  config object
 	 */
 	public static $config;
 
@@ -324,10 +324,10 @@ class Kohana_Core {
 		$_COOKIE = Kohana::sanitize($_COOKIE);
 
 		// Load the logger
-		Kohana::$log = Kohana_Log::instance();
+		Kohana::$log = Log::instance();
 
 		// Load the config
-		Kohana::$config = Kohana_Config::instance();
+		Kohana::$config = Config::instance();
 	}
 
 	/**
@@ -767,7 +767,7 @@ class Kohana_Core {
 	 * Creates a new configuration object for the requested group.
 	 *
 	 * @param   string   group name
-	 * @return  Kohana_Config
+	 * @return  Config
 	 */
 	public static function config($group)
 	{

@@ -20,11 +20,11 @@ Class Kohana_LogTest extends Unittest_TestCase
 	 * empty
 	 *
 	 * @test
-	 * @covers Kohana_Log
+	 * @covers Log
 	 */
 	public function test_messages_is_initially_empty()
 	{
-		$logger = new Kohana_Log;
+		$logger = new Log;
 
 		$this->assertAttributeSame(array(), '_messages', $logger);
 	}
@@ -34,11 +34,11 @@ Class Kohana_LogTest extends Unittest_TestCase
 	 * empty
 	 *
 	 * @test
-	 * @covers Kohana_Log
+	 * @covers Log
 	 */
 	public function test_writers_is_initially_empty()
 	{
-		$logger = new Kohana_Log;
+		$logger = new Log;
 
 		$this->assertAttributeSame(array(), '_writers', $logger);
 	}
@@ -49,12 +49,12 @@ Class Kohana_LogTest extends Unittest_TestCase
 	 * @TODO Is this test too specific?
 	 *
 	 * @test
-	 * @covers Kohana_Log::attach
+	 * @covers Log::attach
 	 */
 	public function test_attach_attaches_log_writer_and_returns_this()
 	{
-		$logger = new Kohana_Log;
-		$writer = $this->getMockForAbstractClass('Kohana_Log_Writer');
+		$logger = new Log;
+		$writer = $this->getMockForAbstractClass('Log_Writer');
 
 		$this->assertSame($logger, $logger->attach($writer));
 
@@ -69,12 +69,12 @@ Class Kohana_LogTest extends Unittest_TestCase
 	 * When we call detach() we expect the specified log writer to be removed
 	 *
 	 * @test
-	 * @covers Kohana_Log::detach
+	 * @covers Log::detach
 	 */
 	public function test_detach_removes_log_writer_and_returns_this()
 	{
-		$logger = new Kohana_Log;
-		$writer = $this->getMockForAbstractClass('Kohana_Log_Writer');
+		$logger = new Log;
+		$writer = $this->getMockForAbstractClass('Log_Writer');
 
 		$logger->attach($writer);
 
