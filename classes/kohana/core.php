@@ -184,7 +184,7 @@ class Kohana_Core {
 	 * Type      | Setting    | Description                                    | Default Value
 	 * ----------|------------|------------------------------------------------|---------------
 	 * `string`  | base_url   | The base URL for your application.  This should be the *relative* path from your DOCROOT to your `index.php` file, in other words, if Kohana is in a subfolder, set this to the subfolder name, otherwise leave it as the default.  **The leading slash is required**, trailing slash is optional.   | `"/"`
-	 * `string`  | index_file | The name of the [front controller](http://en.wikipedia.org/wiki/Front_Controller_pattern).  This is usually `index.php`.  To [remove index.php from your urls](http://192.168.70.2/userguide/guide/kohana/tutorials/clean-urls), set this to `FALSE`. | `"index.php"`
+	 * `string`  | index_file | The name of the [front controller](http://en.wikipedia.org/wiki/Front_Controller_pattern).  This is used by Kohana to generate relative urls like [HTML::anchor()] and [URL::base()]. This is usually `index.php`.  To [remove index.php from your urls](tutorials/clean-urls), set this to `FALSE`. | `"index.php"`
 	 * `string`  | charset    | Character set used for all input and output    | `"utf-8"`
 	 * `string`  | cache_dir  | Kohana's cache directory.  Used by [Kohana::cache] for simple internal caching, like [Fragments](kohana/fragments) and **\[caching database queries](this should link somewhere)**.  This has nothing to do with the [Cache module](cache). | `APPPATH."cache"`
 	 * `integer` | cache_life | Lifetime, in seconds, of items cached by [Kohana::cache]         | `60`
