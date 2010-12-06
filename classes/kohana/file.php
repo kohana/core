@@ -90,12 +90,12 @@ class Kohana_File {
 		// Load all of the mime types
 		$mimes = Kohana::config('mimes');
 
-		return isset($mimes[$extension]) ? (array) $mimes[$extension] : array();
+		return isset($mimes[$extension]) ? ( (array) $mimes[$extension]) : array();
 	}
 
 	/**
 	 * Lookup file extensions by MIME type
-	 * 
+	 *
 	 * @param   string  $type File MIME type
 	 * @return  array   File extensions matching MIME type
 	 */
@@ -118,9 +118,9 @@ class Kohana_File {
 
 					if ( ! isset($types[$mime]))
 					{
-						$types[$mime] = array((string) $ext);
+						$types[$mime] = array( (string) $ext);
 					}
-					else if ( ! in_array($ext, $types[$mime]))
+					elseif ( ! in_array($ext, $types[$mime]))
 					{
 						$types[$mime][] = (string) $ext;
 					}
@@ -133,7 +133,7 @@ class Kohana_File {
 
 	/**
 	 * Lookup a single file extension by MIME type.
-	 * 
+	 *
 	 * @param   string  $type  MIME type to lookup
 	 * @return  mixed          First file extension matching or false
 	 */
