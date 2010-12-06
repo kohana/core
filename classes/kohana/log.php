@@ -28,29 +28,29 @@ class Kohana_Log {
 	public static $write_on_add = FALSE;
 
 	/**
-	 * @var  Kohana_Log  Singleton instance container
+	 * @var  Log  Singleton instance container
 	 */
 	private static $_instance;
 
 	/**
 	 * Get the singleton instance of this class and enable writing at shutdown.
 	 *
-	 *     $log = Kohana_Log::instance();
+	 *     $log = Log::instance();
 	 *
-	 * @return  Kohana_Log
+	 * @return  Log
 	 */
 	public static function instance()
 	{
-		if (self::$_instance === NULL)
+		if (Log::$_instance === NULL)
 		{
 			// Create a new instance
-			self::$_instance = new self;
+			Log::$_instance = new Log;
 
 			// Write the logs at shutdown
-			register_shutdown_function(array(self::$_instance, 'write'));
+			register_shutdown_function(array(Log::$_instance, 'write'));
 		}
 
-		return self::$_instance;
+		return Log::$_instance;
 	}
 
 	// List of added messages
@@ -65,11 +65,11 @@ class Kohana_Log {
 	 *
 	 *     $log->attach($writer);
 	 *
-	 * @param   object  Kohana_Log_Writer instance
+	 * @param   object  Log_Writer instance
 	 * @param   array   messages types to write
 	 * @return  $this
 	 */
-	public function attach(Kohana_Log_Writer $writer, array $types = NULL)
+	public function attach(Log_Writer $writer, array $types = NULL)
 	{
 		$this->_writers["{$writer}"] = array
 		(
@@ -85,10 +85,10 @@ class Kohana_Log {
 	 *
 	 *     $log->detach($writer);
 	 *
-	 * @param   object  Kohana_Log_Writer instance
+	 * @param   object  Log_Writer instance
 	 * @return  $this
 	 */
-	public function detach(Kohana_Log_Writer $writer)
+	public function detach(Log_Writer $writer)
 	{
 		// Remove the writer
 		unset($this->_writers["{$writer}"]);
@@ -120,12 +120,12 @@ class Kohana_Log {
 		// Create a new message and timestamp it
 		$this->_messages[] = array
 		(
-			'time' => Date::formatted_time('now', self::$timestamp, self::$timezone),
+			'time' => Date::formatted_time('now', Log::$timestamp, Log::$timezone),
 			'type' => $type,
 			'body' => $message,
 		);
 
-		if (self::$write_on_add)
+		if (Log::$write_on_add)
 		{
 			// Write logs as they are added
 			$this->write();

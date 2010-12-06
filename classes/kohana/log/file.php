@@ -8,7 +8,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Log_File extends Kohana_Log_Writer {
+class Kohana_Log_File extends Log_Writer {
 
 	// Directory to place log files in
 	protected $_directory;
@@ -17,7 +17,7 @@ class Kohana_Log_File extends Kohana_Log_Writer {
 	 * Creates a new file logger. Checks that the directory exists and
 	 * is writable.
 	 *
-	 *     $writer = new Kohana_Log_File($directory);
+	 *     $writer = new Log_File($directory);
 	 *
 	 * @param   string  log directory
 	 * @return  void
