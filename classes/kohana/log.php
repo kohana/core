@@ -30,7 +30,7 @@ class Kohana_Log {
 	/**
 	 * @var  Log  Singleton instance container
 	 */
-	private static $_instance;
+	protected static $_instance;
 
 	/**
 	 * Get the singleton instance of this class and enable writing at shutdown.
@@ -54,10 +54,10 @@ class Kohana_Log {
 	}
 
 	// List of added messages
-	private $_messages = array();
+	protected $_messages = array();
 
 	// List of log writers
-	private $_writers = array();
+	protected $_writers = array();
 
 	/**
 	 * Attaches a log writer, and optionally limits the types of messages that
