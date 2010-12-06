@@ -131,8 +131,7 @@ class Kohana_Upload {
 		return (isset($file['error'])
 			AND isset($file['tmp_name'])
 			AND $file['error'] === UPLOAD_ERR_OK
-			AND is_uploaded_file($file['tmp_name'])
-		);
+			AND is_uploaded_file($file['tmp_name']));
 	}
 
 	/**

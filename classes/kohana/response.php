@@ -58,7 +58,7 @@ class Kohana_Response implements Serializable {
 		foreach ($cache_control as $key => $value)
 		{
 			// Create a cache control fragment
-			$parts[] = empty($value) ? $key : $key.'='.$value;
+			$parts[] = empty($value) ? $key : ($key.'='.$value);
 		}
 		// Return the rendered parts
 		return implode(', ', $parts);
@@ -256,7 +256,7 @@ class Kohana_Response implements Serializable {
 		{
 			return $this->status;
 		}
-		else if (array_key_exists($status, Response::$messages))
+		elseif (array_key_exists($status, Response::$messages))
 		{
 			$this->status = (int) $status;
 			return $this;
@@ -294,12 +294,12 @@ class Kohana_Response implements Serializable {
 		{
 			return $this->headers;
 		}
-		else if (is_array($key))
+		elseif (is_array($key))
 		{
 			$this->headers = $key;
 			return $this;
 		}
-		else if ($value === NULL)
+		elseif ($value === NULL)
 		{
 			return $this->headers[$key];
 		}
@@ -324,7 +324,7 @@ class Kohana_Response implements Serializable {
 		{
 			$expiration = Cookie::$expiration;
 		}
-		else if ($expiration !== 0)
+		elseif ($expiration !== 0)
 		{
 			$expiration += time();
 		}
@@ -541,7 +541,7 @@ class Kohana_Response implements Serializable {
 
 		if ( ! empty($options['resumable']))
 		{
-			if($start > 0 OR $end < ($size - 1))
+			if ($start > 0 OR $end < ($size - 1))
 			{
 				// Partial Content
 				$this->status = 206;
@@ -679,7 +679,7 @@ class Kohana_Response implements Serializable {
 		$start = 0;
 		$end = $size - 1;
 
-		if($range = $this->_parse_byte_range())
+		if ($range = $this->_parse_byte_range())
 		{
 			// We have a byte range from HTTP_RANGE
 			$start = $range[1];
@@ -705,7 +705,7 @@ class Kohana_Response implements Serializable {
 		$end = min(abs(intval($end)), $size - 1);
 
 		// Keep the start in bounds.
-		$start = $end < $start ? 0 : max($start, 0);
+		$start = ($end < $start) ? 0 : max($start, 0);
 
 		return array($start, $end);
 	}
@@ -774,10 +774,10 @@ class Kohana_Response implements Serializable {
 	 * @return  string
 	 * @throws  Kohana_Exception
 	 */
-	public function serialize(array $toSerialize = array())
+	public function serialize(array $to_serialize = array())
 	{
 		// Serialize the class properties
-		$toSerialize += array
+		$to_serialize += array
 		(
 			'status'  => $this->status,
 			'headers' => $this->headers,
@@ -785,7 +785,7 @@ class Kohana_Response implements Serializable {
 			'body'    => $this->body
 		);
 
-		$string = json_encode($toSerialize);
+		$string = json_encode($to_serialize);
 
 		if (is_string($string))
 		{

@@ -20,14 +20,14 @@ class Kohana_Http_Header extends ArrayObject {
 	public static $sort_by_quality = FALSE;
 
 	/**
-	 * @var     array     default positive filter for sorting header values 
+	 * @var     array     default positive filter for sorting header values
 	 */
 	public static $default_sort_filter = array('accept','accept-charset','accept-encoding','accept-language');
 
 	/**
 	 * Parses Http Header values and creating an appropriate object
 	 * depending on type; i.e. accept-type, accept-char, cache-control etc.
-	 * 
+	 *
 	 *     $header_values_array = Http_Header::parse_header_values(array('cache-control' => 'max-age=200; public'));
 	 *
 	 * @param   string   values to parse
@@ -94,7 +94,7 @@ class Kohana_Http_Header extends ArrayObject {
 	/**
 	 * Constructor method for [Kohana_Http_Header]. Uses the standard constructor
 	 * of the parent `ArrayObject` class.
-	 * 
+	 *
 	 *     $header_object = new Http_Header(array('x-powered-by' => 'Kohana 3.1.x', 'expires' => '...'));
 	 *
 	 * @param   mixed    input array
@@ -105,7 +105,7 @@ class Kohana_Http_Header extends ArrayObject {
 	{
 		/**
 		 * @see http://www.w3.org/Protocols/rfc2616/rfc2616.html
-		 * 
+		 *
 		 * HTTP header declarations should be treated as case-insensitive
 		 */
 		$input = array_change_key_case($input, CASE_LOWER);
@@ -123,9 +123,9 @@ class Kohana_Http_Header extends ArrayObject {
 	/**
 	 * Sort the headers by quality property if the header matches the
 	 * [Kohana_Http_Header::$default_sort_filter] definition.
-	 * 
+	 *
 	 * #### Default sort values
-	 * 
+	 *
 	 *  - Accept
 	 *  - Accept-Chars
 	 *  - Accept-Encoding
@@ -171,12 +171,12 @@ class Kohana_Http_Header extends ArrayObject {
 					return (int) 0; // Return neutral (0)
 				}
 				// If a < b
-				else if ($a < $b)
+				elseif ($a < $b)
 				{
 					return (int) -1; // Return negative (-1)
 				}
 				// If a > b
-				else if ($a > $b)
+				elseif ($a > $b)
 				{
 					return (int) 1; // Return positive (1)
 				}
