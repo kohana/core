@@ -40,7 +40,7 @@ class Kohana_Log_Syslog extends Log_Writer {
 	{
 		foreach ($messages as $message)
 		{
-			syslog($message['type'], $message['body']);
+			syslog($message['level'], $message['body']);
 		}
 	}
 

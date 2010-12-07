@@ -85,8 +85,8 @@ class Kohana_Log_File extends Log_Writer {
 		foreach ($messages as $message)
 		{
 			// Write each message into the log file
-			// Format: time --- type: body
-			file_put_contents($filename, PHP_EOL.$message['time'].' --- '.$this->_log_levels[$message['type']].': '.$message['body'], FILE_APPEND);
+			// Format: time --- level: body
+			file_put_contents($filename, PHP_EOL.$message['time'].' --- '.$this->_log_levels[$message['level']].': '.$message['body'], FILE_APPEND);
 		}
 	}
 

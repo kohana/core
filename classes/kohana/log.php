@@ -12,7 +12,7 @@
  */
 class Kohana_Log {
 
-	// Log message types
+	// Log message levels
 	const EMERGENCY = LOG_EMERG;    // 0
 	const ALERT     = LOG_ALERT;    // 1
 	const CRITICAL  = LOG_CRIT;     // 2
@@ -70,21 +70,27 @@ class Kohana_Log {
 	protected $_writers = array();
 
 	/**
-	 * Attaches a log writer, and optionally limits the types of messages that
+	 * Attaches a log writer, and optionally limits the levels of messages that
 	 * will be written by the writer.
 	 *
 	 *     $log->attach($writer);
 	 *
-	 * @param   object  Log_Writer instance
-	 * @param   array   messages types to write
+	 * @param   object   Log_Writer instance
+	 * @param   mixed    array of messages levels to write OR max level to write
+	 * @param   integer  min level to write IF $levels is not an array
 	 * @return  $this
 	 */
-	public function attach(Log_Writer $writer, array $types = NULL)
+	public function attach(Log_Writer $writer, $levels = array(), $min_level = 0)
 	{
+		if ( ! is_array($levels))
+		{
+			$levels = range($min_level, $levels);
+		}
+		
 		$this->_writers["{$writer}"] = array
 		(
 			'object' => $writer,
-			'types' => $types
+			'levels' => $levels
 		);
 
 		return $this;
@@ -110,16 +116,16 @@ class Kohana_Log {
 	 * Adds a message to the log. Replacement values must be passed in to be
 	 * replaced using [strtr](http://php.net/strtr).
 	 *
-	 *     $log->add('error', 'Could not locate user: :user', array(
+	 *     $log->add(Log::ERROR, 'Could not locate user: :user', array(
 	 *         ':user' => $username,
 	 *     ));
 	 *
-	 * @param   string  type of message
+	 * @param   string  level of message
 	 * @param   string  message body
 	 * @param   array   values to replace in the message
 	 * @return  $this
 	 */
-	public function add($type, $message, array $values = NULL)
+	public function add($level, $message, array $values = NULL)
 	{
 		if ($values)
 		{
@@ -130,9 +136,9 @@ class Kohana_Log {
 		// Create a new message and timestamp it
 		$this->_messages[] = array
 		(
-			'time' => Date::formatted_time('now', Log::$timestamp, Log::$timezone),
-			'type' => $type,
-			'body' => $message,
+			'time'  => Date::formatted_time('now', Log::$timestamp, Log::$timezone),
+			'level' => $level,
+			'body'  => $message,
 		);
 
 		if (Log::$write_on_add)
@@ -167,7 +173,7 @@ class Kohana_Log {
 
 		foreach ($this->_writers as $writer)
 		{
-			if (empty($writer['types']))
+			if (empty($writer['levels']))
 			{
 				// Write all of the messages
 				$writer['object']->write($messages);
@@ -179,7 +185,7 @@ class Kohana_Log {
 
 				foreach ($messages as $message)
 				{
-					if (in_array($message['type'], $writer['types']))
+					if (in_array($message['level'], $writer['levels']))
 					{
 						// Writer accepts this kind of message
 						$filtered[] = $message;
