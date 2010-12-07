@@ -12,7 +12,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_LogTest extends Unittest_TestCase
+class Kohana_LogTest extends Unittest_TestCase
 {
 
 	/**
@@ -44,7 +44,7 @@ Class Kohana_LogTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Test that attaching a log writer adds it to the array of log writers
+	 * Test that attaching a log writer using an array of levels adds it to the array of log writers
 	 *
 	 * @TODO Is this test too specific?
 	 *
@@ -59,7 +59,29 @@ Class Kohana_LogTest extends Unittest_TestCase
 		$this->assertSame($logger, $logger->attach($writer));
 
 		$this->assertAttributeSame(
-			array(spl_object_hash($writer) => array('object' => $writer, 'types' => NULL)),
+			array(spl_object_hash($writer) => array('object' => $writer, 'levels' => array())),
+			'_writers',
+			$logger
+		);
+	}
+
+	/**
+	 * Test that attaching a log writer using a min/max level adds it to the array of log writers
+	 *
+	 * @TODO Is this test too specific?
+	 *
+	 * @test
+	 * @covers Log::attach
+	 */
+	public function test_attach_attaches_log_writer_min_max_and_returns_this()
+	{
+		$logger = new Log;
+		$writer = $this->getMockForAbstractClass('Log_Writer');
+
+		$this->assertSame($logger, $logger->attach($writer, Log::NOTICE, Log::CRITICAL));
+
+		$this->assertAttributeSame(
+			array(spl_object_hash($writer) => array('object' => $writer, 'levels' => array(Log::CRITICAL, Log::ERROR, Log::WARNING, Log::NOTICE))),
 			'_writers',
 			$logger
 		);

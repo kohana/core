@@ -11,6 +11,20 @@
 abstract class Kohana_Log_Writer {
 
 	/**
+	 * Numeric log level to string lookup table.
+	 * @var array 
+	 */
+	protected $_log_levels = array(
+		LOG_EMERG   => 'EMERGENCY',
+		LOG_CRIT    => 'CRITICAL',
+		LOG_ERR     => 'ERROR',
+		LOG_WARNING => 'WARNING',
+		LOG_NOTICE  => 'NOTICE',
+		LOG_INFO    => 'INFO',
+		LOG_DEBUG   => 'DEBUG',
+	);
+
+	/**
 	 * Write an array of messages.
 	 *
 	 *     $writer->write($messages);
