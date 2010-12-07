@@ -18,7 +18,9 @@ class Kohana_Profiler {
 	 */
 	public static $rollover = 1000;
 
-	// Collected benchmarks
+	/**
+	 * @var  array  collected benchmarks
+	 */
 	protected static $_marks = array();
 
 	/**

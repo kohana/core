@@ -10,7 +10,9 @@
  */
 class Kohana_Log_File extends Kohana_Log_Writer {
 
-	// Directory to place log files in
+	/**
+	 * @var  string  Directory to place log files in
+	 */
 	protected $_directory;
 
 	/**

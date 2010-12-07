@@ -140,27 +140,38 @@ class Kohana_Core {
 
 	/**
 	 * @var  object  logging object
+	 * @var  Kohana_Log  logging object
 	 */
 	public static $log;
 
 	/**
-	 * @var  object  config object
+	 * @var  Kohana_Config  config object
 	 */
 	public static $config;
 
-	// Is the environment initialized?
+	/**
+	 * @var  bool  environment initialized?
+	 */
 	protected static $_init = FALSE;
 
-	// Currently active modules
+	/**
+	 * @var  array  Currently active modules
+	 */
 	protected static $_modules = array();
 
-	// Include paths that are used to find files
+	/**
+	 * @var  array  Include paths that are used to find files
+	 */
 	protected static $_paths = array(APPPATH, SYSPATH);
 
-	// File path cache
+	/**
+	 * @var  array  File path cache
+	 */
 	protected static $_files = array();
 
-	// Has the file cache changed?
+	/**
+	 * @var  bool  file cache change check
+	 */
 	protected static $_files_changed = FALSE;
 
 	/**

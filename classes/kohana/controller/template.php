@@ -11,7 +11,7 @@
 abstract class Kohana_Controller_Template extends Controller {
 
 	/**
-	 * @var  string  page template
+	 * @var  View  page template
 	 */
 	public $template = 'template';
 

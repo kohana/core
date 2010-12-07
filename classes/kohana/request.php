@@ -11,7 +11,9 @@
  */
 class Kohana_Request {
 
-	// HTTP status codes and messages
+	/**
+	 * @var  array  HTTP status codes and messages
+	 */
 	public static $messages = array(
 		// Informational 1xx
 		100 => 'Continue',
@@ -102,12 +104,12 @@ class Kohana_Request {
 	public static $is_ajax = FALSE;
 
 	/**
-	 * @var  object  main request instance
+	 * @var  Request  main request instance
 	 */
 	public static $instance;
 
 	/**
-	 * @var  object  currently executing request instance
+	 * @var  Request  currently executing request instance
 	 */
 	public static $current;
 
