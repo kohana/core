@@ -12,8 +12,7 @@
 abstract class Kohana_Config_Reader extends ArrayObject {
 
 	/**
-	 * @access  protected
-	 * @var     string     Configuration group name
+	 * @var  string  Configuration group name
 	 */
 	protected $_configuration_group;
 

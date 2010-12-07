@@ -30,9 +30,7 @@ abstract class Kohana_Model {
 	}
 
 	/**
-	 * Database instance
-	 * @access  protected
-	 * @var     Database
+	 * @var  Database  database instance
 	 */
 	protected $_db;
 

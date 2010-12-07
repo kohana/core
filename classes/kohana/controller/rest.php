@@ -31,8 +31,7 @@
 abstract class Kohana_Controller_REST extends Controller {
 
 	/**
-	 * @access  protected
-	 * @var     array      REST types
+	 * @var  array  REST types
 	 */
 	protected $_action_map = array
 	(
@@ -43,8 +42,7 @@ abstract class Kohana_Controller_REST extends Controller {
 	);
 
 	/**
-	 * @access  protected
-	 * @var     string     requested action
+	 * @var  string  requested action
 	 */
 	protected $_action_requested = '';
 

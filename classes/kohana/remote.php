@@ -11,9 +11,7 @@
 class Kohana_Remote {
 
 	/**
-	 * Default curl options
-	 * @access  protected
-	 * @var     array
+	 * @var  array  default cURL options
 	 */
 	public static $default_options = array
 	(

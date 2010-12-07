@@ -50,9 +50,7 @@ class Kohana_Route {
 	public static $default_action = 'index';
 
 	/**
-	 * List of route objects
-	 * @access  protected
-	 * @var     array
+	 * @var  array  list of route objects
 	 */
 	protected static $_routes = array();
 

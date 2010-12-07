@@ -12,14 +12,12 @@
 class Kohana_Config_File extends Kohana_Config_Reader {
 
 	/**
-	 * @access  protected
-	 * @var     string     Configuration group name
+	 * @var  string  Configuration group name
 	 */
 	protected $_configuration_group;
 
 	/**
-	 * @access  protected
-	 * @var     bool       Has the config group changed?
+	 * @var  bool  Has the config group changed?
 	 */
 	protected $_configuration_modified = FALSE;
 

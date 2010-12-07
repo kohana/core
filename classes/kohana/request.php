@@ -12,9 +12,7 @@
 class Kohana_Request {
 
 	/**
-	 * HTTP status codes and messages
-	 * @access  protected
-	 * @var     array
+	 * @var  array  HTTP status codes and messages
 	 */
 	public static $messages = array(
 		// Informational 1xx

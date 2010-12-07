@@ -11,8 +11,7 @@
 class Kohana_Session_Cookie extends Session {
 
 	/**
-	 * @access  protected
-	 * @param   string     $id  session id
+	 * @param   string  $id  session id
 	 * @return  string
 	 */
 	protected function _read($id = NULL)
@@ -21,7 +20,6 @@ class Kohana_Session_Cookie extends Session {
 	}
 
 	/**
-	 * @access  protected
 	 * @return  null
 	 */
 	protected function _regenerate()
@@ -31,7 +29,6 @@ class Kohana_Session_Cookie extends Session {
 	}
 
 	/**
-	 * @access  protected
 	 * @return  bool
 	 */
 	protected function _write()
@@ -40,7 +37,6 @@ class Kohana_Session_Cookie extends Session {
 	}
 
 	/**
-	 * @access  protected
 	 * @return  bool
 	 */
 	protected function _destroy()

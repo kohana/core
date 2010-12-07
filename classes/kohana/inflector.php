@@ -14,23 +14,17 @@
 class Kohana_Inflector {
 
 	/**
-	 * Cached inflections
-	 * @access  protected
-	 * @var     array
+	 * @var  array  cached inflections
 	 */
 	protected static $cache = array();
 
 	/**
-	 * Uncountable words
-	 * @access  protected
-	 * @var     array
+	 * @var  array  uncountable words
 	 */
 	protected static $uncountable;
 
 	/**
-	 * Irregular words
-	 * @access  protected
-	 * @var     array
+	 * @var  array  irregular words
 	 */
 	protected static $irregular;
 

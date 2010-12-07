@@ -31,10 +31,10 @@ abstract class Kohana_Controller {
 	 * Creates a new controller instance. Each controller must be constructed
 	 * with the request object that created it.
 	 *
-	 * @param   Kohana_Request  Request that created the controller
+	 * @param   Request  Request that created the controller
 	 * @return  void
 	 */
-	public function __construct(Kohana_Request $request)
+	public function __construct(Request $request)
 	{
 		// Assign the request to the controller
 		$this->request = $request;

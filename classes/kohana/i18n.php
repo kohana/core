@@ -33,9 +33,7 @@ class Kohana_I18n {
 	public static $source = 'en-us';
 
 	/**
-	 * Cache of loaded languages
-	 * @access  protected
-	 * @var     array
+	 * @var  array  cache of loaded languages
 	 */
 	protected static $_cache = array();
 

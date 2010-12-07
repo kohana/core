@@ -11,14 +11,12 @@
 class Kohana_Log_Syslog extends Kohana_Log_Writer {
 
 	/**
-	 * @access  protected
-	 * @var     string     The syslog identifier
+	 * @var  string  The syslog identifier
 	 */
 	protected $_ident;
 
 	/**
-	 * @access  protected
-	 * @var     array      log levels
+	 * @var  array  log levels
 	 */
 	protected $_syslog_levels = array('ERROR'    => LOG_ERR,
 	                                  'CRITICAL' => LOG_CRIT,
