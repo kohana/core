@@ -292,11 +292,10 @@ class Kohana_Arr {
 	 *
 	 * @param   mixed    the value to search for
 	 * @param   array    an array of values to search in
-	 * @param   boolean  sort the array now
 	 * @return  integer  the index of the match
 	 * @return  FALSE    no matching index found
 	 */
-	public static function binary_search($needle, $haystack, $sort = FALSE)
+	public static function binary_search($needle, $haystack)
 	{
 		return array_search($needle, $haystack);
 	}
