@@ -198,7 +198,7 @@ class Kohana_Inflector {
 		}
 
 		// Convert to uppsecase if nessasary
-		if($is_uppercase)
+		if ($is_uppercase)
 		{
 			$str = strtoupper($str);
 		}
