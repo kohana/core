@@ -23,5 +23,5 @@ function _strpos($str, $search, $offset = 0)
 
 	$str = UTF8::substr($str, $offset);
 	$pos = UTF8::strpos($str, $search);
-	return ($pos === FALSE) ? FALSE : $pos + $offset;
+	return ($pos === FALSE) ? FALSE : ($pos + $offset);
 }
