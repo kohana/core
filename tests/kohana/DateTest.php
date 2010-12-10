@@ -11,8 +11,32 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_DateTest extends Kohana_Unittest_TestCase
+class Kohana_DateTest extends Kohana_Unittest_TestCase
 {
+	protected $_original_timezone = NULL;
+
+	/**
+	 * Ensures we have a consistant timezone for testing.
+	 */
+	public function setUp()
+	{
+		parent::setUp();
+
+		$this->_original_timezone = date_default_timezone_get();
+
+		date_default_timezone_set('America/Chicago');
+	}
+
+	/**
+	 * Restores original timezone after testing.
+	 */
+	public function tearDown()
+	{
+		date_default_timezone_set($this->_original_timezone);
+
+		parent::tearDown();
+	}
+
 	/**
 	 * Provides test data for test_offset()
 	 *
