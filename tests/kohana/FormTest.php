@@ -12,7 +12,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_FormTest extends Kohana_Unittest_Testcase
+class Kohana_FormTest extends Unittest_TestCase
 {
 	/**
 	 * Defaults for this test

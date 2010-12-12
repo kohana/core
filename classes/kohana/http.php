@@ -79,7 +79,7 @@ abstract class Kohana_Http {
 	 * Parses the the HTTP request headers and returns an array containing
 	 * key value pairs. This method is slow, but provides an accurate
 	 * representation of the HTTP request.
-	 * 
+	 *
 	 *      // Get http headers into the request
 	 *      $request->headers = Http::request_headers();
 	 *
@@ -95,7 +95,7 @@ abstract class Kohana_Http {
 			return new Http_Header(apache_request_headers());
 		}
 		// If the PECL HTTP tools are installed
-		else if (extension_loaded('http'))
+		elseif (extension_loaded('http'))
 		{
 			// Return the much faster method
 			return new Http_Header(http_get_request_headers());
@@ -105,7 +105,7 @@ abstract class Kohana_Http {
 		$headers = array();
 
 		// Parse the content type
-		if( ! empty($_SERVER['CONTENT_TYPE']))
+		if ( ! empty($_SERVER['CONTENT_TYPE']))
 		{
 			$headers['content-type'] = $_SERVER['CONTENT_TYPE'];
 		}

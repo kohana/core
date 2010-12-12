@@ -14,12 +14,12 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaphp.com/license
  */
-class Kohana_DebugTest extends Kohana_Unittest_TestCase
+class Kohana_DebugTest extends Unittest_TestCase
 {
 
 	/**
 	 * Provides test data for test_debug()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_debug()
@@ -46,18 +46,18 @@ class Kohana_DebugTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * Provides test data for testDebugPath()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_debug_path()
 	{
 		return array(
 			array(
-				Kohana::find_file('classes', 'kohana'), 
+				Kohana::find_file('classes', 'kohana'),
 				'SYSPATH'.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'kohana.php'
 			),
 			array(
-				Kohana::find_file('classes', $this->dirSeparator('kohana/unittest/runner')), 
+				Kohana::find_file('classes', $this->dirSeparator('kohana/unittest/runner')),
 				$this->dirSeparator('MODPATH/unittest/classes/kohana/unittest/runner.php')
 			),
 		);
@@ -79,7 +79,7 @@ class Kohana_DebugTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * Provides test data for test_dump()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_dump()
@@ -96,12 +96,12 @@ class Kohana_DebugTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Tests Kohana::dump()
+	 * Tests Debug::dump()
 	 *
 	 * @test
 	 * @dataProvider provider_dump
-	 * @covers Kohana::dump
-	 * @covers Kohana::_dump
+	 * @covers Debug::dump
+	 * @covers Debug::_dump
 	 * @param object $exception exception to test
 	 * @param string $expected  expected output
 	 */

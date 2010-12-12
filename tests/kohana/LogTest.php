@@ -12,7 +12,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_LogTest extends Kohana_Unittest_TestCase
+class Kohana_LogTest extends Unittest_TestCase
 {
 
 	/**
@@ -20,11 +20,11 @@ Class Kohana_LogTest extends Kohana_Unittest_TestCase
 	 * empty
 	 *
 	 * @test
-	 * @covers Kohana_Log
+	 * @covers Log
 	 */
 	public function test_messages_is_initially_empty()
 	{
-		$logger = new Kohana_Log;
+		$logger = new Log;
 
 		$this->assertAttributeSame(array(), '_messages', $logger);
 	}
@@ -34,32 +34,54 @@ Class Kohana_LogTest extends Kohana_Unittest_TestCase
 	 * empty
 	 *
 	 * @test
-	 * @covers Kohana_Log
+	 * @covers Log
 	 */
 	public function test_writers_is_initially_empty()
 	{
-		$logger = new Kohana_Log;
+		$logger = new Log;
 
 		$this->assertAttributeSame(array(), '_writers', $logger);
 	}
 
 	/**
-	 * Test that attaching a log writer adds it to the array of log writers
+	 * Test that attaching a log writer using an array of levels adds it to the array of log writers
 	 *
 	 * @TODO Is this test too specific?
 	 *
 	 * @test
-	 * @covers Kohana_Log::attach
+	 * @covers Log::attach
 	 */
 	public function test_attach_attaches_log_writer_and_returns_this()
 	{
-		$logger = new Kohana_Log;
-		$writer = $this->getMockForAbstractClass('Kohana_Log_Writer');
+		$logger = new Log;
+		$writer = $this->getMockForAbstractClass('Log_Writer');
 
 		$this->assertSame($logger, $logger->attach($writer));
 
 		$this->assertAttributeSame(
-			array(spl_object_hash($writer) => array('object' => $writer, 'types' => NULL)),
+			array(spl_object_hash($writer) => array('object' => $writer, 'levels' => array())),
+			'_writers',
+			$logger
+		);
+	}
+
+	/**
+	 * Test that attaching a log writer using a min/max level adds it to the array of log writers
+	 *
+	 * @TODO Is this test too specific?
+	 *
+	 * @test
+	 * @covers Log::attach
+	 */
+	public function test_attach_attaches_log_writer_min_max_and_returns_this()
+	{
+		$logger = new Log;
+		$writer = $this->getMockForAbstractClass('Log_Writer');
+
+		$this->assertSame($logger, $logger->attach($writer, Log::NOTICE, Log::CRITICAL));
+
+		$this->assertAttributeSame(
+			array(spl_object_hash($writer) => array('object' => $writer, 'levels' => array(Log::CRITICAL, Log::ERROR, Log::WARNING, Log::NOTICE))),
 			'_writers',
 			$logger
 		);
@@ -69,12 +91,12 @@ Class Kohana_LogTest extends Kohana_Unittest_TestCase
 	 * When we call detach() we expect the specified log writer to be removed
 	 *
 	 * @test
-	 * @covers Kohana_Log::detach
+	 * @covers Log::detach
 	 */
 	public function test_detach_removes_log_writer_and_returns_this()
 	{
-		$logger = new Kohana_Log;
-		$writer = $this->getMockForAbstractClass('Kohana_Log_Writer');
+		$logger = new Log;
+		$writer = $this->getMockForAbstractClass('Log_Writer');
 
 		$logger->attach($writer);
 

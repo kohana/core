@@ -79,7 +79,7 @@ class Kohana_Http_Header_Value {
 
 		}
 		// If value is a string
-		else if (is_string($value))
+		elseif (is_string($value))
 		{
 			// Detect properties
 			if (strpos($value, ';') !== FALSE)
@@ -191,14 +191,14 @@ class Kohana_Http_Header_Value {
 	public function __toString()
 	{
 
-		$string = ($this->key !== NULL) ? $this->key.'='.$this->value : $this->value;
+		$string = ($this->key !== NULL) ? ($this->key.'='.$this->value) : $this->value;
 
 		if ($this->properties)
 		{
 			$props = array($string);
 			foreach ($this->properties as $k => $v)
 			{
-				$props[] = is_int($k) ? $v : $k.'='.$v;
+				$props[] = is_int($k) ? $v : ($k.'='.$v);
 			}
 			$string = implode('; ', $props);
 		}

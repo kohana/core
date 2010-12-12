@@ -160,7 +160,7 @@ class Kohana_Remote {
 		fwrite($remote, 'User-Agent: Kohana Framework (+http://kohanaframework.org/)'.$line_feed);
 
 		foreach ($http_headers as $name => $value)
-			fwrite($remote, $name.': '.$value.$CRLF);
+			fwrite($remote, $name.': '.$value.$line_feed);
 
 		// Send one more CRLF to terminate the headers
 		fwrite($remote, $line_feed);

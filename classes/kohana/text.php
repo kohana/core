@@ -476,7 +476,7 @@ class Kohana_Text {
 		}
 
 		// Determine unit to use
-		if (($power = array_search((string) $force_unit, $units)) === FALSE)
+		if (($power = array_search( (string) $force_unit, $units)) === FALSE)
 		{
 			$power = ($bytes > 0) ? floor(log($bytes, $mod)) : 0;
 		}

@@ -11,7 +11,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_CookieTest extends Kohana_Unittest_TestCase
+Class Kohana_CookieTest extends Unittest_TestCase
 {
 
 	protected $_default_salt = 'AdaoidadnA£ASDNadnaoiwdnawd';

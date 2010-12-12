@@ -79,6 +79,70 @@ class Kohana_File {
 	}
 
 	/**
+	 * Lookup MIME types for a file
+	 *
+	 * @see Kohana_File::mime_by_ext()
+	 * @param string $extension Extension to lookup
+	 * @return array Array of MIMEs associated with the specified extension
+	 */
+	public static function mimes_by_ext($extension)
+	{
+		// Load all of the mime types
+		$mimes = Kohana::config('mimes');
+
+		return isset($mimes[$extension]) ? ( (array) $mimes[$extension]) : array();
+	}
+
+	/**
+	 * Lookup file extensions by MIME type
+	 *
+	 * @param   string  $type File MIME type
+	 * @return  array   File extensions matching MIME type
+	 */
+	public static function exts_by_mime($type)
+	{
+		static $types = array();
+
+		// Fill the static array
+		if (empty($types))
+		{
+			foreach (Kohana::config('mimes') as $ext => $mimes)
+			{
+				foreach ($mimes as $mime)
+				{
+					if ($mime == 'application/octet-stream')
+					{
+						// octet-stream is a generic binary
+						continue;
+					}
+
+					if ( ! isset($types[$mime]))
+					{
+						$types[$mime] = array( (string) $ext);
+					}
+					elseif ( ! in_array($ext, $types[$mime]))
+					{
+						$types[$mime][] = (string) $ext;
+					}
+				}
+			}
+		}
+
+		return isset($types[$type]) ? $types[$type] : FALSE;
+	}
+
+	/**
+	 * Lookup a single file extension by MIME type.
+	 *
+	 * @param   string  $type  MIME type to lookup
+	 * @return  mixed          First file extension matching or false
+	 */
+	public static function ext_by_mime($type)
+	{
+		return current(File::exts_by_mime($type));
+	}
+
+	/**
 	 * Split a file into pieces matching a specific size. Used when you need to
 	 * split large files into smaller pieces for easy transmission.
 	 *

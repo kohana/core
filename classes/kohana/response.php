@@ -58,7 +58,7 @@ class Kohana_Response implements Http_Response, Serializable {
 		foreach ($cache_control as $key => $value)
 		{
 			// Create a cache control fragment
-			$parts[] = empty($value) ? $key : $key.'='.$value;
+			$parts[] = empty($value) ? $key : ($key.'='.$value);
 		}
 		// Return the rendered parts
 		return implode(', ', $parts);
@@ -278,7 +278,7 @@ class Kohana_Response implements Http_Response, Serializable {
 		{
 			return $this->status;
 		}
-		else if (array_key_exists($status, Response::$messages))
+		elseif (array_key_exists($status, Response::$messages))
 		{
 			$this->status = (int) $status;
 			return $this;
@@ -316,12 +316,12 @@ class Kohana_Response implements Http_Response, Serializable {
 		{
 			return $this->header;
 		}
-		else if (is_array($key))
+		elseif (is_array($key))
 		{
 			$this->header = $key;
 			return $this;
 		}
-		else if ($value === NULL)
+		elseif ($value === NULL)
 		{
 			return $this->header[$key];
 		}
@@ -346,7 +346,7 @@ class Kohana_Response implements Http_Response, Serializable {
 		{
 			$expiration = Cookie::$expiration;
 		}
-		else if ($expiration !== 0)
+		elseif ($expiration !== 0)
 		{
 			$expiration += time();
 		}
@@ -563,7 +563,7 @@ class Kohana_Response implements Http_Response, Serializable {
 
 		if ( ! empty($options['resumable']))
 		{
-			if($start > 0 OR $end < ($size - 1))
+			if ($start > 0 OR $end < ($size - 1))
 			{
 				// Partial Content
 				$this->status = 206;
@@ -649,7 +649,7 @@ class Kohana_Response implements Http_Response, Serializable {
 			catch (Exception $e)
 			{
 				// Create a text version of the exception
-				$error = Kohana::exception_text($e);
+				$error = Kohana_Exception::text($e);
 
 				if (is_object(Kohana::$log))
 				{
@@ -670,14 +670,17 @@ class Kohana_Response implements Http_Response, Serializable {
 
 	public function render()
 	{
+		/**
+		 * @todo Finish this render method for full HTTP RFC 2616 response
+		 */
+
 		// Add the default Content-Type header if required
 		$this->header['content-type'] = 'text/html; charset='.Kohana::$charset;
 
 		// Add the X-Powered-By header
 		if (Kohana::$expose)
-		{
 			$this->header['x-powered-by'] = 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
-		}
+
 	}
 
 	/**
@@ -748,10 +751,10 @@ class Kohana_Response implements Http_Response, Serializable {
 	 * @return  string
 	 * @throws  Kohana_Exception
 	 */
-	public function serialize(array $toSerialize = array())
+	public function serialize(array $to_serialize = array())
 	{
 		// Serialize the class properties
-		$toSerialize += array
+		$to_serialize += array
 		(
 			'status'  => $this->status,
 			'header'  => $this->header,
@@ -759,7 +762,7 @@ class Kohana_Response implements Http_Response, Serializable {
 			'body'    => $this->body
 		);
 
-		$string = json_encode($toSerialize);
+		$string = json_encode($to_serialize);
 
 		if (is_string($string))
 		{

@@ -5,7 +5,7 @@
  *
  * @group kohana
  */
-Class Kohana_TextTest extends Kohana_Unittest_TestCase
+Class Kohana_TextTest extends Unittest_TestCase
 {
 
 	/**

@@ -1,3 +1,3 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Validate_Exception extends Kohana_Validate_Exception {}
+abstract class Log_Writer extends Kohana_Log_Writer {}

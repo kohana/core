@@ -6,18 +6,18 @@
  * @copyright  (c) 2009-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Validate_Exception extends Kohana_Exception {
+class Kohana_Validation_Exception extends Kohana_Exception {
 
 	/**
-	 * @var  object  Validate instance
+	 * @var  object  Validation instance
 	 */
 	public $array;
 
-	public function __construct(Validate $array, $message = 'Failed to validate array', array $values = NULL, $code = 0)
+	public function __construct(Validation $array, $message = 'Failed to validate array', array $values = NULL, $code = 0)
 	{
 		$this->array = $array;
 
 		parent::__construct($message, $values, $code);
 	}
 
-} // End Kohana_Validate_Exception
+} // End Kohana_Validation_Exception
