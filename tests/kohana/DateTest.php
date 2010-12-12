@@ -70,30 +70,7 @@ class Kohana_DateTest extends Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	public function provider_am_pm()	protected $_original_timezone = NULL;
-
-	/**
-	 * Ensures we have a consistant timezone for testing.
-	 */
-	public function setUp()
-	{
-		parent::setUp();
-
-		$this->_original_timezone = date_default_timezone_get();
-
-		date_default_timezone_set('America/Chicago');
-	}
-
-	/**
-	 * Restores original timezone after testing.
-	 */
-	public function tearDown()
-	{
-		date_default_timezone_set($this->_original_timezone);
-
-		parent::tearDown();
-	}
-
+	public function provider_am_pm()
 	{
 		return array(
 			// All possible values
