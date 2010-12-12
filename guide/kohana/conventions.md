@@ -94,10 +94,10 @@ You must use tabs to indent your code. Using spaces for tabbing is strictly forb
 Vertical spacing (for multi-line) is done with spaces. Tabs are not good for vertical alignment because different people have different tab widths.
 
 	$text = 'this is a long text block that is wrapped. Normally, we aim for '
-		  . 'wrapping at 80 chars. Vertical alignment is very important for '
-		  . 'code readability. Remember that all indentation is done with tabs,'
-		  . 'but vertical alignment should be completed with spaces, after '
-		  . 'indenting with tabs.';
+		  .'wrapping at 80 chars. Vertical alignment is very important for '
+		  .'code readability. Remember that all indentation is done with tabs,'
+		  .'but vertical alignment should be completed with spaces, after '
+		  .'indenting with tabs.';
 
 ### String concatenation
 

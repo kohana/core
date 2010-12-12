@@ -10,10 +10,10 @@ errors into exceptions which are easier to handle.
 
 ## 1. A Custom Exception
 
-First off, we are going to need a custom exception. This is so we can perform different
+First off, we are going to need a custom exception class. This is so we can perform different
 actions based on it in the exception handler. I will talk more about this later.
 
-_classes\_http\_response\_exception.php_
+_classes/http\_response\_exception.php_
 
 	<?php defined('SYSPATH') or die('No direct access');
 
