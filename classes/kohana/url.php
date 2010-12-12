@@ -39,7 +39,7 @@ class Kohana_URL {
 		if ($protocol === TRUE)
 		{
 			// Use the current protocol
-			$protocol = Request::$protocol;
+			$protocol = Request::$current->protocol();
 		}
 		elseif ($protocol === FALSE AND $scheme = parse_url($base_url, PHP_URL_SCHEME))
 		{

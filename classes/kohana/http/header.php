@@ -176,7 +176,7 @@ class Kohana_Http_Header extends ArrayObject {
 		if ( ! $newval instanceof Kohana_Http_Header_Value)
 			$newval = new Http_Header_Value($newval);
 
-		parent::offsetSet($index, $newval);
+		parent::offsetSet(strtolower($index), $newval);
 	}
 
 	/**

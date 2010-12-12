@@ -13,6 +13,16 @@
  */
 interface Kohana_Http_Request extends Http_Interaction {
 
+	// HTTP Methods
+	const GET       = 'GET';
+	const POST      = 'POST';
+	const PUT       = 'PUT';
+	const DELETE    = 'DELETE';
+	const HEAD      = 'HEAD';
+	const OPTIONS   = 'OPTIONS';
+	const TRACE     = 'TRACE';
+	const CONNECT   = 'CONNECT';
+
 	/**
 	 * Gets or sets the Http method. Usually GET, POST, PUT or DELETE in
 	 * traditional CRUD applications.

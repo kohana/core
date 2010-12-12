@@ -18,7 +18,7 @@ abstract class Kohana_Http {
 	/**
 	 * @var  The default protocol to use if it cannot be detected
 	 */
-	public static $protocal = 'HTTP/1.1';
+	public static $protocol = 'HTTP/1.1';
 
 	/**
 	 * Parses a HTTP header string into an associative array
@@ -129,6 +129,28 @@ abstract class Kohana_Http {
 		}
 
 		return new Http_Header($headers);
+	}
+
+	/**
+	 * Processes an array of key value pairs and encodes
+	 * the values to meet RFC 3986
+	 *
+	 * @param   array    params 
+	 * @return  string
+	 */
+	public static function www_form_urlencode(array $params = NULL)
+	{
+		if ($params === NULL)
+			return;
+
+		$encoded = array();
+
+		foreach ($params as $key => $value)
+		{
+			$encoded[] = $key.'='.rawurlencode($value);
+		}
+
+		return implode('&', $encoded);
 	}
 
 	/**

@@ -17,7 +17,7 @@ interface Kohana_Http_Interaction {
 	 * is `HTTP/1.1`.
 	 *
 	 * @param   string   protocol to set to the request/response
-	 * @return  self|string
+	 * @return  mixed
 	 */
 	public function protocol($protocol = NULL);
 
@@ -29,7 +29,7 @@ interface Kohana_Http_Interaction {
 	 *
 	 * @param   string|array   key or array of key/value pairs to set
 	 * @param   string         value to set to the supplied key
-	 * @return  array|string|self
+	 * @return  mixed
 	 */
 	public function headers($key = NULL, $value = NULL);
 
@@ -38,7 +38,8 @@ interface Kohana_Http_Interaction {
 	 * included after the header, separated by a single empty new line.
 	 *
 	 * @param   string         content to set to the object
-	 * @return  string|void
+	 * @return  string
+	 * @return  void
 	 */
 	public function body($content = NULL);
 
