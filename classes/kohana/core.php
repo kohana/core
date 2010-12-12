@@ -81,6 +81,11 @@ class Kohana_Core {
 	public static $safe_mode = FALSE;
 
 	/**
+	 * @var  string
+	 */
+	public static $content_type = 'text/html';
+
+	/**
 	 * @var  string  character set of input and output
 	 */
 	public static $charset = 'utf-8';
@@ -143,7 +148,7 @@ class Kohana_Core {
 	/**
 	 * @var  boolean  set the X-Powered-By header
 	 */
-	public static $expose = TRUE;
+	public static $expose = FALSE;
 
 	/**
 	 * @var  object  logging object
