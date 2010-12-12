@@ -573,6 +573,8 @@ class Kohana_Request implements Http_Request {
 		// Remove trailing slashes from the URI
 		$uri = trim($uri, '/');
 
+		// Detect host
+
 		// Load routes
 		$routes = Route::all();
 
@@ -1030,10 +1032,7 @@ class Kohana_Request implements Http_Request {
 	 */
 	public function send_response_headers()
 	{
-		if ($this->response instanceof Kohana_Response)
-			$this->response->send_headers();
-
-		return $this;
+		return $this->response->send_headers();
 	}
 
 	/**

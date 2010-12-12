@@ -187,8 +187,12 @@ class Kohana_Route {
 	 */
 	public static function url($name, array $params = NULL, $protocol = NULL)
 	{
+		$route = Route::get($name);
+
 		// Create a URI with the route and convert it to a URL
-		return URL::site(Route::get($name)->uri($params), $protocol);
+		return ($route->is_external()) ? 
+			Route::get($name)->uri($params) : 
+			URL::site(Route::get($name)->uri($params), $protocol);
 	}
 
 	/**
@@ -243,13 +247,24 @@ class Kohana_Route {
 	 */
 	protected $_uri = '';
 
-	// Regular expressions for route keys
+	/**
+	 * @var  mixed
+	 */
+	protected $_host;
+
+	/**
+	 * @var  array
+	 */
 	protected $_regex = array();
 
-	// Default values for route keys
-	protected $_defaults = array('action' => 'index');
+	/**
+	 * @var  array
+	 */
+	protected $_defaults = array('action' => 'index', 'host' => FALSE);
 
-	// Compiled regex cache
+	/**
+	 * @var  string
+	 */
 	protected $_route_regex;
 
 	/**
@@ -350,6 +365,17 @@ class Kohana_Route {
 		}
 
 		return $params;
+	}
+
+	/**
+	 * Returns whether this route is an external route
+	 * to a remote controller.
+	 *
+	 * @return  boolean
+	 */
+	public function is_external()
+	{
+		return in_array($this->_host, Route::$localhosts);
 	}
 
 	/**

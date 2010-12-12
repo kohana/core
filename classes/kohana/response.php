@@ -184,7 +184,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	/**
 	 * @var  string      the response body
 	 */
-	public $body = NULL;
+	public $body = '';
 
 	/**
 	 * @var  array       cookies to be returned in the response
@@ -225,9 +225,6 @@ class Kohana_Response implements Http_Response, Serializable {
 	 */
 	public function __toString()
 	{
-		if ( ! $this->header->offsetExists('content-length'))
-			$this->header['content-length'] = $this->content_length();
-
 		return (string) $this->body;
 	}
 
@@ -442,6 +439,14 @@ class Kohana_Response implements Http_Response, Serializable {
 				$protocol = 'HTTP/1.1';
 			}
 
+			// Add the X-Powered-By header
+			if (Kohana::$expose)
+				$this->header['x-powered-by'] = 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
+
+			// Add the content length if not set
+			if ( ! $this->header->offsetExists('content-length'))
+				$this->header['content-length'] = (string) $this->content_length();
+
 			// HTTP status line
 			header($protocol.' '.$this->status.' '.Response::$messages[$this->status]);
 
@@ -463,7 +468,6 @@ class Kohana_Response implements Http_Response, Serializable {
 				Cookie::set($name, $value['value'], $value['expiration']);
 			}
 		}
-
 		return $this;
 	}
 
@@ -699,12 +703,10 @@ class Kohana_Response implements Http_Response, Serializable {
 			$this->header['content-type'] = 'text/html; charset='.Kohana::$charset;
 		}
 
-		// Add the X-Powered-By header
-		if (Kohana::$expose)
-			$this->header['x-powered-by'] = 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
+		$content_length = $this->content_length();
 
 		// Set the content length for the body
-		$this->header['content-length'] = (string) $this->content_length();
+		$this->header['content-length'] = (string) $content_length;
 
 		$output = $this->_protocol.' '.$this->status.' '.Response::$messages[$this->status]."\n";
 		$output .= (string) $this->header;
