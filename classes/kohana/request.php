@@ -1024,6 +1024,19 @@ class Kohana_Request implements Http_Request {
 	}
 
 	/**
+	 * Sends the response status and all set headers.
+	 *
+	 * @return  Kohana_Request
+	 */
+	public function send_response_headers()
+	{
+		if ($this->response instanceof Kohana_Response)
+			$this->response->send_headers();
+
+		return $this;
+	}
+
+	/**
 	 * Gets or sets the HTTP body to the request or response. The body is
 	 * included after the header, separated by a single empty new line.
 	 *

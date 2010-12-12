@@ -210,8 +210,8 @@ class Kohana_Response implements Http_Response, Serializable {
 		{
 			if (property_exists($this, $key))
 			{
-				if ($key == 'headers')
-					$this->headers->exchangeArray($value);
+				if ($key == 'header')
+					$this->header->exchangeArray($value);
 				else
 					$this->$key = $value;
 			}
@@ -225,6 +225,9 @@ class Kohana_Response implements Http_Response, Serializable {
 	 */
 	public function __toString()
 	{
+		if ( ! $this->header->offsetExists('content-length'))
+			$this->header['content-length'] = $this->content_length();
+
 		return (string) $this->body;
 	}
 
@@ -270,7 +273,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	 *      $status = $response->status();
 	 *
 	 * @param   integer  status to set to this response
-	 * @return  integer|self
+	 * @return  integer|Kohana_Response
 	 */
 	public function status($status = NULL)
 	{
@@ -333,12 +336,23 @@ class Kohana_Response implements Http_Response, Serializable {
 	}
 
 	/**
+	 * Returns the length of the body for use with
+	 * content header
+	 *
+	 * @return  integer
+	 */
+	public function content_length()
+	{
+		return strlen((string) $this->body);
+	}
+
+	/**
 	 * Sets a cookie to the response
 	 *
 	 * @param   string   name
 	 * @param   string   value
 	 * @param   int      expiration
-	 * @return  self
+	 * @return  Kohana_Response
 	 */
 	public function set_cookie($name, $value, $expiration = NULL)
 	{
@@ -385,7 +399,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	 * Deletes a cookie set to the response
 	 *
 	 * @param   string   name
-	 * @return  self
+	 * @return  Kohana_Response
 	 */
 	public function delete_cookie($name)
 	{
@@ -400,7 +414,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	/**
 	 * Deletes all cookies from this response
 	 *
-	 * @return  self
+	 * @return  Kohana_Response
 	 */
 	public function delete_cookies()
 	{
@@ -411,7 +425,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	/**
 	 * Sends the response status and all set headers.
 	 *
-	 * @return  $this
+	 * @return  Kohana_Response
 	 */
 	public function send_headers()
 	{
@@ -591,7 +605,7 @@ class Kohana_Response implements Http_Response, Serializable {
 			if (version_compare(Request::user_agent('version'), '8.0', '>='))
 			{
 				// http://ajaxian.com/archives/ie-8-security
-				$this->headers['x-content-type-options'] = 'nosniff';
+				$this->header['x-content-type-options'] = 'nosniff';
 			}
 		}
 
@@ -668,19 +682,35 @@ class Kohana_Response implements Http_Response, Serializable {
 		exit;
 	}
 
+	/**
+	 * Renders the Http_Interaction to a string, producing
+	 * 
+	 *  - Protocol
+	 *  - Headers
+	 *  - Body
+	 *
+	 * @return  string
+	 */
 	public function render()
 	{
-		/**
-		 * @todo Finish this render method for full HTTP RFC 2616 response
-		 */
-
-		// Add the default Content-Type header if required
-		$this->header['content-type'] = 'text/html; charset='.Kohana::$charset;
+		if ( ! $this->header->offsetExists('content-type'))
+		{
+			// Add the default Content-Type header if required
+			$this->header['content-type'] = 'text/html; charset='.Kohana::$charset;
+		}
 
 		// Add the X-Powered-By header
 		if (Kohana::$expose)
 			$this->header['x-powered-by'] = 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
 
+		// Set the content length for the body
+		$this->header['content-length'] = (string) $this->content_length();
+
+		$output = $this->_protocol.' '.$this->status.' '.Response::$messages[$this->status]."\n";
+		$output .= (string) $this->header;
+		$output .= (string) $this->body;
+
+		return $output;
 	}
 
 	/**
