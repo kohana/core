@@ -31,7 +31,7 @@ class Kohana_Request implements Http_Request {
 	 */
 	public static $current;
 
-	public static function factory( & $uri = TRUE)
+	public static function factory( & $uri = TRUE, Kohana_Cache $cache = NULL)
 	{
 		if (Kohana::$is_cli)
 		{
@@ -137,7 +137,7 @@ class Kohana_Request implements Http_Request {
 		$uri = preg_replace('#\.[\s./]*/#', '', $uri);
 
 		// Create the instance singleton
-		$request = new Request($uri);
+		$request = new Request($uri, $cache);
 
 		// Create the initial request if it does not exist
 		(Request::$initial === NULL) and Request::$initial = $request;
@@ -539,6 +539,11 @@ class Kohana_Request implements Http_Request {
 	public $uri;
 
 	/**
+	 * @var  boolean  external request
+	 */
+	protected $_external = FALSE;
+
+	/**
 	 * @var  array   parameters from the route
 	 */
 	protected $_params;
@@ -554,6 +559,11 @@ class Kohana_Request implements Http_Request {
 	protected $_post;
 
 	/**
+	 * @var Kohana_Request_Client
+	 */
+	protected $_client;
+
+	/**
 	 * Creates a new request object for the given URI. New requests should be
 	 * created using the [Request::instance] or [Request::factory] methods.
 	 *
@@ -565,7 +575,7 @@ class Kohana_Request implements Http_Request {
 	 * @uses    Route::all
 	 * @uses    Route::matches
 	 */
-	public function __construct($uri, array $options = NULL)
+	public function __construct($uri, Kohana_Cache $cache = NULL)
 	{
 		// Initialise the header
 		$this->header = new Http_Header(array());
@@ -573,56 +583,78 @@ class Kohana_Request implements Http_Request {
 		// Remove trailing slashes from the URI
 		$uri = trim($uri, '/');
 
-		// Detect host
-
-		// Load routes
-		$routes = Route::all();
-
-		foreach ($routes as $name => $route)
+		// Detect protocol (if present)
+		/**
+		 * @todo   make this smarter, search for localhost etc
+		 */
+		if (strpos($uri, '://') === FALSE)
 		{
-			if ($params = $route->matches($uri))
+			// Load routes
+			$routes = Route::all();
+
+			foreach ($routes as $name => $route)
 			{
-				// Store the URI
-				$this->uri = $uri;
-
-				// Store the matching route
-				$this->route = $route;
-
-				if (isset($params['directory']))
+				if ($params = $route->matches($uri))
 				{
-					// Controllers are in a sub-directory
-					$this->directory = $params['directory'];
+					// Store the URI
+					$this->uri = $uri;
+
+					// Store the matching route
+					$this->route = $route;
+
+					// Is this route external
+					$this->_external = $this->route->is_external();
+
+					if (isset($params['directory']))
+					{
+						// Controllers are in a sub-directory
+						$this->directory = $params['directory'];
+					}
+
+					// Store the controller
+					$this->controller = $params['controller'];
+
+					if (isset($params['action']))
+					{
+						// Store the action
+						$this->action = $params['action'];
+					}
+					else
+					{
+						// Use the default action
+						$this->action = Route::$default_action;
+					}
+
+					// These are accessible as public vars and can be overloaded
+					unset($params['controller'], $params['action'], $params['directory']);
+
+					// Params cannot be changed once matched
+					$this->_params = $params;
+
+					// Apply the client
+					$this->_client = new Request_Client_Internal(array('cache' => $cache));
+
+					return;
 				}
-
-				// Store the controller
-				$this->controller = $params['controller'];
-
-				if (isset($params['action']))
-				{
-					// Store the action
-					$this->action = $params['action'];
-				}
-				else
-				{
-					// Use the default action
-					$this->action = Route::$default_action;
-				}
-
-				// These are accessible as public vars and can be overloaded
-				unset($params['controller'], $params['action'], $params['directory']);
-
-				// Params cannot be changed once matched
-				$this->_params = $params;
-
-				return;
 			}
+
+			// No matching route for this URI
+			$this->status = 404;
+
+			throw new Kohana_Request_Exception('Unable to find a route to match the URI: :uri',
+				array(':uri' => $uri));
 		}
+		else
+		{
+			// Store the URI
+			$this->uri = $uri;
 
-		// No matching route for this URI
-		$this->status = 404;
+			// Set external state
+			$this->_external = TRUE;
 
-		throw new Kohana_Request_Exception('Unable to find a route to match the URI: :uri',
-			array(':uri' => $uri));
+			// Setup the client
+			$this->_client = new Request_Client_External(array('cache' => $cache));
+		}
 	}
 
 	/**
@@ -634,7 +666,7 @@ class Kohana_Request implements Http_Request {
 	 */
 	public function __toString()
 	{
-		return (string) $this->response;
+		return $this->render();
 	}
 
 	/**
@@ -707,7 +739,7 @@ class Kohana_Request implements Http_Request {
 			return $this->_params;
 		}
 
-		return isset($this->_params[$key]) ? $this->_params[$key] : $default;
+		return Arr::get($this->_params, $key, $default);
 	}
 
 	/**
@@ -749,6 +781,18 @@ class Kohana_Request implements Http_Request {
 	}
 
 	/**
+	 * Provides readonly access to the [Request_Client],
+	 * useful for accessing the caching methods within the
+	 * request client.
+	 *
+	 * @return  Kohana_Request_Client
+	 */
+	public function get_client()
+	{
+		return $this->_client;
+	}
+
+	/**
 	 * Processes the request, executing the controller action that handles this
 	 * request, determined by the [Route].
 	 *
@@ -770,108 +814,10 @@ class Kohana_Request implements Http_Request {
 	 */
 	public function execute()
 	{
-		// Create the class prefix
-		$prefix = 'controller_';
+		if ( ! $this->_client instanceof Kohana_Request_Client)
+			throw new Kohana_Request_Exception('Unable to execute :uri without a Kohana_Request_Client', array(':uri', $this->uri));
 
-		if ($this->directory)
-		{
-			// Add the directory name to the class prefix
-			$prefix .= str_replace(array('\\', '/'), '_', trim($this->directory, '/')).'_';
-		}
-
-		if (Kohana::$profiling)
-		{
-			// Set the benchmark name
-			$benchmark = '"'.$this->uri.'"';
-
-			if ($this !== Request::$initial AND Request::$current)
-			{
-				// Add the parent request uri
-				$benchmark .= ' « "'.Request::$current->uri.'"';
-			}
-
-			// Start benchmarking
-			$benchmark = Profiler::start('Requests', $benchmark);
-		}
-
-		// Store the currently active request
-		$previous = Request::$current;
-
-		// Change the current request to this request
-		Request::$current = $this;
-
-		try
-		{
-			// Load the controller using reflection
-			$class = new ReflectionClass($prefix.$this->controller);
-
-			if ($class->isAbstract())
-			{
-				throw new Kohana_Exception('Cannot create instances of abstract :controller',
-					array(':controller' => $prefix.$this->controller));
-			}
-
-			// Create a new instance of the controller
-			$controller = $class->newInstance($this, $this->create_response());
-
-			// Determine the action to use
-			$action = empty($this->action) ? Route::$default_action : $this->action;
-
-			// Get all the method objects before invoking them
-			$before = $class->getMethod('before');
-			$method = $class->getMethod('action_'.$action);
-			$after = $class->getMethod('after');
-		}
-		catch (Exception $e)
-		{
-			// Restore the previous request
-			Request::$current = $previous;
-
-			if (isset($benchmark))
-			{
-				// Delete the benchmark, it is invalid
-				Profiler::delete($benchmark);
-			}
-
-			if ($e instanceof ReflectionException)
-			{
-				// Reflection will throw exceptions for missing classes or actions
-				$this->status = 404;
-			}
-
-			// Re-throw the exception
-			throw $e;
-		}
-
-		try
-		{
-			// Execute the "before action" method
-			$before->invoke($controller);
-
-			// Execute the main action with the parameters
-			$method->invokeArgs($controller, $this->_params);
-
-			// Execute the "after action" method
-			$after->invoke($controller);
-		}
-		catch (Exception $e)
-		{
-			// All other exceptions are PHP/server errors
-			$this->status = 500;
-
-			throw $e;
-		}
-
-		// Restore the previous request
-		Request::$current = $previous;
-
-		if (isset($benchmark))
-		{
-			// Stop the benchmark
-			Profiler::stop($benchmark);
-		}
-
-		return $this;
+		return $this->_client->execute($this);
 	}
 
 
@@ -1062,10 +1008,14 @@ class Kohana_Request implements Http_Request {
 	 *  If there are variables set to the `Kohana_Request::$_post`
 	 *  they will override any values set to body.
 	 *
+	 * @param   boolean  return the rendered response, else returns the rendered request
 	 * @return  string
 	 */
-	public function render()
+	public function render($response = TRUE)
 	{
+		if ($response)
+			return (string) $this->response;
+
 		if ( ! $this->_post)
 			$body = $this->body;
 		else

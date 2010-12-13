@@ -43,8 +43,8 @@ class Kohana_Response implements Http_Response, Serializable {
 	 *     );
 	 *
 	 *     // Create the cache control header, creates :
-	 *     // Cache-Control: max-age=3600, must-revalidate, public
-	 *     $response->headers['Cache-Control'] = Response::create_cache_control($cache_control);
+	 *     // cache-control: max-age=3600, must-revalidate, public
+	 *     $response->header['cache-control'] = Response::create_cache_control($cache_control);
 	 *
 	 * @param   array    cache_control parts to render
 	 * @return  string
@@ -69,42 +69,24 @@ class Kohana_Response implements Http_Response, Serializable {
 	 * header.
 	 *
 	 *     // Create the cache control header
-	 *     $response->headers['Cache-Control'] = 'max-age=3600, must-revalidate, public';
+	 *     $response->header['cache-control'] = 'max-age=3600, must-revalidate, public';
 	 *
 	 *     // Parse the cache control header
-	 *     if($cache_control = Request::parse_cache_control($response->headers))
+	 *     if($cache_control = Request::parse_cache_control($response->header['cache-control']))
 	 *     {
 	 *          // Cache-Control header was found
 	 *          $maxage = $cache_control['max-age'];
 	 *     }
 	 *
 	 * @param   array    headers
-	 * @return  boolean|array
+	 * @return  boolean
+	 * @return  array
 	 * @since   3.1.0
 	 */
-	public static function parse_cache_control(array $headers)
+	public static function parse_cache_control($cache_control)
 	{
-		// If there is no Cache-Control header
-		if ( ! isset($headers['Cache-Control']))
-		{
-			if (isset($headers['Expires']) and ($timestamp = strtotime($headers['Expires'])) !== FALSE)
-			{
-				// Return a parsed version of the Expires header
-				return Response::create_cache_control(array(
-					'max-age'          => $timestamp - time(),
-					'must-revalidate'  => NULL,
-					'public'           => NULL
-				));
-			}
-			else
-			{
-				// return
-				return FALSE;
-			}
-		}
-
 		// If no Cache-Control parts are detected
-		if ( (bool) preg_match_all('/(?<key>[a-z\-]+)=?(?<value>\w+)?/', $headers['Cache-Control'], $matches))
+		if ( (bool) preg_match_all('/(?<key>[a-z\-]+)=?(?<value>\w+)?/', $cache_control, $matches))
 		{
 			// Return combined cache-control key/value pairs
 			return array_combine($matches['key'], $matches['value']);
@@ -443,9 +425,12 @@ class Kohana_Response implements Http_Response, Serializable {
 			if (Kohana::$expose)
 				$this->header['x-powered-by'] = 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
 
+			// Get the contents length
+			$content_length = $this->content_length();
+
 			// Add the content length if not set
-			if ( ! $this->header->offsetExists('content-length'))
-				$this->header['content-length'] = (string) $this->content_length();
+			if ( ! $this->header->offsetExists('content-length') and $content_length > 0)
+				$this->header['content-length'] = (string) $content_length;
 
 			// HTTP status line
 			header($protocol.' '.$this->status.' '.Response::$messages[$this->status]);
@@ -705,8 +690,9 @@ class Kohana_Response implements Http_Response, Serializable {
 
 		$content_length = $this->content_length();
 
-		// Set the content length for the body
-		$this->header['content-length'] = (string) $content_length;
+		// Set the content length for the body if required
+		if ($content_length > 0)
+			$this->header['content-length'] = (string) $content_length;
 
 		$output = $this->_protocol.' '.$this->status.' '.Response::$messages[$this->status]."\n";
 		$output .= (string) $this->header;
@@ -730,18 +716,18 @@ class Kohana_Response implements Http_Response, Serializable {
 		}
 
 		// Generate a unique hash for the response
-		return '"'.sha1($this->body).'"';
+		return '"'.sha1($this->render()).'"';
 	}
 
 	/**
 	 * Check Cache
 	 * Checks the browser cache to see the response needs to be returned
 	 *
-	 * @param String Resource ETag
-	 * @throws Kohana_Request_Exception
-	 * @chainable
+	 * @param   string   Resource ETag
+	 * @param   Kohana_Request  the request to test against
+	 * @return  Kohana_Response
 	 */
-	public function check_cache($etag = null)
+	public function check_cache($etag = null, Kohana_Request $request)
 	{
 		if (empty($etag))
 		{
@@ -752,16 +738,18 @@ class Kohana_Response implements Http_Response, Serializable {
 		$this->header['etag'] = $etag;
 
 		// Add the Cache-Control header if it is not already set
-		// This allows etags to be used with Max-Age, etc
+		// This allows etags to be used with max-age, etc
+		if ($this->header->offsetExists('cache-control'))
+		{
+			if (is_array($this->header['cache-control']))
+				$this->header['cache-control'][] = new Http_Header_Value('must-revalidate');
+			else
+				$this->header['cache-control'] = (string) $this->header['cache-control'].', must-revalidate';
+		}
+		else
+			$this->header['cache-control'] = 'must-revalidate';
 
-		/**
-		 * @todo fix this!!
-		 */
-		// $this->header += array(
-		// 	'cache-control' => 'must-revalidate',
-		// );
-
-		if (isset($_SERVER['HTTP_IF_NONE_MATCH']) AND $_SERVER['HTTP_IF_NONE_MATCH'] === $etag)
+		if ($request->header->offsetExists('if-none-match') AND (string) $request->header['if-none-match'] === $etag)
 		{
 			// No need to send data again
 			$this->status = 304;

@@ -32,10 +32,10 @@ abstract class Kohana_Controller_REST extends Controller {
 
 	protected $_action_map = array
 	(
-		'GET'    => 'index',
-		'PUT'    => 'update',
-		'POST'   => 'create',
-		'DELETE' => 'delete',
+		Http_Request::GET    => 'index',
+		Http_Request::PUT    => 'update',
+		Http_Request::POST   => 'create',
+		Http_Request::DELETE => 'delete',
 	);
 
 	protected $_action_requested = '';
@@ -59,6 +59,20 @@ abstract class Kohana_Controller_REST extends Controller {
 		}
 
 		return parent::before();
+	}
+
+	/**
+	 * undocumented function
+	 */
+	public function after()
+	{
+		if (in_array($this->request->method, array(
+			Http_Request::PUT,
+			Http_Request::POST,
+			Http_Request::DELETE)))
+		{
+			$this->response->header['cache-control'] = 'no-cache, no-store, max-age=0, must-revalidate';
+		}
 	}
 
 	/**
