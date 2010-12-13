@@ -140,7 +140,13 @@ class Kohana_Request implements Http_Request {
 		$request = new Request($uri, $cache);
 
 		// Create the initial request if it does not exist
-		(Request::$initial === NULL) and Request::$initial = $request;
+		if (Request::$initial === NULL)
+		{
+			Request::$initial = $request;
+
+			$request->query($_GET)
+				->post($_POST);
+		} 
 
 		/**
 		 * @todo   Apply this to the request->response headers
@@ -1048,7 +1054,15 @@ class Kohana_Request implements Http_Request {
 		if ($key === NULL)
 			return $this->_get;
 		else if ($value === NULL)
+		{
+			if (is_array($key))
+			{
+				$this->_get = $key;
+				return $this;
+			}
+
 			return $this->_get[$key];
+		}
 		else
 		{
 			$this->_get[$key] = $value;
@@ -1068,7 +1082,15 @@ class Kohana_Request implements Http_Request {
 		if ($key === NULL)
 			return $this->_post;
 		else if ($value === NULL)
+		{
+			if (is_array($key))
+			{
+				$this->_post = $key;
+				return $this;
+			}
+
 			return $this->_post[$key];
+		}
 		else
 		{
 			$this->_post[$key] = $value;
