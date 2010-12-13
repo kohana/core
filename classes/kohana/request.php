@@ -33,117 +33,118 @@ class Kohana_Request implements Http_Request {
 
 	public static function factory($uri = TRUE, Kohana_Cache $cache = NULL)
 	{
-		if (Kohana::$is_cli)
+		// If this is the initial request
+		if ( ! Request::$initial)
 		{
-			// Default protocol for command line is cli://
-			$protocol = 'cli';
-
-			// Get the command line options
-			$options = CLI::options('uri', 'method', 'get', 'post');
-
-			if (isset($options['uri']))
+			if (Kohana::$is_cli)
 			{
-				// Use the specified URI
-				$uri = $options['uri'];
+				// Default protocol for command line is cli://
+				$protocol = 'cli';
+
+				// Get the command line options
+				$options = CLI::options('uri', 'method', 'get', 'post');
+
+				if (isset($options['uri']))
+				{
+					// Use the specified URI
+					$uri = $options['uri'];
+				}
+
+				if (isset($options['method']))
+				{
+					// Use the specified method
+					$method = strtoupper($options['method']);
+				}
+
+				if (isset($options['get']))
+				{
+					// Overload the global GET data
+					parse_str($options['get'], $_GET);
+				}
+
+				if (isset($options['post']))
+				{
+					// Overload the global POST data
+					parse_str($options['post'], $_POST);
+				}
+			}
+			else
+			{
+				if (isset($_SERVER['REQUEST_METHOD']))
+				{
+					// Use the server request method
+					$method = $_SERVER['REQUEST_METHOD'];
+				}
+
+				if ( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
+				{
+					// This request is secure
+					$protocol = 'https';
+				}
+
+				if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+				{
+					// This request is an AJAX request
+					$is_ajax = TRUE;
+				}
+
+				if (isset($_SERVER['HTTP_REFERER']))
+				{
+					// There is a referrer for this request
+					$referrer = $_SERVER['HTTP_REFERER'];
+				}
+
+				if (isset($_SERVER['HTTP_USER_AGENT']))
+				{
+					// Set the client user agent
+					$user_agent = $_SERVER['HTTP_USER_AGENT'];
+				}
+
+				if (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+				{
+					// Use the forwarded IP address, typically set when the
+					// client is using a proxy server.
+					Request::$client_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+				}
+				elseif (isset($_SERVER['HTTP_CLIENT_IP']))
+				{
+					// Use the forwarded IP address, typically set when the
+					// client is using a proxy server.
+					Request::$client_ip = $_SERVER['HTTP_CLIENT_IP'];
+				}
+				elseif (isset($_SERVER['REMOTE_ADDR']))
+				{
+					// The remote IP address
+					Request::$client_ip = $_SERVER['REMOTE_ADDR'];
+				}
+
+				if ($method !== 'GET' AND $method !== 'POST')
+				{
+					// Ensure the raw body is saved for future use
+					$body = file_get_contents('php://input');
+					// Methods besides GET and POST do not properly parse the form-encoded
+					// query string into the $_POST array, so we overload it manually.
+					parse_str($body, $_POST);
+				}
+
+				if ($uri === TRUE)
+				{
+					$uri = Request::detect_uri();
+				}
 			}
 
-			if (isset($options['method']))
-			{
-				// Use the specified method
-				$method = strtoupper($options['method']);
-			}
-
-			if (isset($options['get']))
-			{
-				// Overload the global GET data
-				parse_str($options['get'], $_GET);
-			}
-
-			if (isset($options['post']))
-			{
-				// Overload the global POST data
-				parse_str($options['post'], $_POST);
-			}
+			// Create the instance singleton
+			$request = new Request($uri, $cache);
+			$request->header = Http::request_headers();
 		}
 		else
-		{
-			if (isset($_SERVER['REQUEST_METHOD']))
-			{
-				// Use the server request method
-				$method = $_SERVER['REQUEST_METHOD'];
-			}
-
-			if ( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
-			{
-				// This request is secure
-				$protocol = 'https';
-			}
-
-			if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
-			{
-				// This request is an AJAX request
-				$is_ajax = TRUE;
-			}
-
-			if (isset($_SERVER['HTTP_REFERER']))
-			{
-				// There is a referrer for this request
-				$referrer = $_SERVER['HTTP_REFERER'];
-			}
-
-			if (isset($_SERVER['HTTP_USER_AGENT']))
-			{
-				// Set the client user agent
-				$user_agent = $_SERVER['HTTP_USER_AGENT'];
-			}
-
-			if (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
-			{
-				// Use the forwarded IP address, typically set when the
-				// client is using a proxy server.
-				Request::$client_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-			}
-			elseif (isset($_SERVER['HTTP_CLIENT_IP']))
-			{
-				// Use the forwarded IP address, typically set when the
-				// client is using a proxy server.
-				Request::$client_ip = $_SERVER['HTTP_CLIENT_IP'];
-			}
-			elseif (isset($_SERVER['REMOTE_ADDR']))
-			{
-				// The remote IP address
-				Request::$client_ip = $_SERVER['REMOTE_ADDR'];
-			}
-
-			if ($method !== 'GET' AND $method !== 'POST')
-			{
-				// Ensure the raw body is saved for future use
-				$body = file_get_contents('php://input');
-				// Methods besides GET and POST do not properly parse the form-encoded
-				// query string into the $_POST array, so we overload it manually.
-				parse_str($body, $_POST);
-			}
-
-			if ($uri === TRUE)
-			{
-				$uri = Request::detect_uri();
-			}
-		}
-
-		// Reduce multiple slashes to a single slash
-		$uri = preg_replace('#//+#', '/', $uri);
-
-		// Remove all dot-paths from the URI, they are not valid
-		$uri = preg_replace('#\.[\s./]*/#', '', $uri);
-
-		// Create the instance singleton
-		$request = new Request($uri, $cache);
+			$request = new Request($uri, $cache);
 
 		// If there is a body, set it to the model
 		isset($body) and $request->body = $body;
 
 		// Create the initial request if it does not exist
-		if (Request::$initial === NULL)
+		if ( ! Request::$initial)
 		{
 			Request::$initial = $request;
 
@@ -151,11 +152,6 @@ class Kohana_Request implements Http_Request {
 				->post($_POST);
 		} 
 
-		/**
-		 * @todo   Apply this to the request->response headers
-		 */
-		// Add the default Content-Type header
-		//Request::$instance->headers['Content-Type'] = Kohana::$content_type.'; charset='.Kohana::$charset;
 		return $request;
 	}
 
