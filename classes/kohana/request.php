@@ -31,7 +31,7 @@ class Kohana_Request implements Http_Request {
 	 */
 	public static $current;
 
-	public static function factory( & $uri = TRUE, Kohana_Cache $cache = NULL)
+	public static function factory($uri = TRUE, Kohana_Cache $cache = NULL)
 	{
 		if (Kohana::$is_cli)
 		{
@@ -978,16 +978,6 @@ class Kohana_Request implements Http_Request {
 			$this->header[$key] = $value;
 
 		return $this;
-	}
-
-	/**
-	 * Sends the response status and all set headers.
-	 *
-	 * @return  Kohana_Request
-	 */
-	public function send_response_headers()
-	{
-		return $this->response->send_headers();
 	}
 
 	/**
