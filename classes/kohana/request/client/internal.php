@@ -96,16 +96,8 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			$before = $class->getMethod('before');
 			$after  = $class->getMethod('after');
 
-			if( ! $class->hasMethod('action_'.$action) AND $class->hasMethod('__call'))
-			{
-				$params = array($action, $request->param());
-				$method = $class->getMethod('__call');
-			}
-			else
-			{
-				$params = $request->param();
-				$method = $class->getMethod('action_'.$action);
-			}
+			$params = $request->param();
+			$method = $class->getMethod('action_'.$action);
 
 		}
 		catch (Exception $e)
