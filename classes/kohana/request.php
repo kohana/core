@@ -150,7 +150,7 @@ class Kohana_Request implements Http_Request {
 
 			$request->query($_GET)
 				->post($_POST);
-		} 
+		}
 
 		return $request;
 	}
@@ -236,10 +236,10 @@ class Kohana_Request implements Http_Request {
 	/**
 	 * Returns the first request encountered by this framework. This will should
 	 * only be set once during the first [Request::factory] invocation.
-	 * 
+	 *
 	 *     // Get the first request
 	 *     $request = Request::initial();
-	 * 
+	 *
 	 *     // Test whether the current request is the first request
 	 *     if (Request::initial() === Request::current())
 	 *          // Do something useful
@@ -853,10 +853,10 @@ class Kohana_Request implements Http_Request {
 	 * Creates a response based on the type of request, i.e. an
 	 * Request_Http will produce a Response_Http, and the same applies
 	 * to CLI.
-	 * 
+	 *
 	 *      // Create a response to the request
 	 *      $response = $request->create_response();
-	 * 
+	 *
 	 * @param   boolean  bind to this request
 	 * @return  Kohana_Response
 	 * @since   3.1.0
@@ -995,11 +995,11 @@ class Kohana_Request implements Http_Request {
 
 	/**
 	 * Renders the Http_Interaction to a string, producing
-	 * 
+	 *
 	 *  - Protocol
 	 *  - Headers
 	 *  - Body
-	 * 
+	 *
 	 *  If there are variables set to the `Kohana_Request::$_post`
 	 *  they will override any values set to body.
 	 *
