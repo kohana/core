@@ -140,7 +140,7 @@ abstract class Kohana_Http {
 	 */
 	public static function www_form_urlencode(array $params = NULL)
 	{
-		if ($params === NULL)
+		if ( ! $params)
 			return;
 
 		$encoded = array();
