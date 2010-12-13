@@ -139,6 +139,9 @@ class Kohana_Request implements Http_Request {
 		// Create the instance singleton
 		$request = new Request($uri, $cache);
 
+		// If there is a body, set it to the model
+		isset($body) and $request->body = $body;
+
 		// Create the initial request if it does not exist
 		if (Request::$initial === NULL)
 		{
