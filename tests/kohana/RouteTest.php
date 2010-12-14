@@ -145,7 +145,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 
 		$this->assertAttributeSame('', '_uri', $route);
 		$this->assertAttributeSame(array(), '_regex', $route);
-		$this->assertAttributeSame(array('action' => 'index'), '_defaults', $route);
+		$this->assertAttributeSame(array('action' => 'index', 'host' => FALSE), '_defaults', $route);
 		$this->assertAttributeSame(NULL, '_route_regex', $route);
 	}
 
@@ -221,7 +221,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 		$this->assertArrayHasKey('controller', $matches);
 		$this->assertArrayHasKey('action', $matches);
 		$this->assertArrayNotHasKey('id', $matches);
-		$this->assertSame(2, count($matches));
+		$this->assertSame(3, count($matches));
 		$this->assertSame('welcome', $matches['controller']);
 		$this->assertSame('index', $matches['action']);
 	}
@@ -274,7 +274,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 		$matches = $route->matches('admin/users/add');
 
 		$this->assertType('array', $matches);
-		$this->assertSame(2, count($matches));
+		$this->assertSame(3, count($matches));
 		$this->assertArrayHasKey('controller', $matches);
 		$this->assertArrayHasKey('action', $matches);
 	}
