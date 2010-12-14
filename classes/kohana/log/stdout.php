@@ -25,7 +25,7 @@ class Kohana_Log_StdOut extends Kohana_Log_Writer {
 		foreach ($messages as $message)
 		{
 			// Writes out each message
-			fwrite(STDOUT, PHP_EOL.strtr($format, $message));
+			fwrite(STDOUT, PHP_EOL.$message['time'].' --- '.$this->_log_levels[$message['level']].': '.$message['body']);
 		}
 	}
 } // End Kohana_Log_StdOut
