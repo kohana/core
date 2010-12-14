@@ -108,21 +108,12 @@ class Kohana_Http_Header extends ArrayObject {
 	 */
 	public function __construct($input, $flags = NULL, $iterator_class = 'ArrayIterator')
 	{
-		/**
-		 * @see http://www.w3.org/Protocols/rfc2616/rfc2616.html
-		 *
-		 * HTTP header declarations should be treated as case-insensitive
-		 */
-		$input = array_change_key_case($input, CASE_LOWER);
-
 		// Parse the values into [Http_Header_Values]
 		parent::__construct(Http_Header::parse_header_values($input), $flags, $iterator_class);
 
 		// If sort by quality is set, sort the fields by q=0.0 value
 		if (Http_Header::$sort_by_quality)
-		{
 			$this->sort_values_by_quality();
-		}
 	}
 
 	/**

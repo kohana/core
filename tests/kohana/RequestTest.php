@@ -50,7 +50,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for test_instance()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_instance()
@@ -76,7 +76,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_instance
-	 * @covers Request::instance
+	 * @covers Request::factory
 	 * @param boolean $value  Input for Kohana::sanitize
 	 * @param boolean $result Output for Kohana::sanitize
 	 */
@@ -87,8 +87,8 @@ class Kohana_RequestTest extends Unittest_TestCase
 			'Kohana::$is_cli'    => $is_cli,
 			'Request::$instance' => NULL
 		));
-	
-		$request = Request::instance($route);
+
+		$request = Request::factory($route);
 
 		$this->assertEquals($status, $request->status);
 		$this->assertEquals($response, $request->response);
@@ -179,7 +179,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 			'Kohana::$is_cli'    => $is_cli,
 		));
 
-		$this->assertEquals(Request::instance($uri)->url($params, $protocol), $expected);
+		$this->assertEquals(Request::factory($uri)->url($params, $protocol), $expected);
 	}
 }
 

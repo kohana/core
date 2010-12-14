@@ -96,16 +96,8 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			$before = $class->getMethod('before');
 			$after  = $class->getMethod('after');
 
-			if( ! $class->hasMethod('action_'.$action) AND $class->hasMethod('__call'))
-			{
-				$params = array($action, $request->param());
-				$method = $class->getMethod('__call');
-			}
-			else
-			{
-				$params = $request->param();
-				$method = $class->getMethod('action_'.$action);
-			}
+			$params = $request->param();
+			$method = $class->getMethod('action_'.$action);
 
 		}
 		catch (Exception $e)
@@ -150,6 +142,10 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 			// Stop response time
 			$this->_response_time = (time() - $this->_response_time);
+
+			// Add the default Content-Type header to initial request if not present
+			if ($initial_request and ! $request->header->offsetExists('content-type'))
+				$request->header['content-type'] = Kohana::$content_type.'; charset='.Kohana::$charset;
 
 			if ( ! $initial_request)
 				$this->_deinit_environment();
@@ -208,8 +204,11 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 		$query_strings = array();
 
-		foreach ($_GET as $key => $val)
-			$query_strings[] = $key.'='.urlencode($val);
+		if ($_GET)
+		{
+			foreach ($_GET as $key => $val)
+				$query_strings[] = $key.'='.urlencode($val);
+		}
 
 		// Get argc number
 		$_argc = $query_strings ? 1 : 0;
@@ -231,7 +230,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		);
 
 		// Add the request headers to replacement server vars
-		foreach ($request->headers as $key => $value)
+		foreach ($request->header as $key => $value)
 			$_request_server[('HTTP_'.strtoupper((str_replace('-', '_', $key))))] = $value;
 
 		// Replace global $_SERVER with request server var
