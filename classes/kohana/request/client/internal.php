@@ -1,12 +1,13 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Request Client for internal execution
- * 
+ *
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
+ * @since      3.1.0
  */
 class Kohana_Request_Client_Internal extends Request_Client {
 
@@ -30,16 +31,16 @@ class Kohana_Request_Client_Internal extends Request_Client {
 	 *
 	 *     $request->execute();
 	 *
-	 * @param   Kohana_Request
-	 * @return  Kohana_Response
+	 * @param   Request $request
+	 * @return  Response
 	 * @throws  Kohana_Exception
 	 * @uses    [Kohana::$profiling]
 	 * @uses    [Profiler]
 	 */
-	public function execute(Kohana_Request $request)
+	public function execute(Request $request)
 	{
 		// Check for cache existance
-		if ($this->_cache instanceof Kohana_Cache and ($response = $this->_cache->cache_response($request)) instanceof Kohana_Response)
+		if ($this->_cache instanceof Cache AND ($response = $this->_cache->cache_response($request)) instanceof Response)
 			return $response;
 
 		// Create the class prefix
@@ -144,16 +145,22 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			$this->_response_time = (time() - $this->_response_time);
 
 			// Add the default Content-Type header to initial request if not present
-			if ($initial_request and ! $request->header->offsetExists('content-type'))
+			if ($initial_request AND ! $request->header->offsetExists('content-type'))
+			{
 				$request->header['content-type'] = Kohana::$content_type.'; charset='.Kohana::$charset;
+			}
 
 			if ( ! $initial_request)
+			{
 				$this->_deinit_environment();
+			}
 		}
 		catch (Exception $e)
 		{
 			if ( ! $initial_request)
+			{
 				$this->_deinit_environment();
+			}
 
 			// All other exceptions are PHP/server errors
 			$response = $request->create_response();
@@ -171,8 +178,10 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			Profiler::stop($benchmark);
 		}
 
-		if ($this->_cache instanceof Kohana_Cache)
+		if ($this->_cache instanceof Cache)
+		{
 			$this->cache_response($request, $request->response);
+		}
 
 		// Return the response
 		return $request->response;
@@ -181,13 +190,12 @@ class Kohana_Request_Client_Internal extends Request_Client {
 	/**
 	 * Initialises the server environment variables
 	 * for this request execution.
-	 * 
+	 *
 	 * - Stores _GET, _POST and select _SERVER vars
 	 * - Replaces _GET, _POST and select _SERVER vars
 	 *
 	 * @param   Kohana_Request  request
 	 * @return  void
-	 * @since   3.1.0
 	 */
 	protected function _init_environment(Kohana_Request $request)
 	{
@@ -207,7 +215,9 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		if ($_GET)
 		{
 			foreach ($_GET as $key => $val)
+			{
 				$query_strings[] = $key.'='.urlencode($val);
+			}
 		}
 
 		// Get argc number
@@ -231,7 +241,9 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 		// Add the request headers to replacement server vars
 		foreach ($request->header as $key => $value)
+		{
 			$_request_server[('HTTP_'.strtoupper((str_replace('-', '_', $key))))] = $value;
+		}
 
 		// Replace global $_SERVER with request server var
 		$_SERVER = $_request_server;
@@ -242,7 +254,6 @@ class Kohana_Request_Client_Internal extends Request_Client {
 	 * to their initial state
 	 *
 	 * @return void
-	 * @since   3.1.0
 	 */
 	protected function _deinit_environment()
 	{
