@@ -16,14 +16,15 @@
 class Kohana_Http_Header_Value {
 
 	/**
-	 * @var     float    the default quality header property value
+	 * @var     float    The default quality header property value
 	 */
 	public static $default_quality = 1.0;
 
 	/**
 	 * Detects and returns key/value pairs
 	 *
-	 * @param   string   string to parse
+	 * @param   string   $string String to parse
+	 * @param   string   $separator
 	 * @return  array
 	 */
 	public static function parse_key_value($string, $separator = '=')
@@ -58,7 +59,7 @@ class Kohana_Http_Header_Value {
 	/**
 	 * Builds the header field
 	 *
-	 * @param   string|array   value string|values
+	 * @param   mixed   $value  Configuration array passed
 	 * @throws  Kohana_Http_Exception
 	 */
 	public function __construct($value)
@@ -126,8 +127,8 @@ class Kohana_Http_Header_Value {
 	/**
 	 * Provides direct access to the key of this header value
 	 *
-	 * @param   string   key value to set
-	 * @return  voic|string|self
+	 * @param   string   $key  Key value to set
+	 * @return  mixed
 	 */
 	public function key($key = NULL)
 	{
@@ -145,8 +146,8 @@ class Kohana_Http_Header_Value {
 	/**
 	 * Provides direct access to the value of this header value
 	 *
-	 * @param   string   value to set
-	 * @return  string|self
+	 * @param   string   $value Value to set
+	 * @return  mixed
 	 */
 	public function value($value = NULL)
 	{
@@ -164,12 +165,12 @@ class Kohana_Http_Header_Value {
 	/**
 	 * Provides direct access to the properties of this header value
 	 *
-	 * @param   array    properties to set to this value
-	 * @return  array
+	 * @param   array    $properties Properties to set to this value
+	 * @return  mixed
 	 */
-	public function properties(array $properties = NULL)
+	public function properties(array $properties = array())
 	{
-		if ($properties === NULL)
+		if ( ! $properties)
 		{
 			return $this->properties;
 		}

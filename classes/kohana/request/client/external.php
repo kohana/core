@@ -24,13 +24,13 @@ class Kohana_Request_Client_External extends Request_Client {
 	 *
 	 *     $request->execute();
 	 *
-	 * @param   Kohana_Request
-	 * @return  Kohana_Response
+	 * @param   Request
+	 * @return  Response
 	 * @throws  Kohana_Exception
 	 * @uses    [Kohana::$profiling]
 	 * @uses    [Profiler]
 	 */
-	public function execute(Kohana_Request $request)
+	public function execute(Request $request)
 	{
 		/**
 		 * @todo   implement this

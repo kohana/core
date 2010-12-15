@@ -10,7 +10,8 @@
  * @package    Kohana
  * @category   Http
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
+ * @since      3.1.0
+ * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 abstract class Kohana_Http {
@@ -23,8 +24,8 @@ abstract class Kohana_Http {
 	/**
 	 * Parses a HTTP header string into an associative array
 	 *
-	 * @param   string   header string to parse
-	 * @return  [Kohana_Http_Header]
+	 * @param   string   $header_string  Header string to parse
+	 * @return  Http_Header
 	 */
 	public static function parse_header_string($header_string)
 	{
@@ -83,8 +84,7 @@ abstract class Kohana_Http {
 	 *      // Get http headers into the request
 	 *      $request->headers = Http::request_headers();
 	 *
-	 * @return  [Kohana_Http_Header]
-	 * @since   3.1.0
+	 * @return  Http_Header
 	 */
 	public static function request_headers()
 	{
@@ -135,10 +135,10 @@ abstract class Kohana_Http {
 	 * Processes an array of key value pairs and encodes
 	 * the values to meet RFC 3986
 	 *
-	 * @param   array    params 
+	 * @param   array   $params  Params
 	 * @return  string
 	 */
-	public static function www_form_urlencode(array $params = NULL)
+	public static function www_form_urlencode(array $params = array())
 	{
 		if ( ! $params)
 			return;

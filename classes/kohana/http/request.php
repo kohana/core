@@ -27,8 +27,8 @@ interface Kohana_Http_Request extends Http_Interaction {
 	 * Gets or sets the Http method. Usually GET, POST, PUT or DELETE in
 	 * traditional CRUD applications.
 	 *
-	 * @param   string   method to use for this request
-	 * @return  self|string
+	 * @param   string   $method  Method to use for this request
+	 * @return  mixed
 	 */
 	public function method($method = NULL);
 
@@ -38,26 +38,26 @@ interface Kohana_Http_Request extends Http_Interaction {
 	 * If no parameters are passed, the request will use the
 	 * default values defined in the Route.
 	 *
-	 * @param   array    optional parameters to include in uri generation
+	 * @param   array    $params  Optional parameters to include in uri generation
 	 * @return  string
 	 */
-	public function uri(array $params = NULL);
+	public function uri(array $params = array());
 
 	/**
 	 * Gets or sets HTTP query string.
 	 *
-	 * @param   string|array key or key value pairs to set
-	 * @param   string   value to set to a key
-	 * @return  self|mixed
+	 * @param   mixed   $key    Key or key value pairs to set
+	 * @param   string  $value  Value to set to a key
+	 * @return  mixed
 	 */
 	public function query($key = NULL, $value = NULL);
 
 	/**
 	 * Gets or sets HTTP POST parameters to the request.
 	 *
-	 * @param   string|array key or key value pairs to set
-	 * @param   string   value to set to a key
-	 * @return  self|mixed
+	 * @param   mixed   $key   Key or key value pairs to set
+	 * @param   string  $value Value to set to a key
+	 * @return  mixed
 	 */
 	public function post($key = NULL, $value = NULL);
 

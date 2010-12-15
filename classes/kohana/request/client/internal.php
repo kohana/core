@@ -117,7 +117,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 				$response = $request->create_response();
 
 				// Reflection will throw exceptions for missing classes or actions
-				$response->status = 404;
+				$response->status(404);
 			}
 
 			// Re-throw the exception
@@ -164,7 +164,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 			// All other exceptions are PHP/server errors
 			$response = $request->create_response();
-			$response->status = 500;
+			$response->status(500);
 
 			throw $e;
 		}
