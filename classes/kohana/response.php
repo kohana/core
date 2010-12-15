@@ -154,17 +154,17 @@ class Kohana_Response implements Http_Response, Serializable {
 	/**
 	 * @var  integer     The response http status
 	 */
-	public $status = 200;
+	protected $status = 200;
 
 	/**
 	 * @var  Http_Header  Headers returned in the response
 	 */
-	public $header;
+	protected $header;
 
 	/**
 	 * @var  string      The response body
 	 */
-	public $body = '';
+	protected $body = '';
 
 	/**
 	 * @var  array       Cookies to be returned in the response
@@ -209,7 +209,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	 */
 	public function __toString()
 	{
-		return (string) $this->body;
+		return $this->body;
 	}
 
 	/**
@@ -226,7 +226,7 @@ class Kohana_Response implements Http_Response, Serializable {
 			return $this;
 		}
 
-		return (string) $this->body;
+		return $this->body;
 	}
 
 	/**
@@ -328,7 +328,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	 */
 	public function content_length()
 	{
-		return strlen((string) $this->body);
+		return strlen($this->body);
 	}
 
 	/**
@@ -708,7 +708,7 @@ class Kohana_Response implements Http_Response, Serializable {
 
 		$output = $this->_protocol.' '.$this->status.' '.Response::$messages[$this->status]."\n";
 		$output .= (string) $this->header;
-		$output .= (string) $this->body;
+		$output .= $this->body;
 
 		return $output;
 	}
