@@ -131,7 +131,7 @@ class Kohana_Core {
 	/**
 	 * @var  array  Types of errors to display at shutdown
 	 */
-	public static $shutdown_errors = array(E_PARSE, E_ERROR, E_USER_ERROR, E_COMPILE_ERROR);
+	public static $shutdown_errors = array(E_PARSE, E_ERROR, E_USER_ERROR);
 
 	/**
 	 * @var  boolean  escape quotes in Kohana::debug?
@@ -139,12 +139,12 @@ class Kohana_Core {
 	public static $debug_escape_quotes = FALSE;
 
 	/**
-	 * @var  object  Kohana Logging object
+	 * @var  Kohana_Log  logging object
 	 */
 	public static $log;
 
 	/**
-	 * @var  object  Kohana Config object
+	 * @var  Kohana_Config  config object
 	 */
 	public static $config;
 

@@ -11,7 +11,9 @@
  */
 class Kohana_Request {
 
-	// HTTP status codes and messages
+	/**
+	 * @var  array  HTTP status codes and messages
+	 */
 	public static $messages = array(
 		// Informational 1xx
 		100 => 'Continue',
@@ -102,12 +104,12 @@ class Kohana_Request {
 	public static $is_ajax = FALSE;
 
 	/**
-	 * @var  object  main request instance
+	 * @var  Request  main request instance
 	 */
 	public static $instance;
 
 	/**
-	 * @var  object  currently executing request instance
+	 * @var  Request  currently executing request instance
 	 */
 	public static $current;
 
@@ -949,7 +951,7 @@ class Kohana_Request {
 
 		if ( ! empty($options['resumable']))
 		{
-			if($start > 0 OR $end < ($size - 1))
+			if ($start > 0 OR $end < ($size - 1))
 			{
 				// Partial Content
 				$this->status = 206;
@@ -1087,7 +1089,7 @@ class Kohana_Request {
 		$start = 0;
 		$end = $size - 1;
 
-		if($range = $this->_parse_byte_range())
+		if ($range = $this->_parse_byte_range())
 		{
 			// We have a byte range from HTTP_RANGE
 			$start = $range[1];
@@ -1113,7 +1115,7 @@ class Kohana_Request {
 		$end = min(abs(intval($end)), $size - 1);
 
 		// Keep the start in bounds.
-		$start = $end < $start ? 0 : max($start, 0);
+		$start = ($end < $start) ? 0 : max($start, 0);
 
 		return array($start, $end);
 	}
