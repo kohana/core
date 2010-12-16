@@ -47,7 +47,7 @@ class Kohana_Encrypt {
 	 *     $encrypt = Encrypt::instance();
 	 *
 	 * @param   string  configuration group name
-	 * @return  object
+	 * @return  Encrypt
 	 */
 	public static function instance($name = NULL)
 	{
