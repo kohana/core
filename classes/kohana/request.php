@@ -564,6 +564,11 @@ class Kohana_Request implements Http_Request {
 	protected $_post;
 
 	/**
+	 * @var array    cookies to send with the request
+	 */
+	protected $_cookies = array();
+
+	/**
 	 * @var Kohana_Request_Client
 	 */
 	protected $_client;
@@ -1064,6 +1069,28 @@ class Kohana_Request implements Http_Request {
 	}
 
 	/**
+	 * Set and get cookies values for this request.
+	 *
+	 * @param   mixed     cookie name, or array of cookie values
+	 * @param   string    value to set to cookie
+	 * @return  string
+	 * @return  [Request]
+	 */
+	public function cookie($key = NULL, $value = NULL)
+	{
+		if ($key === NULL)
+			return $this->_cookies;
+		else if (is_array($key))
+			$this->_cookies = $key;
+		else if ( ! $value)
+			return Arr::get($this->_cookies, $key);
+		else
+			$this->_cookies[$key] = (string) $value;
+
+		return $this;
+	}
+
+	/**
 	 * Gets or sets the HTTP body to the request or response. The body is
 	 * included after the header, separated by a single empty new line.
 	 *
@@ -1110,6 +1137,19 @@ class Kohana_Request implements Http_Request {
 			$query_string = '';
 		else
 			$query_string = '?'.Http::www_form_urlencode($this->query());
+
+		// Prepare cookies
+		if ($this->_cookies)
+		{
+			$cookie_string = array();
+
+			// Parse each 
+			foreach ($this->_cookies as $key => $value)
+				$cookie_string[] = $key.'='.$value;
+
+			// Create the cookie string
+			$this->_header['cookie'] = implode('; ', $cookie_string);
+		}
 
 		$output = $this->_method.' '.$this->uri($this->param()).$query_string.' '.$this->protocol()."\n";
 		$output .= (string) $this->_header;
