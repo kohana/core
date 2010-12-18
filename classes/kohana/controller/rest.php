@@ -47,15 +47,15 @@ abstract class Kohana_Controller_REST extends Controller {
 	 */
 	public function before()
 	{
-		$this->_action_requested = $this->request->action;
+		$this->_action_requested = $this->request->action();
 
 		if ( ! isset($this->_action_map[$this->request->method]))
 		{
-			$this->request->action = 'invalid';
+			$this->request->action('invalid');
 		}
 		else
 		{
-			$this->request->action = $this->_action_map[$this->request->method];
+			$this->request->action($this->_action_map[$this->request->method]);
 		}
 
 		return parent::before();
@@ -66,12 +66,12 @@ abstract class Kohana_Controller_REST extends Controller {
 	 */
 	public function after()
 	{
-		if (in_array($this->request->method, array(
+		if (in_array($this->request->method(), array(
 			Http_Request::PUT,
 			Http_Request::POST,
 			Http_Request::DELETE)))
 		{
-			$this->response->header['cache-control'] = 'no-cache, no-store, max-age=0, must-revalidate';
+			$this->response->headers('cache-control', 'no-cache, no-store, max-age=0, must-revalidate');
 		}
 	}
 
