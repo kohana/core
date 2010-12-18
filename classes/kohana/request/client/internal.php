@@ -137,7 +137,9 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		try
 		{
 			if ( ! $initial_request)
+			{
 				$this->_init_environment($request);
+			}
 
 			// Initiate response time
 			$this->_response_time = time();
@@ -190,7 +192,9 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 		// Cache the response if cache is available
 		if ($this->_cache instanceof Cache)
+		{
 			$this->cache_response($request, $request->response());
+		}
 
 		// Return the response
 		return $request->response();

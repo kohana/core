@@ -788,7 +788,7 @@ class Kohana_Request implements Http_Request {
 	/**
 	 * Sets and gets the referrer from the request.
 	 *
-	 * @param   string $referrer 
+	 * @param   string $referrer
 	 * @return  string
 	 * @return  Request
 	 */
@@ -1023,7 +1023,9 @@ class Kohana_Request implements Http_Request {
 		if ($protocol === NULL)
 		{
 			if ($this->_protocol === NULL)
+			{
 				$this->_protocol = Http::$protocol;
+			}
 
 			return $this->_protocol;
 		}
@@ -1045,20 +1047,28 @@ class Kohana_Request implements Http_Request {
 	public function headers($key = NULL, $value = NULL)
 	{
 		if ($key instanceof Http_Header)
+		{
 			$this->_header = $key;
-		else if ($key === NULL)
+		}
+		elseif ($key === NULL)
+		{
 			return $this->_header;
-		else if ($value === NULL)
+		}
+		elseif ($value === NULL)
 		{
 			if ($this->_header->offsetExists($key))
 				return $this->_header[$key];
 			else
 				return;
 		}
-		else if (is_array($key))
+		elseif (is_array($key))
+		{
 			$this->_header->exchangeArray($key);
+		}
 		else
+		{
 			$this->_header[$key] = $value;
+		}
 
 		return $this;
 	}
@@ -1099,7 +1109,9 @@ class Kohana_Request implements Http_Request {
 			return (string) $this->_response;
 
 		if ( ! $this->_post)
+		{
 			$body = $this->_body;
+		}
 		else
 		{
 			$this->_header['content-type'] = 'application/x-www-form-urlencoded';
@@ -1107,9 +1119,13 @@ class Kohana_Request implements Http_Request {
 		}
 
 		if ( ! $this->_get)
+		{
 			$query_string = '';
+		}
 		else
+		{
 			$query_string = '?'.Http::www_form_urlencode($this->query());
+		}
 
 		$output = $this->_method.' '.$this->uri($this->param()).$query_string.' '.$this->protocol()."\n";
 		$output .= (string) $this->_header;
@@ -1129,7 +1145,7 @@ class Kohana_Request implements Http_Request {
 	{
 		if ($key === NULL)
 			return $this->_get;
-		else if ($value === NULL)
+		elseif ($value === NULL)
 		{
 			if (is_array($key))
 			{
@@ -1157,7 +1173,7 @@ class Kohana_Request implements Http_Request {
 	{
 		if ($key === NULL)
 			return $this->_post;
-		else if ($value === NULL)
+		elseif ($value === NULL)
 		{
 			if (is_array($key))
 			{
