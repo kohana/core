@@ -135,11 +135,11 @@ class Kohana_Http_Header extends ArrayObject {
 		{
 			if (is_array($value))
 			{
-				$header .= $key.': '.(implode(', ', $value))."\n";
+				$header .= $key.': '.(implode(', ', $value))."\r\n";
 			}
 			else
 			{
-				$header .= $key.': '.$value."\n";
+				$header .= $key.': '.$value."\r\n";
 			}
 		}
 
