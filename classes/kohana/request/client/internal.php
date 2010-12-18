@@ -63,14 +63,13 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 		if (Kohana::$profiling)
 		{
-			$uri = $request->uri();
 			// Set the benchmark name
-			$benchmark = '"'.$uri.'"';
+			$benchmark = '"'.$request->uri().'"';
 
 			if ($request !== Request::$initial AND Request::$current)
 			{
 				// Add the parent request uri
-				$benchmark .= ' « "'.$uri.'"';
+				$benchmark .= ' « "'.Request::$current->uri().'"';
 			}
 
 			// Start benchmarking
