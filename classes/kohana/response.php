@@ -420,7 +420,7 @@ class Kohana_Response implements Http_Response, Serializable {
 			else
 			{
 				// Default to using newer protocol
-				$protocol = Http::$protocol.'/'.Http::$version;
+				$protocol = strtoupper(Http::$protocol).'/'.Http::$version;
 			}
 
 			// Add the X-Powered-By header
