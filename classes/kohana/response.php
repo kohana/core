@@ -154,17 +154,17 @@ class Kohana_Response implements Http_Response, Serializable {
 	/**
 	 * @var  integer     The response http status
 	 */
-	protected $status = 200;
+	protected $_status = 200;
 
 	/**
 	 * @var  Http_Header  Headers returned in the response
 	 */
-	protected $header;
+	protected $_header;
 
 	/**
 	 * @var  string      The response body
 	 */
-	protected $body = '';
+	protected $_body = '';
 
 	/**
 	 * @var  array       Cookies to be returned in the response
@@ -184,20 +184,16 @@ class Kohana_Response implements Http_Response, Serializable {
 	 */
 	public function __construct(array $config = array())
 	{
-		$this->header = new Http_Header(array());
+		$this->_header = new Http_Header(array());
 
 		foreach ($config as $key => $value)
 		{
 			if (property_exists($this, $key))
 			{
-				if ($key == 'header')
-				{
-					$this->header->exchangeArray($value);
-				}
+				if ($key == '_header')
+					$this->_header->exchangeArray($value);
 				else
-				{
 					$this->$key = $value;
-				}
 			}
 		}
 	}
@@ -209,7 +205,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	 */
 	public function __toString()
 	{
-		return $this->body;
+		return $this->_body;
 	}
 
 	/**
@@ -222,11 +218,11 @@ class Kohana_Response implements Http_Response, Serializable {
 	{
 		if ($content)
 		{
-			$this->body = (string) $content;
+			$this->_body = (string) $content;
 			return $this;
 		}
 
-		return $this->body;
+		return $this->_body;
 	}
 
 	/**
@@ -264,11 +260,11 @@ class Kohana_Response implements Http_Response, Serializable {
 	{
 		if ($status === NULL)
 		{
-			return $this->status;
+			return $this->_status;
 		}
 		elseif (array_key_exists($status, Response::$messages))
 		{
-			$this->status = (int) $status;
+			$this->_status = (int) $status;
 			return $this;
 		}
 		else
@@ -302,20 +298,20 @@ class Kohana_Response implements Http_Response, Serializable {
 	{
 		if ($key === NULL)
 		{
-			return $this->header;
+			return $this->_header;
 		}
 		elseif (is_array($key))
 		{
-			$this->header = $key;
+			$this->_header = $key;
 			return $this;
 		}
 		elseif ($value === NULL)
 		{
-			return $this->header[$key];
+			return $this->_header[$key];
 		}
 		else
 		{
-			$this->header[$key] = $value;
+			$this->_header[$key] = $value;
 			return $this;
 		}
 	}
@@ -328,7 +324,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	 */
 	public function content_length()
 	{
-		return strlen($this->body);
+		return strlen($this->_body);
 	}
 
 	/**
@@ -424,28 +420,28 @@ class Kohana_Response implements Http_Response, Serializable {
 			else
 			{
 				// Default to using newer protocol
-				$protocol = 'HTTP/1.1';
+				$protocol = Http::$protocol.'/'.Http::$version;
 			}
 
 			// Add the X-Powered-By header
 			if (Kohana::$expose)
 			{
-				$this->header['x-powered-by'] = 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
+				$this->_header['x-powered-by'] = 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
 			}
 
 			// Get the contents length
 			$content_length = $this->content_length();
 
 			// Add the content length if not set
-			if ( ! $this->header->offsetExists('content-length') AND $content_length > 0)
+			if ( ! $this->_header->offsetExists('content-length') AND $content_length > 0)
 			{
-				$this->header['content-length'] = (string) $content_length;
+				$this->_header['content-length'] = (string) $content_length;
 			}
 
 			// HTTP status line
-			header($protocol.' '.$this->status.' '.Response::$messages[$this->status]);
+			header($protocol.' '.$this->_status.' '.Response::$messages[$this->_status]);
 
-			foreach ($this->header as $name => $value)
+			foreach ($this->_header as $name => $value)
 			{
 				if (is_string($name))
 				{
@@ -463,6 +459,7 @@ class Kohana_Response implements Http_Response, Serializable {
 				Cookie::set($name, $value['value'], $value['expiration']);
 			}
 		}
+
 		return $this;
 	}
 
@@ -523,7 +520,7 @@ class Kohana_Response implements Http_Response, Serializable {
 			}
 
 			// Force the data to be rendered if
-			$file_data = (string) $this->response;
+			$file_data = (string) $this->_body;
 
 			// Get the content size
 			$size = strlen($file_data);
@@ -579,18 +576,18 @@ class Kohana_Response implements Http_Response, Serializable {
 			if ($start > 0 OR $end < ($size - 1))
 			{
 				// Partial Content
-				$this->status = 206;
+				$this->_status = 206;
 			}
 
 			// Range of bytes being sent
-			$this->header['content-tange'] = 'bytes '.$start.'-'.$end.'/'.$size;
-			$this->header['accept-ranges'] = 'bytes';
+			$this->_header['content-tange'] = 'bytes '.$start.'-'.$end.'/'.$size;
+			$this->_header['accept-ranges'] = 'bytes';
 		}
 
 		// Set the headers for a download
-		$this->header['content-disposition'] = $disposition.'; filename="'.$download.'"';
-		$this->header['content-type']        = $mime;
-		$this->header['content-length']      = ($end - $start) + 1;
+		$this->_header['content-disposition'] = $disposition.'; filename="'.$download.'"';
+		$this->_header['content-type']        = $mime;
+		$this->_header['content-length']      = ($end - $start) + 1;
 
 		if (Request::user_agent('browser') === 'Internet Explorer')
 		{
@@ -598,13 +595,13 @@ class Kohana_Response implements Http_Response, Serializable {
 			if (Request::$initial->protocol() === 'https')
 			{
 				// http://support.microsoft.com/kb/316431
-				$this->header['pragma'] = $this->header['cache-control'] = 'public';
+				$this->_header['pragma'] = $this->_header['cache-control'] = 'public';
 			}
 
 			if (version_compare(Request::user_agent('version'), '8.0', '>='))
 			{
 				// http://ajaxian.com/archives/ie-8-security
-				$this->header['x-content-type-options'] = 'nosniff';
+				$this->_header['x-content-type-options'] = 'nosniff';
 			}
 		}
 
@@ -692,10 +689,10 @@ class Kohana_Response implements Http_Response, Serializable {
 	 */
 	public function render()
 	{
-		if ( ! $this->header->offsetExists('content-type'))
+		if ( ! $this->_header->offsetExists('content-type'))
 		{
 			// Add the default Content-Type header if required
-			$this->header['content-type'] = 'text/html; charset='.Kohana::$charset;
+			$this->_header['content-type'] = 'text/html; charset='.Kohana::$charset;
 		}
 
 		$content_length = $this->content_length();
@@ -703,12 +700,12 @@ class Kohana_Response implements Http_Response, Serializable {
 		// Set the content length for the body if required
 		if ($content_length > 0)
 		{
-			$this->header['content-length'] = (string) $content_length;
+			$this->_header['content-length'] = (string) $content_length;
 		}
 
-		$output = $this->_protocol.' '.$this->status.' '.Response::$messages[$this->status]."\n";
-		$output .= (string) $this->header;
-		$output .= $this->body;
+		$output = $this->_protocol.' '.$this->_status.' '.Response::$messages[$this->_status]."\n";
+		$output .= (string) $this->_header;
+		$output .= $this->_body;
 
 		return $output;
 	}
@@ -722,7 +719,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	 */
 	public function generate_etag()
 	{
-	    if ($this->response === NULL)
+	    if ($this->_body === NULL)
 		{
 			throw new Kohana_Request_Exception('No response yet associated with request - cannot auto generate resource ETag');
 		}
@@ -747,30 +744,26 @@ class Kohana_Response implements Http_Response, Serializable {
 		}
 
 		// Set the ETag header
-		$this->header['etag'] = $etag;
+		$this->_header['etag'] = $etag;
 
 		// Add the Cache-Control header if it is not already set
 		// This allows etags to be used with max-age, etc
-		if ($this->header->offsetExists('cache-control'))
+		if ($this->_header->offsetExists('cache-control'))
 		{
-			if (is_array($this->header['cache-control']))
-			{
-				$this->header['cache-control'][] = new Http_Header_Value('must-revalidate');
-			}
+			if (is_array($this->_header['cache-control']))
+				$this->_header['cache-control'][] = new Http_Header_Value('must-revalidate');
 			else
-			{
-				$this->header['cache-control'] = $this->header['cache-control'].', must-revalidate';
-			}
+				$this->_header['cache-control'] = $this->_header['cache-control'].', must-revalidate';
 		}
 		else
 		{
-			$this->header['cache-control'] = 'must-revalidate';
+			$this->_header['cache-control'] = 'must-revalidate';
 		}
 
-		if ($request->header->offsetExists('if-none-match') AND (string) $request->header['if-none-match'] === $etag)
+		if ($request->_header->offsetExists('if-none-match') AND (string) $request->_header['if-none-match'] === $etag)
 		{
 			// No need to send data again
-			$this->status = 304;
+			$this->_status = 304;
 			$this->send_headers();
 
 			// Stop execution
@@ -794,13 +787,13 @@ class Kohana_Response implements Http_Response, Serializable {
 		// Serialize the class properties
 		$to_serialize += array
 		(
-			'status'  => $this->status,
-			'header'  => $this->header,
+			'status'  => $this->_status,
+			'header'  => $this->_header,
 			'cookies' => $this->_cookies,
-			'body'    => $this->body
+			'body'    => $this->_body
 		);
 
-		$string = json_encode($to_serialize);
+		$serialized = serialize($to_serialize);
 
 		if (is_string($string))
 		{
@@ -808,7 +801,7 @@ class Kohana_Response implements Http_Response, Serializable {
 		}
 		else
 		{
-			throw new Kohana_Exception('Unable to correctly encode object to json');
+			throw new Kohana_Exception('Unable to serialize object');
 		}
 	}
 
@@ -822,24 +815,20 @@ class Kohana_Response implements Http_Response, Serializable {
 	public function unserialize($string)
 	{
 		// Unserialise object
-		$unserialized = json_decode($string);
+		$unserialized = unserialize($string);
 
 		// If failed
 		if ($unserialized === NULL)
 		{
 			// Throw exception
-			throw new Kohana_Exception('Unable to correctly decode object from json');
+			throw new Kohana_Exception('Unable to correctly unserialize string: :string', array(':string' => $string));
 		}
 
 		// Foreach key/value pair
 		foreach ($unserialized as $key => $value)
 		{
-			// If it belongs here
 			if (property_exists($this, $key))
-			{
-				// Apply it
 				$this->$key = $value;
-			}
 		}
 
 		return TRUE;
