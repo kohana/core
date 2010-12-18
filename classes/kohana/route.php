@@ -190,8 +190,8 @@ class Kohana_Route {
 		$route = Route::get($name);
 
 		// Create a URI with the route and convert it to a URL
-		return ($route->is_external()) ? 
-			Route::get($name)->uri($params) : 
+		return ($route->is_external()) ?
+			Route::get($name)->uri($params) :
 			URL::site(Route::get($name)->uri($params), $protocol);
 	}
 
@@ -375,7 +375,7 @@ class Kohana_Route {
 	 */
 	public function is_external()
 	{
-		return in_array($this->_host, Route::$localhosts);
+		return ! in_array($this->_host, Route::$localhosts);
 	}
 
 	/**
