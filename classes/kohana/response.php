@@ -330,12 +330,15 @@ class Kohana_Response implements Http_Response, Serializable {
 	/**
 	 * Sets a cookie to the response
 	 *
-	 * @param   string   $name       Name
-	 * @param   string   $value      Value
-	 * @param   int      $expiration Expiration
+	 * @param   string    name of cookie
+	 * @param   string    value of cookie
+	 * @param   int       expiration time (RFC RFC 1123)
+	 * @param   string    domain to restrict cookie to
+	 * @param   string    path to restrict cookie to
+	 * @param   boolean   only store on secure channels
 	 * @return  Response
 	 */
-	public function set_cookie($name, $value, $expiration = NULL)
+	public function set_cookie($name, $value, $expiration = NULL, $domain = NULL, $path = NULL, $secure = FALSE)
 	{
 		if ($expiration === NULL)
 		{
@@ -346,10 +349,21 @@ class Kohana_Response implements Http_Response, Serializable {
 			$expiration += time();
 		}
 
-		$this->_cookies[$name] = array(
+		$cookie = array(
 			'value'      => $value,
-			'expiration' => $expiration
+			'expiration' => $expiration,
 		);
+
+		if ($domain)
+			$cookie['domain'] = $domain;
+
+		if ($path)
+			$cookie['path'] = $path;
+
+		if ($secure)
+			$cookie['secure'] = $secure;
+
+		$this->_cookies[$name] = $cookie;
 
 		return $this;
 	}
@@ -701,6 +715,29 @@ class Kohana_Response implements Http_Response, Serializable {
 		if ($content_length > 0)
 		{
 			$this->_header['content-length'] = (string) $content_length;
+		}
+
+		// Prepare cookies
+		if ($this->_cookies)
+		{
+			if (extension_loaded('http'))
+			{
+				$this->_header['set-cookie'] = http_build_cookie($this->_cookies);
+			}
+			else
+			{
+				$cookies = array();
+
+				// Parse each 
+				foreach ($this->_cookies as $key => $value)
+				{
+					$string = $key.'='.$value['value'].'; expires='.date('l, d M Y H:i:s T', $value['expiration']);
+					$cookies[] = $string;
+				}
+
+				// Create the cookie string
+				$this->_header['set-cookie'] = $cookies;
+			}
 		}
 
 		$output = $this->_protocol.' '.$this->_status.' '.Response::$messages[$this->_status]."\n";
