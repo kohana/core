@@ -123,7 +123,7 @@ class Kohana_Http_Header extends ArrayObject {
 	 * the terminating new line
 	 *
 	 *     // Return the header as a string
-	 *     echo (string) $request->headers;
+	 *     echo (string) $request->headers();
 	 *
 	 * @return  string
 	 */
