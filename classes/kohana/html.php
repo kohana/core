@@ -91,7 +91,7 @@ class Kohana_HTML {
 	 * @param   string  URL or URI string
 	 * @param   string  link text
 	 * @param   array   HTML anchor attributes
-	 * @param   string  use a specific protocol
+	 * @param   mixed   text based protocol, or request object to use for protocol
 	 * @return  string
 	 * @uses    URL::base
 	 * @uses    URL::site
