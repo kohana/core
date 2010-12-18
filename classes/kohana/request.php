@@ -491,57 +491,57 @@ class Kohana_Request implements Http_Request {
 	/**
 	 * @var  string  method: GET, POST, PUT, DELETE, HEAD, etc
 	 */
-	public $method = 'GET';
+	protected $_method = 'GET';
 
 	/**
 	 * @var  string  protocol: HTTP/1.1, FTP, CLI, etc
 	 */
-	public $protocol;
+	protected $_protocol;
 
 	/**
 	 * @var  string  referring URL
 	 */
-	public $referrer;
+	protected $_referrer;
 
 	/**
 	 * @var  Route       route matched for this request
 	 */
-	public $route;
+	protected $_route;
 
 	/**
 	 * @var  Kohana_Response  response
 	 */
-	public $response;
+	protected $_response;
 
 	/**
 	 * @var  Kohana_Http_Header  headers to sent as part of the request
 	 */
-	public $header;
+	protected $_header;
 
 	/**
 	 * @var  string the body
 	 */
-	public $body;
+	protected $_body;
 
 	/**
 	 * @var  string  controller directory
 	 */
-	public $directory = '';
+	protected $_directory = '';
 
 	/**
 	 * @var  string  controller to be executed
 	 */
-	public $controller;
+	protected $_controller;
 
 	/**
 	 * @var  string  action to be executed in the controller
 	 */
-	public $action;
+	protected $_action;
 
 	/**
 	 * @var  string  the URI of the request
 	 */
-	public $uri;
+	protected $_uri;
 
 	/**
 	 * @var  boolean  external request
@@ -583,7 +583,7 @@ class Kohana_Request implements Http_Request {
 	public function __construct($uri, Kohana_Cache $cache = NULL)
 	{
 		// Initialise the header
-		$this->header = new Http_Header(array());
+		$this->_header = new Http_Header(array());
 
 		// Remove trailing slashes from the URI
 		$uri = trim($uri, '/');
@@ -602,32 +602,32 @@ class Kohana_Request implements Http_Request {
 				if ($params = $route->matches($uri))
 				{
 					// Store the URI
-					$this->uri = $uri;
+					$this->_uri = $uri;
 
 					// Store the matching route
-					$this->route = $route;
+					$this->_route = $route;
 
 					// Is this route external
-					$this->_external = $this->route->is_external();
+					$this->_external = $this->_route->is_external();
 
 					if (isset($params['directory']))
 					{
 						// Controllers are in a sub-directory
-						$this->directory = $params['directory'];
+						$this->_directory = $params['directory'];
 					}
 
 					// Store the controller
-					$this->controller = $params['controller'];
+					$this->_controller = $params['controller'];
 
 					if (isset($params['action']))
 					{
 						// Store the action
-						$this->action = $params['action'];
+						$this->_action = $params['action'];
 					}
 					else
 					{
 						// Use the default action
-						$this->action = Route::$default_action;
+						$this->_action = Route::$default_action;
 					}
 
 					// These are accessible as public vars and can be overloaded
@@ -644,7 +644,7 @@ class Kohana_Request implements Http_Request {
 			}
 
 			// No matching route for this URI
-			$this->status = 404;
+			$this->_status = 404;
 
 			throw new Kohana_Request_Exception('Unable to find a route to match the URI: :uri',
 				array(':uri' => $uri));
@@ -652,7 +652,7 @@ class Kohana_Request implements Http_Request {
 		else
 		{
 			// Store the URI
-			$this->uri = $uri;
+			$this->_uri = $uri;
 
 			// Set external state
 			$this->_external = TRUE;
@@ -688,25 +688,25 @@ class Kohana_Request implements Http_Request {
 		if ( ! isset($params['directory']))
 		{
 			// Add the current directory
-			$params['directory'] = $this->directory;
+			$params['directory'] = $this->_directory;
 		}
 
 		if ( ! isset($params['controller']))
 		{
 			// Add the current controller
-			$params['controller'] = $this->controller;
+			$params['controller'] = $this->_controller;
 		}
 
 		if ( ! isset($params['action']))
 		{
 			// Add the current action
-			$params['action'] = $this->action;
+			$params['action'] = $this->_action;
 		}
 
 		// Add the current parameters
 		$params += $this->_params;
 
-		return $this->route->uri($params);
+		return $this->_route->uri($params);
 	}
 
 	/**
@@ -773,16 +773,80 @@ class Kohana_Request implements Http_Request {
 		$response = $this->create_response();
 
 		// Set the response status
-		$response->status = $code;
+		$response->status($code);
 
 		// Set the location header
-		$response->headers['Location'] = $url;
+		$response->headers('Location', $url);
 
 		// Send headers
 		$response->send_headers();
 
 		// Stop execution
 		exit;
+	}
+
+	/**
+	 * Sets and gets the referrer from the request.
+	 *
+	 * @param   string $referrer 
+	 * @return  string
+	 * @return  Request
+	 */
+	public function referrer($referrer = NULL)
+	{
+		if ( ! $referrer)
+			return $this->_referrer;
+
+		$this->_referrer = (string) $referrer;
+		return $this;
+	}
+
+	/**
+	 * Sets and gets the directory for the controller.
+	 *
+	 * @param   string   directory to execute the controller from
+	 * @return  void
+	 * @return  Request
+	 */
+	public function directory($directory = NULL)
+	{
+		if ( ! $directory)
+			return $this->_directory;
+
+		$this->_directory = (string) $directory;
+		return $this;
+	}
+
+	/**
+	 * Sets and gets the controller for the matched route.
+	 *
+	 * @param   string   controller to execute the action
+	 * @return  void
+	 * @return  Request
+	 */
+	public function controller($controller = NULL)
+	{
+		if ( ! $controller)
+			return $this->_controller;
+
+		$this->_controller = (string) $controller;
+		return $this;
+	}
+
+	/**
+	 * Sets and gets the action for the controller.
+	 *
+	 * @param   string   action to execute the controller from
+	 * @return  void
+	 * @return  Request
+	 */
+	public function action($action = NULL)
+	{
+		if ( ! $action)
+			return $this->_action;
+
+		$this->_action = (string) $action;
+		return $this;
 	}
 
 	/**
@@ -840,13 +904,29 @@ class Kohana_Request implements Http_Request {
 	 */
 	public function generate_etag()
 	{
-	    if ($this->response === NULL)
+	    if ($this->_response === NULL)
 		{
 			throw new Kohana_Request_Exception('No response yet associated with request - cannot auto generate resource ETag');
 		}
 
 		// Generate a unique hash for the response
-		return '"'.sha1($this->response).'"';
+		return '"'.sha1($this->_response).'"';
+	}
+
+	/**
+	 * Set or get the response for this request
+	 *
+	 * @param   Response  response to apply to this request
+	 * @return  Response
+	 * @return  void
+	 */
+	public function response(Response $response = NULL)
+	{
+		if ( ! $response)
+			return $this->_response;
+
+		$this->_response = $response;
+		return $this;
 	}
 
 	/**
@@ -868,7 +948,7 @@ class Kohana_Request implements Http_Request {
 		if ( ! $bind)
 			return $response;
 		else
-			return $this->response = $response;
+			return $this->_response = $response;
 	}
 
 	/**
@@ -891,7 +971,7 @@ class Kohana_Request implements Http_Request {
 		}
 
 		// Set the ETag header
-		$this->header['ETag'] = $etag;
+		$this->headers('ETag', $etag);
 
 		// Add the Cache-Control header if it is not already set
 		// This allows etags to be used with Max-Age, etc
@@ -903,7 +983,7 @@ class Kohana_Request implements Http_Request {
 		{
 			// No need to send data again
 			$response = $this->create_response();
-			$response->status = 304;
+			$response->status(304);
 			$response->send_headers();
 
 			// Stop execution
@@ -924,9 +1004,9 @@ class Kohana_Request implements Http_Request {
 	public function method($method = NULL)
 	{
 		if ($method === NULL)
-			return $this->method;
+			return $this->_method;
 
-		$this->method = strtoupper($method);
+		$this->_method = strtoupper($method);
 		return $this;
 	}
 
@@ -942,13 +1022,13 @@ class Kohana_Request implements Http_Request {
 	{
 		if ($protocol === NULL)
 		{
-			if ($this->protocol === NULL)
-				$this->protocol = Http::$protocol;
+			if ($this->_protocol === NULL)
+				$this->_protocol = Http::$protocol;
 
-			return $this->protocol;
+			return $this->_protocol;
 		}
 
-		$this->protocol = strtoupper($protocol);
+		$this->_protocol = strtoupper($protocol);
 		return $this;
 	}
 
@@ -965,13 +1045,13 @@ class Kohana_Request implements Http_Request {
 	public function headers($key = NULL, $value = NULL)
 	{
 		if ($key === NULL)
-			return $this->header;
+			return $this->_header;
 		else if ($value === NULL)
 			return $this->header[$key];
 		else if (is_array($key))
-			$this->header->exchangeArray($key);
+			$this->_header->exchangeArray($key);
 		else
-			$this->header[$key] = $value;
+			$this->_header[$key] = $value;
 
 		return $this;
 	}
@@ -987,9 +1067,9 @@ class Kohana_Request implements Http_Request {
 	public function body($content = NULL)
 	{
 		if ($content === NULL)
-			return $this->body;
+			return $this->_body;
 
-		$this->body = $content;
+		$this->_body = $content;
 		return $this;
 	}
 
@@ -1009,13 +1089,13 @@ class Kohana_Request implements Http_Request {
 	public function render($response = TRUE)
 	{
 		if ($response)
-			return (string) $this->response;
+			return (string) $this->_response;
 
 		if ( ! $this->_post)
-			$body = $this->body;
+			$body = $this->_body;
 		else
 		{
-			$this->header['content-type'] = 'application/x-www-form-urlencoded';
+			$this->_header['content-type'] = 'application/x-www-form-urlencoded';
 			$body = Http::www_form_urlencode($this->_post);
 		}
 
@@ -1024,8 +1104,8 @@ class Kohana_Request implements Http_Request {
 		else
 			$query_string = '?'.Http::www_form_urlencode($this->query());
 
-		$output = $this->method.' '.$this->uri($this->param()).$query_string.' '.$this->protocol()."\n";
-		$output .= (string) $this->header;
+		$output = $this->_method.' '.$this->uri($this->param()).$query_string.' '.$this->protocol()."\n";
+		$output .= (string) $this->_header;
 		$output .= $body;
 
 		return $output;
@@ -1086,4 +1166,5 @@ class Kohana_Request implements Http_Request {
 			return $this;
 		}
 	}
+
 } // End Request

@@ -897,4 +897,4 @@ class Kohana_Response implements Http_Response, Serializable {
 
 		return array($start, $end);
 	}
-}
+} // End Kohana_Response
