@@ -481,7 +481,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	 *
 	 * Download generated content as a file:
 	 *
-	 *     $request->response = $content;
+	 *     $request->response($content);
 	 *     $request->send_file(TRUE, $filename);
 	 *
 	 * [!!] No further processing can be done after this method is called!
@@ -756,11 +756,9 @@ class Kohana_Response implements Http_Response, Serializable {
 				$this->_header['cache-control'] = $this->_header['cache-control'].', must-revalidate';
 		}
 		else
-		{
 			$this->_header['cache-control'] = 'must-revalidate';
-		}
 
-		if ($request->_header->offsetExists('if-none-match') AND (string) $request->_header['if-none-match'] === $etag)
+		if ($request->headers('if-none-match') AND (string) $request->headers('if-none-match') === $etag)
 		{
 			// No need to send data again
 			$this->_status = 304;

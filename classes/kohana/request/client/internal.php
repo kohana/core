@@ -155,9 +155,9 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			$this->_response_time = (time() - $this->_response_time);
 
 			// Add the default Content-Type header to initial request if not present
-			if ($initial_request AND ! $request->header->offsetExists('content-type'))
+			if ($initial_request AND ! $request->headers('content-type'))
 			{
-				$request->header['content-type'] = Kohana::$content_type.'; charset='.Kohana::$charset;
+				$request->headers('content-type', Kohana::$content_type.'; charset='.Kohana::$charset);
 			}
 
 			if ( ! $initial_request)
@@ -235,17 +235,19 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		// Create the full query string
 		$query_string = implode('&', $query_strings);
 
+		$uri = $request->uri();
+
 		// Augment the existing $_SERVER
 		$_request_server = array(
 			'QUERY_STRING'     => $query_string,
 			'argv'             => $query_string,
 			'argc'             => $_argc,
-			'REQUEST_METHOD'   => $request->method,
-			'SCRIPT_NAME'      => '/'.Kohana::$index_file.'/'.$request->uri,
+			'REQUEST_METHOD'   => $request->method(),
+			'SCRIPT_NAME'      => '/'.Kohana::$index_file.'/'.$uri,
 			'REQUEST_URI'      => '/'.$request->uri,
-			'DOCUMENT_URI'     => '/'.Kohana::$index_file.'/'.$request->uri,
+			'DOCUMENT_URI'     => '/'.Kohana::$index_file.'/'.$uri,
 			'REQUEST_TIME'     => time(),
-			'PHP_SELF'         => '/'.Kohana::$index_file.'/'.$request->uri,
+			'PHP_SELF'         => '/'.Kohana::$index_file.'/'.$uri,
 		);
 
 		// Add the request headers to replacement server vars

@@ -135,13 +135,13 @@ class Kohana_Request implements Http_Request {
 
 			// Create the instance singleton
 			$request = new Request($uri, $cache);
-			$request->header = Http::request_headers();
+			$request->headers(Http::request_headers());
 		}
 		else
 			$request = new Request($uri, $cache);
 
 		// If there is a body, set it to the model
-		isset($body) and $request->body = $body;
+		isset($body) and $request->body($body);
 
 		// Create the initial request if it does not exist
 		if ( ! Request::$initial)
@@ -1044,10 +1044,17 @@ class Kohana_Request implements Http_Request {
 	 */
 	public function headers($key = NULL, $value = NULL)
 	{
-		if ($key === NULL)
+		if ($key instanceof Http_Header)
+			$this->_header = $key;
+		else if ($key === NULL)
 			return $this->_header;
 		else if ($value === NULL)
-			return $this->header[$key];
+		{
+			if ($this->_header->offsetExists($key))
+				return $this->_header[$key];
+			else
+				return;
+		}
 		else if (is_array($key))
 			$this->_header->exchangeArray($key);
 		else
