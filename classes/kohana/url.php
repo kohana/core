@@ -20,26 +20,30 @@ class Kohana_URL {
 	 *     echo URL::base();
 	 *
 	 *     // Complete relative, with host and protocol
-	 *     echo URL::base(TRUE, TRUE);
+	 *     echo URL::base(TRUE, TRUE, $request);
 	 *
 	 *     // Complete relative, with host and "https" protocol
 	 *     echo URL::base(TRUE, 'https');
 	 *
 	 * @param   boolean  add index file to URL?
 	 * @param   mixed    protocol string or boolean, add protocol and domain?
+	 * @param   Request  the request to use for protocol if no protocol defined
 	 * @return  string
 	 * @uses    Kohana::$index_file
 	 * @uses    Request::$protocol
 	 */
-	public static function base($index = FALSE, $protocol = FALSE)
+	public static function base($index = FALSE, $protocol = FALSE, Request $request = NULL)
 	{
 		// Start with the configured base URL
 		$base_url = Kohana::$base_url;
 
 		if ($protocol === TRUE)
 		{
+			if ( ! $request)
+				throw new Kohana_Exception(__METHOD__.' no Request supplied to use for protocol resolution');
+
 			// Use the current protocol
-			$protocol = Request::$current->protocol();
+			$protocol = $request->protocol();
 		}
 		elseif ($protocol === FALSE AND $scheme = parse_url($base_url, PHP_URL_SCHEME))
 		{
