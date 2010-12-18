@@ -46,21 +46,31 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		// Create the class prefix
 		$prefix = 'controller_';
 
-		if ($request->directory)
+		// Directory
+		$directory = $request->directory();
+
+		// Controller
+		$controller = $request->controller();
+
+		// Action
+		$action = $request->action();
+
+		if ($directory)
 		{
 			// Add the directory name to the class prefix
-			$prefix .= str_replace(array('\\', '/'), '_', trim($request->directory, '/')).'_';
+			$prefix .= str_replace(array('\\', '/'), '_', trim($directory, '/')).'_';
 		}
 
 		if (Kohana::$profiling)
 		{
+			$uri = $request->uri();
 			// Set the benchmark name
-			$benchmark = '"'.$request->uri.'"';
+			$benchmark = '"'.$uri.'"';
 
 			if ($request !== Request::$initial AND Request::$current)
 			{
 				// Add the parent request uri
-				$benchmark .= ' « "'.Request::$current->uri.'"';
+				$benchmark .= ' « "'.$uri.'"';
 			}
 
 			// Start benchmarking
@@ -79,19 +89,19 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		try
 		{
 			// Load the controller using reflection
-			$class = new ReflectionClass($prefix.$request->controller);
+			$class = new ReflectionClass($prefix.$controller);
 
 			if ($class->isAbstract())
 			{
 				throw new Kohana_Exception('Cannot create instances of abstract :controller',
-					array(':controller' => $prefix.$request->controller));
+					array(':controller' => $prefix.$controller));
 			}
 
 			// Create a new instance of the controller
 			$controller = $class->newInstance($request, $request->create_response());
 
 			// Determine the action to use
-			$action = empty($request->action) ? Route::$default_action : $request->action;
+			$action = empty($action) ? Route::$default_action : $action;
 
 			// Get all the method objects before invoking them
 			$before = $class->getMethod('before');
@@ -178,13 +188,12 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			Profiler::stop($benchmark);
 		}
 
+		// Cache the response if cache is available
 		if ($this->_cache instanceof Cache)
-		{
-			$this->cache_response($request, $request->response);
-		}
+			$this->cache_response($request, $request->response());
 
 		// Return the response
-		return $request->response;
+		return $request->response();
 	}
 
 	/**
