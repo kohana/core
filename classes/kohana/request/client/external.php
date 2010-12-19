@@ -10,6 +10,17 @@
 class Kohana_Request_Client_External extends Request_Client {
 
 	/**
+	 * @var     array     internal header cache for curl processing
+	 * @todo    remove in PHP 5.3, use Lambda instead
+	 */
+	protected static $_curl_headers = array();
+
+	/**
+	 * @var     array     additional curl options to use on execution
+	 */
+	protected $_options = array();
+
+	/**
 	 * Processes the request, executing the controller action that handles this
 	 * request, determined by the [Route].
 	 *
@@ -36,6 +47,24 @@ class Kohana_Request_Client_External extends Request_Client {
 		if ($this->_cache instanceof Cache AND ($response = $this->_cache->cache_response($request)) instanceof Response)
 			return $response;
 
+		$previous = Request::$current;
+		Request::$current = $request;
+
+		if (Kohana::$profiling)
+		{
+			// Set the benchmark name
+			$benchmark = '"'.$request->uri().'"';
+
+			if ($request !== Request::$initial AND Request::$current)
+			{
+				// Add the parent request uri
+				$benchmark .= ' « "'.Request::$current->uri().'"';
+			}
+
+			// Start benchmarking
+			$benchmark = Profiler::start('Requests', $benchmark);
+		}
+
 		// If PECL_HTTP is present, use extension to complete request
 		if (extension_loaded('http'))
 		{
@@ -49,8 +78,16 @@ class Kohana_Request_Client_External extends Request_Client {
 		// Else use the sloooow method
 		else
 		{
-			
+			$this->_native_execute($request);
 		}
+
+		if (isset($benchmark))
+		{
+			// Stop the benchmark
+			Profiler::stop($benchmark);
+		}
+
+		Request::$current = $previous;
 
 		// Cache the response if cache is available
 		if ($this->_cache instanceof Cache)
@@ -115,10 +152,62 @@ class Kohana_Request_Client_External extends Request_Client {
 	 */
 	protected function _curl_execute(Request $request)
 	{
-		/**
-		 * @todo Port Kohana_Remote into this class and
-		 * remove Kohana_Remote
-		 */
+		// Reset the headers
+		Request_Client_External::$_curl_headers = array();
+
+		// Load the default remote settings
+		$defaults = Kohana::config('remote')->as_array();
+
+		if ( ! $this->options)
+		{
+			// Use default options
+			$options = $defaults;
+		}
+		else
+		{
+			// Add default options
+			$options = $options + $defaults;
+		}
+
+		// The transfer must always be returned
+		$options[CURLOPT_RETURNTRANSFER] = TRUE;
+
+		// Open a new remote connection
+		$curl = curl_init($url);
+
+		// Set connection options
+		if ( ! curl_setopt_array($curl, $options))
+		{
+			throw new Kohana_Request_Exception('Failed to set CURL options, check CURL documentation: :url',
+				array(':url' => 'http://php.net/curl_setopt_array'));
+		}
+
+		// Get the response body
+		$body = curl_exec($curl);
+
+		// Get the response information
+		$code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+		if ($response === FALSE)
+		{
+			$error = curl_error($curl);
+		}
+
+		// Close the connection
+		curl_close($curl);
+
+		if (isset($error))
+		{
+			throw new Kohana_Request_Exception('Error fetching remote :url [ status :code ] :error',
+				array(':url' => $url, ':code' => $code, ':error' => $error));
+		}
+
+		// Create response
+		$response = $request->create_response();
+
+		$response->status($code)
+			->headers(Request_Client_External::$_curl_headers)
+			->body($body);
 	}
 
 	/**
@@ -129,8 +218,6 @@ class Kohana_Request_Client_External extends Request_Client {
 	 */
 	protected function _native_execute(Request $request)
 	{
-		/**
-		 * @todo Use streams to implement remote execution natively
-		 */
+		
 	}
 } // End Kohana_Request_Client_External
