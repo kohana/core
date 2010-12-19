@@ -92,21 +92,21 @@ class Kohana_Request_Client_External extends Request_Client {
 			$benchmark = Profiler::start('Requests', $benchmark);
 		}
 
-		// // If PECL_HTTP is present, use extension to complete request
-		// if (extension_loaded('http'))
-		// {
-		// 	$this->_http_execute($request);
-		// }
-		// // Else if CURL is present, use extension to complete request
-		// else if (extension_loaded('curl'))
-		// {
-		// 	$this->_curl_execute($request);
-		// }
-		// // Else use the sloooow method
-		// else
-		// {
+		// If PECL_HTTP is present, use extension to complete request
+		if (extension_loaded('http'))
+		{
+			$this->_http_execute($request);
+		}
+		// Else if CURL is present, use extension to complete request
+		else if (extension_loaded('curl'))
+		{
+			$this->_curl_execute($request);
+		}
+		// Else use the sloooow method
+		else
+		{
 			$this->_native_execute($request);
-		// }
+		}
 
 		if (isset($benchmark))
 		{
