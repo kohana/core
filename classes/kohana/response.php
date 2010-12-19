@@ -191,9 +191,13 @@ class Kohana_Response implements Http_Response, Serializable {
 			if (property_exists($this, $key))
 			{
 				if ($key == '_header')
+				{
 					$this->_header->exchangeArray($value);
+				}
 				else
+				{
 					$this->$key = $value;
+				}
 			}
 		}
 	}
@@ -788,12 +792,18 @@ class Kohana_Response implements Http_Response, Serializable {
 		if ($this->_header->offsetExists('cache-control'))
 		{
 			if (is_array($this->_header['cache-control']))
+			{
 				$this->_header['cache-control'][] = new Http_Header_Value('must-revalidate');
+			}
 			else
+			{
 				$this->_header['cache-control'] = $this->_header['cache-control'].', must-revalidate';
+			}
 		}
 		else
+		{
 			$this->_header['cache-control'] = 'must-revalidate';
+		}
 
 		if ($request->headers('if-none-match') AND (string) $request->headers('if-none-match') === $etag)
 		{
@@ -863,7 +873,9 @@ class Kohana_Response implements Http_Response, Serializable {
 		foreach ($unserialized as $key => $value)
 		{
 			if (property_exists($this, $key))
+			{
 				$this->$key = $value;
+			}
 		}
 
 		return TRUE;
@@ -928,7 +940,7 @@ class Kohana_Response implements Http_Response, Serializable {
 		$end = min(abs(intval($end)), $size - 1);
 
 		// Keep the start in bounds.
-		$start = $end < $start ? 0 : max($start, 0);
+		$start = ($end < $start) ? 0 : max($start, 0);
 
 		return array($start, $end);
 	}

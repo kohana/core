@@ -21,14 +21,13 @@ Class Kohana_URLTest extends Unittest_TestCase
 	protected $environmentDefault =	array(
 		'Kohana::$base_url'	=> '/kohana/',
 		'Kohana::$index_file'=> 'index.php',
-		'Request::$protocol'	=> 'http',
 		'HTTP_HOST' => 'example.com',
 		'_GET'		=> array(),
 	);
 
 	/**
 	 * Provides test data for test_base()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_base()
@@ -37,34 +36,33 @@ Class Kohana_URLTest extends Unittest_TestCase
 			// $index, $protocol, $expected, $enviroment
 			//
 			// Test with different combinations of parameters for max code coverage
-			array(FALSE, FALSE,  '/kohana/'),
-			array(FALSE, TRUE,   'http://example.com/kohana/'),
-			array(TRUE,  FALSE,  '/kohana/index.php/'),
-			array(TRUE,  FALSE,  '/kohana/index.php/'),
-			array(TRUE,  TRUE,   'http://example.com/kohana/index.php/'),
-			array(TRUE,  'http', 'http://example.com/kohana/index.php/'),
-			array(TRUE,  'https','https://example.com/kohana/index.php/'),
-			array(TRUE,  'ftp',  'ftp://example.com/kohana/index.php/'),
+			array(NULL,    FALSE, '/kohana/'),
+			array('http',  FALSE, 'http://example.com/kohana/'),
+			array(NULL,    TRUE,  '/kohana/index.php/'),
+			array(NULL,    TRUE,  '/kohana/index.php/'),
+			array('http',  TRUE,  'http://example.com/kohana/index.php/'),
+			array('https', TRUE,  'https://example.com/kohana/index.php/'),
+			array('ftp',   TRUE,  'ftp://example.com/kohana/index.php/'),
 
 			//
 			// These tests make sure that the protocol changes when the global setting changes
-			array(TRUE,   TRUE,   'https://example.com/kohana/index.php/', array('Request::$protocol' => 'https')),
-			array(FALSE,  TRUE,   'https://example.com/kohana/', array('Request::$protocol' => 'https')),
+			//array(TRUE,   TRUE,   'https://example.com/kohana/index.php/', array('Http::$protocol' => 'https')),
+			//array(FALSE,  TRUE,   'https://example.com/kohana/', array('Http::$protocol' => 'https')),
 
 			// Change base url'
-			array(FALSE, 'https', 'https://example.com/kohana/', array('Kohana::$base_url' => 'omglol://example.com/kohana/')),
+			array('https', FALSE, 'https://example.com/kohana/', array('Kohana::$base_url' => 'omglol://example.com/kohana/')),
 
 			// Use port in base url, issue #3307
-			array(FALSE, TRUE, 'http://example.com:8080/', array('Kohana::$base_url' => 'example.com:8080/')),
+			array('http', FALSE, 'http://example.com:8080/', array('Kohana::$base_url' => 'example.com:8080/')),
 
 			// Use protocol from base url if none specified
-			array(FALSE, FALSE,   'http://www.example.com/', array('Kohana::$base_url' => 'http://www.example.com/')),
+			array(NULL,  FALSE, 'http://www.example.com/', array('Kohana::$base_url' => 'http://www.example.com/')),
 
 			// Use HTTP_HOST before SERVER_NAME
-			array(FALSE, 'http',  'http://example.com/kohana/', array('HTTP_HOST' => 'example.com', 'SERVER_NAME' => 'example.org')),
+			array('http', FALSE, 'http://example.com/kohana/', array('HTTP_HOST' => 'example.com', 'SERVER_NAME' => 'example.org')),
 
 			// Use SERVER_NAME if HTTP_HOST DNX
-			array(FALSE, 'http',  'http://example.org/kohana/', array('HTTP_HOST' => NULL, 'SERVER_NAME' => 'example.org')),
+			array('http',  FALSE, 'http://example.org/kohana/', array('HTTP_HOST' => NULL, 'SERVER_NAME' => 'example.org')),
 		);
 	}
 
@@ -90,33 +88,33 @@ Class Kohana_URLTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for test_site()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_site()
 	{
 		return array(
-			array('', FALSE,		'/kohana/index.php/'),
-			array('', TRUE,			'http://example.com/kohana/index.php/'),
+			array('', NULL,		'/kohana/index.php/'),
+			array('', 'http',			'http://example.com/kohana/index.php/'),
 
-			array('my/site', FALSE, '/kohana/index.php/my/site'),
-			array('my/site', TRUE,  'http://example.com/kohana/index.php/my/site'),
+			array('my/site', NULL, '/kohana/index.php/my/site'),
+			array('my/site', 'http',  'http://example.com/kohana/index.php/my/site'),
 
 			// @ticket #3110
-			array('my/site/page:5', FALSE, '/kohana/index.php/my/site/page:5'),
-			array('my/site/page:5', TRUE, 'http://example.com/kohana/index.php/my/site/page:5'),
+			array('my/site/page:5', NULL, '/kohana/index.php/my/site/page:5'),
+			array('my/site/page:5', 'http', 'http://example.com/kohana/index.php/my/site/page:5'),
 
-			array('my/site?var=asd&kohana=awesome', FALSE,  '/kohana/index.php/my/site?var=asd&kohana=awesome'),
-			array('my/site?var=asd&kohana=awesome', TRUE,  'http://example.com/kohana/index.php/my/site?var=asd&kohana=awesome'),
+			array('my/site?var=asd&kohana=awesome', NULL,  '/kohana/index.php/my/site?var=asd&kohana=awesome'),
+			array('my/site?var=asd&kohana=awesome', 'http',  'http://example.com/kohana/index.php/my/site?var=asd&kohana=awesome'),
 
-			array('?kohana=awesome&life=good', FALSE, '/kohana/index.php/?kohana=awesome&life=good'),
-			array('?kohana=awesome&life=good', TRUE, 'http://example.com/kohana/index.php/?kohana=awesome&life=good'),
+			array('?kohana=awesome&life=good', NULL, '/kohana/index.php/?kohana=awesome&life=good'),
+			array('?kohana=awesome&life=good', 'http', 'http://example.com/kohana/index.php/?kohana=awesome&life=good'),
 
-			array('?kohana=awesome&life=good#fact', FALSE, '/kohana/index.php/?kohana=awesome&life=good#fact'),
-			array('?kohana=awesome&life=good#fact', TRUE, 'http://example.com/kohana/index.php/?kohana=awesome&life=good#fact'),
+			array('?kohana=awesome&life=good#fact', NULL, '/kohana/index.php/?kohana=awesome&life=good#fact'),
+			array('?kohana=awesome&life=good#fact', 'http', 'http://example.com/kohana/index.php/?kohana=awesome&life=good#fact'),
 
-			array('some/long/route/goes/here?kohana=awesome&life=good#fact', FALSE, '/kohana/index.php/some/long/route/goes/here?kohana=awesome&life=good#fact'),
-			array('some/long/route/goes/here?kohana=awesome&life=good#fact', TRUE, 'http://example.com/kohana/index.php/some/long/route/goes/here?kohana=awesome&life=good#fact'),
+			array('some/long/route/goes/here?kohana=awesome&life=good#fact', NULL, '/kohana/index.php/some/long/route/goes/here?kohana=awesome&life=good#fact'),
+			array('some/long/route/goes/here?kohana=awesome&life=good#fact', 'http', 'http://example.com/kohana/index.php/some/long/route/goes/here?kohana=awesome&life=good#fact'),
 
 			array('/route/goes/here?kohana=awesome&life=good#fact', 'https', 'https://example.com/kohana/index.php/route/goes/here?kohana=awesome&life=good#fact'),
 			array('/route/goes/here?kohana=awesome&life=good#fact', 'ftp', 'ftp://example.com/kohana/index.php/route/goes/here?kohana=awesome&life=good#fact'),
