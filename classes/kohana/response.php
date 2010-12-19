@@ -192,7 +192,7 @@ class Kohana_Response implements Http_Response, Serializable {
 			{
 				if ($key == '_header')
 				{
-					$this->_header->exchangeArray($value);
+					$this->headers($value);
 				}
 				else
 				{
@@ -306,7 +306,7 @@ class Kohana_Response implements Http_Response, Serializable {
 		}
 		elseif (is_array($key))
 		{
-			$this->_header = $key;
+			$this->_header->exchangeArray($key);
 			return $this;
 		}
 		elseif ($value === NULL)

@@ -13,7 +13,34 @@ class Kohana_Request_Client_External extends Request_Client {
 	 * @var     array     internal header cache for curl processing
 	 * @todo    remove in PHP 5.3, use Lambda instead
 	 */
-	protected static $_curl_headers = array();
+	protected static $_processed_headers = array();
+
+	/**
+	 * Parses the returned headers from the remote
+	 * request
+	 *
+	 * @param   resource the curl resource
+	 * @param   string   the full header string
+	 * @return  int
+	 */
+	protected static function _parse_headers($remote, $header)
+	{
+		$headers = array();
+
+		if (preg_match_all('/(\w[^\s:]*):[ ]*([^\r\n]*(?:\r\n[ \t][^\r\n]*)*)/', $header, $matches))
+		{
+			foreach ($matches[0] as $key => $value)
+				$headers[$matches[1][$key]] = $matches[2][$key];
+		}
+
+		// If there are headers to apply
+		if ($headers)
+		{
+			Request_Client_External::$_processed_headers += $headers;
+		}
+
+		return strlen($header);
+	}
 
 	/**
 	 * @var     array     additional curl options to use on execution
@@ -65,21 +92,21 @@ class Kohana_Request_Client_External extends Request_Client {
 			$benchmark = Profiler::start('Requests', $benchmark);
 		}
 
-		// If PECL_HTTP is present, use extension to complete request
-		if (extension_loaded('http'))
-		{
-			$this->_http_execute($request);
-		}
-		// Else if CURL is present, use extension to complete request
-		else if (extension_loaded('curl'))
-		{
-			$this->_curl_execute($request);
-		}
-		// Else use the sloooow method
-		else
-		{
+		// // If PECL_HTTP is present, use extension to complete request
+		// if (extension_loaded('http'))
+		// {
+		// 	$this->_http_execute($request);
+		// }
+		// // Else if CURL is present, use extension to complete request
+		// else if (extension_loaded('curl'))
+		// {
+		// 	$this->_curl_execute($request);
+		// }
+		// // Else use the sloooow method
+		// else
+		// {
 			$this->_native_execute($request);
-		}
+		// }
 
 		if (isset($benchmark))
 		{
@@ -142,6 +169,8 @@ class Kohana_Request_Client_External extends Request_Client {
 			->headers($http_request->getResponseHeader())
 			->cookie($http_request->getResponseCookies())
 			->body($http_request->getResponseBody());
+
+		return $response;
 	}
 
 	/**
@@ -153,7 +182,7 @@ class Kohana_Request_Client_External extends Request_Client {
 	protected function _curl_execute(Request $request)
 	{
 		// Reset the headers
-		Request_Client_External::$_curl_headers = array();
+		Request_Client_External::$_processed_headers = array();
 
 		// Load the default remote settings
 		$defaults = Kohana::config('remote')->as_array();
@@ -206,8 +235,10 @@ class Kohana_Request_Client_External extends Request_Client {
 		$response = $request->create_response();
 
 		$response->status($code)
-			->headers(Request_Client_External::$_curl_headers)
+			->headers(Request_Client_External::$_processed_headers)
 			->body($body);
+
+		return $response;
 	}
 
 	/**
@@ -218,6 +249,54 @@ class Kohana_Request_Client_External extends Request_Client {
 	 */
 	protected function _native_execute(Request $request)
 	{
-		
+		// Reset the headers
+		Request_Client_External::$_processed_headers = array();
+
+		// Calculate stream mode
+		$mode = ($request->method() === Http_Request::GET) ? 'r' : 'r+';
+
+		// Create the context
+		$options = array(
+			$request->protocol() => array(
+				'method'     => $request->method(),
+				'header'     => (string) $request->headers(),
+				'content'    => $request->body(),
+				'user-agent' => 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')'
+			)
+		);
+
+		// Create the context stream
+		$context = stream_context_create($options);
+
+		$stream = fopen($request->uri(), $mode, FALSE, $context);
+
+		$meta_data = stream_get_meta_data($stream);
+
+		// Get the HTTP response code
+		$http_response = array_shift($meta_data['wrapper_data']);
+
+		if (preg_match_all('/(\w+\/\d\.\d) (\d{3})/', $http_response, $matches) !== FALSE)
+		{
+			$protocol = $matches[1][0];
+			$status   = (int) $matches[2][0];
+		}
+		else
+		{
+			$protocol = NULL;
+			$status   = NULL;
+		}
+
+		// Process headers
+		array_map(array('Request_Client_External', '_parse_headers'), array(), $meta_data['wrapper_data']);
+
+		// Create a response
+		$response = $request->create_response();
+
+		$response->status($status)
+			->protocol($protocol)
+			->headers(Request_Client_External::$_processed_headers)
+			->body(stream_get_contents($stream));
+
+		return $response;
 	}
 } // End Kohana_Request_Client_External

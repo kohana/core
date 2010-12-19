@@ -690,6 +690,9 @@ class Kohana_Request implements Http_Request {
 	 */
 	public function uri(array $params = NULL)
 	{
+		if ($this->_external)
+			return $this->_uri;
+
 		if ( ! isset($params['directory']))
 		{
 			// Add the current directory
@@ -1017,7 +1020,7 @@ class Kohana_Request implements Http_Request {
 
 	/**
 	 * Gets or sets the HTTP protocol. The standard protocol to use
-	 * is `HTTP/1.1`.
+	 * is `http`.
 	 *
 	 * @param   string   protocol to set to the request/response
 	 * @return  string
