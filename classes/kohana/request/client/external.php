@@ -297,6 +297,9 @@ class Kohana_Request_Client_External extends Request_Client {
 			->headers(Request_Client_External::$_processed_headers)
 			->body(stream_get_contents($stream));
 
+		// Close the stream after use
+		fclose($stream);
+
 		return $response;
 	}
 } // End Kohana_Request_Client_External
