@@ -10,16 +10,16 @@
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
  * @copyright  (c) 2008-2010 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
-class Kohana_InflectorTest extends Kohana_Unittest_TestCase
+class Kohana_InflectorTest extends Unittest_TestCase
 {
 	/**
-	 * Provides test data for testLang()
+	 * Provides test data for test_lang()
 	 * 
 	 * @return array
 	 */
-	function providerUncountable()
+	public function provider_uncountable()
 	{
 		return array(
 			// $value, $result
@@ -32,21 +32,21 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 	 * Tests Inflector::uncountable
 	 *
 	 * @test
-	 * @dataProvider providerUncountable
+	 * @dataProvider provider_uncountable
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function testUncountable($input, $expected)
+	public function test_uncountable($input, $expected)
 	{
 		$this->assertSame($expected, Inflector::uncountable($input));
 	}
 
 	/**
-	 * Provides test data for testLang()
+	 * Provides test data for test_lang()
 	 * 
 	 * @return array
 	 */
-	function providerSingular()
+	public function provider_singular()
 	{
 		return array(
 			// $value, $result
@@ -55,6 +55,12 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 			array('cats', 2, 'cats'),
 			array('cats', '2', 'cats'),
 			array('children', NULL, 'child'),
+			array('meters', 0.6, 'meters'),
+			array('meters', 1.6, 'meters'),
+			array('meters', 1.0, 'meter'),
+			array('status', NULL, 'status'),
+			array('statuses', NULL, 'status'),
+			array('heroes', NULL, 'hero'),
 		);
 	}
 
@@ -62,21 +68,21 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 	 * Tests Inflector::singular
 	 *
 	 * @test
-	 * @dataProvider providerSingular
+	 * @dataProvider provider_singular
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function testSingular($input, $count, $expected)
+	public function test_singular($input, $count, $expected)
 	{
 		$this->assertSame($expected, Inflector::singular($input, $count));
 	}
 
 	/**
-	 * Provides test data for testLang()
+	 * Provides test data for test_lang()
 	 * 
 	 * @return array
 	 */
-	function providerPlural()
+	public function provider_plural()
 	{
 		return array(
 			// $value, $result
@@ -85,6 +91,12 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 			array('cats', 1, 'cats'),
 			array('cats', '1', 'cats'),
 			array('movie', NULL, 'movies'),
+			array('meter', 0.6, 'meters'),
+			array('meter', 1.6, 'meters'),
+			array('meter', 1.0, 'meter'),
+			array('hero', NULL, 'heroes'),
+			array('Dog', NULL, 'Dogs'), // Titlecase
+			array('DOG', NULL, 'DOGS'), // Uppercase
 		);
 	}
 
@@ -92,21 +104,21 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 	 * Tests Inflector::plural
 	 *
 	 * @test
-	 * @dataProvider providerPlural
+	 * @dataProvider provider_plural
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function testPlural($input, $count, $expected)
+	public function test_plural($input, $count, $expected)
 	{
 		$this->assertSame($expected, Inflector::plural($input, $count));
 	}
 
 	/**
-	 * Provides test data for testCamelize()
+	 * Provides test data for test_camelize()
 	 * 
 	 * @return array
 	 */
-	function providerCamelize()
+	public function provider_camelize()
 	{
 		return array(
 			// $value, $result
@@ -123,12 +135,47 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 	 * Tests Inflector::camelize
 	 *
 	 * @test
-	 * @dataProvider providerCamelize
+	 * @dataProvider provider_camelize
 	 * @param boolean $input  Input for File::mime
 	 * @param boolean $expected Output for File::mime
 	 */
-	function testCamelize($input, $method, $expected)
+	public function test_camelize($input, $method, $expected)
 	{
 		$this->assertSame($expected, Inflector::$method($input));
+	}
+
+	/**
+	 * Provides data for test_decamelize()
+	 *
+	 * @return array
+	 */
+	public function provider_decamelize()
+	{
+		return array(
+			array('getText', '_', 'get_text'),
+			array('getJSON', '_', 'get_json'),
+			array('getLongText', '_', 'get_long_text'),
+			array('getI18N', '_', 'get_i18n'),
+			array('getL10n', '_', 'get_l10n'),
+			array('getTe5t1ng', '_', 'get_te5t1ng'),
+			array('OpenFile', '_', 'open_file'),
+			array('CloseIoSocket', '_', 'close_io_socket'),
+			array('fooBar', ' ', 'foo bar'),
+			array('camelCase', '+', 'camel+case'),
+		);
+	}
+
+	/**
+	 * Tests Inflector::decamelize()
+	 *
+	 * @test
+	 * @dataProvider provider_decamelize
+	 * @param string Camelized string
+	 * @param string Glue
+	 * @param string Expected string
+	 */
+	public function test_decamelize($input, $glue, $expected)
+	{
+		$this->assertSame($expected, Inflector::decamelize($input, $glue));
 	}
 }

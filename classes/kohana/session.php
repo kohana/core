@@ -5,8 +5,8 @@
  * @package    Kohana
  * @category   Session
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 abstract class Kohana_Session {
 
@@ -175,6 +175,19 @@ abstract class Kohana_Session {
 	}
 
 	/**
+	 * Get the current session cookie name.
+	 *
+	 *     $name = $session->name();
+	 *
+	 * @return  string
+	 * @since   3.0.8
+	 */
+	public function name()
+	{
+		return $this->_name;
+	}
+
+	/**
 	 * Get a variable from the session array.
 	 *
 	 *     $foo = $session->get('foo');
@@ -209,7 +222,7 @@ abstract class Kohana_Session {
 	/**
 	 * Set a variable in the session array.
 	 *
-	 *     $session->set('foo');
+	 *     $session->set('foo', 'bar');
 	 *
 	 * @param   string   variable name
 	 * @param   mixed    value
@@ -218,6 +231,22 @@ abstract class Kohana_Session {
 	public function set($key, $value)
 	{
 		$this->_data[$key] = $value;
+
+		return $this;
+	}
+
+	/**
+	 * Set a variable by reference.
+	 *
+	 *     $session->bind('foo', $foo);
+	 *
+	 * @param   string  variable name
+	 * @param   mixed   referenced value
+	 * @return  $this
+	 */
+	public function bind($key, & $value)
+	{
+		$this->_data[$key] =& $value;
 
 		return $this;
 	}
@@ -327,7 +356,7 @@ abstract class Kohana_Session {
 		catch (Exception $e)
 		{
 			// Log & ignore all errors when a write fails
-			Kohana::$log->add(Kohana::ERROR, Kohana::exception_text($e))->write();
+			Kohana::$log->add(Kohana::ERROR, Kohana_Exception::text($e))->write();
 
 			return FALSE;
 		}

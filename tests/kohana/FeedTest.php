@@ -9,20 +9,20 @@
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
  * @copyright  (c) 2008-2010 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
-class Kohana_FeedTest extends Kohana_Unittest_TestCase
+class Kohana_FeedTest extends Unittest_TestCase
 {
 	/**
 	 * Provides test data for test_parse()
 	 *
 	 * @return array
 	 */
-	function provider_parse()
+	public function provider_parse()
 	{
 		return array(
 			// $source, $expected
-			array('http://dev.kohanaframework.org/projects/kohana3/activity.atom?key=pqSTxjuK4m2b3dSYF4S00eOYW86BJUq3cwzQj2xo', 15),
+			array('http://dev.kohanaframework.org/projects/kohana3/activity.atom', 15),
 		);
 	}
 
@@ -31,13 +31,15 @@ class Kohana_FeedTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_parse
-	 * @group requires.internet
 	 * @covers feed::parse
 	 * @param string  $source   URL to test
 	 * @param integer $expected Count of items
 	 */
-	function test_parse($source, $expected)
+	public function test_parse($source, $expected)
 	{
+		if ( ! $this->hasInternet())
+			$this->markTestSkipped('An internet connection is required for this test');
+		
 		$this->assertEquals($expected, count(feed::parse($source)));
 	}
 
@@ -46,7 +48,7 @@ class Kohana_FeedTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_create()
+	public function provider_create()
 	{
 		$info = array('pubDate' => 123, 'image' => array('link' => 'http://kohanaframework.org/image.png', 'url' => 'http://kohanaframework.org/', 'title' => 'title'));
 
@@ -105,7 +107,7 @@ class Kohana_FeedTest extends Kohana_Unittest_TestCase
 	 * @param integer $items    items to add
 	 * @param integer $matcher  output
 	 */
-	function test_create($info, $items, $enviroment, $matcher_item, $matchers_image)
+	public function test_create($info, $items, $enviroment, $matcher_item, $matchers_image)
 	{
 		$this->setEnvironment($enviroment);
 

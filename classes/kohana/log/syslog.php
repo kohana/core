@@ -2,22 +2,16 @@
 /**
  * Syslog log writer.
  *
- * @package    Logging
+ * @package    Kohana
+ * @category   Logging
  * @author     Jeremy Bush
  * @copyright  (c) 2010 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
-class Kohana_Log_Syslog extends Kohana_Log_Writer {
+class Kohana_Log_Syslog extends Log_Writer {
 
 	// The syslog identifier
 	protected $_ident;
-
-	protected $_syslog_levels = array('ERROR'    => LOG_ERR,
-	                                  'CRITICAL' => LOG_CRIT,
-	                                  'STRACE'   => LOG_ALERT,
-	                                  'ALERT'    => LOG_WARNING,
-	                                  'INFO'     => LOG_INFO,
-	                                  'DEBUG'    => LOG_DEBUG);
 
 	/**
 	 * Creates a new syslog logger.
@@ -46,7 +40,7 @@ class Kohana_Log_Syslog extends Kohana_Log_Writer {
 	{
 		foreach ($messages as $message)
 		{
-			syslog($this->_syslog_levels[$message['type']], $message['body']);
+			syslog($message['level'], $message['body']);
 		}
 	}
 

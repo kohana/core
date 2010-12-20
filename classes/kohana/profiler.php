@@ -9,7 +9,7 @@
  * @category   Helpers
  * @author     Kohana Team
  * @copyright  (c) 2009-2010 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Profiler {
 
@@ -193,7 +193,10 @@ class Kohana_Profiler {
 		// Which groups do we need to calculate stats for?
 		$groups = ($groups === NULL)
 			? Profiler::groups()
-			: array_intersect_key(Profiler::groups(), array_flip((array) $groups));
+			: array_intersect_key(Profiler::groups(), array_flip( (array) $groups));
+
+		// All statistics
+		$stats = array();
 
 		foreach ($groups as $group => $names)
 		{
@@ -329,22 +332,30 @@ class Kohana_Profiler {
 
 		// Calculate max time
 		if ($stats['max']['time'] === NULL OR $time > $stats['max']['time'])
+		{
 			$stats['max']['time'] = $time;
+		}
 
 		// Calculate min time
 		if ($stats['min']['time'] === NULL OR $time < $stats['min']['time'])
+		{
 			$stats['min']['time'] = $time;
+		}
 
 		// Add to total time
 		$stats['total']['time'] += $time;
 
 		// Calculate max memory
 		if ($stats['max']['memory'] === NULL OR $memory > $stats['max']['memory'])
+		{
 			$stats['max']['memory'] = $memory;
+		}
 
 		// Calculate min memory
 		if ($stats['min']['memory'] === NULL OR $memory < $stats['min']['memory'])
+		{
 			$stats['min']['memory'] = $memory;
+		}
 
 		// Add to total memory
 		$stats['total']['memory'] += $memory;

@@ -5,8 +5,8 @@
  * @package    Kohana
  * @category   Session
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Session_Native extends Session {
 
@@ -17,8 +17,11 @@ class Kohana_Session_Native extends Session {
 
 	protected function _read($id = NULL)
 	{
-		// Set the cookie lifetime
-		session_set_cookie_params($this->_lifetime);
+		// Sync up the session cookie with Cookie parameters
+		session_set_cookie_params($this->_lifetime, Cookie::$path, Cookie::$domain, Cookie::$secure, Cookie::$httponly);
+
+		// Do not allow PHP to send Cache-Control headers
+		session_cache_limiter(FALSE);
 
 		// Set the session cookie name
 		session_name($this->_name);
@@ -59,7 +62,16 @@ class Kohana_Session_Native extends Session {
 		// Destroy the current session
 		session_destroy();
 
-		return ! session_id();
+		// Did destruction work?
+		$status = ! session_id();
+
+		if ($status)
+		{
+			// Make sure the session cannot be restarted
+			Cookie::delete($this->_name);
+		}
+
+		return $status;
 	}
 
 } // End Session_Native

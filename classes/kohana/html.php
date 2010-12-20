@@ -7,7 +7,7 @@
  * @category   Helpers
  * @author     Kohana Team
  * @copyright  (c) 2007-2010 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_HTML {
 
@@ -63,7 +63,7 @@ class Kohana_HTML {
 	 */
 	public static function chars($value, $double_encode = TRUE)
 	{
-		return htmlspecialchars((string) $value, ENT_QUOTES, Kohana::$charset, $double_encode);
+		return htmlspecialchars( (string) $value, ENT_QUOTES, Kohana::$charset, $double_encode);
 	}
 
 	/**
@@ -79,7 +79,7 @@ class Kohana_HTML {
 	 */
 	public static function entities($value, $double_encode = TRUE)
 	{
-		return htmlentities((string) $value, ENT_QUOTES, Kohana::$charset, $double_encode);
+		return htmlentities( (string) $value, ENT_QUOTES, Kohana::$charset, $double_encode);
 	}
 
 	/**
@@ -91,7 +91,7 @@ class Kohana_HTML {
 	 * @param   string  URL or URI string
 	 * @param   string  link text
 	 * @param   array   HTML anchor attributes
-	 * @param   string  use a specific protocol
+	 * @param   mixed   text based protocol, or request object to use for protocol
 	 * @return  string
 	 * @uses    URL::base
 	 * @uses    URL::site
@@ -181,11 +181,18 @@ class Kohana_HTML {
 			switch (rand(1, 3))
 			{
 				// HTML entity code
-				case 1: $safe .= '&#'.ord($letter).';'; break;
+				case 1:
+					$safe .= '&#'.ord($letter).';';
+				break;
+
 				// Hex character code
-				case 2: $safe .= '&#x'.dechex(ord($letter)).';'; break;
+				case 2:
+					$safe .= '&#x'.dechex(ord($letter)).';';
+				break;
+
 				// Raw (no) encoding
-				case 3: $safe .= $letter;
+				case 3:
+					$safe .= $letter;
 			}
 		}
 
@@ -358,7 +365,7 @@ class Kohana_HTML {
 			}
 
 			// Add the attribute value
-			$compiled .= ' '.$key.'="'.htmlspecialchars($value, ENT_QUOTES, Kohana::$charset).'"';
+			$compiled .= ' '.$key.'="'.HTML::chars($value).'"';
 		}
 
 		return $compiled;

@@ -19,6 +19,7 @@ return array(
 		'information',
 		'knowledge',
 		'luggage',
+		'media',
 		'money',
 		'music',
 		'news',
@@ -31,6 +32,7 @@ return array(
 		'series',
 		'sheep',
 		'sms',
+		'spam',
 		'species',
 		'staff',
 		'toothpaste',
@@ -57,5 +59,7 @@ return array(
 		'was' => 'were',
 		'is' => 'are',
 		'verse' => 'verses',
+		'hero' => 'heroes',
+		'purchase' => 'purchases',
 	),
 );

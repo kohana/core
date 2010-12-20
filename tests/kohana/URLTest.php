@@ -9,10 +9,10 @@
  * @package    Unittest
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
-Class Kohana_URLTest extends Kohana_Unittest_TestCase
+Class Kohana_URLTest extends Unittest_TestCase
 {
 	/**
 	 * Default values for the environment, see setEnvironment
@@ -21,38 +21,48 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	protected $environmentDefault =	array(
 		'Kohana::$base_url'	=> '/kohana/',
 		'Kohana::$index_file'=> 'index.php',
-		'Request::$protocol'	=> 'http',
 		'HTTP_HOST' => 'example.com',
 		'_GET'		=> array(),
 	);
 
 	/**
-	 * Provides test data for testBase()
-	 * 
+	 * Provides test data for test_base()
+	 *
 	 * @return array
 	 */
-	function provider_base()
+	public function provider_base()
 	{
 		return array(
 			// $index, $protocol, $expected, $enviroment
 			//
 			// Test with different combinations of parameters for max code coverage
-			array(FALSE, FALSE,  '/kohana/'),
-			array(FALSE, TRUE,   'http://example.com/kohana/'),
-			array(TRUE,  FALSE,  '/kohana/index.php/'),
-			array(TRUE,  FALSE,  '/kohana/index.php/'),
-			array(TRUE,  TRUE,   'http://example.com/kohana/index.php/'),
-			array(TRUE,  'http', 'http://example.com/kohana/index.php/'),
-			array(TRUE,  'https','https://example.com/kohana/index.php/'),
-			array(TRUE,  'ftp',  'ftp://example.com/kohana/index.php/'),
+			array(NULL,    FALSE, '/kohana/'),
+			array('http',  FALSE, 'http://example.com/kohana/'),
+			array(NULL,    TRUE,  '/kohana/index.php/'),
+			array(NULL,    TRUE,  '/kohana/index.php/'),
+			array('http',  TRUE,  'http://example.com/kohana/index.php/'),
+			array('https', TRUE,  'https://example.com/kohana/index.php/'),
+			array('ftp',   TRUE,  'ftp://example.com/kohana/index.php/'),
 
 			//
 			// These tests make sure that the protocol changes when the global setting changes
-			array(TRUE,   TRUE,   'https://example.com/kohana/index.php/', array('Request::$protocol' => 'https')),
-			array(FALSE,  TRUE,   'https://example.com/kohana/', array('Request::$protocol' => 'https')),
+			//array(TRUE,   TRUE,   'https://example.com/kohana/index.php/', array('Http::$protocol' => 'https')),
+			//array(FALSE,  TRUE,   'https://example.com/kohana/', array('Http::$protocol' => 'https')),
 
-			// Change base url
-			array(FALSE, 'https', 'https://example.com/kohana/', array('Kohana::$base_url' => 'omglol://example.com/kohana/'))
+			// Change base url'
+			array('https', FALSE, 'https://example.com/kohana/', array('Kohana::$base_url' => 'omglol://example.com/kohana/')),
+
+			// Use port in base url, issue #3307
+			array('http', FALSE, 'http://example.com:8080/', array('Kohana::$base_url' => 'example.com:8080/')),
+
+			// Use protocol from base url if none specified
+			array(NULL,  FALSE, 'http://www.example.com/', array('Kohana::$base_url' => 'http://www.example.com/')),
+
+			// Use HTTP_HOST before SERVER_NAME
+			array('http', FALSE, 'http://example.com/kohana/', array('HTTP_HOST' => 'example.com', 'SERVER_NAME' => 'example.org')),
+
+			// Use SERVER_NAME if HTTP_HOST DNX
+			array('http',  FALSE, 'http://example.org/kohana/', array('HTTP_HOST' => NULL, 'SERVER_NAME' => 'example.org')),
 		);
 	}
 
@@ -66,7 +76,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * @param string  $expected    Expected url
 	 * @param array   $enviroment  Array of enviroment vars to change @see Kohana_URLTest::setEnvironment()
 	 */
-	function test_base($index, $protocol, $expected, array $enviroment = array())
+	public function test_base($index, $protocol, $expected, array $enviroment = array())
 	{
 		$this->setEnvironment($enviroment);
 
@@ -78,29 +88,33 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * Provides test data for test_site()
-	 * 
+	 *
 	 * @return array
 	 */
-	function provider_site()
+	public function provider_site()
 	{
 		return array(
-			array('', FALSE,		'/kohana/index.php/'),
-			array('', TRUE,			'http://example.com/kohana/index.php/'),
+			array('', NULL,		'/kohana/index.php/'),
+			array('', 'http',			'http://example.com/kohana/index.php/'),
 
-			array('my/site', FALSE, '/kohana/index.php/my/site'),
-			array('my/site', TRUE,  'http://example.com/kohana/index.php/my/site'),
+			array('my/site', NULL, '/kohana/index.php/my/site'),
+			array('my/site', 'http',  'http://example.com/kohana/index.php/my/site'),
 
-			array('my/site?var=asd&kohana=awesome', FALSE,  '/kohana/index.php/my/site?var=asd&kohana=awesome'),
-			array('my/site?var=asd&kohana=awesome', TRUE,  'http://example.com/kohana/index.php/my/site?var=asd&kohana=awesome'),
+			// @ticket #3110
+			array('my/site/page:5', NULL, '/kohana/index.php/my/site/page:5'),
+			array('my/site/page:5', 'http', 'http://example.com/kohana/index.php/my/site/page:5'),
 
-			array('?kohana=awesome&life=good', FALSE, '/kohana/index.php/?kohana=awesome&life=good'),
-			array('?kohana=awesome&life=good', TRUE, 'http://example.com/kohana/index.php/?kohana=awesome&life=good'),
+			array('my/site?var=asd&kohana=awesome', NULL,  '/kohana/index.php/my/site?var=asd&kohana=awesome'),
+			array('my/site?var=asd&kohana=awesome', 'http',  'http://example.com/kohana/index.php/my/site?var=asd&kohana=awesome'),
 
-			array('?kohana=awesome&life=good#fact', FALSE, '/kohana/index.php/?kohana=awesome&life=good#fact'),
-			array('?kohana=awesome&life=good#fact', TRUE, 'http://example.com/kohana/index.php/?kohana=awesome&life=good#fact'),
+			array('?kohana=awesome&life=good', NULL, '/kohana/index.php/?kohana=awesome&life=good'),
+			array('?kohana=awesome&life=good', 'http', 'http://example.com/kohana/index.php/?kohana=awesome&life=good'),
 
-			array('some/long/route/goes/here?kohana=awesome&life=good#fact', FALSE, '/kohana/index.php/some/long/route/goes/here?kohana=awesome&life=good#fact'),
-			array('some/long/route/goes/here?kohana=awesome&life=good#fact', TRUE, 'http://example.com/kohana/index.php/some/long/route/goes/here?kohana=awesome&life=good#fact'),
+			array('?kohana=awesome&life=good#fact', NULL, '/kohana/index.php/?kohana=awesome&life=good#fact'),
+			array('?kohana=awesome&life=good#fact', 'http', 'http://example.com/kohana/index.php/?kohana=awesome&life=good#fact'),
+
+			array('some/long/route/goes/here?kohana=awesome&life=good#fact', NULL, '/kohana/index.php/some/long/route/goes/here?kohana=awesome&life=good#fact'),
+			array('some/long/route/goes/here?kohana=awesome&life=good#fact', 'http', 'http://example.com/kohana/index.php/some/long/route/goes/here?kohana=awesome&life=good#fact'),
 
 			array('/route/goes/here?kohana=awesome&life=good#fact', 'https', 'https://example.com/kohana/index.php/route/goes/here?kohana=awesome&life=good#fact'),
 			array('/route/goes/here?kohana=awesome&life=good#fact', 'ftp', 'ftp://example.com/kohana/index.php/route/goes/here?kohana=awesome&life=good#fact'),
@@ -117,7 +131,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * @param string          $expected    Expected result
 	 * @param array           $enviroment  Array of enviroment vars to set
 	 */
-	function test_site($uri, $protocol, $expected, array $enviroment = array())
+	public function test_site($uri, $protocol, $expected, array $enviroment = array())
 	{
 		$this->setEnvironment($enviroment);
 
@@ -128,10 +142,50 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
+	 * Provides test data for test_site_url_encode_uri()
+	 * See issue #2680
+	 *
+	 * @return array
+	 */
+	public function provider_site_url_encode_uri()
+	{
+		$provider = array(
+			array('test', 'encode'),
+			array('test', 'éñçø∂ë∂'),
+			array('†éß†', 'encode'),
+			array('†éß†', 'éñçø∂ë∂', 'µåñ¥'),
+		);
+
+		foreach ($provider as $i => $params)
+		{
+			// Every non-ASCII character except for forward slash should be encoded...
+			$expected = implode('/', array_map('rawurlencode', $params));
+
+			// ... from a URI that is not encoded
+			$uri = implode('/', $params);
+
+			$provider[$i] = array("/kohana/index.php/{$expected}", $uri);
+		}
+
+		return $provider;
+	}
+
+	/**
+	 * Tests URL::site for proper URL encoding when working with non-ASCII characters.
+	 *
+	 * @test
+	 * @dataProvider provider_site_url_encode_uri
+	 */
+	public function test_site_url_encode_uri($expected, $uri)
+	{
+		$this->assertSame($expected, URL::site($uri, FALSE));
+	}
+
+	/**
 	 * Provides test data for test_title()
 	 * @return array
 	 */
-	function provider_title()
+	public function provider_title()
 	{
 		return array(
 			// Tests that..
@@ -167,7 +221,7 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * @param string $separator    Seperate to replace invalid characters with
 	 * @param string $expected     Expected result
 	 */
-	function testTitle($expected, $title, $separator, $ascii_only = FALSE)
+	public function test_Title($expected, $title, $separator, $ascii_only = FALSE)
 	{
 		$this->assertSame(
 			$expected,
@@ -179,13 +233,21 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * Provides test data for URL::query()
 	 * @return array
 	 */
-	public function providerQuery()
+	public function provider_Query()
 	{
 		return array(
-			array(NULL, '', array()),
-			array(NULL, '?test=data', array('_GET' => array('test' => 'data'))),
-			array(array('test' => 'data'), '?test=data', array()),
-			array(array('test' => 'data'), '?more=data&test=data', array('_GET' => array('more' => 'data')))
+			array(array(), '', NULL),
+			array(array('_GET' => array('test' => 'data')), '?test=data', NULL),
+			array(array(), '?test=data', array('test' => 'data')),
+			array(array('_GET' => array('more' => 'data')), '?more=data&test=data', array('test' => 'data')),
+			array(array('_GET' => array('sort' => 'down')), '?test=data', array('test' => 'data'), FALSE),
+
+			// http://dev.kohanaframework.org/issues/3362
+			array(array(), '', array('key' => NULL)),
+			array(array(), '?key=0', array('key' => FALSE)),
+			array(array(), '?key=1', array('key' => TRUE)),
+			array(array('_GET' => array('sort' => 'down')), '?sort=down&key=1', array('key' => TRUE)),
+			array(array('_GET' => array('sort' => 'down')), '?sort=down&key=0', array('key' => FALSE)),
 		);
 	}
 
@@ -193,18 +255,19 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 * Tests URL::query()
 	 *
 	 * @test
-	 * @dataProvider providerQuery
-	 * @param array $params Query string
-	 * @param string $expected Expected result
+	 * @dataProvider provider_query
 	 * @param array $enviroment Set environment
+	 * @param string $expected Expected result
+	 * @param array $params Query string
+	 * @param boolean $use_get Combine with GET parameters
 	 */
-	function testQuery($params, $expected, $enviroment)
+	public function test_query($enviroment, $expected, $params, $use_get = TRUE)
 	{
 		$this->setEnvironment($enviroment);
 
 		$this->assertSame(
 			$expected,
-			URL::query($params)
+			URL::query($params, $use_get)
 		);
 	}
 }

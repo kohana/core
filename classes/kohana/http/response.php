@@ -11,20 +11,20 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaphp.com/license
  */
-interface Kohana_Http_Response extends Kohana_Http_Interaction {
+interface Kohana_Http_Response extends Http_Interaction {
 
 	/**
 	 * Sets or gets the HTTP status from this response.
-	 * 
+	 *
 	 *      // Set the HTTP status to 404 Not Found
 	 *      $response = Response::factory()
 	 *              ->status(404);
-	 * 
+	 *
 	 *      // Get the current status
 	 *      $status = $response->status();
 	 *
-	 * @param   integer  status to set to this response
-	 * @return  integer|self
+	 * @param   integer  $code  Status to set to this response
+	 * @return  mixed
 	 */
 	public function status($code = NULL);
 

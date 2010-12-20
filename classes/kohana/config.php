@@ -6,8 +6,8 @@
  * @package    Kohana
  * @category   Configuration
  * @author     Kohana Team
- * @copyright  (c) 2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2009-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Config {
 
@@ -15,21 +15,21 @@ class Kohana_Config {
 	protected static $_instance;
 
 	/**
-	 * Get the singleton instance of Kohana_Config.
+	 * Get the singleton instance of Config.
 	 *
-	 *     $config = Kohana_Config::instance();
+	 *     $config = Config::instance();
 	 *
-	 * @return  Kohana_Config
+	 * @return  Config
 	 */
 	public static function instance()
 	{
-		if (self::$_instance === NULL)
+		if (Config::$_instance === NULL)
 		{
 			// Create a new instance
-			self::$_instance = new self;
+			Config::$_instance = new Config;
 		}
 
-		return self::$_instance;
+		return Config::$_instance;
 	}
 
 	// Configuration readers
@@ -43,11 +43,11 @@ class Kohana_Config {
 	 *     $config->attach($reader);        // Try first
 	 *     $config->attach($reader, FALSE); // Try last
 	 *
-	 * @param   object   Kohana_Config_Reader instance
+	 * @param   object   Config_Reader instance
 	 * @param   boolean  add the reader as the first used object
 	 * @return  $this
 	 */
-	public function attach(Kohana_Config_Reader $reader, $first = TRUE)
+	public function attach(Config_Reader $reader, $first = TRUE)
 	{
 		if ($first === TRUE)
 		{
@@ -68,10 +68,10 @@ class Kohana_Config {
 	 *
 	 *     $config->detach($reader);
 	 *
-	 * @param   object  Kohana_Config_Reader instance
+	 * @param   object  Config_Reader instance
 	 * @return  $this
 	 */
-	public function detach(Kohana_Config_Reader $reader)
+	public function detach(Config_Reader $reader)
 	{
 		if (($key = array_search($reader, $this->_readers)) !== FALSE)
 		{
@@ -90,7 +90,7 @@ class Kohana_Config {
 	 *     $array = $config->load($name);
 	 *
 	 * @param   string  configuration group name
-	 * @return  object  Kohana_Config_Reader
+	 * @return  Config_Reader
 	 * @throws  Kohana_Exception
 	 */
 	public function load($group)

@@ -8,10 +8,10 @@
  * @package    Unittest
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
-Class Kohana_HTMLTest extends Kohana_Unittest_TestCase
+Class Kohana_HTMLTest extends Unittest_TestCase
 {	
 	protected $environmentDefault = array(
 		'Kohana::$base_url' => '/kohana/',
@@ -23,7 +23,7 @@ Class Kohana_HTMLTest extends Kohana_Unittest_TestCase
 	 * 
 	 * @return array
 	 */
-	function provider_attributes()
+	public function provider_attributes()
 	{
 		return array(
 			array(
@@ -49,7 +49,7 @@ Class Kohana_HTMLTest extends Kohana_Unittest_TestCase
 	 * @param array  $attributes  Attributes to use
 	 * @param string $expected    Expected output
 	 */
-	function test_attributes($attributes, $expected)
+	public function test_attributes($attributes, $expected)
 	{
 		$this->assertSame(
 			$expected,
@@ -62,7 +62,7 @@ Class Kohana_HTMLTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Array of test data
 	 */
-	function provider_script()
+	public function provider_script()
 	{
 		return array(
 			array(
@@ -82,7 +82,7 @@ Class Kohana_HTMLTest extends Kohana_Unittest_TestCase
 	 * @param array   $attributes     HTML attributes for the anchor
 	 * @param bool    $index          Should the index file be included in url?
 	 */
-	function test_script($expected, $file, array $attributes = NULL, $index = FALSE)
+	public function test_script($expected, $file, array $attributes = NULL, $index = FALSE)
 	{
 		$this->assertSame(
 			$expected,
@@ -95,7 +95,7 @@ Class Kohana_HTMLTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Array of test data
 	 */
-	function provider_style()
+	public function provider_style()
 	{
 		return array(
 			array(
@@ -117,7 +117,7 @@ Class Kohana_HTMLTest extends Kohana_Unittest_TestCase
 	 * @param array   $attributes   Any extra attributes for the link
 	 * @param bool    $index        Whether the index file should be added to the link
 	 */
-	function test_style($expected, $file, array $attributes = NULL, $index = FALSE)
+	public function test_style($expected, $file, array $attributes = NULL, $index = FALSE)
 	{
 		$this->assertSame(
 			$expected,
@@ -130,7 +130,7 @@ Class Kohana_HTMLTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Array of test data
 	 */
-	function provider_obfuscate()
+	public function provider_obfuscate()
 	{
 		return array(
 			array('something crazy'),
@@ -145,7 +145,7 @@ Class Kohana_HTMLTest extends Kohana_Unittest_TestCase
 	 * @dataProvider   provider_obfuscate
 	 * @param string   $string            The string to obfuscate
 	 */
-	function test_obfuscate($string)
+	public function test_obfuscate($string)
 	{
 		$this->assertNotSame(
 			$string,
@@ -158,7 +158,7 @@ Class Kohana_HTMLTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array Test data
 	 */
-	function provider_anchor()
+	public function provider_anchor()
 	{
 		return array(
 			array(
@@ -183,7 +183,7 @@ Class Kohana_HTMLTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_anchor
 	 */
-	function test_anchor($expected, array $options, $uri, $title = NULL, array $attributes = NULL, $protocol = NULL)
+	public function test_anchor($expected, array $options, $uri, $title = NULL, array $attributes = NULL, $protocol = NULL)
 	{
 		//$this->setEnvironment($options);
 
@@ -198,7 +198,7 @@ Class Kohana_HTMLTest extends Kohana_Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	function provider_file_anchor()
+	public function provider_file_anchor()
 	{
 		return array(
 			array(
@@ -217,7 +217,7 @@ Class Kohana_HTMLTest extends Kohana_Unittest_TestCase
 	 * @covers HTML::file_anchor
 	 * @dataProvider provider_file_anchor
 	 */
-	function test_file_anchor($expected, array $options, $file, $title = NULL, array $attributes = NULL, $protocol = NULL)
+	public function test_file_anchor($expected, array $options, $file, $title = NULL, array $attributes = NULL, $protocol = NULL)
 	{
 		$this->assertSame(
 			$expected,
