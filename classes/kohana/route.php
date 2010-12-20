@@ -217,6 +217,9 @@ class Kohana_Route {
 	 */
 	public static function compile($uri, array $regex = NULL)
 	{
+		if ( ! is_string($uri))
+			return;
+
 		// The URI should be considered literal except for keys and optional parts
 		// Escape everything preg_quote would escape except for : ( ) < >
 		$expression = preg_replace('#'.Route::REGEX_ESCAPE.'#', '\\\\$0', $uri);
@@ -291,11 +294,10 @@ class Kohana_Route {
 			return;
 		}
 
-		if (is_callable($uri_callback))
+		if ( ! is_string($uri_callback) AND is_callable($uri_callback))
 		{
 			$this->_callback = $uri_callback;
 		}
-		// assume it's a string uri, how do we detect a regex?
 		elseif ( ! empty($uri_callback))
 		{
 			$this->_uri = $uri_callback;
@@ -318,7 +320,7 @@ class Kohana_Route {
 	public function process_callback($uri)
 	{
 		$closure = $this->_callback;
-		return $closure($uri);
+		return call_user_func($closure, $uri);
 	}
 
 	/**

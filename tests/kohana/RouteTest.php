@@ -414,4 +414,41 @@ class Kohana_RouteTest extends Unittest_TestCase
 
 		$this->assertSame('#^(?P<controller>[a-z]+)(?:/(?P<action>[^/.,;?\n]++)(?:/(?P<id>\d+))?)?$#uD', $compiled);
 	}
+
+	/**
+	 * Tests callback routes
+	 * 
+	 * @test
+	 *
+	 * @return null
+	 */
+	public function test_callback_route()
+	{
+		$route = new Route(array($this, 'callback_route'));
+
+		if ($route->has_callback())
+		{
+			// We found something suitable
+			if ($params = $route->process_callback('foo/bar'))
+			{
+				$this->assertEquals('welcome', $params['controller']);
+				$this->assertEquals('foobar', $params['action']);
+			}
+
+			return;
+		}
+
+		$this->fail();
+	}
+
+	public function callback_route($uri)
+	{
+		if ($uri == 'foo/bar')
+		{
+			return array(
+				'controller' => 'welcome',
+				'action'     => 'foobar',
+			);
+	}
+	}
 }
