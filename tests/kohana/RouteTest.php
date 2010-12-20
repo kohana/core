@@ -429,7 +429,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 		if ($route->has_callback())
 		{
 			// We found something suitable
-			if ($params = $route->process_callback('foo/bar'))
+			if ($params = $route->matches('foo/bar'))
 			{
 				$this->assertEquals('welcome', $params['controller']);
 				$this->assertEquals('foobar', $params['action']);

@@ -1233,27 +1233,19 @@ class Kohana_Request implements Http_Request {
 
 		foreach ($routes as $name => $route)
 		{
-			// See if the route can match on it's own
-			if ($route->has_callback())
+			// We found something suitable
+			if ($params = $route->matches($uri))
 			{
-				// We found something suitable
-				if ($params = $route->process_callback($uri))
+				if ( ! isset($params['uri']))
 				{
-					if ( ! isset($params['uri']))
-					{
-						$params['uri'] = $uri;
-					}
-
-					if ( ! isset($params['route']))
-					{
-						$params['route'] = $route;
-					}
-
-					break;
+					$params['uri'] = $uri;
 				}
-			}
-			elseif ($params = $route->matches($uri))
-			{
+
+				if ( ! isset($params['route']))
+				{
+					$params['route'] = $route;
+				}
+
 				break;
 			}
 		}

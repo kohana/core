@@ -342,24 +342,6 @@ class Kohana_Route {
 	}
 
 	/**
-	 * "Runs" the callback/lambda method attached to this route. Optionally
-	 * assigns the uri that is returned with the callback.
-	 * 
-	 * @param string $uri
-	 * 
-	 * @return array
-	 */
-	public function process_callback($uri)
-	{
-		$closure = $this->_callback;
-		$results = call_user_func($closure, $uri);
-
-		$this->_uri = arr::get($results, 'uri', '');
-		unset($results['uri']);
-		return $results;
-	}
-
-	/**
 	 * Provides default values for keys when they are not present. The default
 	 * action will always be "index" unless it is overloaded here.
 	 *
@@ -399,6 +381,16 @@ class Kohana_Route {
 	 */
  	public function matches($uri)
 	{
+		if ($this->_callback)
+		{
+			$closure = $this->_callback;
+			$results = call_user_func($closure, $uri);
+
+			$this->_uri = arr::get($results, 'uri', '');
+			unset($results['uri']);
+			return $results;
+		}
+
 		if ( ! preg_match($this->_route_regex, $uri, $matches))
 			return FALSE;
 
