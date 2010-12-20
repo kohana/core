@@ -48,6 +48,20 @@ class Kohana_Request_Client_External extends Request_Client {
 	protected $_options = array();
 
 	/**
+	 * @var     array     Internal mapping of Http_Request to HttpRequest constants
+	 */
+	protected $_http_method_mapping = array(
+		Http_Request::GET     => HttpRequest::METH_GET,
+		Http_Request::HEAD    => HttpRequest::METH_HEAD,
+		Http_Request::POST    => HttpRequest::METH_POST,
+		Http_Request::PUT     => HttpRequest::METH_PUT,
+		Http_Request::DELETE  => HttpRequest::METH_DELETE,
+		Http_Request::OPTIONS => HttpRequest::METH_OPTIONS,
+		Http_Request::TRACE   => HttpRequest::METH_TRACE,
+		Http_Request::CONNECT => HttpRequest::METH_CONNECT,
+	);
+
+	/**
 	 * Processes the request, executing the controller action that handles this
 	 * request, determined by the [Route].
 	 *
@@ -133,13 +147,13 @@ class Kohana_Request_Client_External extends Request_Client {
 	protected function _http_execute(Request $request)
 	{
 		// Create an http request object
-		$http_request = new HttpRequest($request->uri(), $request->method());
+		$http_request = new HttpRequest($request->uri(), $this->_http_method_mapping[$request->method()]);
 
 		// Set headers
 		$http_request->setHeaders($request->headers()->getArrayCopy());
 
 		// Set cookies
-		$http_request->setCookies($request->cookies());
+		$http_request->setCookies($request->cookie());
 
 		// Set body
 		$http_request->setBody($request->body());
@@ -187,7 +201,7 @@ class Kohana_Request_Client_External extends Request_Client {
 		// Load the default remote settings
 		$defaults = Kohana::config('remote')->as_array();
 
-		if ( ! $this->options)
+		if ( ! $this->_options)
 		{
 			// Use default options
 			$options = $defaults;
@@ -198,11 +212,17 @@ class Kohana_Request_Client_External extends Request_Client {
 			$options = $options + $defaults;
 		}
 
+		// Process cookies
+		if ($cookies = $request->cookie())
+		{
+			$options[CURLOPT_COOKIE] = http_build_query($cookies, NULL, '; ');
+		}
+
 		// The transfer must always be returned
 		$options[CURLOPT_RETURNTRANSFER] = TRUE;
 
 		// Open a new remote connection
-		$curl = curl_init($url);
+		$curl = curl_init($request->uri());
 
 		// Set connection options
 		if ( ! curl_setopt_array($curl, $options))
@@ -217,7 +237,7 @@ class Kohana_Request_Client_External extends Request_Client {
 		// Get the response information
 		$code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-		if ($response === FALSE)
+		if ($body === FALSE)
 		{
 			$error = curl_error($curl);
 		}
@@ -228,7 +248,7 @@ class Kohana_Request_Client_External extends Request_Client {
 		if (isset($error))
 		{
 			throw new Kohana_Request_Exception('Error fetching remote :url [ status :code ] :error',
-				array(':url' => $url, ':code' => $code, ':error' => $error));
+				array(':url' => $request->url(), ':code' => $code, ':error' => $error));
 		}
 
 		// Create response
@@ -254,6 +274,12 @@ class Kohana_Request_Client_External extends Request_Client {
 
 		// Calculate stream mode
 		$mode = ($request->method() === Http_Request::GET) ? 'r' : 'r+';
+
+		// Process cookies
+		if ($cookies = $request->cookie())
+		{
+			$request->headers('cookie', http_build_query($cookies, NULL, '; '));
+		}
 
 		// Create the context
 		$options = array(
