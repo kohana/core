@@ -332,66 +332,25 @@ class Kohana_Response implements Http_Response, Serializable {
 	}
 
 	/**
-	 * Sets a cookie to the response
+	 * Set and get cookies values for this response.
 	 *
-	 * @param   string    name of cookie
-	 * @param   string    value of cookie
-	 * @param   int       expiration time (RFC RFC 1123)
-	 * @param   string    domain to restrict cookie to
-	 * @param   string    path to restrict cookie to
-	 * @param   boolean   only store on secure channels
-	 * @return  Response
+	 * @param   mixed     cookie name, or array of cookie values
+	 * @param   string    value to set to cookie
+	 * @return  string
+	 * @return  [Request]
 	 */
-	public function set_cookie($name, $value, $expiration = NULL, $domain = NULL, $path = NULL, $secure = FALSE)
+	public function cookie($key = NULL, $value = NULL)
 	{
-		if ($expiration === NULL)
-		{
-			$expiration = Cookie::$expiration;
-		}
-		elseif ($expiration !== 0)
-		{
-			$expiration += time();
-		}
-
-		$cookie = array(
-			'value'      => $value,
-			'expiration' => $expiration,
-		);
-
-		if ($domain)
-			$cookie['domain'] = $domain;
-
-		if ($path)
-			$cookie['path'] = $path;
-
-		if ($secure)
-			$cookie['secure'] = $secure;
-
-		$this->_cookies[$name] = $cookie;
+		if ($key === NULL)
+			return $this->_cookies;
+		else if (is_array($key))
+			$this->_cookies = $key;
+		else if ( ! $value)
+			return Arr::get($this->_cookies, $key);
+		else
+			$this->_cookies[$key] = (string) $value;
 
 		return $this;
-	}
-
-	/**
-	 * Returns a cookie by name
-	 *
-	 * @param   string $name
-	 * @param   string $default
-	 * @return  mixed
-	 */
-	public function get_cookie($name, $default = NULL)
-	{
-		return Arr::get($this->_cookies, $name, $default);
-	}
-
-	/**
-	 * Get all the cookies
-	 *
-	 * @return  array
-	 */
-	public function get_cookies()
-	{
-		return $this->_cookies;
 	}
 
 	/**
