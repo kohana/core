@@ -307,7 +307,7 @@ class Kohana_Route {
 		}
 
 		// Store the compiled regex locally
-		$this->_route_regex = Route::compile($uri, $regex);
+		$this->_route_regex = Route::compile($uri_callback, $regex);
 	}
 
 	public function has_callback()
