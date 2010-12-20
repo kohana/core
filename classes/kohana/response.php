@@ -791,10 +791,10 @@ class Kohana_Response implements Http_Response, Serializable {
 		// Serialize the class properties
 		$to_serialize += array
 		(
-			'status'  => $this->_status,
-			'header'  => $this->_header,
-			'cookies' => $this->_cookies,
-			'body'    => $this->_body
+			'_status'  => $this->_status,
+			'_header'  => $this->_header,
+			'_cookies' => $this->_cookies,
+			'_body'    => $this->_body
 		);
 
 		$serialized = serialize($to_serialize);
@@ -831,10 +831,7 @@ class Kohana_Response implements Http_Response, Serializable {
 		// Foreach key/value pair
 		foreach ($unserialized as $key => $value)
 		{
-			if (property_exists($this, $key))
-			{
-				$this->$key = $value;
-			}
+			$this->$key = $value;
 		}
 
 		return TRUE;
