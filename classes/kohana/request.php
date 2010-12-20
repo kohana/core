@@ -122,9 +122,6 @@ class Kohana_Request implements Http_Request {
 				{
 					// Ensure the raw body is saved for future use
 					$body = file_get_contents('php://input');
-					// Methods besides GET and POST do not properly parse the form-encoded
-					// query string into the $_POST array, so we overload it manually.
-					parse_str($body, $_POST);
 				}
 
 				if ($uri === TRUE)

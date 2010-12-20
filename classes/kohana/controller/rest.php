@@ -49,13 +49,15 @@ abstract class Kohana_Controller_REST extends Controller {
 	{
 		$this->_action_requested = $this->request->action();
 
-		if ( ! isset($this->_action_map[$this->request->method]))
+		$method = Arr::get($_SERVER, 'HTTP_X_HTTP_METHOD_OVERRIDE', $this->request->method());
+
+		if ( ! isset($this->_action_map[$method]))
 		{
 			$this->request->action('invalid');
 		}
 		else
 		{
-			$this->request->action($this->_action_map[$this->request->method]);
+			$this->request->action($this->_action_map[$method]);
 		}
 
 		return parent::before();
