@@ -280,27 +280,46 @@ class Kohana_Route {
 	 * be properly stored.
 	 *
 	 *     $route = new Route($uri, $regex);
+	 * 
+	 * The $uri parameter can either be a string for basic regex matching or it
+	 * can be a valid callback or anonymous function (php 5.3+). If you use a 
+	 * callback or anonymous function, your method should return an array
+	 * containing the proper keys for the route. If you want the route to be
+	 * "reversable", you need to return a 'uri' key in the standard syntax.
+	 * 
+	 *     $route = new Route(function($uri)
+	 *     {
+	 *     	if (list($controller, $action, $param) = explode('/', $uri) AND $controller == 'foo' AND $action == 'bar')
+	 *     	{
+	 *     		return array(
+	 *     			'controller' => 'foobar',
+	 *     			'action' => $action,
+	 *     			'id' => $param,
+	 *     			'uri' => 'foo/bar/<id>.html
+	 *     		);
+	 *     	}
+	 *     });
 	 *
-	 * @param   string   route URI pattern
+	 * @param   mixed    route URI pattern or lambda/callback function
 	 * @param   array    key patterns
 	 * @return  void
 	 * @uses    Route::_compile
 	 */
-	public function __construct($uri_callback = NULL, $regex = NULL)
+	public function __construct($uri = NULL, $regex = NULL)
 	{
-		if ($uri_callback === NULL)
+		if ($uri === NULL)
 		{
 			// Assume the route is from cache
 			return;
 		}
 
-		if ( ! is_string($uri_callback) AND is_callable($uri_callback))
+		if ( ! is_string($uri) AND is_callable($uri))
 		{
-			$this->_callback = $uri_callback;
+			$this->_callback = $uri;
 		}
-		elseif ( ! empty($uri_callback))
+		elseif ( ! empty($uri))
 		{
-			$this->_uri = $uri_callback;
+			$this->_uri = $uri;
 		}
 
 		if ( ! empty($regex))
@@ -309,18 +328,35 @@ class Kohana_Route {
 		}
 
 		// Store the compiled regex locally
-		$this->_route_regex = Route::compile($uri_callback, $regex);
+		$this->_route_regex = Route::compile($uri, $regex);
 	}
 
+	/**
+	 * Determines if this route is a lamba/callback route
+	 * 
+	 * @return bool
+	 */
 	public function has_callback()
 	{
 		return isset($this->_callback);
 	}
 
+	/**
+	 * "Runs" the callback/lambda method attached to this route. Optionally
+	 * assigns the uri that is returned with the callback.
+	 * 
+	 * @param string $uri
+	 * 
+	 * @return array
+	 */
 	public function process_callback($uri)
 	{
 		$closure = $this->_callback;
-		return call_user_func($closure, $uri);
+		$results = call_user_func($closure, $uri);
+
+		$this->_uri = arr::get($results, 'uri', '');
+		unset($results['uri']);
+		return $results;
 	}
 
 	/**

@@ -433,6 +433,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 			{
 				$this->assertEquals('welcome', $params['controller']);
 				$this->assertEquals('foobar', $params['action']);
+				$this->assertEquals('foo/bar', $route->uri());
 			}
 
 			return;
@@ -448,6 +449,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 			return array(
 				'controller' => 'welcome',
 				'action'     => 'foobar',
+				'uri' => 'foo/bar',
 			);
 	}
 	}
