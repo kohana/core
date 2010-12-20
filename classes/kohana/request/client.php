@@ -152,10 +152,10 @@ abstract class Kohana_Request_Client {
 	 */
 	public function set_cache(Response $response)
 	{
-		if ($response->header->offsetExists('cache-control'))
+		if ($cache_control = $response->header->offsetExists('cache-control'))
 		{
 			// Parse the cache control
-			$cache_control = Response::parse_cache_control( (string) $response->header['cache-control']);
+			$cache_control = Response::parse_cache_control( (string) $cache_control);
 
 			// If the no-cache or no-store directive is set, return
 			if (array_intersect_key($cache_control, array('no-cache' => NULL, 'no-store' => NULL)))
@@ -179,9 +179,9 @@ abstract class Kohana_Request_Client {
 				return FALSE;
 		}
 
-		if ($response->header->offsetExists('expires') and ! isset($cache_control['max-age']))
+		if (($expires = $response->headers('expires')) and ! isset($cache_control['max-age']))
 		{
-			if (strtotime($response->header['expires']) >= time())
+			if (strtotime( (string) $expires) >= time())
 				return FALSE;
 		}
 
@@ -204,7 +204,16 @@ abstract class Kohana_Request_Client {
 		if ( ! $this->_cache instanceof Cache)
 			return FALSE;
 
-		if ($response === NULL)
+		// Check for Pragma: no-cache
+		if ($pragma = $request->headers('pragma'))
+		{
+			if ($pragma instanceof Http_Header_Value and $pragma->key == 'no-cache')
+				return FALSE;
+			else if (is_array($pragma) and isset($pragma['no-cache']))
+				return FALSE;
+		}
+
+		if ( ! $response)
 		{
 			$response = $this->_cache->get($this->create_cache_key($request));
 			return ($response !== NULL) ? $response : FALSE;
@@ -232,9 +241,9 @@ abstract class Kohana_Request_Client {
 			return FALSE;
 
 		// Calculate apparent age
-		if ($response->header->offsetExits('date'))
+		if ($date = $response->headers('date'))
 		{
-			$apparent_age = max(0, $this->_response_time - strtotime( (string) $response->header['date']));
+			$apparent_age = max(0, $this->_response_time - strtotime( (string) $date));
 		}
 		else
 		{
@@ -242,9 +251,9 @@ abstract class Kohana_Request_Client {
 		}
 
 		// Calculate corrected received age
-		if ($response->header->offsetExits('age'))
+		if ($age = $response->headers('age'))
 		{
-			$corrected_received_age = max($apparent_age, intval( (string) $response->header['age']));
+			$corrected_received_age = max($apparent_age, intval( (string) $age));
 		}
 		else
 		{
@@ -264,10 +273,10 @@ abstract class Kohana_Request_Client {
 		$ttl = NULL;
 
 		// Cache control overrides
-		if ($response->header->offsetExists('cache-control'))
+		if ($cache_control = $response->headers('cache-control'))
 		{
 			// Parse the cache control header
-			$cache_control = Response::parse_cache_control( (string) $response->header['cache-control']);
+			$cache_control = Response::parse_cache_control( (string) $cache_control);
 
 			if (isset($cache_control['max-age']))
 			{
@@ -289,8 +298,8 @@ abstract class Kohana_Request_Client {
 		if ($ttl !== NULL)
 			return $ttl;
 
-		if ($response->header->offsetExists('expires'))
-			return strtotime($response->header['expires']) - $current_age;
+		if ($expires = $response->headers('expires'))
+			return strtotime( (string) $expires) - $current_age;
 
 		return FALSE;
 	}
