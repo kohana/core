@@ -35,8 +35,8 @@ class Kohana_Http_Exception extends Kohana_Exception {
 		// Create view
 		$this->_http_view = new View($this->_http_view, array(
 			'http_code'    => $code,
-			'http_status'  => Response::$messages[$code],
-			'message'      => strip_tags($message)
+			'http_status'  => isset(Response::$messages[$code]) ? Response::$messages[$code] : $code,
+			'message'      => $message
 		));
 	}
 
@@ -54,7 +54,7 @@ class Kohana_Http_Exception extends Kohana_Exception {
 
 	/**
 	 * Renders this exception.
-	 * 
+	 *
 	 *     $response = $exception->render();
 	 *
 	 * @return  [Response]
