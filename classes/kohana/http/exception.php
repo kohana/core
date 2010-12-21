@@ -61,7 +61,7 @@ class Kohana_Http_Exception extends Kohana_Exception {
 		$message = $this->getMessage();
 
 		// Create response
-		$response = Request::initial()->create_response();
+		$response = Request::current()->create_response();
 		// Create view
 		$this->_http_view = new View($this->_http_view, array(
 			'http_code'    => $code,
