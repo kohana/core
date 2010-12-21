@@ -7,10 +7,10 @@
  * @package    Unittest
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
-Class Kohana_NumTest extends Kohana_Unittest_TestCase
+Class Kohana_NumTest extends Unittest_TestCase
 {
 	protected $default_locale;
 
@@ -32,6 +32,35 @@ Class Kohana_NumTest extends Kohana_Unittest_TestCase
 		parent::tearDown();
 
 		setlocale(LC_ALL, $this->default_locale);
+	}
+
+	/**
+	 * Provides test data for test_bytes()
+	 *
+	 * @return array
+	 */
+	public function provider_bytes()
+	{
+		return array(
+			array(204800.0, '200K'),
+			array(5242880.0, '5MiB'),
+			array(1000.0, 1000),
+			array(2684354560.0, '2.5GB'),
+		);
+	}
+	
+	/**
+	 * Tests Num::bytes()
+	 *
+	 * @test
+	 * @covers Num::bytes
+	 * @dataProvider provider_bytes
+	 * @param integer Expected Value
+	 * @param string  Input value
+	 */
+	public function test_bytes($expected, $size)
+	{
+		$this->assertSame($expected, Num::bytes($size));
 	}
 	
 	/**
@@ -91,5 +120,79 @@ Class Kohana_NumTest extends Kohana_Unittest_TestCase
 	public function test_format($number, $places, $monetary, $expected)
 	{
 		$this->assertSame($expected, Num::format($number, $places, $monetary));
+	}
+
+	/**
+	 * Provides data for test_round()
+	 * @return array
+	 */
+	function provider_round()
+	{
+		return array(
+			array(5.5, 0, array(
+				6.0,
+				5.0,
+				6.0,
+				5.0,
+			)),
+			array(42.5, 0, array(
+				43.0,
+				42.0,
+				42.0,
+				43.0,
+			)),
+			array(10.4, 0, array(
+				10.0,
+				10.0,
+				10.0,
+				10.0,
+			)),
+			array(10.8, 0, array(
+				11.0,
+				11.0,
+				11.0,
+				11.0,
+			)),
+			array(-5.5, 0, array(
+				-6.0,
+				-5.0,
+				-6.0,
+				-5.0,
+			)),
+			array(-10.5, 0, array(
+				-11.0,
+				-10.0,
+				-10.0,
+				-11.0,
+			)),
+			array(26.12375, 4, array(
+				26.1238,
+				26.1237,
+				26.1238,
+				26.1237,
+			)),
+			array(26.12325, 4, array(
+				26.1233,
+				26.1232,
+				26.1232,
+				26.1233,
+			)),
+		);
+	}
+
+	/**
+	 * @test
+	 * @dataProvider provider_round
+	 * @param number $input
+	 * @param integer $precision
+	 * @param integer $mode
+	 * @param number $expected
+	 */
+	function test_round($input, $precision, $expected)
+	{
+		foreach (array(Num::ROUND_HALF_UP, Num::ROUND_HALF_DOWN, Num::ROUND_HALF_EVEN, Num::ROUND_HALF_ODD) as $i => $mode)
+		{
+			$this->assertSame($expected[$i], Num::round($input, $precision, $mode, false));
+		}
 	}
 }

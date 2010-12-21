@@ -10,9 +10,9 @@
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
  * @author     Matt Button <matthew@sigswitch.com>
  * @copyright  (c) 2008-2010 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
-Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
+Class Kohana_ConfigTest extends Unittest_TestCase
 {
 
 	/**

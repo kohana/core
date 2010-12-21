@@ -2,10 +2,11 @@
 /**
  * Syslog log writer.
  *
- * @package    Logging
+ * @package    Kohana
+ * @category   Logging
  * @author     Jeremy Bush
  * @copyright  (c) 2010 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Log_Syslog extends Kohana_Log_Writer {
 

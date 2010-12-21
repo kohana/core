@@ -30,8 +30,8 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Route {
 
@@ -46,7 +46,7 @@ class Kohana_Route {
 
 	/**
 	 * @var  string  default protocol for all routes
-	 * 
+	 *
 	 * @example  'http://'
 	 */
 	public static $default_protocol = 'http://';
@@ -60,6 +60,11 @@ class Kohana_Route {
 	 * @var  string  default action for all routes
 	 */
 	public static $default_action = 'index';
+
+	/**
+	 * @var  bool Indicates whether routes are cached
+	 */
+	public static $cache = FALSE;
 
 	// List of route objects
 	protected static $_routes = array();
@@ -158,12 +163,12 @@ class Kohana_Route {
 				Route::$_routes = $routes;
 
 				// Routes were cached
-				return TRUE;
+				return Route::$cache = TRUE;
 			}
 			else
 			{
 				// Routes were not cached
-				return FALSE;
+				return Route::$cache = FALSE;
 			}
 		}
 	}
@@ -186,7 +191,56 @@ class Kohana_Route {
 		return URL::site(Route::get($name)->uri($params), $protocol);
 	}
 
-	// Route URI string
+	/**
+	 * Returns the compiled regular expression for the route. This translates
+	 * keys and optional groups to a proper PCRE regular expression.
+	 *
+	 *     $compiled = Route::compile(
+	 *        '<controller>(/<action>(/<id>))',
+	 *         array(
+	 *           'controller' => '[a-z]+',
+	 *           'id' => '\d+',
+	 *         )
+	 *     );
+	 *
+	 * @return  string
+	 * @uses    Route::REGEX_ESCAPE
+	 * @uses    Route::REGEX_SEGMENT
+	 */
+	public static function compile($uri, array $regex = NULL)
+	{
+		// The URI should be considered literal except for keys and optional parts
+		// Escape everything preg_quote would escape except for : ( ) < >
+		$expression = preg_replace('#'.Route::REGEX_ESCAPE.'#', '\\\\$0', $uri);
+
+		if (strpos($expression, '(') !== FALSE)
+		{
+			// Make optional parts of the URI non-capturing and optional
+			$expression = str_replace(array('(', ')'), array('(?:', ')?'), $expression);
+		}
+
+		// Insert default regex for keys
+		$expression = str_replace(array('<', '>'), array('(?P<', '>'.Route::REGEX_SEGMENT.')'), $expression);
+
+		if ($regex)
+		{
+			$search = $replace = array();
+			foreach ($regex as $key => $value)
+			{
+				$search[]  = "<$key>".Route::REGEX_SEGMENT;
+				$replace[] = "<$key>$value";
+			}
+
+			// Replace the default regex with the user-specified regex
+			$expression = str_replace($search, $replace, $expression);
+		}
+
+		return '#^'.$expression.'$#uD';
+	}
+
+	/**
+	 * @var  string  route URI
+	 */
 	protected $_uri = '';
 
 	// Regular expressions for route keys
@@ -227,7 +281,7 @@ class Kohana_Route {
 		$this->_uri = $uri;
 
 		// Store the compiled regex locally
-		$this->_route_regex = $this->_compile();
+		$this->_route_regex = Route::compile($uri, $regex);
 	}
 
 	/**
@@ -315,6 +369,17 @@ class Kohana_Route {
 	 */
 	public function uri(array $params = NULL)
 	{
+		if ($params === NULL)
+		{
+			// Use the default parameters
+			$params = $this->_defaults;
+		}
+		else
+		{
+			// Add the default parameters
+			$params += $this->_defaults;
+		}
+
 		// Start with the routed URI
 		$uri = $this->_uri;
 
@@ -332,7 +397,7 @@ class Kohana_Route {
 			// Remove the parenthesis from the match as the replace
 			$replace = substr($match[0], 1, -1);
 
-			while(preg_match('#'.Route::REGEX_KEY.'#', $replace, $match))
+			while (preg_match('#'.Route::REGEX_KEY.'#', $replace, $match))
 			{
 				list($key, $param) = $match;
 
@@ -356,7 +421,7 @@ class Kohana_Route {
 			$uri = str_replace($search, $replace, $uri);
 		}
 
-		while(preg_match('#'.Route::REGEX_KEY.'#', $uri, $match))
+		while (preg_match('#'.Route::REGEX_KEY.'#', $uri, $match))
 		{
 			list($key, $param) = $match;
 
@@ -387,47 +452,6 @@ class Kohana_Route {
 
 		// Compile the final uri and return it
 		return rtrim($params['host'], '/').'/'.$uri;
-	}
-
-	/**
-	 * Returns the compiled regular expression for the route. This translates
-	 * keys and optional groups to a proper PCRE regular expression.
-	 *
-	 *     $regex = $route->_compile();
-	 *
-	 * @return  string
-	 * @uses    Route::REGEX_ESCAPE
-	 * @uses    Route::REGEX_SEGMENT
-	 */
-	protected function _compile()
-	{
-		// The URI should be considered literal except for keys and optional parts
-		// Escape everything preg_quote would escape except for : ( ) < >
-		$regex = preg_replace('#'.Route::REGEX_ESCAPE.'#', '\\\\$0', $this->_uri);
-
-		if (strpos($regex, '(') !== FALSE)
-		{
-			// Make optional parts of the URI non-capturing and optional
-			$regex = str_replace(array('(', ')'), array('(?:', ')?'), $regex);
-		}
-
-		// Insert default regex for keys
-		$regex = str_replace(array('<', '>'), array('(?P<', '>'.Route::REGEX_SEGMENT.')'), $regex);
-
-		if ( ! empty($this->_regex))
-		{
-			$search = $replace = array();
-			foreach ($this->_regex as $key => $value)
-			{
-				$search[]  = "<$key>".Route::REGEX_SEGMENT;
-				$replace[] = "<$key>$value";
-			}
-
-			// Replace the default regex with the user-specified regex
-			$regex = str_replace($search, $replace, $regex);
-		}
-
-		return '#^'.$regex.'$#uD';
 	}
 
 } // End Route

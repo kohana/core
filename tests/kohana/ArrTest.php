@@ -8,10 +8,10 @@
  * @package    Unittest
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
-Class Kohana_ArrTest extends Kohana_Unittest_TestCase
+Class Kohana_ArrTest extends Unittest_TestCase
 {
 	/**
 	 * Provides test data for test_callback()
@@ -95,6 +95,42 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 		$this->assertSame($expected, $array);
 	}
 
+	/**
+	 * Provides test data for test_pluck
+	 *
+	 * @return array
+	 */
+	public function provider_pluck()
+	{
+		return array(
+			array(
+				array(
+					  array('id' => 20, 'name' => 'John Smith'),
+					  array('name' => 'Linda'),
+					  array('id' => 25, 'name' => 'Fred'),
+					 ),
+				'id',
+				array(20, 25)
+			),
+		);
+	}
+
+	/**
+	 * Tests Arr::pluck()
+	 *
+	 * @test
+	 * @dataProvider provider_pluck
+	 * @param array $array
+	 * @param string $key
+	 * @param array $expected
+	 */
+	public function test_pluck(array $array, $key, $expected)
+	{
+		$array = Arr::pluck($array, $key);
+
+		$this->assertSame(count($expected), count($array));
+		$this->assertSame($expected, $array);
+	}
 
 	/**
 	 * Provides test data for test_get()
@@ -161,6 +197,38 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 		);
 	}
 
+	/**
+	 * Provides test data for test_is_array()
+	 *
+	 * @return array
+	 */
+	public function provider_is_array()
+	{
+		return array(
+			array($a = array('one', 'two', 'three'), TRUE),
+			array(new ArrayObject($a), TRUE),
+			array(new ArrayIterator($a), TRUE),
+			array('not an array', FALSE),
+			array(new stdClass, FALSE),
+		);
+	}
+
+	/**
+	 * Tests Arr::is_array()
+	 *
+	 * @test
+	 * @dataProvider provider_is_array
+	 * @param mixed   $value     Value to check
+	 * @param boolean $expected  Is $value an array?
+	 */
+	public function test_is_array($array, $expected)
+	{
+		$this->assertSame(
+			$expected,
+			Arr::is_array($array)
+		);
+	}
+
 	public function provider_merge()
 	{
 		return array(
@@ -198,6 +266,17 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 				array('foo' => 'bin', array('temp' => 'name')),
 				array('foo' => 'bar', array('temp' => 'life')),
 			),
+			// Bug #3139
+			array(
+				array('foo'	=> array('bar')),
+				array('foo'	=> 'bar'),
+				array('foo'	=> array('bar')),
+			),
+			array(
+				array('foo'	=> 'bar'),
+				array('foo'	=> array('bar')),
+				array('foo'	=> 'bar'),
+			),
 		);
 	}
 
@@ -215,26 +294,30 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for test_get()
+	 * Provides test data for test_path()
 	 *
 	 * @return array
 	 */
 	public function provider_path()
 	{
 		$array = array(
-			'foobar' =>	array('definition' => 'lost'),
+			'foobar' => array('definition' => 'lost'),
 			'kohana' => 'awesome',
 			'users'  => array(
 				1 => array('name' => 'matt'),
 				2 => array('name' => 'john', 'interests' => array('hocky' => array('length' => 2), 'football' => array())),
+				3 => 'frank', // Issue #3194
 			),
+			'object' => new ArrayObject(array('iterator' => TRUE)), // Iterable object should work exactly the same
 		);
 
 		return array(
 			// Tests returns normal values
 			array($array['foobar'], $array, 'foobar'),
 			array($array['kohana'], $array, 'kohana'),
-			array($array['foobar']['definition'], $array,  'foobar.definition'),
+			array($array['foobar']['definition'], $array, 'foobar.definition'),
+			// Custom delimiters
+			array($array['foobar']['definition'], $array, 'foobar/definition', NULL, '/'),
 			// We should be able to use NULL as a default, returned if the key DNX
 			array(NULL, $array, 'foobar.alternatives',  NULL),
 			array(NULL, $array, 'kohana.alternatives',  NULL),
@@ -250,23 +333,29 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 			array(array(0 => array(0 => 2)), $array, 'users.*.interests.*.length'),
 			// See what happens when it can't dig any deeper from a wildcard
 			array(NULL, $array, 'users.*.fans'),
+			// Starting wildcards, issue #3269
+			array(array('matt', 'john'), $array['users'], '*.name'),
+			// Path as array, issue #3260
+			array($array['users'][2]['name'], $array, array('users', 2, 'name')),
+			array($array['object']['iterator'], $array, 'object.iterator'),
 		);
 	}
 
 	/**
-	 * Tests Arr::get()
+	 * Tests Arr::path()
 	 *
 	 * @test
 	 * @dataProvider provider_path
-	 * @param string  $path      The path to follow
-	 * @param mixed   $default   The value to return if dnx
-	 * @param boolean $expected  The expected value
+	 * @param string  $path       The path to follow
+	 * @param mixed   $default    The value to return if dnx
+	 * @param boolean $expected   The expected value
+	 * @param string  $delimiter  The path delimiter
 	 */
-	public function test_path($expected, $array, $path, $default = NULL)
+	public function test_path($expected, $array, $path, $default = NULL, $delimiter = NULL)
 	{
 		$this->assertSame(
 			$expected,
-			Arr::path($array, $path, $default)
+			Arr::path($array, $path, $default, $delimiter)
 		);
 	}
 
@@ -371,31 +460,6 @@ Class Kohana_ArrTest extends Kohana_Unittest_TestCase
 		$this->assertSame(
 			$expected,
 			Arr::overwrite($arr1, $arr2, $arr3, $arr4)
-		);
-	}
-
-	/**
-	 * Provides test data for test_binary_search
-	 *
-	 * @return array Test Data
-	 */
-	public function provider_binary_search()
-	{
-		return array(
-			array(2, 'john', array('mary', 'louise', 'john', 'kent'))
-		);
-	}
-
-	/**
-	 *
-	 * @test
-	 * @dataProvider provider_binary_search
-	 */
-	public function test_binary_search($expected, $needle, $haystack, $sort = FALSE)
-	{
-		$this->assertSame(
-			$expected,
-			Arr::binary_search($needle, $haystack, $sort)
 		);
 	}
 

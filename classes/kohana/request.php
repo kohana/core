@@ -6,8 +6,8 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Request {
 
@@ -286,13 +286,13 @@ class Kohana_Request {
 			if (strpos($uri, $base_url) === 0)
 			{
 				// Remove the base URL from the URI
-				$uri = substr($uri, strlen($base_url));
+				$uri = (string) substr($uri, strlen($base_url));
 			}
 
 			if (Kohana::$index_file AND strpos($uri, Kohana::$index_file) === 0)
 			{
 				// Remove the index file from the URI
-				$uri = substr($uri, strlen(Kohana::$index_file));
+				$uri = (string) substr($uri, strlen(Kohana::$index_file));
 			}
 		}
 
@@ -335,14 +335,32 @@ class Kohana_Request {
 	 *     // Returns "Chrome" when using Google Chrome
 	 *     $browser = Request::user_agent('browser');
 	 *
-	 * @param   string  value to return: browser, version, robot, mobile, platform
-	 * @return  string  requested information
-	 * @return  FALSE   no information found
+	 * Multiple values can be returned at once by using an array:
+	 *
+	 *     // Get the browser and platform with a single call
+	 *     $info = Request::user_agent(array('browser', 'platform'));
+	 *
+	 * When using an array for the value, an associative array will be returned.
+	 *
+	 * @param   mixed   string to return: browser, version, robot, mobile, platform; or array of values
+	 * @return  mixed   requested information, FALSE if nothing is found
 	 * @uses    Kohana::config
 	 * @uses    Request::$user_agent
 	 */
 	public static function user_agent($value)
 	{
+		if (is_array($value))
+		{
+			$agent = array();
+			foreach ($value as $v)
+			{
+				// Add each key to the set
+				$agent[$v] = Request::user_agent($v);
+			}
+
+			return $agent;
+		}
+
 		static $info;
 
 		if (isset($info[$value]))
@@ -822,179 +840,6 @@ class Kohana_Request {
 	}
 
 	/**
-	 * Send file download as the response. All execution will be halted when
-	 * this method is called! Use TRUE for the filename to send the current
-	 * response as the file content. The third parameter allows the following
-	 * options to be set:
-	 *
-	 * Type      | Option    | Description                        | Default Value
-	 * ----------|-----------|------------------------------------|--------------
-	 * `boolean` | inline    | Display inline instead of download | `FALSE`
-	 * `string`  | mime_type | Manual mime type                   | Automatic
-	 * `boolean` | delete    | Delete the file after sending      | `FALSE`
-	 *
-	 * Download a file that already exists:
-	 *
-	 *     $request->send_file('media/packages/kohana.zip');
-	 *
-	 * Download generated content as a file:
-	 *
-	 *     $request->response = $content;
-	 *     $request->send_file(TRUE, $filename);
-	 *
-	 * [!!] No further processing can be done after this method is called!
-	 *
-	 * @param   string   filename with path, or TRUE for the current response
-	 * @param   string   downloaded file name
-	 * @param   array    additional options
-	 * @return  void
-	 * @throws  Kohana_Exception
-	 * @uses    File::mime_by_ext
-	 * @uses    File::mime
-	 * @uses    Request::send_headers
-	 */
-	public function send_file($filename, $download = NULL, array $options = NULL)
-	{
-		if ( ! empty($options['mime_type']))
-		{
-			// The mime-type has been manually set
-			$mime = $options['mime_type'];
-		}
-
-		if ($filename === TRUE)
-		{
-			if (empty($download))
-			{
-				throw new Kohana_Exception('Download name must be provided for streaming files');
-			}
-
-			// Temporary files will automatically be deleted
-			$options['delete'] = FALSE;
-
-			if ( ! isset($mime))
-			{
-				// Guess the mime using the file extension
-				$mime = File::mime_by_ext(strtolower(pathinfo($download, PATHINFO_EXTENSION)));
-			}
-
-			// Force the data to be rendered if 
-			$file_data = (string) $this->response;
-
-			// Get the content size
-			$size = strlen($file_data);
-
-			// Create a temporary file to hold the current response
-			$file = tmpfile();
-
-			// Write the current response into the file
-			fwrite($file, $file_data);
-
-			// Prepare the file for reading
-			fseek($file, 0);
-
-			// File data is no longer needed
-			unset($file_data);
-		}
-		else
-		{
-			// Get the complete file path
-			$filename = realpath($filename);
-
-			if (empty($download))
-			{
-				// Use the file name as the download file name
-				$download = pathinfo($filename, PATHINFO_BASENAME);
-			}
-
-			// Get the file size
-			$size = filesize($filename);
-
-			if ( ! isset($mime))
-			{
-				// Get the mime type
-				$mime = File::mime($filename);
-			}
-
-			// Open the file for reading
-			$file = fopen($filename, 'rb');
-		}
-
-		// Inline or download?
-		$disposition = empty($options['inline']) ? 'attachment' : 'inline';
-
-		// Set the headers for a download
-		$this->headers['Content-Disposition'] = $disposition.'; filename="'.$download.'"';
-		$this->headers['Content-Type']        = $mime;
-		$this->headers['Content-Length']      = $size;
-
-		if ( ! empty($options['resumable']))
-		{
-			// @todo: ranged download processing
-		}
-
-		// Send all headers now
-		$this->send_headers();
-
-		while (ob_get_level())
-		{
-			// Flush all output buffers
-			ob_end_flush();
-		}
-
-		// Manually stop execution
-		ignore_user_abort(TRUE);
-
-		// Keep the script running forever
-		set_time_limit(0);
-
-		// Send data in 16kb blocks
-		$block = 1024 * 16;
-
-		while ( ! feof($file))
-		{
-			if (connection_aborted())
-				break;
-
-			// Output a block of the file
-			echo fread($file, $block);
-
-			// Send the data now
-			flush();
-		}
-
-		// Close the file
-		fclose($file);
-
-		if ( ! empty($options['delete']))
-		{
-			try
-			{
-				// Attempt to remove the file
-				unlink($filename);
-			}
-			catch (Exception $e)
-			{
-				// Create a text version of the exception
-				$error = Kohana::exception_text($e);
-
-				if (is_object(Kohana::$log))
-				{
-					// Add this exception to the log
-					Kohana::$log->add(Kohana::ERROR, $error);
-
-					// Make sure the logs are written
-					Kohana::$log->write();
-				}
-
-				// Do NOT display the exception, it will corrupt the output!
-			}
-		}
-
-		// Stop execution
-		exit;
-	}
-
-	/**
 	 * Processes the request, executing the controller action that handles this
 	 * request, determined by the [Route].
 	 *
@@ -1126,7 +971,7 @@ class Kohana_Request {
 	 * request response.
 	 *
 	 *     $etag = $request->generate_etag();
-	 * 
+	 *
 	 * [!!] If the request response is empty when this method is called, an
 	 * exception will be thrown!
 	 *

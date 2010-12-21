@@ -5,8 +5,8 @@
  * @package    Kohana
  * @category   Security
  * @author     Kohana Team
- * @copyright  (c) 2007-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2007-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Security {
 
@@ -25,7 +25,7 @@ class Kohana_Security {
 	 *
 	 *     echo Form::hidden('csrf', Security::token());
 	 *
-	 * And then check it when using [Validate]:
+	 * And then check it when using [Validation]:
 	 *
 	 *     $array->rules('csrf', array(
 	 *         'not_empty'       => NULL,

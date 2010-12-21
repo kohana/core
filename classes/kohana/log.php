@@ -7,26 +7,28 @@
  * @package    Kohana
  * @category   Logging
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Log {
 
 	/**
-	 * Timestamp format for log entries
-	 * @var string
+	 * @var  string  timestamp format for log entries
 	 */
 	public static $timestamp = 'Y-m-d H:i:s';
 
 	/**
-	 * Timezone for log entries
-	 * @var string
+	 * @var  string  timezone for log entries
 	 */
 	public static $timezone;
 
 	/**
-	 * Singleton instance container
-	 * @var Kohana_Log
+	 * @var  boolean  immediately write when logs are added
+	 */
+	public static $write_on_add = FALSE;
+
+	/**
+	 * @var  Kohana_Log  Singleton instance container
 	 */
 	private static $_instance;
 
@@ -122,6 +124,12 @@ class Kohana_Log {
 			'type' => $type,
 			'body' => $message,
 		);
+
+		if (self::$write_on_add)
+		{
+			// Write logs as they are added
+			$this->write();
+		}
 
 		return $this;
 	}

@@ -8,10 +8,10 @@
  * @package    Unittest
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
-Class Kohana_HTMLTest extends Kohana_Unittest_TestCase
+Class Kohana_HTMLTest extends Unittest_TestCase
 {	
 	protected $environmentDefault = array(
 		'Kohana::$base_url' => '/kohana/',

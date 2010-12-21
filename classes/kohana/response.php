@@ -16,10 +16,10 @@ class Kohana_Response implements Serializable {
 	/**
 	 * Factory method to create a new [Response]. Pass properties
 	 * in using an associative array.
-	 * 
+	 *
 	 *      // Create a new response
 	 *      $response = Response::factory();
-	 * 
+	 *
 	 *      // Create a new response with headers
 	 *      $response = Response::factory(array('status' => 200));
 	 *
@@ -34,14 +34,14 @@ class Kohana_Response implements Serializable {
 	/**
 	 * Generates a [Cache-Control HTTP](http://en.wikipedia.org/wiki/List_of_HTTP_headers)
 	 * header based on the supplied array.
-	 * 
+	 *
 	 *     // Set the cache control headers you want to use
 	 *     $cache_control = array(
 	 *         'max-age'          => 3600,
 	 *         'must-revalidate'  => NULL,
 	 *         'public'           => NULL
 	 *     );
-	 *     
+	 *
 	 *     // Create the cache control header, creates :
 	 *     // Cache-Control: max-age=3600, must-revalidate, public
 	 *     $response->headers['Cache-Control'] = Response::create_cache_control($cache_control);
@@ -70,7 +70,7 @@ class Kohana_Response implements Serializable {
 	 *
 	 *     // Create the cache control header
 	 *     $response->headers['Cache-Control'] = 'max-age=3600, must-revalidate, public';
-	 *     
+	 *
 	 *     // Parse the cache control header
 	 *     if($cache_control = Request::parse_cache_control($response->headers))
 	 *     {
@@ -78,7 +78,7 @@ class Kohana_Response implements Serializable {
 	 *          $maxage = $cache_control['max-age'];
 	 *     }
 	 *
-	 * @param   array    headers 
+	 * @param   array    headers
 	 * @return  boolean|array
 	 * @since   3.1.0
 	 */
@@ -194,7 +194,7 @@ class Kohana_Response implements Serializable {
 	/**
 	 * Sets up the response object
 	 *
-	 * @param   array $config 
+	 * @param   array $config
 	 * @return  void
 	 */
 	public function __construct(array $config = array())
@@ -209,6 +209,12 @@ class Kohana_Response implements Serializable {
 
 		// Add the default Content-Type header if required
 		$this->headers += array('Content-Type' => 'text/html; charset='.Kohana::$charset);
+
+		// Add the X-Powered-By header
+		if (Kohana::$expose)
+		{
+			$this->headers += array('X-Powered-By' => 'Kohana Framework '.Kohana::VERSION);
+		}
 	}
 
 	/**
@@ -233,11 +239,11 @@ class Kohana_Response implements Serializable {
 
 	/**
 	 * Sets or gets the HTTP status from this response.
-	 * 
+	 *
 	 *      // Set the HTTP status to 404 Not Found
 	 *      $response = Response::factory()
 	 *              ->status(404);
-	 * 
+	 *
 	 *      // Get the current status
 	 *      $status = $response->status();
 	 *
@@ -265,21 +271,21 @@ class Kohana_Response implements Serializable {
 	 * Gets and sets headers to the [Response], allowing chaining
 	 * of response methods. If chaining isn't required, direct
 	 * access to the property should be used instead.
-	 * 
+	 *
 	 *       // Get a header
 	 *       $accept = $response->headers('Content-Type');
-	 * 
+	 *
 	 *       // Set a header
 	 *       $response->headers('Content-Type', 'text/html');
-	 * 
+	 *
 	 *       // Get all headers
 	 *       $headers = $response->headers();
-	 * 
+	 *
 	 *       // Set multiple headers
 	 *       $response->headers(array('Content-Type' => 'text/html', 'Cache-Control' => 'no-cache'));
 	 *
-	 * @param string $key 
-	 * @param string $value 
+	 * @param string $key
+	 * @param string $value
 	 * @return void
 	 */
 	public function headers($key = NULL, $value = NULL)
@@ -307,9 +313,9 @@ class Kohana_Response implements Serializable {
 	/**
 	 * Sets a cookie to the response
 	 *
-	 * @param   string   name 
-	 * @param   string   value 
-	 * @param   int      expiration 
+	 * @param   string   name
+	 * @param   string   value
+	 * @param   int      expiration
 	 * @return  self
 	 */
 	public function set_cookie($name, $value, $expiration = NULL)
@@ -334,8 +340,8 @@ class Kohana_Response implements Serializable {
 	/**
 	 * Returns a cookie by name
 	 *
-	 * @param   string $name 
-	 * @param   string $default 
+	 * @param   string $name
+	 * @param   string $default
 	 * @return  mixed
 	 */
 	public function get_cookie($name, $default = NULL)
@@ -356,7 +362,7 @@ class Kohana_Response implements Serializable {
 	/**
 	 * Deletes a cookie set to the response
 	 *
-	 * @param   string   name 
+	 * @param   string   name
 	 * @return  self
 	 */
 	public function delete_cookie($name)
@@ -435,11 +441,27 @@ class Kohana_Response implements Serializable {
 	 * ----------|-----------|------------------------------------|--------------
 	 * `boolean` | inline    | Display inline instead of download | `FALSE`
 	 * `string`  | mime_type | Manual mime type                   | Automatic
+	 * `boolean` | delete    | Delete the file after sending      | `FALSE`
+	 *
+	 * Download a file that already exists:
+	 *
+	 *     $request->send_file('media/packages/kohana.zip');
+	 *
+	 * Download generated content as a file:
+	 *
+	 *     $request->response = $content;
+	 *     $request->send_file(TRUE, $filename);
+	 *
+	 * [!!] No further processing can be done after this method is called!
 	 *
 	 * @param   string   filename with path, or TRUE for the current response
-	 * @param   string   download file name
+	 * @param   string   downloaded file name
 	 * @param   array    additional options
 	 * @return  void
+	 * @throws  Kohana_Exception
+	 * @uses    File::mime_by_ext
+	 * @uses    File::mime
+	 * @uses    Request::send_headers
 	 */
 	public function send_file($filename, $download = NULL, array $options = NULL)
 	{
@@ -456,23 +478,29 @@ class Kohana_Response implements Serializable {
 				throw new Kohana_Exception('Download name must be provided for streaming files');
 			}
 
+			// Temporary files will automatically be deleted
+			$options['delete'] = FALSE;
+
 			if ( ! isset($mime))
 			{
 				// Guess the mime using the file extension
-				$mime = File::mime_by_ext($download);
+				$mime = File::mime_by_ext(strtolower(pathinfo($download, PATHINFO_EXTENSION)));
 			}
 
+			// Force the data to be rendered if
+			$file_data = (string) $this->response;
+
 			// Get the content size
-			$size = strlen($this->response);
+			$size = strlen($file_data);
 
 			// Create a temporary file to hold the current response
 			$file = tmpfile();
 
 			// Write the current response into the file
-			fwrite($file, $this->response);
+			fwrite($file, $file_data);
 
-			// Prepare the file for reading
-			fseek($file, 0);
+			// File data is no longer needed
+			unset($file_data);
 		}
 		else
 		{
@@ -498,17 +526,51 @@ class Kohana_Response implements Serializable {
 			$file = fopen($filename, 'rb');
 		}
 
+		if ( ! is_resource($file))
+		{
+			throw new Kohana_Exception('Could not read file to send: :file', array(
+				':file' => $download,
+			));
+		}
+
 		// Inline or download?
 		$disposition = empty($options['inline']) ? 'attachment' : 'inline';
+
+		// Calculate byte range to download.
+		list($start, $end) = $this->_calculate_byte_range($size);
+
+		if ( ! empty($options['resumable']))
+		{
+			if($start > 0 OR $end < ($size - 1))
+			{
+				// Partial Content
+				$this->status = 206;
+			}
+
+			// Range of bytes being sent
+			$this->headers['Content-Range'] = 'bytes '.$start.'-'.$end.'/'.$size;
+			$this->headers['Accept-Ranges'] = 'bytes';
+		}
 
 		// Set the headers for a download
 		$this->headers['Content-Disposition'] = $disposition.'; filename="'.$download.'"';
 		$this->headers['Content-Type']        = $mime;
-		$this->headers['Content-Length']      = $size;
+		$this->headers['Content-Length']      = ($end - $start) + 1;
 
-		if ( ! empty($options['resumable']))
+		if (Request::user_agent('browser') === 'Internet Explorer')
 		{
-			// @todo: ranged download processing
+			// Naturally, IE does not act like a real browser...
+			if (Request::$protocol === 'https')
+			{
+				// http://support.microsoft.com/kb/316431
+				$this->headers['Pragma'] = $this->headers['Cache-Control'] = 'public';
+			}
+
+			if (version_compare(Request::user_agent('version'), '8.0', '>='))
+			{
+				// http://ajaxian.com/archives/ie-8-security
+				$this->headers['X-Content-Type-Options'] = 'nosniff';
+			}
 		}
 
 		// Send all headers now
@@ -523,16 +585,27 @@ class Kohana_Response implements Serializable {
 		// Manually stop execution
 		ignore_user_abort(TRUE);
 
-		// Keep the script running forever
-		set_time_limit(0);
+		if ( ! Kohana::$safe_mode)
+		{
+			// Keep the script running forever
+			set_time_limit(0);
+		}
 
 		// Send data in 16kb blocks
 		$block = 1024 * 16;
 
-		while ( ! feof($file))
+		fseek($file, $start);
+
+		while ( ! feof($file) AND ($pos = ftell($file)) <= $end)
 		{
 			if (connection_aborted())
 				break;
+
+			if ($pos + $block > $end)
+			{
+				// Don't read past the buffer.
+				$block = $end - $pos + 1;
+			}
 
 			// Output a block of the file
 			echo fread($file, $block);
@@ -544,8 +617,97 @@ class Kohana_Response implements Serializable {
 		// Close the file
 		fclose($file);
 
+		if ( ! empty($options['delete']))
+		{
+			try
+			{
+				// Attempt to remove the file
+				unlink($filename);
+			}
+			catch (Exception $e)
+			{
+				// Create a text version of the exception
+				$error = Kohana_Exception::text($e);
+
+				if (is_object(Kohana::$log))
+				{
+					// Add this exception to the log
+					Kohana::$log->add(Kohana::ERROR, $error);
+
+					// Make sure the logs are written
+					Kohana::$log->write();
+				}
+
+				// Do NOT display the exception, it will corrupt the output!
+			}
+		}
+
 		// Stop execution
 		exit;
+	}
+
+	/**
+	 * Parse the byte ranges from the HTTP_RANGE header used for
+	 * resumable downloads.
+	 *
+	 * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
+	 * @return array|FALSE
+	 */
+	protected function _parse_byte_range()
+	{
+		if ( ! isset($_SERVER['HTTP_RANGE']))
+		{
+			return FALSE;
+		}
+
+		// TODO, speed this up with the use of string functions.
+		preg_match_all('/(-?[0-9]++(?:-(?![0-9]++))?)(?:-?([0-9]++))?/', $_SERVER['HTTP_RANGE'], $matches, PREG_SET_ORDER);
+
+		return $matches[0];
+	}
+
+	/**
+	 * Calculates the byte range to use with send_file. If HTTP_RANGE doesn't
+	 * exist then the complete byte range is returned
+	 *
+	 * @param  integer $size
+	 * @return array
+	 */
+	protected function _calculate_byte_range($size)
+	{
+		// Defaults to start with when the HTTP_RANGE header doesn't exist.
+		$start = 0;
+		$end = $size - 1;
+
+		if($range = $this->_parse_byte_range())
+		{
+			// We have a byte range from HTTP_RANGE
+			$start = $range[1];
+
+			if ($start[0] === '-')
+			{
+				// A negative value means we start from the end, so -500 would be the
+				// last 500 bytes.
+				$start = $size - abs($start);
+			}
+
+			if (isset($range[2]))
+			{
+				// Set the end range
+				$end = $range[2];
+			}
+		}
+
+		// Normalize values.
+		$start = abs(intval($start));
+
+		// Keep the the end value in bounds and normalize it.
+		$end = min(abs(intval($end)), $size - 1);
+
+		// Keep the start in bounds.
+		$start = $end < $start ? 0 : max($start, 0);
+
+		return array($start, $end);
 	}
 
 	/**

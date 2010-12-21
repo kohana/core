@@ -10,9 +10,9 @@
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
  * @copyright  (c) 2008-2010 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
-class Kohana_FileTest extends Kohana_Unittest_Testcase
+class Kohana_FileTest extends Unittest_TestCase
 {
 	/**
 	 * Provides test data for test_sanitize()

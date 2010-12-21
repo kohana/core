@@ -5,8 +5,8 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2007-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Date {
 
@@ -17,7 +17,11 @@ class Kohana_Date {
 	const DAY    = 86400;
 	const HOUR   = 3600;
 	const MINUTE = 60;
-	
+
+	// Available formats for Date::months()
+	const MONTHS_LONG  = '%B';
+	const MONTHS_SHORT = '%b';
+
 	/**
 	 * Default timestamp format for formatted_time
 	 * @var  string
@@ -27,7 +31,7 @@ class Kohana_Date {
 	/**
 	 * Timezone for formatted_time
 	 * @link http://uk2.php.net/manual/en/timezones.php
-	 * @var  string 
+	 * @var  string
 	 */
 	public static $timezone;
 
@@ -190,11 +194,15 @@ class Kohana_Date {
 		{
 			case 'am':
 				if ($hour == 12)
+				{
 					$hour = 0;
+				}
 			break;
 			case 'pm':
 				if ($hour < 12)
+				{
 					$hour += 12;
+				}
 			break;
 		}
 
@@ -246,14 +254,42 @@ class Kohana_Date {
 	 * Number of months in a year. Typically used as a shortcut for generating
 	 * a list that can be used in a form.
 	 *
-	 *     Date::months(); // 01, 02, 03, ..., 10, 11, 12
+	 * By default a mirrored array of $month_number => $month_number is returned
+	 *
+	 *     Date::months();
+	 *     // aray(1 => 1, 2 => 2, 3 => 3, ..., 12 => 12)
+	 *
+	 * But you can customise this by passing in either Date::MONTHS_LONG
+	 *
+	 *     Date::months(Date::MONTHS_LONG);
+	 *     // array(1 => 'January', 2 => 'February', ..., 12 => 'December')
+	 *
+	 * Or Date::MONTHS_SHORT
+	 *
+	 *     Date::months(Date::MONTHS_SHORT);
+	 *     // array(1 => 'Jan', 2 => 'Feb', ..., 12 => 'Dec')
 	 *
 	 * @uses    Date::hours
-	 * @return  array  A mirrored (foo => foo) array from 1-12.
+	 * @param   string The format to use for months
+	 * @return  array  An array of months based on the specified format
 	 */
-	public static function months()
+	public static function months($format = NULL)
 	{
-		return Date::hours();
+		$months = array();
+
+		if ($format === DATE::MONTHS_LONG OR $format === DATE::MONTHS_SHORT)
+		{
+			for ($i = 1; $i <= 12; ++$i)
+			{
+				$months[$i] = strftime($format, mktime(0, 0, 0, $i, 1));
+			}
+		}
+		else
+		{
+			$months = Date::hours();
+		}
+
+		return $months;
 	}
 
 	/**
@@ -270,8 +306,8 @@ class Kohana_Date {
 	public static function years($start = FALSE, $end = FALSE)
 	{
 		// Default values
-		$start = ($start === FALSE) ? date('Y') - 5 : (int) $start;
-		$end   = ($end   === FALSE) ? date('Y') + 5 : (int) $end;
+		$start = ($start === FALSE) ? (date('Y') - 5) : (int) $start;
+		$end   = ($end   === FALSE) ? (date('Y') + 5) : (int) $end;
 
 		$years = array();
 
@@ -300,7 +336,7 @@ class Kohana_Date {
 	public static function span($remote, $local = NULL, $output = 'years,months,weeks,days,hours,minutes,seconds')
 	{
 		// Normalize output
-		$output = trim(strtolower((string) $output));
+		$output = trim(strtolower( (string) $output));
 
 		if ( ! $output)
 		{
@@ -374,20 +410,25 @@ class Kohana_Date {
 
 	/**
 	 * Returns the difference between a time and now in a "fuzzy" way.
-	 * Note that unlike [Date::span], the "local" timestamp will always be the
-	 * current time. Displaying a fuzzy time instead of a date is usually
-	 * faster to read and understand.
+	 * Displaying a fuzzy time instead of a date is usually faster to read and understand.
 	 *
 	 *     $span = Date::fuzzy_span(time() - 10); // "moments ago"
 	 *     $span = Date::fuzzy_span(time() + 20); // "in moments"
 	 *
+	 * A second parameter is available to manually set the "local" timestamp,
+	 * however this parameter shouldn't be needed in normal usage and is only
+	 * included for unit tests
+	 *
 	 * @param   integer  "remote" timestamp
+	 * @param   integer  "local" timestamp, defaults to time()
 	 * @return  string
 	 */
-	public static function fuzzy_span($timestamp)
+	public static function fuzzy_span($timestamp, $local_timestamp = NULL)
 	{
+		$local_timestamp = ($local_timestamp === NULL) ? time() : (int) $local_timestamp;
+
 		// Determine the difference in seconds
-		$offset = abs(time() - $timestamp);
+		$offset = abs($local_timestamp - $timestamp);
 
 		if ($offset <= Date::MINUTE)
 		{
@@ -470,7 +511,7 @@ class Kohana_Date {
 			$span = 'a long time';
 		}
 
-		if ($timestamp <= time())
+		if ($timestamp <= $local_timestamp)
 		{
 			// This is in the past
 			return $span.' ago';
@@ -531,7 +572,7 @@ class Kohana_Date {
 
 		return mktime($hrs, $min, $sec, $mon, $day, $year + 1980);
 	}
-	
+
 	/**
 	 * Returns a date/time string with the specified timestamp format
 	 *
@@ -544,13 +585,13 @@ class Kohana_Date {
 	 */
 	public static function formatted_time($datetime_str = 'now', $timestamp_format = NULL, $timezone = NULL)
 	{
-		$timestamp_format = $timestamp_format == NULL ? Date::$timestamp_format : $timestamp_format;
-		$timezone         = $timezone === NULL ? Date::$timezone : $timezone;
-	
+		$timestamp_format = ($timestamp_format == NULL) ? Date::$timestamp_format : $timestamp_format;
+		$timezone         = ($timezone === NULL) ? Date::$timezone : $timezone;
+
 		$time = new DateTime($datetime_str, new DateTimeZone(
 			$timezone ? $timezone : date_default_timezone_get()
 		));
-		
+
 		return $time->format($timestamp_format);
 	}
 

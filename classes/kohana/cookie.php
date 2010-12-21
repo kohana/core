@@ -5,15 +5,15 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Cookie {
 
 	/**
 	 * @var  string  Magic salt to add to the cookie
 	 */
-	public static $salt = 'kooky';
+	public static $salt = NULL;
 
 	/**
 	 * @var  integer  Number of seconds before the cookie expires
@@ -146,6 +146,12 @@ class Kohana_Cookie {
 	 */
 	public static function salt($name, $value)
 	{
+		// Require a valid salt
+		if ( ! Cookie::$salt)
+		{
+			throw new Kohana_Exception('A valid cookie salt is required. Please set Cookie::$salt.');
+		}
+
 		// Determine the user agent
 		$agent = isset($_SERVER['HTTP_USER_AGENT']) ? strtolower($_SERVER['HTTP_USER_AGENT']) : 'unknown';
 

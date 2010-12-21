@@ -59,6 +59,7 @@ return array(
 		'OmniWeb'           => 'OmniWeb',
 		'Chrome'            => 'Chrome',
 		'Safari'            => 'Safari',
+		'CFNetwork'         => 'Safari', // Core Foundation for OSX, WebKit/Safari
 		'Konqueror'         => 'Konqueror',
 		'Epiphany'          => 'Epiphany',
 		'Galeon'            => 'Galeon',

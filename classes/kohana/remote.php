@@ -5,19 +5,10 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Remote {
-
-	// Default curl options
-	public static $default_options = array
-	(
-		CURLOPT_CONNECTTIMEOUT => 5,
-		CURLOPT_TIMEOUT        => 5,
-		CURLOPT_HEADERFUNCTION => array('Remote', '_parse_headers'),
-		CURLOPT_HEADER         => FALSE,
-	);
 
 	/**
 	 * @var     array  Headers from the request
@@ -74,20 +65,22 @@ class Kohana_Remote {
 		// Reset the headers
 		Remote::$_headers = array();
 
+		// Load the default remote settings
+		$defaults = Kohana::config('remote')->as_array();
+
 		if ($options === NULL)
 		{
 			// Use default options
-			$options = Remote::$default_options;
+			$options = $defaults;
 		}
 		else
 		{
 			// Add default options
-			$options = $options + Remote::$default_options;
+			$options = $options + $defaults;
 		}
 
 		// The transfer must always be returned
 		$options[CURLOPT_RETURNTRANSFER] = TRUE;
-		$options[CURLOPT_USERAGENT]      = 'Mozilla/5.0 (compatible; Kohana v'.Kohana::VERSION.' +http://kohanaphp.com/)';
 
 		// Open a new remote connection
 		$remote = curl_init($url);
@@ -158,19 +151,19 @@ class Kohana_Remote {
 			return FALSE;
 
 		// Set CRLF
-		$CRLF = "\r\n";
+		$line_feed = "\r\n";
 
 		// Send request
-		fwrite($remote, 'HEAD '.$url['path'].' HTTP/1.0'.$CRLF);
-		fwrite($remote, 'Host: '.$url['host'].$CRLF);
-		fwrite($remote, 'Connection: close'.$CRLF);
-		fwrite($remote, 'User-Agent: Kohana Framework (+http://kohanaphp.com/)'.$CRLF);
+		fwrite($remote, 'HEAD '.$url['path'].' HTTP/1.0'.$line_feed);
+		fwrite($remote, 'Host: '.$url['host'].$line_feed);
+		fwrite($remote, 'Connection: close'.$line_feed);
+		fwrite($remote, 'User-Agent: Kohana Framework (+http://kohanaframework.org/)'.$line_feed);
 
 		foreach ($http_headers as $name => $value)
 			fwrite($remote, $name.': '.$value.$CRLF);
 
 		// Send one more CRLF to terminate the headers
-		fwrite($remote, $CRLF);
+		fwrite($remote, $line_feed);
 
 		// Remote is offline
 		$response = FALSE;

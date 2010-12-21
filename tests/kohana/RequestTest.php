@@ -8,10 +8,10 @@
  * @package    Unittest
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
-class Kohana_RequestTest extends Kohana_Unittest_TestCase
+class Kohana_RequestTest extends Unittest_TestCase
 {
 	/**
 	 * Route::matches() should return false if the route doesn't match against a uri
