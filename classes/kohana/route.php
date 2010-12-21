@@ -316,6 +316,8 @@ class Kohana_Route {
 		if ( ! is_string($uri) AND is_callable($uri))
 		{
 			$this->_callback = $uri;
+			$this->_uri = $regex;
+			$regex = NULL;
 		}
 		elseif ( ! empty($uri))
 		{
@@ -384,27 +386,28 @@ class Kohana_Route {
 		if ($this->_callback)
 		{
 			$closure = $this->_callback;
-			$results = call_user_func($closure, $uri);
+			$params = call_user_func($closure, $uri);
 
-			$this->_uri = arr::get($results, 'uri', '');
-			unset($results['uri']);
-			return $results;
+			if ( ! is_array($params))
+				return FALSE;
 		}
-
-		if ( ! preg_match($this->_route_regex, $uri, $matches))
-			return FALSE;
-
-		$params = array();
-		foreach ($matches as $key => $value)
+		else
 		{
-			if (is_int($key))
-			{
-				// Skip all unnamed keys
-				continue;
-			}
+			if ( ! preg_match($this->_route_regex, $uri, $matches))
+				return FALSE;
 
-			// Set the value for all matched keys
-			$params[$key] = $value;
+			$params = array();
+			foreach ($matches as $key => $value)
+			{
+				if (is_int($key))
+				{
+					// Skip all unnamed keys
+					continue;
+				}
+
+				// Set the value for all matched keys
+				$params[$key] = $value;
+			}
 		}
 
 		foreach ($this->_defaults as $key => $value)
