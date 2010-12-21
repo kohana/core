@@ -121,12 +121,10 @@ class Kohana_Request_Client_Internal extends Request_Client {
 				Profiler::delete($benchmark);
 			}
 
+			// If exception was due to reflection, most likely to be 404
 			if ($e instanceof ReflectionException)
 			{
-				$response = $request->create_response();
-
-				// Reflection will throw exceptions for missing classes or actions
-				$response->status(404);
+				throw new Kohana_Http_Exception_404;
 			}
 
 			// Re-throw the exception
