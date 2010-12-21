@@ -30,14 +30,10 @@ class Kohana_Http_Exception extends Kohana_Exception {
 			$code = $this->_code;
 		}
 
-		parent::__construct($message, $variables, $code);
+		if ( ! isset(Response::$messages[$code]))
+			throw new Kohana_Exception('Unrecognized HTTP status code: :code . Only valid HTTP status codes are acceptable, see RFC 2616.', array(':code' => $code));
 
-		// Create view
-		$this->_http_view = new View($this->_http_view, array(
-			'http_code'    => $code,
-			'http_status'  => isset(Response::$messages[$code]) ? Response::$messages[$code] : $code,
-			'message'      => $message
-		));
+		parent::__construct($message, $variables, $code);
 	}
 
 	/**
@@ -62,7 +58,16 @@ class Kohana_Http_Exception extends Kohana_Exception {
 	public function render()
 	{
 		// Create response
+
 		$response = Request::initial()->create_response();
+		// Create view
+		$this->_http_view = new View($this->_http_view, array(
+			'http_code'    => $code,
+			'http_status'  => Response::$messages[$code],
+			'message'      => $message
+		));
+
+		// Return the response with variables applied
 		return $response->status($this->getCode())
 			->body($this->_http_view->render());
 	}
