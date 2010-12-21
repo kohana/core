@@ -334,16 +334,6 @@ class Kohana_Route {
 	}
 
 	/**
-	 * Determines if this route is a lamba/callback route
-	 * 
-	 * @return bool
-	 */
-	public function has_callback()
-	{
-		return isset($this->_callback);
-	}
-
-	/**
 	 * Provides default values for keys when they are not present. The default
 	 * action will always be "index" unless it is overloaded here.
 	 *
