@@ -211,7 +211,7 @@ class Kohana_RouteTest extends Kohana_Unittest_TestCase
 
 		$matches = $route->matches('welcome/index');
 
-		$this->assertType('array', $matches);
+		$this->assertInternalType('array', $matches);
 		$this->assertArrayHasKey('controller', $matches);
 		$this->assertArrayHasKey('action', $matches);
 		$this->assertArrayNotHasKey('id', $matches);
@@ -234,7 +234,7 @@ class Kohana_RouteTest extends Kohana_Unittest_TestCase
 
 		$matches = $route->matches('');
 
-		$this->assertType('array', $matches);
+		$this->assertInternalType('array', $matches);
 		$this->assertArrayHasKey('controller', $matches);
 		$this->assertArrayHasKey('action', $matches);
 		$this->assertArrayNotHasKey('id', $matches);
@@ -263,11 +263,11 @@ class Kohana_RouteTest extends Kohana_Unittest_TestCase
 
 		$matches = $route->matches('admin');
 
-		$this->assertType('array', $matches);
+		$this->assertInternalType('array', $matches);
 
 		$matches = $route->matches('admin/users/add');
 
-		$this->assertType('array', $matches);
+		$this->assertInternalType('array', $matches);
 		$this->assertSame(2, count($matches));
 		$this->assertArrayHasKey('controller', $matches);
 		$this->assertArrayHasKey('action', $matches);
@@ -309,7 +309,7 @@ class Kohana_RouteTest extends Kohana_Unittest_TestCase
 		}
 		catch(Exception $e)
 		{
-			$this->assertType('Kohana_Exception', $e);
+			$this->assertInstanceOf('Kohana_Exception', $e);
 			// Check that the error in question is about the controller param
 			$this->assertContains('controller', $e->getMessage());
 		}
