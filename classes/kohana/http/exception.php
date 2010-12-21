@@ -57,8 +57,10 @@ class Kohana_Http_Exception extends Kohana_Exception {
 	 */
 	public function render()
 	{
-		// Create response
+		$code = $this->getCode();
+		$message = $this->getMessage();
 
+		// Create response
 		$response = Request::initial()->create_response();
 		// Create view
 		$this->_http_view = new View($this->_http_view, array(
