@@ -13,4 +13,4 @@
 <p><em><?php echo ('Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')'); ?></em></p>
 <?php endif; ?>
 <body>
-<html>
+</html>
