@@ -60,8 +60,14 @@ class Kohana_Http_Exception extends Kohana_Exception {
 		$code = $this->getCode();
 		$message = $this->getMessage();
 
+		// In some edge cases, Request::current() may be NULL
+		if ( ! ($request = Request::current()) instanceof Request)
+		{
+			$request = Request::initial();
+		}
+
 		// Create response
-		$response = Request::current()->create_response();
+		$response = $request->create_response();
 		// Create view
 		$this->_http_view = new View($this->_http_view, array(
 			'http_code'    => $code,
