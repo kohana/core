@@ -209,7 +209,7 @@ abstract class Kohana_Request_Client {
 		{
 			if ($pragma instanceof Http_Header_Value and $pragma->key == 'no-cache')
 				return FALSE;
-			else if (is_array($pragma) and isset($pragma['no-cache']))
+			elseif (is_array($pragma) and isset($pragma['no-cache']))
 				return FALSE;
 		}
 

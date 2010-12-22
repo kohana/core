@@ -262,7 +262,7 @@ class Kohana_Request implements Http_Request {
 	 *
 	 * When using an array for the value, an associative array will be returned.
 	 *
-	 * @param   mixed   string to return: browser, version, robot, mobile, platform; or array of values
+	 * @param   mixed   $value String to return: browser, version, robot, mobile, platform; or array of values
 	 * @return  mixed   requested information, FALSE if nothing is found
 	 * @uses    Kohana::config
 	 * @uses    Request::$user_agent
@@ -341,9 +341,8 @@ class Kohana_Request implements Http_Request {
 	 *
 	 *     $types = Request::accept_type();
 	 *
-	 * @param   string  content MIME type
-	 * @return  float   when checking a specific type
-	 * @return  array
+	 * @param   string  $type Content MIME type
+	 * @return  mixed   An array of all types or a specific type as a string
 	 * @uses    Request::_parse_accept
 	 */
 	public static function accept_type($type = NULL)
@@ -372,9 +371,8 @@ class Kohana_Request implements Http_Request {
 	 *
 	 *     $langs = Request::accept_lang();
 	 *
-	 * @param   string  language code
-	 * @return  float   when checking a specific language
-	 * @return  array
+	 * @param   string  $lang  Language code
+	 * @return  mixed   An array of all types or a specific type as a string
 	 * @uses    Request::_parse_accept
 	 */
 	public static function accept_lang($lang = NULL)
@@ -403,9 +401,8 @@ class Kohana_Request implements Http_Request {
 	 *
 	 *     $encodings = Request::accept_encoding();
 	 *
-	 * @param   string  encoding type
-	 * @return  float   when checking a specific encoding
-	 * @return  array
+	 * @param   string  $type Encoding type
+	 * @return  mixed   An array of all types or a specific type as a string
 	 * @uses    Request::_parse_accept
 	 */
 	public static function accept_encoding($type = NULL)
@@ -433,8 +430,8 @@ class Kohana_Request implements Http_Request {
 	 *
 	 *     $accept = Request::_parse_accept($header, $defaults);
 	 *
-	 * @param   string   header to parse
-	 * @param   array    default values
+	 * @param   string   $header   Header to parse
+	 * @param   array    $accepts  Default values
 	 * @return  array
 	 */
 	protected static function _parse_accept( & $header, array $accepts = NULL)
@@ -576,7 +573,8 @@ class Kohana_Request implements Http_Request {
 	 *
 	 *     $request = new Request($uri);
 	 *
-	 * @param   string  URI of the request
+	 * @param   string  $uri URI of the request
+	 * @param   Cache   $cache
 	 * @return  void
 	 * @throws  Kohana_Request_Exception
 	 * @uses    Route::all
@@ -676,7 +674,7 @@ class Kohana_Request implements Http_Request {
 	 *
 	 *     $request->uri($params);
 	 *
-	 * @param   array   additional route parameters
+	 * @param   array   $params  Additional route parameters
 	 * @return  string
 	 * @uses    Route::uri
 	 */
@@ -714,9 +712,8 @@ class Kohana_Request implements Http_Request {
 	 *
 	 *     echo URL::site($this->request->uri($params), $protocol);
 	 *
-	 * @param   string   route name
-	 * @param   array    URI parameters
-	 * @param   mixed    protocol string or boolean, adds protocol and domain
+	 * @param   array    $params    URI parameters
+	 * @param   mixed    $protocol  protocol string or Request object
 	 * @return  string
 	 * @since   3.0.7
 	 * @uses    URL::site
@@ -732,8 +729,8 @@ class Kohana_Request implements Http_Request {
 	 *
 	 *     $id = $request->param('id');
 	 *
-	 * @param   string   key of the value
-	 * @param   mixed    default value if the key is not set
+	 * @param   string   $key      Key of the value
+	 * @param   mixed    $default  Default value if the key is not set
 	 * @return  mixed
 	 */
 	public function param($key = NULL, $default = NULL)
@@ -755,8 +752,8 @@ class Kohana_Request implements Http_Request {
 	 *
 	 * [!!] No further processing can be done after this method is called!
 	 *
-	 * @param   string   redirect location
-	 * @param   integer  status code: 301, 302, etc
+	 * @param   string   $url   Redirect location
+	 * @param   integer  $code  Status code: 301, 302, etc
 	 * @return  void
 	 * @uses    URL::site
 	 * @uses    Request::send_headers
@@ -789,8 +786,7 @@ class Kohana_Request implements Http_Request {
 	 * Sets and gets the referrer from the request.
 	 *
 	 * @param   string $referrer
-	 * @return  string
-	 * @return  Request
+	 * @return  mixed
 	 */
 	public function referrer($referrer = NULL)
 	{
@@ -804,9 +800,8 @@ class Kohana_Request implements Http_Request {
 	/**
 	 * Sets and gets the directory for the controller.
 	 *
-	 * @param   string   directory to execute the controller from
-	 * @return  void
-	 * @return  Request
+	 * @param   string   $directory  Directory to execute the controller from
+	 * @return  mixed
 	 */
 	public function directory($directory = NULL)
 	{
@@ -820,9 +815,8 @@ class Kohana_Request implements Http_Request {
 	/**
 	 * Sets and gets the controller for the matched route.
 	 *
-	 * @param   string   controller to execute the action
-	 * @return  void
-	 * @return  Request
+	 * @param   string   $controller  Controller to execute the action
+	 * @return  mixed
 	 */
 	public function controller($controller = NULL)
 	{
@@ -836,9 +830,8 @@ class Kohana_Request implements Http_Request {
 	/**
 	 * Sets and gets the action for the controller.
 	 *
-	 * @param   string   action to execute the controller from
-	 * @return  void
-	 * @return  Request
+	 * @param   string   $action  Action to execute the controller from
+	 * @return  mixed
 	 */
 	public function action($action = NULL)
 	{
@@ -854,7 +847,7 @@ class Kohana_Request implements Http_Request {
 	 * useful for accessing the caching methods within the
 	 * request client.
 	 *
-	 * @return  Kohana_Request_Client
+	 * @return  Request_Client
 	 */
 	public function get_client()
 	{
@@ -876,7 +869,7 @@ class Kohana_Request implements Http_Request {
 	 *
 	 *     $request->execute();
 	 *
-	 * @return  $this
+	 * @return  Response
 	 * @throws  Kohana_Exception
 	 * @uses    [Kohana::$profiling]
 	 * @uses    [Profiler]
@@ -916,7 +909,7 @@ class Kohana_Request implements Http_Request {
 	/**
 	 * Set or get the response for this request
 	 *
-	 * @param   Response  response to apply to this request
+	 * @param   Response  $response  Response to apply to this request
 	 * @return  Response
 	 * @return  void
 	 */
@@ -937,8 +930,8 @@ class Kohana_Request implements Http_Request {
 	 *      // Create a response to the request
 	 *      $response = $request->create_response();
 	 *
-	 * @param   boolean  bind to this request
-	 * @return  Kohana_Response
+	 * @param   boolean  $bind  Bind to this request
+	 * @return  Response
 	 * @since   3.1.0
 	 */
 	public function create_response($bind = TRUE)
@@ -958,8 +951,8 @@ class Kohana_Request implements Http_Request {
 	 *
 	 * [!!] If the cache check succeeds, no further processing can be done!
 	 *
-	 * @param   string  etag to check
-	 * @return  $this
+	 * @param   string  $etag  Etag to check
+	 * @return  Request
 	 * @throws  Kohana_Request_Exception
 	 * @uses    Request::generate_etag
 	 */
@@ -997,9 +990,8 @@ class Kohana_Request implements Http_Request {
 	 * Gets or sets the Http method. Usually GET, POST, PUT or DELETE in
 	 * traditional CRUD applications.
 	 *
-	 * @param   string   method to use for this request
-	 * @return  string
-	 * @return  Kohana_Request
+	 * @param   string   $method  Method to use for this request
+	 * @return  mixed
 	 */
 	public function method($method = NULL)
 	{
@@ -1014,9 +1006,8 @@ class Kohana_Request implements Http_Request {
 	 * Gets or sets the HTTP protocol. The standard protocol to use
 	 * is `http`.
 	 *
-	 * @param   string   protocol to set to the request/response
-	 * @return  string
-	 * @return  Kohana_Request
+	 * @param   string   $protocol  Protocol to set to the request/response
+	 * @return  mixed
 	 */
 	public function protocol($protocol = NULL)
 	{
@@ -1040,8 +1031,8 @@ class Kohana_Request implements Http_Request {
 	 * transmission. This method provides a simple array or key/value
 	 * interface to the headers.
 	 *
-	 * @param   string|array   key or array of key/value pairs to set
-	 * @param   string         value to set to the supplied key
+	 * @param   mixed   $key   Key or array of key/value pairs to set
+	 * @param   string  $value Value to set to the supplied key
 	 * @return  mixed
 	 */
 	public function headers($key = NULL, $value = NULL)
@@ -1076,8 +1067,8 @@ class Kohana_Request implements Http_Request {
 	/**
 	 * Set and get cookies values for this request.
 	 *
-	 * @param   mixed     cookie name, or array of cookie values
-	 * @param   string    value to set to cookie
+	 * @param   mixed    $key    Cookie name, or array of cookie values
+	 * @param   string   $value  Value to set to cookie
 	 * @return  string
 	 * @return  [Request]
 	 */
@@ -1085,12 +1076,19 @@ class Kohana_Request implements Http_Request {
 	{
 		if ($key === NULL)
 			return $this->_cookies;
-		else if (is_array($key))
+
+		if (is_array($key))
+		{
 			$this->_cookies = $key;
-		else if ( ! $value)
+		}
+		elseif ( ! $value)
+		{
 			return Arr::get($this->_cookies, $key);
+		}
 		else
+		{
 			$this->_cookies[$key] = (string) $value;
+		}
 
 		return $this;
 	}
@@ -1099,9 +1097,8 @@ class Kohana_Request implements Http_Request {
 	 * Gets or sets the HTTP body to the request or response. The body is
 	 * included after the header, separated by a single empty new line.
 	 *
-	 * @param   string         content to set to the object
-	 * @return  string
-	 * @return  Kohana_Request
+	 * @param   string  $content Content to set to the object
+	 * @return  mixed
 	 */
 	public function body($content = NULL)
 	{
@@ -1122,7 +1119,7 @@ class Kohana_Request implements Http_Request {
 	 *  If there are variables set to the `Kohana_Request::$_post`
 	 *  they will override any values set to body.
 	 *
-	 * @param   boolean  return the rendered response, else returns the rendered request
+	 * @param   boolean  $response  Return the rendered response, else returns the rendered request
 	 * @return  string
 	 */
 	public function render($response = TRUE)
@@ -1154,7 +1151,7 @@ class Kohana_Request implements Http_Request {
 		{
 			$cookie_string = array();
 
-			// Parse each 
+			// Parse each
 			foreach ($this->_cookies as $key => $value)
 				$cookie_string[] = $key.'='.$value;
 
@@ -1172,8 +1169,8 @@ class Kohana_Request implements Http_Request {
 	/**
 	 * Gets or sets HTTP query string.
 	 *
-	 * @param   string|array key or key value pairs to set
-	 * @param   string   value to set to a key
+	 * @param   mixed   $key    Key or key value pairs to set
+	 * @param   string  $value  Value to set to a key
 	 * @return  mixed
 	 */
 	public function query($key = NULL, $value = NULL)
@@ -1200,8 +1197,8 @@ class Kohana_Request implements Http_Request {
 	/**
 	 * Gets or sets HTTP POST parameters to the request.
 	 *
-	 * @param   string|array key or key value pairs to set
-	 * @param   string   value to set to a key
+	 * @param   mixed  $key    Key or key value pairs to set
+	 * @param   string $value  Value to set to a key
 	 * @return  mixed
 	 */
 	public function post($key = NULL, $value = NULL)
@@ -1225,10 +1222,17 @@ class Kohana_Request implements Http_Request {
 		}
 	}
 
+	/**
+	 * Process URI
+	 *
+	 * @param   string  $uri     URI
+	 * @param   array   $routes  Route
+	 * @return  array
+	 */
 	public static function process_uri($uri, $routes = NULL)
 	{
 		// Load routes
-		$routes = $routes === NULL ? Route::all() : $routes;
+		$routes = ($routes === NULL) ? Route::all() : $routes;
 		$params = NULL;
 
 		foreach ($routes as $name => $route)

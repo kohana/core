@@ -343,12 +343,19 @@ class Kohana_Response implements Http_Response, Serializable {
 	{
 		if ($key === NULL)
 			return $this->_cookies;
-		else if (is_array($key))
+
+		if (is_array($key))
+		{
 			$this->_cookies = $key;
-		else if ( ! $value)
+		}
+		elseif ( ! $value)
+		{
 			return Arr::get($this->_cookies, $key);
+		}
 		else
+		{
 			$this->_cookies[$key] = (string) $value;
+		}
 
 		return $this;
 	}
@@ -691,7 +698,7 @@ class Kohana_Response implements Http_Response, Serializable {
 			{
 				$cookies = array();
 
-				// Parse each 
+				// Parse each
 				foreach ($this->_cookies as $key => $value)
 				{
 					$string = $key.'='.$value['value'].'; expires='.date('l, d M Y H:i:s T', $value['expiration']);
