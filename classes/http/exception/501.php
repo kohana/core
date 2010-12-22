@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Kohana_Http_Exception_501 extends Kohana_Http_Exception {
+class Http_Exception_501 extends Kohana_Http_Exception_501 {
 
 	/**
 	 * @var   integer    HTTP 501 Not Implemented
