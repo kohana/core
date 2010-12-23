@@ -19,8 +19,8 @@ class Kohana_Request_Client_External extends Request_Client {
 	 * Parses the returned headers from the remote
 	 * request
 	 *
-	 * @param   resource the curl resource
-	 * @param   string   the full header string
+	 * @param   resource $remote  The curl resource
+	 * @param   string   $header  The full header string
 	 * @return  int
 	 */
 	protected static function _parse_headers($remote, $header)
@@ -76,7 +76,7 @@ class Kohana_Request_Client_External extends Request_Client {
 	 *
 	 *     $request->execute();
 	 *
-	 * @param   Request
+	 * @param   Request $request A request object
 	 * @return  Response
 	 * @throws  Kohana_Exception
 	 * @uses    [Kohana::$profiling]
@@ -132,7 +132,9 @@ class Kohana_Request_Client_External extends Request_Client {
 
 		// Cache the response if cache is available
 		if ($this->_cache instanceof Cache)
+		{
 			$this->cache_response($request, $request->response());
+		}
 
 		// Return the response
 		return $request->response();
@@ -141,8 +143,8 @@ class Kohana_Request_Client_External extends Request_Client {
 	/**
 	 * Execute the request using the PECL HTTP extension. (recommended)
 	 *
-	 * @param   Request   request to execute
-	 * @return  void
+	 * @param   Request   $request Request to execute
+	 * @return  Response
 	 */
 	protected function _http_execute(Request $request)
 	{
@@ -190,8 +192,8 @@ class Kohana_Request_Client_External extends Request_Client {
 	/**
 	 * Execute the request using the CURL extension. (recommended)
 	 *
-	 * @param   Request   request to execute
-	 * @return  void
+	 * @param   Request   $request  Request to execute
+	 * @return  Response
 	 */
 	protected function _curl_execute(Request $request)
 	{
@@ -264,8 +266,8 @@ class Kohana_Request_Client_External extends Request_Client {
 	/**
 	 * Execute the request using PHP stream. (not recommended)
 	 *
-	 * @param   Request   request to execute
-	 * @return  void
+	 * @param   Request   $request  Request to execute
+	 * @return  Response
 	 */
 	protected function _native_execute(Request $request)
 	{

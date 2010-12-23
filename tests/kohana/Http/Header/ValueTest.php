@@ -92,7 +92,7 @@ Class Kohana_HTTP_Header_ValueTest extends Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_constructor_throws_exception_if_header_value_type_not_allowed
-	 * @expectedException Kohana_HTTP_Exception
+	 * @expectedException Kohana_Exception
 	 * @param mixed The header value to pass to the constructor
 	 */
 	public function test_constructor_throws_exception_if_header_value_type_not_allowed($header)
