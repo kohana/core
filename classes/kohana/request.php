@@ -97,7 +97,7 @@ class Kohana_Request implements Http_Request {
 				if (isset($_SERVER['HTTP_USER_AGENT']))
 				{
 					// Set the client user agent
-					$user_agent = $_SERVER['HTTP_USER_AGENT'];
+					Request::$user_agent = $_SERVER['HTTP_USER_AGENT'];
 				}
 
 				if (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
