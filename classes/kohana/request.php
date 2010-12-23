@@ -144,7 +144,6 @@ class Kohana_Request implements Http_Request {
 		if ( ! Request::$initial)
 		{
 			Request::$initial = $request;
-			Request::$current = $request;
 
 			$request->query($_GET)
 				->post($_POST);
