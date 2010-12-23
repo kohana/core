@@ -6,8 +6,8 @@
  * @package    Kohana
  * @category   Configuration
  * @author     Kohana Team
- * @copyright  (c) 2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2009-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 Class Kohana_Config_File_Reader implements Kohana_Config_Reader {
 
@@ -17,7 +17,6 @@ Class Kohana_Config_File_Reader implements Kohana_Config_Reader {
 	 */
 	protected $_directory = '';
 
-	
 	/**
 	 * Creates a new file reader using the given directory as a config source
 	 *
