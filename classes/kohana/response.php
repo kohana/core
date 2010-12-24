@@ -413,13 +413,16 @@ class Kohana_Response implements Http_Response, Serializable {
 				$this->_header['x-powered-by'] = 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
 			}
 
-			// Get the contents length
-			$content_length = $this->content_length();
-
-			// Add the content length if not set
-			if ( ! $this->_header->offsetExists('content-length') AND $content_length > 0)
+			// If in production, include the content length in the response
+			if (Kohana::$environment === Kohana::PRODUCTION)
 			{
-				$this->_header['content-length'] = (string) $content_length;
+				$content_length = $this->content_length();
+
+				// Set the content length for the body if required
+				if ($content_length > 0)
+				{
+					$this->_header['content-length'] = (string) $content_length;
+				}
 			}
 
 			// HTTP status line
