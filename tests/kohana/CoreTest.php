@@ -16,6 +16,7 @@
  */
 class Kohana_CoreTest extends Kohana_Unittest_TestCase
 {
+	
 	/**
 	 * Provides test data for test_sanitize()
 	 * 
@@ -363,7 +364,6 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_modules_sets_and_returns_valid_modules
-	 * @covers Kohana::modules
 	 * @param boolean $source   Input for Kohana::modules
 	 * @param boolean $expected Output for Kohana::modules
 	 */
@@ -371,7 +371,16 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	{
 		$modules = Kohana::modules();
 
-		$this->assertEquals($expected, Kohana::modules($source));
+		try
+		{
+			$this->assertEquals($expected, Kohana::modules($source));
+		}
+		catch(Exception $e)
+		{
+			Kohana::modules($modules);
+
+			throw $e;
+		}
 
 		Kohana::modules($modules);
 	}
