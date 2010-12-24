@@ -75,23 +75,30 @@ class Kohana_Request implements Http_Request {
 					// Use the server request method
 					$method = $_SERVER['REQUEST_METHOD'];
 				}
+				else
+				{
+					// Default to GET
+					$method = Http_Request::GET;
+				}
 
 				if ( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
 				{
 					// This request is secure
 					$protocol = 'https';
 				}
-
-				if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) AND strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+				else
 				{
-					// This request is an AJAX request
-					$is_ajax = TRUE;
+					$protocol = 'http';
 				}
 
 				if (isset($_SERVER['HTTP_REFERER']))
 				{
 					// There is a referrer for this request
 					$referrer = $_SERVER['HTTP_REFERER'];
+				}
+				else
+				{
+					$referrer = NULL;
 				}
 
 				if (isset($_SERVER['HTTP_USER_AGENT']))
@@ -132,13 +139,16 @@ class Kohana_Request implements Http_Request {
 
 			// Create the instance singleton
 			$request = new Request($uri, $cache);
-			$request->headers(Http::request_headers());
+			$request->headers(Http::request_headers())
+				->protocol($protocol)
+				->method($method)
+				->referrer($referrer);
+
+			// If there is a body, set it to the model
+			isset($body) and $request->body($body);
 		}
 		else
 			$request = new Request($uri, $cache);
-
-		// If there is a body, set it to the model
-		isset($body) and $request->body($body);
 
 		// Create the initial request if it does not exist
 		if ( ! Request::$initial)
