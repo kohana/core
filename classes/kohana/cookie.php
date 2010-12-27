@@ -132,7 +132,7 @@ class Kohana_Cookie {
 		unset($_COOKIE[$name]);
 
 		// Nullify the cookie and make it expire
-		return Cookie::set($name, NULL, -86400);
+		return setcookie($name, NULL, -86400, Cookie::$path, Cookie::$domain, Cookie::$secure, Cookie::$httponly);
 	}
 
 	/**
