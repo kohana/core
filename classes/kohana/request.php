@@ -42,7 +42,7 @@ class Kohana_Request implements Http_Request {
 				$protocol = 'cli';
 
 				// Get the command line options
-				$options = CLI::options('uri', 'method', 'get', 'post');
+				$options = CLI::options('uri', 'method', 'get', 'post', 'referrer');
 
 				if (isset($options['uri']))
 				{
@@ -55,6 +55,8 @@ class Kohana_Request implements Http_Request {
 					// Use the specified method
 					$method = strtoupper($options['method']);
 				}
+				else
+					$method = 'GET';
 
 				if (isset($options['get']))
 				{
@@ -67,6 +69,13 @@ class Kohana_Request implements Http_Request {
 					// Overload the global POST data
 					parse_str($options['post'], $_POST);
 				}
+
+				if (isset($options['referrer']))
+				{
+					$referrer = $options['referrer'];
+				}
+				else
+					$referrer = NULL;
 			}
 			else
 			{

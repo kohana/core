@@ -14,37 +14,97 @@
 class Kohana_RequestTest extends Unittest_TestCase
 {
 	/**
-	 * Setup
+	 * Provides the data for test_create()
+	 * @return  array
 	 */
-	public function setUp()
+	public function provider_create()
 	{
-		parent::setUp();
+		return array(
+			array('foo/bar', 'Request_Client_Internal'),
+			array('http://google.com', 'Request_Client_External'),
+		);
+	}
+	
+	/**
+	 * Ensures the create class is created with the correct client
+	 *
+	 * @test
+	 * @dataProvider provider_create
+	 */
+	public function test_create($uri, $client_class)
+	{
+		$request = Request::factory($uri);
+		$client = $request->get_client();
 
-		$this->markTestSkipped('Request tests need to be updated for new request class.');
+		$this->assertEquals(get_class($client), $client_class);
 	}
 
 	/**
-	 * Route::matches() should return false if the route doesn't match against a uri
+	 * Ensure that parameters can be read
 	 *
 	 * @test
 	 */
-	public function test_create()
+	public function test_param()
 	{
-		$request = Request::factory('foo/bar')->execute();
+		$uri = 'foo/bar';
+		$request = Request::factory($uri);
 
-		$this->assertEquals(200, $request->status);
-		$this->assertEquals('foo', $request->response);
+		$this->assertEquals($request->param('uri'), $uri);
+		$this->assertEquals(is_array($request->param()), TRUE);
+	}
 
-		try
-		{
-			$request = new Request('bar/foo');
-			$request->execute();
-		}
-		catch (Exception $e)
-		{
-			$this->assertEquals(TRUE, $e instanceof ReflectionException);
-			$this->assertEquals('404', $request->status);
-		}
+	/**
+	 * Provides data for Request::create_response()
+	 */
+	public function provider_create_response()
+	{
+		return array(
+			array('foo/bar', TRUE, TRUE),
+			array('foo/bar', FALSE, FALSE)
+		);
+	}
+
+	/**
+	 * Ensures a request creates an empty response, and binds correctly
+	 * 
+	 * @test
+	 * @dataProvider  provider_create_response
+	 */
+	public function test_create_response($uri, $bind, $equality)
+	{
+		$request = Request::factory($uri);
+		$response = $request->create_response($bind);
+
+		$this->assertEquals(($request->response() === $response), $equality);
+	}
+
+	/**
+	 * Tests Request::response()
+	 * 
+	 * @test
+	 */
+	public function test_response()
+	{
+		$request = Request::factory('foo/bar');
+		$response = $request->create_response(FALSE);
+
+		$this->assertEquals($request->response(), NULL);
+		$this->assertEquals(($request->response($response) === $request), TRUE);
+		$this->assertEquals(($request->response() === $response), TRUE);
+	}
+
+	/**
+	 * Tests Request::method()
+	 * 
+	 * @test
+	 */
+	public function test_method()
+	{
+		$request = Request::factory('foo/bar');
+
+		$this->assertEquals($request->method(), 'GET');
+		$this->assertEquals(($request->method('post') === $request), TRUE);
+		$this->assertEquals(($request->method() === 'POST'), TRUE);
 	}
 
 	/**
@@ -56,60 +116,6 @@ class Kohana_RequestTest extends Unittest_TestCase
 	public function test_accept_type()
 	{
 		$this->assertEquals(array('*/*' => 1), Request::accept_type());
-	}
-
-	/**
-	 * Provides test data for test_instance()
-	 *
-	 * @return array
-	 */
-	public function provider_instance()
-	{
-		return array(
-			// $route, $is_cli, $_server, $status, $response
-			array('foo/bar', TRUE, array(), 200, ''), // Shouldn't this be 'foo' ?
-			array('foo/foo', TRUE, array(), 200, ''), // Shouldn't this be a 404?
-			array(
-				'foo/bar',
-				FALSE,
-				array(
-					'REQUEST_METHOD' => 'get',
-					'HTTP_REFERER' => 'http://www.kohanaframework.org',
-					'HTTP_USER_AGENT' => 'Kohana Unit Test',
-					'REMOTE_ADDR' => '127.0.0.1',
-				), 200, ''), // Shouldn't this be 'foo' ?
-		);
-	}
-
-	/**
-	 * Tests Request::instance()
-	 *
-	 * @test
-	 * @dataProvider provider_instance
-	 * @covers Request::factory
-	 * @param boolean $value  Input for Kohana::sanitize
-	 * @param boolean $result Output for Kohana::sanitize
-	 */
-	public function test_instance($route, $is_cli, $server, $status, $response)
-	{
-		$this->setEnvironment(array(
-			'_SERVER'            => $server+array('argc' => $_SERVER['argc']),
-			'Kohana::$is_cli'    => $is_cli,
-			'Request::$instance' => NULL
-		));
-
-		$request = Request::factory($route);
-
-		$this->assertEquals($status, $request->status);
-		$this->assertEquals($response, $request->response);
-		$this->assertEquals($route, $request->uri);
-
-		if ( ! $is_cli)
-		{
-			$this->assertEquals($server['REQUEST_METHOD'], Request::$method);
-			$this->assertEquals($server['HTTP_REFERER'], Request::$referrer);
-			$this->assertEquals($server['HTTP_USER_AGENT'], Request::$user_agent);
-		}
 	}
 
 	/**
@@ -196,6 +202,6 @@ class Kohana_RequestTest extends Unittest_TestCase
 class Controller_Foo extends Controller {
 	public function action_bar()
 	{
-		$this->request->response = 'foo';
+		$this->response->body('foo');
 	}
 }
