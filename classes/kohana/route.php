@@ -66,11 +66,10 @@ class Kohana_Route {
 	 */
 	public static $cache = FALSE;
 
-	// List of route objects
+	/**
+	 * @var  array 
+	 */
 	protected static $_routes = array();
-
-	// The callback that will modify this route
-	protected $_callback;
 
 	/**
 	 * Stores a named route and returns it. The "action" will always be set to
@@ -248,6 +247,11 @@ class Kohana_Route {
 
 		return '#^'.$expression.'$#uD';
 	}
+
+	/**
+	 * @var  callback     The callback method for routes
+	 */
+	protected $_callback;
 
 	/**
 	 * @var  string  route URI
