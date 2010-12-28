@@ -133,11 +133,6 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 		try
 		{
-			if ( ! $initial_request)
-			{
-				$this->_init_environment($request);
-			}
-
 			// Initiate response time
 			$this->_response_time = time();
 
@@ -158,19 +153,9 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			{
 				$request->headers('content-type', Kohana::$content_type.'; charset='.Kohana::$charset);
 			}
-
-			if ( ! $initial_request)
-			{
-				$this->_deinit_environment();
-			}
 		}
 		catch (Exception $e)
 		{
-			if ( ! $initial_request)
-			{
-				$this->_deinit_environment();
-			}
-
 			// All other exceptions are PHP/server errors
 			$response = $request->create_response();
 			$response->status(500);
@@ -196,90 +181,4 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		// Return the response
 		return $request->response();
 	}
-
-	/**
-	 * Initialises the server environment variables
-	 * for this request execution.
-	 *
-	 * - Stores _GET, _POST and select _SERVER vars
-	 * - Replaces _GET, _POST and select _SERVER vars
-	 *
-	 * @param   Kohana_Request  request
-	 * @return  void
-	 */
-	protected function _init_environment(Kohana_Request $request)
-	{
-		// Store existing $_GET, $_POST, $_SERVER vars
-		$this->_previous_environment = array(
-			'_GET'    => $_GET,
-			'_POST'   => $_POST,
-			'_SERVER' => $_SERVER,
-		);
-
-		// Assign this requests values to globals
-		$_GET = $request->query();
-		$_POST = $request->post();
-
-		$query_strings = array();
-
-		if ($_GET)
-		{
-			foreach ($_GET as $key => $val)
-			{
-				$query_strings[] = $key.'='.urlencode($val);
-			}
-		}
-
-		// Get argc number
-		$_argc = $query_strings ? 1 : 0;
-
-		// Create the full query string
-		$query_string = implode('&', $query_strings);
-
-		$uri = $request->uri();
-
-		// Augment the existing $_SERVER
-		$_request_server = array(
-			'QUERY_STRING'     => $query_string,
-			'argv'             => $query_string,
-			'argc'             => $_argc,
-			'REQUEST_METHOD'   => $request->method(),
-			'SCRIPT_NAME'      => '/'.Kohana::$index_file.'/'.$uri,
-			'REQUEST_URI'      => '/'.$request->uri,
-			'DOCUMENT_URI'     => '/'.Kohana::$index_file.'/'.$uri,
-			'REQUEST_TIME'     => time(),
-			'PHP_SELF'         => '/'.Kohana::$index_file.'/'.$uri,
-		);
-
-		// Add the request headers to replacement server vars
-		foreach ($request->header as $key => $value)
-		{
-			$_request_server[('HTTP_'.strtoupper((str_replace('-', '_', $key))))] = $value;
-		}
-
-		// Replace global $_SERVER with request server var
-		$_SERVER = $_request_server;
-	}
-
-	/**
-	 * Returns the server environment variables
-	 * to their initial state
-	 *
-	 * @return void
-	 */
-	protected function _deinit_environment()
-	{
-		// Exit now if environment is initialised already
-		if ( ! $this->_previous_environment)
-			return;
-
-		// Restore globals
-		$_GET = $this->_previous_environment['_GET'];
-		$_POST = $this->_previous_environment['_POST'];
-		$_SERVER = $this->_previous_environment['_SERVER'];
-
-		// Reset the previous environment
-		$this->_previous_environment = FALSE;
-	}
-
 } // End Kohana_Request_Client_Internal
