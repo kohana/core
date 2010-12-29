@@ -98,7 +98,7 @@ class Kohana_Request_Client_External extends Request_Client {
 			$this->_http_execute($request);
 		}
 		// Else if CURL is present, use extension to complete request
-		else if (extension_loaded('curl'))
+		elseif (extension_loaded('curl'))
 		{
 			$this->_curl_execute($request);
 		}
