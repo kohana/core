@@ -445,7 +445,7 @@ class Kohana_Request implements Http_Request {
 	/**
 	 * Checks if a file larger than the post_max_size has been uploaded
 	 * 
-	 * @return  bool
+	 * @return  boolean
 	 * @since   3.1.0
 	 */
 	public static function post_max_size_exceeded()
@@ -924,6 +924,19 @@ class Kohana_Request implements Http_Request {
 		return $this->_client->execute($this);
 	}
 
+	/**
+	 * Returns whether this request is the initial request Kohana received.
+	 * Can be used to test for sub requests.
+	 * 
+	 *     if ( ! $request->is_initial())
+	 *         // This is a sub request
+	 *
+	 * @return  boolean
+	 */
+	public function is_initial()
+	{
+		return (bool) ($this === Request::$initial);
+	}
 
 	/**
 	 * Generates an [ETag](http://en.wikipedia.org/wiki/HTTP_ETag) from the
