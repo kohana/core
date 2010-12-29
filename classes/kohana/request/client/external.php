@@ -48,20 +48,6 @@ class Kohana_Request_Client_External extends Request_Client {
 	protected $_options = array();
 
 	/**
-	 * @var     array     Internal mapping of Http_Request to HttpRequest constants
-	 */
-	protected $_http_method_mapping = array(
-		Http_Request::GET     => HttpRequest::METH_GET,
-		Http_Request::HEAD    => HttpRequest::METH_HEAD,
-		Http_Request::POST    => HttpRequest::METH_POST,
-		Http_Request::PUT     => HttpRequest::METH_PUT,
-		Http_Request::DELETE  => HttpRequest::METH_DELETE,
-		Http_Request::OPTIONS => HttpRequest::METH_OPTIONS,
-		Http_Request::TRACE   => HttpRequest::METH_TRACE,
-		Http_Request::CONNECT => HttpRequest::METH_CONNECT,
-	);
-
-	/**
 	 * Processes the request, executing the controller action that handles this
 	 * request, determined by the [Route].
 	 *
@@ -148,8 +134,19 @@ class Kohana_Request_Client_External extends Request_Client {
 	 */
 	protected function _http_execute(Request $request)
 	{
+		$http_method_mapping = array(
+			Http_Request::GET     => HttpRequest::METH_GET,
+			Http_Request::HEAD    => HttpRequest::METH_HEAD,
+			Http_Request::POST    => HttpRequest::METH_POST,
+			Http_Request::PUT     => HttpRequest::METH_PUT,
+			Http_Request::DELETE  => HttpRequest::METH_DELETE,
+			Http_Request::OPTIONS => HttpRequest::METH_OPTIONS,
+			Http_Request::TRACE   => HttpRequest::METH_TRACE,
+			Http_Request::CONNECT => HttpRequest::METH_CONNECT,
+		);
+
 		// Create an http request object
-		$http_request = new HttpRequest($request->uri(), $this->_http_method_mapping[$request->method()]);
+		$http_request = new HttpRequest($request->uri(), $http_method_mapping[$request->method()]);
 
 		// Set headers
 		$http_request->setHeaders($request->headers()->getArrayCopy());
