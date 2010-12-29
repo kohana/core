@@ -105,6 +105,13 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			$action = empty($action) ? Route::$default_action : $request->action();
 
 			$params = $request->param();
+
+			// If the action doesn't exist, it's a 404
+			if ( ! $class->hasMethod('action_'.$action))
+			{
+				throw new Kohana_Http_Exception_404;
+			}
+
 			$method = $class->getMethod('action_'.$action);
 
 			// Execute the main action with the parameters
@@ -131,12 +138,6 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			{
 				// Delete the benchmark, it is invalid
 				Profiler::delete($benchmark);
-			}
-
-			// If exception was due to reflection, most likely to be 404
-			if ($e instanceof ReflectionException)
-			{
-				throw new Kohana_Http_Exception_404;
 			}
 
 			// Re-throw the exception
