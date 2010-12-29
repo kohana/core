@@ -116,6 +116,11 @@ class Kohana_Request implements Http_Request {
 					Request::$user_agent = $_SERVER['HTTP_USER_AGENT'];
 				}
 
+				if (isset($_SERVER['HTTP_X_REQUESTED_WITH']))
+				{
+					$requested_with = $_SERVER['HTTP_X_REQUESTED_WITH'];
+				}
+
 				if (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
 				{
 					// Use the forwarded IP address, typically set when the
@@ -152,8 +157,11 @@ class Kohana_Request implements Http_Request {
 				->method($method)
 				->referrer($referrer);
 
+			// Apply the requested with variable
+			isset($requested_with) AND $request->requested_with($requested_with);
+
 			// If there is a body, set it to the model
-			isset($body) and $request->body($body);
+			isset($body) AND $request->body($body);
 		}
 		else
 			$request = new Request($uri, $cache);
