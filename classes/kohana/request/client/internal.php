@@ -52,9 +52,6 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		// Controller
 		$controller = $request->controller();
 
-		// Action
-		$action = $request->action();
-
 		if ($directory)
 		{
 			// Add the directory name to the class prefix
@@ -105,7 +102,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			$class->getMethod('before')->invoke($controller);
 
 			// Determine the action to use
-			$action = empty($action) ? Route::$default_action : $action;
+			$action = empty($action) ? Route::$default_action : $request->action();
 
 			$params = $request->param();
 			$method = $class->getMethod('action_'.$action);
