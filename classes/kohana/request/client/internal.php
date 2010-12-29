@@ -87,6 +87,9 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 		try
 		{
+			// Initiate response time
+			$this->_response_time = time();
+
 			// Load the controller using reflection
 			$class = new ReflectionClass($prefix.$controller);
 
@@ -99,16 +102,28 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			// Create a new instance of the controller
 			$controller = $class->newInstance($request, $request->create_response());
 
+			$class->getMethod('before')->invoke($controller);
+
 			// Determine the action to use
 			$action = empty($action) ? Route::$default_action : $action;
-
-			// Get all the method objects before invoking them
-			$before = $class->getMethod('before');
-			$after  = $class->getMethod('after');
 
 			$params = $request->param();
 			$method = $class->getMethod('action_'.$action);
 
+			// Execute the main action with the parameters
+			$method->invokeArgs($controller, $params);
+
+			// Execute the "after action" method
+			$class->getMethod('after')->invoke($controller);
+
+			// Stop response time
+			$this->_response_time = (time() - $this->_response_time);
+
+			// Add the default Content-Type header to initial request if not present
+			if ($initial_request AND ! $request->headers('content-type'))
+			{
+				$request->headers('content-type', Kohana::$content_type.'; charset='.Kohana::$charset);
+			}
 		}
 		catch (Exception $e)
 		{
@@ -128,38 +143,6 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			}
 
 			// Re-throw the exception
-			throw $e;
-		}
-
-		try
-		{
-			// Initiate response time
-			$this->_response_time = time();
-
-			// Execute the "before action" method
-			$before->invoke($controller);
-
-			// Execute the main action with the parameters
-			$method->invokeArgs($controller, $params);
-
-			// Execute the "after action" method
-			$after->invoke($controller);
-
-			// Stop response time
-			$this->_response_time = (time() - $this->_response_time);
-
-			// Add the default Content-Type header to initial request if not present
-			if ($initial_request AND ! $request->headers('content-type'))
-			{
-				$request->headers('content-type', Kohana::$content_type.'; charset='.Kohana::$charset);
-			}
-		}
-		catch (Exception $e)
-		{
-			// All other exceptions are PHP/server errors
-			$response = $request->create_response();
-			$response->status(500);
-
 			throw $e;
 		}
 
