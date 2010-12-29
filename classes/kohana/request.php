@@ -451,25 +451,25 @@ class Kohana_Request implements Http_Request {
 	}
 
 	/**
-	 * Checks if a file larger than the post_max_size has been uploaded
-	 * 
+	 * Determines if a file larger than the post_max_size has been uploaded. PHP
+	 * does not handle this situation gracefully on its own, so this method
+	 * helps to solve that problem.
+	 *
 	 * @return  boolean
-	 * @since   3.1.0
+	 * @uses    Num::bytes
+	 * @uses    Arr::get
 	 */
 	public static function post_max_size_exceeded()
 	{
+		// Make sure the request method is POST
+		if (Request::$method !== 'POST')
+			return FALSE;
+
 		// Get the post_max_size in bytes
 		$max_bytes = Num::bytes(ini_get('post_max_size'));
 
-		// Error occured if the POST array is empty, but the content length is 
-		// greater than post_max_size
-		return (bool) 
-		(
-			Arr::get($_SERVER, 'REQUEST_METHOD') == 'POST' AND 
-			empty($_POST) AND 
-			empty($_FILES) AND 
-			Arr::get($_SERVER, 'CONTENT_LENGTH') > $max_bytes
-		);
+		// Error occurred if method is POST, and content length is too long
+		return (Arr::get($_SERVER, 'CONTENT_LENGTH') > $max_bytes);
 	}
 
 	/**
