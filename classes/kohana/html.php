@@ -364,6 +364,12 @@ class Kohana_HTML {
 				continue;
 			}
 
+			if (is_int($key))
+			{
+				// Assume non-associative keys are mirrored attributes
+				$key = $value;
+			}
+
 			// Add the attribute value
 			$compiled .= ' '.$key.'="'.HTML::chars($value).'"';
 		}
