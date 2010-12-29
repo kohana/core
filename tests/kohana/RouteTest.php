@@ -304,7 +304,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 					'action' => 'test',
 					'id' => '1'
 				),
-				'welcome/index',
+				'',
 			),
 			array(
 				array('Route_Holder', 'default_return_callback'),
@@ -318,7 +318,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 					'action' => 'test',
 					'id' => '1'
 				),
-				'welcome/index',
+				'',
 			),
 		);
 	}
@@ -332,7 +332,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 	 * @test
 	 * @covers Route::matches
 	 */
-	public function test_defaults_are_used_if_params_arent_specified($uri, $regex, $defaults, $c, $a, $test_uri, $test_uri_array, $default_uri)
+	public function test_defaults_are_not_used_if_params_arent_specified($uri, $regex, $defaults, $c, $a, $test_uri, $test_uri_array, $default_uri)
 	{
 		$route = new Route($uri, $regex);
 		$route->defaults($defaults);
@@ -562,7 +562,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 	public function provider_composing_url_from_route()
 	{
 		return array(
-			array('/welcome'),
+			array('/'),
 			array('/news/view/42', array('controller' => 'news', 'action' => 'view', 'id' => 42)),
 			array('http://kohanaframework.org/news', array('controller' => 'news'), 'http')
 		);

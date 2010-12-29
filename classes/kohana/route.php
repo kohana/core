@@ -447,17 +447,6 @@ class Kohana_Route {
 	 */
 	public function uri(array $params = NULL)
 	{
-		if ($params === NULL)
-		{
-			// Use the default parameters
-			$params = $this->_defaults;
-		}
-		else
-		{
-			// Add the default parameters
-			$params += $this->_defaults;
-		}
-
 		// Start with the routed URI
 		$uri = $this->_uri;
 
