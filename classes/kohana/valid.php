@@ -475,7 +475,7 @@ class Kohana_Valid {
 		if ($digits > 0)
 		{
 			// Specific number of digits
-			$digits = '{'. (int) $digits.'}';
+			$digits = '{'.( (int) $digits).'}';
 		}
 		else
 		{
@@ -486,7 +486,7 @@ class Kohana_Valid {
 		// Get the decimal point for the current locale
 		list($decimal) = array_values(localeconv());
 
-		return (bool) preg_match('/^[0-9]'.$digits.preg_quote($decimal).'[0-9]{'. (int) $places.'}$/D', $str);
+		return (bool) preg_match('/^[0-9]'.$digits.preg_quote($decimal).'[0-9]{'.( (int) $places).'}$/D', $str);
 	}
 
 	/**
