@@ -148,8 +148,7 @@ class Kohana_Request implements Http_Request {
 
 			// Create the instance singleton
 			$request = new Request($uri, $cache);
-			$request->headers(Http::request_headers())
-				->protocol($protocol)
+			$request->protocol($protocol)
 				->method($method)
 				->referrer($referrer);
 
@@ -1059,28 +1058,33 @@ class Kohana_Request implements Http_Request {
 		if ($key instanceof Http_Header)
 		{
 			$this->_header = $key;
+			return $this;
 		}
-		elseif ($key === NULL)
+		elseif (is_array($key))
+		{
+			$this->_header->exchangeArray($key);
+			return $this;
+		}
+
+		// We need to check for initial request (lazy load)
+		if ($this === Request::$initial and $this->_header->count() < 1)
+		{
+			$this->_header = Http::request_headers();
+		}
+
+		if ($key === NULL)
 		{
 			return $this->_header;
 		}
 		elseif ($value === NULL)
 		{
-			if ($this->_header->offsetExists($key))
-				return $this->_header[$key];
-			else
-				return;
-		}
-		elseif (is_array($key))
-		{
-			$this->_header->exchangeArray($key);
+			return ($this->_header->offsetExists($key)) ? $this->_header->offsetGet($key) : NULL;
 		}
 		else
 		{
 			$this->_header[$key] = $value;
+			return $this;
 		}
-
-		return $this;
 	}
 
 	/**
