@@ -107,7 +107,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			$class->getMethod('before')->invoke($controller);
 
 			// Determine the action to use
-			$action = empty($action) ? Route::$default_action : $request->action();
+			$action = $request->action();
 
 			$params = $request->param();
 
