@@ -1,8 +1,27 @@
-<http://kohanaframework.org/guide/debugging.errors>
+# Error/Exception Handling
 
-The stuff below was copy and pasted from other pages, it will need to be rewokred.
+Kohana provides both an exception handler and an error handler that transforms errors into exceptions using PHP's [ErrorException](http://php.net/errorexception) class. Many details of the error and the internal state of the application is displayed by the handler:
 
-### Error Reporting
+1. Exception class
+2. Error level
+3. Error message
+4. Source of the error, with the error line highlighted
+5. A [debug backtrace](http://php.net/debug_backtrace) of the execution flow
+6. Included files, loaded extensions, and global variables
+
+## Example
+
+Click any of the links to toggle the display of additional information:
+
+<div>{{userguide/examples/error}}</div>
+
+## Disabling Error/Exception Handling
+
+If you do not want to use the internal error handling, you can disable it when calling [Kohana::init]:
+
+    Kohana::init(array('errors' => FALSE));
+
+## Error Reporting
 
 By default, Kohana displays all errors, including strict mode warnings. This is set using [error_reporting](http://php.net/error_reporting):
 
@@ -19,7 +38,7 @@ If you get a white screen when an error is triggered, your host probably has dis
 Errors should **always** be displayed, even in production, because it allows you to use [exception and error handling](debugging.errors) to serve a nice error page rather than a blank white screen when an error happens.
 
 
-##### Last thoughts
+## Last thoughts
 
 In production, **your application should never have any uncaught exceptions**, as this can expose sensitive information (via the stack trace).  In the previous example we make the assumption that there is actually a view called 'views/errors/404', which is fairly safe to assume.  One solution is to turn 'errors' off in Kohana::init for your production machine, so it displays the normal php errors rather than a stack trace.
 
