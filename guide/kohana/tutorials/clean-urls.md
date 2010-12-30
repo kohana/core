@@ -67,24 +67,14 @@ You should also check your Apache logs to see if they can shed some light on the
 It is hard to give examples of nginx configuration, but here is a sample for a server:
 
     location / {
-        index index.php index.html index.htm;
-        try_files $uri $uri/ index.php$uri?$args;
+        index     index.php index.html index.htm;
+        try_files $uri index.php;
     }
 
-    location ~ ^(.+\.php)(.*)$ {
-        fastcgi_split_path_info ^(.+\.php)(.*)$;
-        fastcgi_param  SCRIPT_NAME        $fastcgi_script_name;
-        fastcgi_param  SCRIPT_FILENAME    $document_root/$fastcgi_script_name;
-        fastcgi_param  PATH_INFO          $fastcgi_path_info;
-
-        include fastcgi.conf;
-
+    location = index.php {
+        include       fastcgi.conf;
         fastcgi_pass  127.0.0.1:9000;
         fastcgi_index index.php;
     }
-
-The two things to note are the use of [try_files](http://wiki.nginx.org/NginxHttpCoreModule#try_files) and [fastcgi_split_path_info](http://wiki.nginx.org/NginxHttpFcgiModule#fastcgi_split_path_info).
-
-[!!] This assumes that you are running PHP as a FastCGI server on port 9000 and are using nginx v0.7.31 or later.
 
 If you are having issues getting this working, enable debug level logging in nginx and check the access and error logs.
