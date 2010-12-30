@@ -7,8 +7,8 @@
  * @package    Kohana
  * @category   Logging
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Log {
 
@@ -53,10 +53,14 @@ class Kohana_Log {
 		return self::$_instance;
 	}
 
-	// List of added messages
+	/**
+	 * @var  array  list of added messages
+	 */
 	private $_messages = array();
 
-	// List of log writers
+	/**
+	 * @var  array  list of log writers
+	 */
 	private $_writers = array();
 
 	/**
@@ -67,7 +71,7 @@ class Kohana_Log {
 	 *
 	 * @param   object  Kohana_Log_Writer instance
 	 * @param   array   messages types to write
-	 * @return  $this
+	 * @return  Kohana_Log
 	 */
 	public function attach(Kohana_Log_Writer $writer, array $types = NULL)
 	{
@@ -86,7 +90,7 @@ class Kohana_Log {
 	 *     $log->detach($writer);
 	 *
 	 * @param   object  Kohana_Log_Writer instance
-	 * @return  $this
+	 * @return  Kohana_Log
 	 */
 	public function detach(Kohana_Log_Writer $writer)
 	{
@@ -107,7 +111,7 @@ class Kohana_Log {
 	 * @param   string  type of message
 	 * @param   string  message body
 	 * @param   array   values to replace in the message
-	 * @return  $this
+	 * @return  Kohana_Log
 	 */
 	public function add($type, $message, array $values = NULL)
 	{

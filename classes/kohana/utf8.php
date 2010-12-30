@@ -19,19 +19,19 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2007-2008 Kohana Team
+ * @copyright  (c) 2007-2010 Kohana Team
  * @copyright  (c) 2005 Harry Fuecks
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
  */
 class Kohana_UTF8 {
 
 	/**
-	 * @var  boolean  does the server support UTF-8 natively?
+	 * @var  boolean  Does the server support UTF-8 natively?
 	 */
 	public static $server_utf8 = NULL;
 
 	/**
-	 * @var  array  list of called methods
+	 * @var  array  List of called methods that have had their required file included.
 	 */
 	public static $called = array();
 
@@ -45,13 +45,19 @@ class Kohana_UTF8 {
 	 * [!!] This method requires [Iconv](http://php.net/iconv)
 	 *
 	 * @param   mixed   variable to clean
-	 * @param   string  character set, defaults to UTF-8
+	 * @param   string  character set, defaults to Kohana::$charset
 	 * @return  mixed
 	 * @uses    UTF8::strip_ascii_ctrl
 	 * @uses    UTF8::is_ascii
 	 */
-	public static function clean($var, $charset = 'UTF-8')
+	public static function clean($var, $charset = NULL)
 	{
+		if ( ! $charset)
+		{
+			// Use the application character set
+			$charset = Kohana::$charset;
+		}
+
 		if (is_array($var) OR is_object($var))
 		{
 			foreach ($var as $key => $val)
@@ -68,13 +74,13 @@ class Kohana_UTF8 {
 			if ( ! self::is_ascii($var))
 			{
 				// Disable notices
-				$ER = error_reporting(~E_NOTICE);
+				$error_reporting = error_reporting(~E_NOTICE);
 
 				// iconv is expensive, so it is only used when needed
 				$var = iconv($charset, $charset.'//IGNORE', $var);
 
 				// Turn notices back on
-				error_reporting($ER);
+				error_reporting($error_reporting);
 			}
 		}
 

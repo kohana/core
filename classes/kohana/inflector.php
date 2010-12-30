@@ -8,16 +8,24 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2007-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Inflector {
 
-	// Cached inflections
+	/**
+	 * @var  array  cached inflections
+	 */
 	protected static $cache = array();
 
-	// Uncountable and irregular words
+	/**
+	 * @var  array  uncountable words
+	 */
 	protected static $uncountable;
+
+	/**
+	 * @var  array  irregular words
+	 */
 	protected static $irregular;
 
 	/**
@@ -151,10 +159,13 @@ class Kohana_Inflector {
 			return $str;
 
 		// Remove garbage
-		$str = strtolower(trim($str));
+		$str = trim($str);
 
 		// Cache key name
 		$key = 'plural_'.$str.$count;
+
+		// Check uppercase
+		$is_uppercase = ctype_upper($str);
 
 		if (isset(Inflector::$cache[$key]))
 			return Inflector::$cache[$key];
@@ -186,6 +197,12 @@ class Kohana_Inflector {
 			$str .= 's';
 		}
 
+		// Convert to uppsecase if nessasary
+		if ($is_uppercase)
+		{
+			$str = strtoupper($str);
+		}
+
 		// Set the cache and return
 		return Inflector::$cache[$key] = $str;
 	}
@@ -205,6 +222,21 @@ class Kohana_Inflector {
 		$str = ucwords(preg_replace('/[\s_]+/', ' ', $str));
 
 		return substr(str_replace(' ', '', $str), 1);
+	}
+
+	/**
+	 * Converts a camel case phrase into a spaced phrase.
+	 *
+	 *     $str = Inflector::decamelize('houseCat');    // "house cat"
+	 *     $str = Inflector::decamelize('kingAllyCat'); // "king ally cat"
+	 *
+	 * @param   string   phrase to camelize
+	 * @param   string   word separator
+	 * @return  string
+	 */
+	public static function decamelize($str, $sep = ' ')
+	{
+		return strtolower(preg_replace('/([a-z])([A-Z])/', '$1'.$sep.'$2', trim($str)));
 	}
 
 	/**

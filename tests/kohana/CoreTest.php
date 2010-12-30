@@ -12,10 +12,11 @@
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
  * @copyright  (c) 2008-2010 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_CoreTest extends Kohana_Unittest_TestCase
 {
+	
 	/**
 	 * Provides test data for test_sanitize()
 	 * 
@@ -49,7 +50,24 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * If a file can't be found then find_file() should return FALSE if 
+	 * Passing FALSE for the file extension should prevent appending any extension.
+	 * See issue #3214
+	 *
+	 * @test
+	 * @covers  Kohana::find_file
+	 */
+	public function test_find_file_no_extension()
+	{
+		// EXT is manually appened to the _file name_, not passed as the extension
+		$path = Kohana::find_file('classes', $file = 'kohana/core'.EXT, FALSE);
+
+		$this->assertInternalType('string', $path);
+
+		$this->assertStringEndsWith($file, $path);
+	}
+
+	/**
+	 * If a file can't be found then find_file() should return FALSE if
 	 * only a single file was requested, or an empty array if multiple files
 	 * (i.e. configuration files) were requested
 	 *
@@ -73,7 +91,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	{
 		$files = Kohana::list_files('config');
 
-		$this->assertType('array', $files);
+		$this->assertInternalType('array', $files);
 		$this->assertGreaterThan(3, count($files));
 		
 		$this->assertSame(array(), Kohana::list_files('geshmuck'));
@@ -138,7 +156,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 			array(
 				array(
 					'alpha'         => ':field must contain only letters',
-					'alpha_dash'    => ':field must contain only letters and dashes',
+					'alpha_dash'    => ':field must contain only numbers, letters and dashes',
 					'alpha_numeric' => ':field must contain only letters and numbers',
 					'color'         => ':field must be a color',
 					'credit_card'   => ':field must be a credit card number',
@@ -147,14 +165,16 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 					'digit'         => ':field must be a digit',
 					'email'         => ':field must be a email address',
 					'email_domain'  => ':field must contain a valid email domain',
+					'equals'        => ':field must equal :param1',
 					'exact_length'  => ':field must be exactly :param1 characters long',
 					'in_array'      => ':field must be one of the available options',
 					'ip'            => ':field must be an ip address',
 					'matches'       => ':field must be the same as :param1',
 					'min_length'    => ':field must be at least :param1 characters long',
 					'max_length'    => ':field must be less than :param1 characters long',
-					'phone'         => ':field must be a phone number',
 					'not_empty'     => ':field must not be empty',
+					'numeric'       => ':field must be numeric',
+					'phone'         => ':field must be a phone number',
 					'range'         => ':field must be within the range of :param1 to :param2',
 					'regex'         => ':field does not match the required format',
 					'url'           => ':field must be a url',
@@ -344,7 +364,6 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_modules_sets_and_returns_valid_modules
-	 * @covers Kohana::modules
 	 * @param boolean $source   Input for Kohana::modules
 	 * @param boolean $expected Output for Kohana::modules
 	 */
@@ -352,7 +371,16 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	{
 		$modules = Kohana::modules();
 
-		$this->assertEquals($expected, Kohana::modules($source));
+		try
+		{
+			$this->assertEquals($expected, Kohana::modules($source));
+		}
+		catch(Exception $e)
+		{
+			Kohana::modules($modules);
+
+			throw $e;
+		}
 
 		Kohana::modules($modules);
 	}
@@ -369,7 +397,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	{
 		$modules = Kohana::modules();
 
-		$this->assertType('array', $modules);
+		$this->assertInternalType('array', $modules);
 
 		$this->assertArrayHasKey('unittest', $modules);
 	}
@@ -386,7 +414,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 		$include_paths = Kohana::include_paths();
 		$modules       = Kohana::modules();
 
-		$this->assertType('array', $include_paths);
+		$this->assertInternalType('array', $include_paths);
 
 		// We must have at least 2 items in include paths (APP / SYS)
 		$this->assertGreaterThan(2, count($include_paths));

@@ -4,7 +4,7 @@
  *
  * @package    Kohana
  * @author     Kohana Team
- * @copyright  (c) 2007-2008 Kohana Team
+ * @copyright  (c) 2007-2010 Kohana Team
  * @copyright  (c) 2005 Harry Fuecks
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
  */
@@ -13,11 +13,11 @@ function _strtolower($str)
 	if (UTF8::is_ascii($str))
 		return strtolower($str);
 
-	static $UTF8_UPPER_TO_LOWER = NULL;
+	static $utf8_upper_to_lower = NULL;
 
-	if ($UTF8_UPPER_TO_LOWER === NULL)
+	if ($utf8_upper_to_lower === NULL)
 	{
-		$UTF8_UPPER_TO_LOWER = array(
+		$utf8_upper_to_lower = array(
 			0x0041=>0x0061, 0x03A6=>0x03C6, 0x0162=>0x0163, 0x00C5=>0x00E5, 0x0042=>0x0062,
 			0x0139=>0x013A, 0x00C1=>0x00E1, 0x0141=>0x0142, 0x038E=>0x03CD, 0x0100=>0x0101,
 			0x0490=>0x0491, 0x0394=>0x03B4, 0x015A=>0x015B, 0x0044=>0x0064, 0x0393=>0x03B3,
@@ -71,9 +71,9 @@ function _strtolower($str)
 
 	for ($i = 0, $c = count($uni); $i < $c; $i++)
 	{
-		if (isset($UTF8_UPPER_TO_LOWER[$uni[$i]]))
+		if (isset($utf8_upper_to_lower[$uni[$i]]))
 		{
-			$uni[$i] = $UTF8_UPPER_TO_LOWER[$uni[$i]];
+			$uni[$i] = $utf8_upper_to_lower[$uni[$i]];
 		}
 	}
 

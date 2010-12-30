@@ -4,15 +4,18 @@
  *
  * @package    Kohana
  * @author     Kohana Team
- * @copyright  (c) 2007-2008 Kohana Team
+ * @copyright  (c) 2007-2010 Kohana Team
  * @copyright  (c) 2005 Harry Fuecks
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
  */
 function _to_unicode($str)
 {
-	$mState = 0; // cached expected number of octets after the current octet until the beginning of the next UTF8 character sequence
-	$mUcs4  = 0; // cached Unicode character
-	$mBytes = 1; // cached expected number of octets in the current sequence
+	// Cached expected number of octets after the current octet until the beginning of the next UTF8 character sequence
+	$m_state = 0;
+	// Cached Unicode character
+	$m_ucs4  = 0;
+	// Cached expected number of octets in the current sequence
+	$m_bytes = 1;
 
 	$out = array();
 
@@ -22,61 +25,61 @@ function _to_unicode($str)
 	{
 		$in = ord($str[$i]);
 
-		if ($mState == 0)
+		if ($m_state == 0)
 		{
-			// When mState is zero we expect either a US-ASCII character or a
-			// multi-octet sequence.
+			// When m_state is zero we expect either a US-ASCII character or a multi-octet sequence.
 			if (0 == (0x80 & $in))
 			{
 				// US-ASCII, pass straight through.
 				$out[] = $in;
-				$mBytes = 1;
+				$m_bytes = 1;
 			}
 			elseif (0xC0 == (0xE0 & $in))
 			{
 				// First octet of 2 octet sequence
-				$mUcs4 = $in;
-				$mUcs4 = ($mUcs4 & 0x1F) << 6;
-				$mState = 1;
-				$mBytes = 2;
+				$m_ucs4 = $in;
+				$m_ucs4 = ($m_ucs4 & 0x1F) << 6;
+				$m_state = 1;
+				$m_bytes = 2;
 			}
 			elseif (0xE0 == (0xF0 & $in))
 			{
 				// First octet of 3 octet sequence
-				$mUcs4 = $in;
-				$mUcs4 = ($mUcs4 & 0x0F) << 12;
-				$mState = 2;
-				$mBytes = 3;
+				$m_ucs4 = $in;
+				$m_ucs4 = ($m_ucs4 & 0x0F) << 12;
+				$m_state = 2;
+				$m_bytes = 3;
 			}
 			elseif (0xF0 == (0xF8 & $in))
 			{
 				// First octet of 4 octet sequence
-				$mUcs4 = $in;
-				$mUcs4 = ($mUcs4 & 0x07) << 18;
-				$mState = 3;
-				$mBytes = 4;
+				$m_ucs4 = $in;
+				$m_ucs4 = ($m_ucs4 & 0x07) << 18;
+				$m_state = 3;
+				$m_bytes = 4;
 			}
 			elseif (0xF8 == (0xFC & $in))
 			{
-				// First octet of 5 octet sequence.
-				//
-				// This is illegal because the encoded codepoint must be either
-				// (a) not the shortest form or
-				// (b) outside the Unicode range of 0-0x10FFFF.
-				// Rather than trying to resynchronize, we will carry on until the end
-				// of the sequence and let the later error handling code catch it.
-				$mUcs4 = $in;
-				$mUcs4 = ($mUcs4 & 0x03) << 24;
-				$mState = 4;
-				$mBytes = 5;
+				/** First octet of 5 octet sequence.
+				 *
+				 * This is illegal because the encoded codepoint must be either
+				 * (a) not the shortest form or
+				 * (b) outside the Unicode range of 0-0x10FFFF.
+				 * Rather than trying to resynchronize, we will carry on until the end
+				 * of the sequence and let the later error handling code catch it.
+				 **/
+				$m_ucs4 = $in;
+				$m_ucs4 = ($m_ucs4 & 0x03) << 24;
+				$m_state = 4;
+				$m_bytes = 5;
 			}
 			elseif (0xFC == (0xFE & $in))
 			{
 				// First octet of 6 octet sequence, see comments for 5 octet sequence.
-				$mUcs4 = $in;
-				$mUcs4 = ($mUcs4 & 1) << 30;
-				$mState = 5;
-				$mBytes = 6;
+				$m_ucs4 = $in;
+				$m_ucs4 = ($m_ucs4 & 1) << 30;
+				$m_state = 5;
+				$m_bytes = 6;
 			}
 			else
 			{
@@ -87,49 +90,49 @@ function _to_unicode($str)
 		}
 		else
 		{
-			// When mState is non-zero, we expect a continuation of the multi-octet sequence
+			// When m_state is non-zero, we expect a continuation of the multi-octet sequence
 			if (0x80 == (0xC0 & $in))
 			{
 				// Legal continuation
-				$shift = ($mState - 1) * 6;
+				$shift = ($m_state - 1) * 6;
 				$tmp = $in;
 				$tmp = ($tmp & 0x0000003F) << $shift;
-				$mUcs4 |= $tmp;
+				$m_ucs4 |= $tmp;
 
 				// End of the multi-octet sequence. mUcs4 now contains the final Unicode codepoint to be output
-				if (0 == --$mState)
+				if (0 == --$m_state)
 				{
 					// Check for illegal sequences and codepoints
 
 					// From Unicode 3.1, non-shortest form is illegal
-					if (((2 == $mBytes) AND ($mUcs4 < 0x0080)) OR
-						((3 == $mBytes) AND ($mUcs4 < 0x0800)) OR
-						((4 == $mBytes) AND ($mUcs4 < 0x10000)) OR
-						(4 < $mBytes) OR
+					if (((2 == $m_bytes) AND ($m_ucs4 < 0x0080)) OR
+						((3 == $m_bytes) AND ($m_ucs4 < 0x0800)) OR
+						((4 == $m_bytes) AND ($m_ucs4 < 0x10000)) OR
+						(4 < $m_bytes) OR
 						// From Unicode 3.2, surrogate characters are illegal
-						(($mUcs4 & 0xFFFFF800) == 0xD800) OR
+						(($m_ucs4 & 0xFFFFF800) == 0xD800) OR
 						// Codepoints outside the Unicode range are illegal
-						($mUcs4 > 0x10FFFF))
+						($m_ucs4 > 0x10FFFF))
 					{
 						trigger_error('UTF8::to_unicode: Illegal sequence or codepoint in UTF-8 at byte '.$i, E_USER_WARNING);
 						return FALSE;
 					}
 
-					if (0xFEFF != $mUcs4)
+					if (0xFEFF != $m_ucs4)
 					{
 						// BOM is legal but we don't want to output it
-						$out[] = $mUcs4;
+						$out[] = $m_ucs4;
 					}
 
 					// Initialize UTF-8 cache
-					$mState = 0;
-					$mUcs4  = 0;
-					$mBytes = 1;
+					$m_state = 0;
+					$m_ucs4  = 0;
+					$m_bytes = 1;
 				}
 			}
 			else
 			{
-				// ((0xC0 & (*in) != 0x80) AND (mState != 0))
+				// ((0xC0 & (*in) != 0x80) AND (m_state != 0))
 				// Incomplete multi-octet sequence
 				trigger_error('UTF8::to_unicode: Incomplete multi-octet sequence in UTF-8 at byte '.$i, E_USER_WARNING);
 				return FALSE;

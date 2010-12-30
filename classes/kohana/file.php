@@ -5,8 +5,8 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2007-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_File {
 
@@ -40,7 +40,7 @@ class Kohana_File {
 
 		if (class_exists('finfo', FALSE))
 		{
-			if ($info = new finfo(FILEINFO_MIME_TYPE))
+			if ($info = new finfo(defined('FILEINFO_MIME_TYPE') ? FILEINFO_MIME_TYPE : FILEINFO_MIME))
 			{
 				return $info->file($filename);
 			}

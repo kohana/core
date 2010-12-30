@@ -6,12 +6,14 @@
  * @package    Kohana
  * @category   Configuration
  * @author     Kohana Team
- * @copyright  (c) 2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2009-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Config {
 
-	// Singleton static instance
+	/**
+	 * @var  Kohana_Config  Singleton static instance
+	 */
 	protected static $_instance;
 
 	/**
@@ -32,7 +34,9 @@ class Kohana_Config {
 		return self::$_instance;
 	}
 
-	// Configuration readers
+	/**
+	 * @var  array  Configuration readers
+	 */
 	protected $_readers = array();
 
 	/**

@@ -5,8 +5,8 @@
  * @package    Kohana
  * @category   Session
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 abstract class Kohana_Session {
 
@@ -15,7 +15,9 @@ abstract class Kohana_Session {
 	 */
 	public static $default = 'native';
 
-	// Session instances
+	/**
+	 * @var  array  session instances
+	 */
 	protected static $instances = array();
 
 	/**
@@ -58,19 +60,29 @@ abstract class Kohana_Session {
 		return Session::$instances[$type];
 	}
 
-	// Cookie name
+	/**
+	 * @var  string  cookie name
+	 */
 	protected $_name = 'session';
 
-	// Cookie lifetime
+	/**
+	 * @var  int  cookie lifetime
+	 */
 	protected $_lifetime = 0;
 
-	// Encrypt session data?
+	/**
+	 * @var  bool  encrypt session data?
+	 */
 	protected $_encrypted = FALSE;
 
-	// Session data
+	/**
+	 * @var  array  session data
+	 */
 	protected $_data = array();
 
-	// Is the session destroyed?
+	/**
+	 * @var  bool  session destroyed?
+	 */
 	protected $_destroyed = FALSE;
 
 	/**
@@ -177,7 +189,7 @@ abstract class Kohana_Session {
 	/**
 	 * Get the current session cookie name.
 	 *
-	 *     $name = $session->id();
+	 *     $name = $session->name();
 	 *
 	 * @return  string
 	 * @since   3.0.8

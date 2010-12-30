@@ -5,12 +5,14 @@
  * @package    Kohana
  * @category   Logging
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Log_File extends Kohana_Log_Writer {
 
-	// Directory to place log files in
+	/**
+	 * @var  string  Directory to place log files in
+	 */
 	protected $_directory;
 
 	/**
@@ -47,31 +49,31 @@ class Kohana_Log_File extends Kohana_Log_Writer {
 	public function write(array $messages)
 	{
 		// Set the yearly directory name
-		$directory = $this->_directory.date('Y').DIRECTORY_SEPARATOR;
+		$directory = $this->_directory.date('Y');
 
 		if ( ! is_dir($directory))
 		{
 			// Create the yearly directory
-			mkdir($directory, 0777);
+			mkdir($directory, 02777);
 
 			// Set permissions (must be manually set to fix umask issues)
-			chmod($directory, 0777);
+			chmod($directory, 02777);
 		}
 
 		// Add the month to the directory
-		$directory .= date('m').DIRECTORY_SEPARATOR;
+		$directory .= DIRECTORY_SEPARATOR.date('m');
 
 		if ( ! is_dir($directory))
 		{
 			// Create the yearly directory
-			mkdir($directory, 0777);
+			mkdir($directory, 02777);
 
 			// Set permissions (must be manually set to fix umask issues)
-			chmod($directory, 0777);
+			chmod($directory, 02777);
 		}
 
 		// Set the name of the log file
-		$filename = $directory.date('d').EXT;
+		$filename = $directory.DIRECTORY_SEPARATOR.date('d').EXT;
 
 		if ( ! file_exists($filename))
 		{

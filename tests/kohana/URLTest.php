@@ -9,8 +9,8 @@
  * @package    Unittest
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 Class Kohana_URLTest extends Kohana_Unittest_TestCase
 {
@@ -53,6 +53,9 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 
 			// Change base url'
 			array(FALSE, 'https', 'https://example.com/kohana/', array('Kohana::$base_url' => 'omglol://example.com/kohana/')),
+
+			// Use port in base url, issue #3307
+			array(FALSE, TRUE, 'http://example.com:8080/', array('Kohana::$base_url' => 'example.com:8080/')),
 
 			// Use protocol from base url if none specified
 			array(FALSE, FALSE,   'http://www.example.com/', array('Kohana::$base_url' => 'http://www.example.com/')),
@@ -141,6 +144,46 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
+	 * Provides test data for test_site_url_encode_uri()
+	 * See issue #2680
+	 *
+	 * @return array
+	 */
+	public function provider_site_url_encode_uri()
+	{
+		$provider = array(
+			array('test', 'encode'),
+			array('test', 'éñçø∂ë∂'),
+			array('†éß†', 'encode'),
+			array('†éß†', 'éñçø∂ë∂', 'µåñ¥'),
+		);
+
+		foreach ($provider as $i => $params)
+		{
+			// Every non-ASCII character except for forward slash should be encoded...
+			$expected = implode('/', array_map('rawurlencode', $params));
+
+			// ... from a URI that is not encoded
+			$uri = implode('/', $params);
+
+			$provider[$i] = array("/kohana/index.php/{$expected}", $uri);
+		}
+
+		return $provider;
+	}
+
+	/**
+	 * Tests URL::site for proper URL encoding when working with non-ASCII characters.
+	 *
+	 * @test
+	 * @dataProvider provider_site_url_encode_uri
+	 */
+	public function test_site_url_encode_uri($expected, $uri)
+	{
+		$this->assertSame($expected, URL::site($uri, FALSE));
+	}
+
+	/**
 	 * Provides test data for test_title()
 	 * @return array
 	 */
@@ -195,10 +238,18 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	public function provider_Query()
 	{
 		return array(
-			array(NULL, '', array()),
-			array(NULL, '?test=data', array('_GET' => array('test' => 'data'))),
-			array(array('test' => 'data'), '?test=data', array()),
-			array(array('test' => 'data'), '?more=data&test=data', array('_GET' => array('more' => 'data')))
+			array(array(), '', NULL),
+			array(array('_GET' => array('test' => 'data')), '?test=data', NULL),
+			array(array(), '?test=data', array('test' => 'data')),
+			array(array('_GET' => array('more' => 'data')), '?more=data&test=data', array('test' => 'data')),
+			array(array('_GET' => array('sort' => 'down')), '?test=data', array('test' => 'data'), FALSE),
+
+			// http://dev.kohanaframework.org/issues/3362
+			array(array(), '', array('key' => NULL)),
+			array(array(), '?key=0', array('key' => FALSE)),
+			array(array(), '?key=1', array('key' => TRUE)),
+			array(array('_GET' => array('sort' => 'down')), '?sort=down&key=1', array('key' => TRUE)),
+			array(array('_GET' => array('sort' => 'down')), '?sort=down&key=0', array('key' => FALSE)),
 		);
 	}
 
@@ -207,17 +258,18 @@ Class Kohana_URLTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_query
-	 * @param array $params Query string
-	 * @param string $expected Expected result
 	 * @param array $enviroment Set environment
+	 * @param string $expected Expected result
+	 * @param array $params Query string
+	 * @param boolean $use_get Combine with GET parameters
 	 */
-	public function test_query($params, $expected, $enviroment)
+	public function test_query($enviroment, $expected, $params, $use_get = TRUE)
 	{
 		$this->setEnvironment($enviroment);
 
 		$this->assertSame(
 			$expected,
-			URL::query($params)
+			URL::query($params, $use_get)
 		);
 	}
 }

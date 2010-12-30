@@ -10,7 +10,7 @@
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
  * @author     Matt Button <matthew@sigswitch.com>
  * @copyright  (c) 2008-2010 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
 Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 {
@@ -204,7 +204,7 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 
 		// By asserting a return type we're making the test a little less brittle / less likely
 		// to break due to minor modifications
-		$this->assertType('Kohana_Config_Reader', $config->load($config_group));
+		$this->assertInstanceOf('Kohana_Config_Reader', $config->load($config_group));
 	}
 
 	/**
@@ -236,7 +236,8 @@ Class Kohana_ConfigTest extends Kohana_Unittest_TestCase
 
 		$new_config = $config->load('my_group');
 
-		$this->assertType('Kohana_Config_Waffles', $new_config);
+		$this->assertInstanceOf('Kohana_Config_Waffles', $new_config);
+
 		// Slightly taboo, testing a different api!!
 		$this->assertSame(array(), $new_config->as_array());
 	}

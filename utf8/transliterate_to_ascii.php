@@ -4,20 +4,20 @@
  *
  * @package    Kohana
  * @author     Kohana Team
- * @copyright  (c) 2007-2008 Kohana Team
+ * @copyright  (c) 2007-2010 Kohana Team
  * @copyright  (c) 2005 Harry Fuecks
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
  */
 function _transliterate_to_ascii($str, $case = 0)
 {
-	static $UTF8_LOWER_ACCENTS = NULL;
-	static $UTF8_UPPER_ACCENTS = NULL;
+	static $utf8_lower_accents = NULL;
+	static $utf8_upper_accents = NULL;
 
 	if ($case <= 0)
 	{
-		if ($UTF8_LOWER_ACCENTS === NULL)
+		if ($utf8_lower_accents === NULL)
 		{
-			$UTF8_LOWER_ACCENTS = array(
+			$utf8_lower_accents = array(
 				'à' => 'a',  'ô' => 'o',  'ď' => 'd',  'ḟ' => 'f',  'ë' => 'e',  'š' => 's',  'ơ' => 'o',
 				'ß' => 'ss', 'ă' => 'a',  'ř' => 'r',  'ț' => 't',  'ň' => 'n',  'ā' => 'a',  'ķ' => 'k',
 				'ŝ' => 's',  'ỳ' => 'y',  'ņ' => 'n',  'ĺ' => 'l',  'ħ' => 'h',  'ṗ' => 'p',  'ó' => 'o',
@@ -37,17 +37,17 @@ function _transliterate_to_ascii($str, $case = 0)
 		}
 
 		$str = str_replace(
-			array_keys($UTF8_LOWER_ACCENTS),
-			array_values($UTF8_LOWER_ACCENTS),
+			array_keys($utf8_lower_accents),
+			array_values($utf8_lower_accents),
 			$str
 		);
 	}
 
 	if ($case >= 0)
 	{
-		if ($UTF8_UPPER_ACCENTS === NULL)
+		if ($utf8_upper_accents === NULL)
 		{
-			$UTF8_UPPER_ACCENTS = array(
+			$utf8_upper_accents = array(
 				'À' => 'A',  'Ô' => 'O',  'Ď' => 'D',  'Ḟ' => 'F',  'Ë' => 'E',  'Š' => 'S',  'Ơ' => 'O',
 				'Ă' => 'A',  'Ř' => 'R',  'Ț' => 'T',  'Ň' => 'N',  'Ā' => 'A',  'Ķ' => 'K',  'Ĕ' => 'E',
 				'Ŝ' => 'S',  'Ỳ' => 'Y',  'Ņ' => 'N',  'Ĺ' => 'L',  'Ħ' => 'H',  'Ṗ' => 'P',  'Ó' => 'O',
@@ -67,8 +67,8 @@ function _transliterate_to_ascii($str, $case = 0)
 		}
 
 		$str = str_replace(
-			array_keys($UTF8_UPPER_ACCENTS),
-			array_values($UTF8_UPPER_ACCENTS),
+			array_keys($utf8_upper_accents),
+			array_values($utf8_upper_accents),
 			$str
 		);
 	}

@@ -17,13 +17,13 @@
  * @package    Kohana
  * @category   Controller
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 abstract class Kohana_Controller {
 
 	/**
-	 * @var  object  Request that created the controller
+	 * @var  Request  Request that created the controller
 	 */
 	public $request;
 
@@ -31,10 +31,10 @@ abstract class Kohana_Controller {
 	 * Creates a new controller instance. Each controller must be constructed
 	 * with the request object that created it.
 	 *
-	 * @param   object  Request that created the controller
+	 * @param   Request  Request that created the controller
 	 * @return  void
 	 */
-	public function __construct(Kohana_Request $request)
+	public function __construct(Request $request)
 	{
 		// Assign the request to the controller
 		$this->request = $request;

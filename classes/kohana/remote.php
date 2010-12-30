@@ -5,15 +5,17 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Remote {
 
-	// Default curl options
+	/**
+	 * @var  array  default cURL options
+	 */
 	public static $default_options = array
 	(
-		CURLOPT_USERAGENT      => 'Mozilla/5.0 (compatible; Kohana v3.0 +http://kohanaphp.com/)',
+		CURLOPT_USERAGENT      => 'Mozilla/5.0 (compatible; Kohana v3.0 +http://kohanaframework.org/)',
 		CURLOPT_CONNECTTIMEOUT => 5,
 		CURLOPT_TIMEOUT        => 5,
 	);
@@ -116,16 +118,16 @@ class Kohana_Remote {
 			return FALSE;
 
 		// Set CRLF
-		$CRLF = "\r\n";
+		$line_feed = "\r\n";
 
 		// Send request
-		fwrite($remote, 'HEAD '.$url['path'].' HTTP/1.0'.$CRLF);
-		fwrite($remote, 'Host: '.$url['host'].$CRLF);
-		fwrite($remote, 'Connection: close'.$CRLF);
-		fwrite($remote, 'User-Agent: Kohana Framework (+http://kohanaphp.com/)'.$CRLF);
+		fwrite($remote, 'HEAD '.$url['path'].' HTTP/1.0'.$line_feed);
+		fwrite($remote, 'Host: '.$url['host'].$line_feed);
+		fwrite($remote, 'Connection: close'.$line_feed);
+		fwrite($remote, 'User-Agent: Kohana Framework (+http://kohanaframework.org/)'.$line_feed);
 
 		// Send one more CRLF to terminate the headers
-		fwrite($remote, $CRLF);
+		fwrite($remote, $line_feed);
 
 		// Remote is offline
 		$response = FALSE;

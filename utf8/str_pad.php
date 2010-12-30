@@ -4,7 +4,7 @@
  *
  * @package    Kohana
  * @author     Kohana Team
- * @copyright  (c) 2007-2008 Kohana Team
+ * @copyright  (c) 2007-2010 Kohana Team
  * @copyright  (c) 2005 Harry Fuecks
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
  */
@@ -42,9 +42,9 @@ function _str_pad($str, $final_str_length, $pad_str = ' ', $pad_type = STR_PAD_R
 		$repeat_right = ceil($pad_length_right / $pad_str_length);
 
 		$pad_left = UTF8::substr(str_repeat($pad_str, $repeat_left), 0, $pad_length_left);
-		$pad_right = UTF8::substr(str_repeat($pad_str, $repeat_right), 0, $pad_length_left);
+		$pad_right = UTF8::substr(str_repeat($pad_str, $repeat_right), 0, $pad_length_right);
 		return $pad_left.$str.$pad_right;
 	}
 
-	trigger_error('UTF8::str_pad: Unknown padding type (' . $pad_type . ')', E_USER_ERROR);
+	trigger_error('UTF8::str_pad: Unknown padding type ('.$pad_type.')', E_USER_ERROR);
 }

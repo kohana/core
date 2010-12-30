@@ -21,7 +21,7 @@
  * @category   Security
  * @author     Kohana Team
  * @copyright  (c) 2007-2010 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Encrypt {
 
@@ -35,7 +35,9 @@ class Kohana_Encrypt {
 	 */
 	public static $instances = array();
 
-	// OS-dependent RAND type to use
+	/**
+	 * @var  string  OS-dependent RAND type to use
+	 */
 	protected static $_rand;
 
 	/**
@@ -45,7 +47,7 @@ class Kohana_Encrypt {
 	 *     $encrypt = Encrypt::instance();
 	 *
 	 * @param   string  configuration group name
-	 * @return  object
+	 * @return  Encrypt
 	 */
 	public static function instance($name = NULL)
 	{

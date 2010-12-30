@@ -5,8 +5,8 @@
  * @package    Kohana
  * @category   Models
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 abstract class Kohana_Model {
 
@@ -29,8 +29,10 @@ abstract class Kohana_Model {
 		return new $class($db);
 	}
 
-	// Database instance
-	protected $_db = 'default';
+	/**
+	 * @var  Database  database instance
+	 */
+	protected $_db;
 
 	/**
 	 * Loads the database.
@@ -42,10 +44,15 @@ abstract class Kohana_Model {
 	 */
 	public function __construct($db = NULL)
 	{
-		if ($db !== NULL)
+		if ($db)
 		{
-			// Set the database instance name
+			// Set the database instance to use
 			$this->_db = $db;
+		}
+		elseif ( ! $this->_db)
+		{
+			// Use the global database
+			$this->_db = Database::$default;
 		}
 
 		if (is_string($this->_db))

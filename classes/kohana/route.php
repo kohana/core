@@ -30,8 +30,8 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2010 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Route {
 
@@ -49,7 +49,9 @@ class Kohana_Route {
 	 */
 	public static $default_action = 'index';
 
-	// List of route objects
+	/**
+	 * @var  array  list of route objects
+	 */
 	protected static $_routes = array();
 
 	/**
@@ -331,7 +333,7 @@ class Kohana_Route {
 			// Remove the parenthesis from the match as the replace
 			$replace = substr($match[0], 1, -1);
 
-			while(preg_match('#'.Route::REGEX_KEY.'#', $replace, $match))
+			while (preg_match('#'.Route::REGEX_KEY.'#', $replace, $match))
 			{
 				list($key, $param) = $match;
 
@@ -352,7 +354,7 @@ class Kohana_Route {
 			$uri = str_replace($search, $replace, $uri);
 		}
 
-		while(preg_match('#'.Route::REGEX_KEY.'#', $uri, $match))
+		while (preg_match('#'.Route::REGEX_KEY.'#', $uri, $match))
 		{
 			list($key, $param) = $match;
 
