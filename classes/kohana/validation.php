@@ -108,11 +108,20 @@ class Kohana_Validation extends ArrayObject {
 
 	/**
 	 * Overwrites or appends rules to a field. Each rule will be executed once.
-	 * All rules must be string names of functions method names.
+	 * All rules must be string names of functions method names. Parameters must
+	 * match the parameters of the callback function exactly
+	 * 
+	 * Aliases you can use in callback parameters:
+	 * - :validation - the validation array
+	 * - :field - the field name
+	 * - :value - the valie of the field
 	 *
 	 *     // The "username" must not be empty and have a minimum length of 4
 	 *     $validation->rule('username', 'not_empty')
-	 *                ->rule('username', 'min_length', array(4));
+	 *                ->rule('username', 'min_length', array('username', 4));
+	 *
+	 *     // The "password" field must match the "password_repeat" field
+	 *     $validation->rule('password', 'matches', array(':validation', 'password', 'password_repeat'));
 	 *
 	 * @param   string    field name
 	 * @param   callback  valid PHP callback
