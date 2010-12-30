@@ -87,6 +87,11 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			// Initiate response time
 			$this->_response_time = time();
 
+			if ( ! class_exists($prefix.$controller))
+			{
+				throw new Kohana_Http_Exception_404;
+			}
+
 			// Load the controller using reflection
 			$class = new ReflectionClass($prefix.$controller);
 

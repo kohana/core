@@ -368,11 +368,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	 */
 	public function delete_cookie($name)
 	{
-		if (isset($this->_cookies[$name]))
-		{
-			unset($this->_cookies[$name]);
-		}
-
+		unset($this->_cookies[$name]);
 		return $this;
 	}
 

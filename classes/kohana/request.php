@@ -116,6 +116,11 @@ class Kohana_Request implements Http_Request {
 					Request::$user_agent = $_SERVER['HTTP_USER_AGENT'];
 				}
 
+				if (isset($_SERVER['HTTP_X_REQUESTED_WITH']))
+				{
+					$requested_with = $_SERVER['HTTP_X_REQUESTED_WITH'];
+				}
+
 				if (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
 				{
 					// Use the forwarded IP address, typically set when the
@@ -152,8 +157,11 @@ class Kohana_Request implements Http_Request {
 				->method($method)
 				->referrer($referrer);
 
+			// Apply the requested with variable
+			isset($requested_with) AND $request->requested_with($requested_with);
+
 			// If there is a body, set it to the model
-			isset($body) and $request->body($body);
+			isset($body) AND $request->body($body);
 		}
 		else
 			$request = new Request($uri, $cache);
@@ -443,27 +451,25 @@ class Kohana_Request implements Http_Request {
 	}
 
 	/**
-	 * Checks if a file larger than the post_max_size has been uploaded
-	 * 
+	 * Determines if a file larger than the post_max_size has been uploaded. PHP
+	 * does not handle this situation gracefully on its own, so this method
+	 * helps to solve that problem.
+	 *
 	 * @return  boolean
-	 * @since   3.1.0
+	 * @uses    Num::bytes
+	 * @uses    Arr::get
 	 */
 	public static function post_max_size_exceeded()
 	{
+		// Make sure the request method is POST
+		if (Request::$method !== 'POST')
+			return FALSE;
+
 		// Get the post_max_size in bytes
 		$max_bytes = Num::bytes(ini_get('post_max_size'));
 
-		// Error occured if the POST array is empty, but the content length is greater than post_max_size
-		return (bool)
-		(
-			Arr::get($_SERVER, 'REQUEST_METHOD') == 'POST'
-			and
-			empty($_POST)
-			and
-			empty($_FILES)
-			and
-			Arr::get($_SERVER, 'CONTENT_LENGTH') > $max_bytes
-		);
+		// Error occurred if method is POST, and content length is too long
+		return (Arr::get($_SERVER, 'CONTENT_LENGTH') > $max_bytes);
 	}
 
 	/**
@@ -523,6 +529,12 @@ class Kohana_Request implements Http_Request {
 
 		return $accepts;
 	}
+
+	/**
+	 * @var  string  the x-requested-with header which most likely
+	 *               will be xmlhttprequest
+	 */
+	protected $_requested_with;
 
 	/**
 	 * @var  string  method: GET, POST, PUT, DELETE, HEAD, etc
@@ -897,6 +909,23 @@ class Kohana_Request implements Http_Request {
 	}
 
 	/**
+	 * Gets and sets the requested with property, which should
+	 * be relative to the x-requested-with pseudo header.
+	 *
+	 * @param   string    requested with 
+	 * @return  string
+	 * @return  Request
+	 */
+	public function requested_with($requested_with = NULL)
+	{
+		if ($requested_with === NULL)
+			return $this->_requested_with;
+
+		$this->_requested_with = strtolower($requested_with);
+		return $this;
+	}
+
+	/**
 	 * Processes the request, executing the controller action that handles this
 	 * request, determined by the [Route].
 	 *
@@ -936,6 +965,16 @@ class Kohana_Request implements Http_Request {
 	public function is_initial()
 	{
 		return (bool) ($this === Request::$initial);
+	}
+
+	/**
+	 * Returns whether this is an ajax request (as used by JS frameworks)
+	 *
+	 * @return  boolean
+	 */
+	public function is_ajax()
+	{
+		return (bool) ($this->requested_with() === 'xmlhttprequest');
 	}
 
 	/**
