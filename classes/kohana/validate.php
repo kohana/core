@@ -87,7 +87,7 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
-	 * CHecks that a field is exactly the value required.
+	 * Checks that a field is exactly the value required.
 	 *
 	 * @param   string   value
 	 * @param   string   required value
