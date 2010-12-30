@@ -191,6 +191,49 @@ class Kohana_Arr {
 	}
 
 	/**
+	* Set a value on an array by path.
+	*
+	* @see Arr::path()
+	* @param array   $array     Array to update
+	* @param string  $path      Path
+	* @param mixed   $value     Value to set
+	* @param string  $delimiter Path delimiter
+	*/
+	public static function set_path(array &$array, $path, $value, $delimiter = NULL)
+	{
+		if ( ! $delimiter)
+		{
+			// Use the default delimiter
+			$delimiter = Arr::$delimiter;
+		}
+
+		// Split the keys by delimiter
+		$keys = explode($delimiter, $path);
+
+		// Set current $array to inner-most array path
+		while (count($keys) > 1)
+		{
+			$key = array_shift($keys);
+
+			if (ctype_digit($key))
+			{
+				// Make the key an integer
+				$key = (int) $key;
+			}
+
+			if ( ! isset($array[$key]))
+			{
+				$array[$key] = array();
+			}
+
+			$array = &$array[$key];
+		}
+
+		// Set key on inner-most array
+		$array[array_shift($keys)] = $value;
+	}
+
+	/**
 	 * Fill an array with a range of numbers.
 	 *
 	 *     // Fill an array with values 5, 10, 15, 20
