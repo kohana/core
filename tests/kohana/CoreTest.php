@@ -61,7 +61,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 		// EXT is manually appened to the _file name_, not passed as the extension
 		$path = Kohana::find_file('classes', $file = 'kohana/core'.EXT, FALSE);
 
-		$this->assertType('string', $path);
+		$this->assertInternalType('string', $path);
 
 		$this->assertStringEndsWith($file, $path);
 	}
@@ -91,7 +91,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	{
 		$files = Kohana::list_files('config');
 
-		$this->assertType('array', $files);
+		$this->assertInternalType('array', $files);
 		$this->assertGreaterThan(3, count($files));
 		
 		$this->assertSame(array(), Kohana::list_files('geshmuck'));
@@ -397,7 +397,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	{
 		$modules = Kohana::modules();
 
-		$this->assertType('array', $modules);
+		$this->assertInternalType('array', $modules);
 
 		$this->assertArrayHasKey('unittest', $modules);
 	}
@@ -414,7 +414,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 		$include_paths = Kohana::include_paths();
 		$modules       = Kohana::modules();
 
-		$this->assertType('array', $include_paths);
+		$this->assertInternalType('array', $include_paths);
 
 		// We must have at least 2 items in include paths (APP / SYS)
 		$this->assertGreaterThan(2, count($include_paths));
