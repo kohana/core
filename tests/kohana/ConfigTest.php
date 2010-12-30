@@ -204,7 +204,7 @@ Class Kohana_ConfigTest extends Unittest_TestCase
 
 		// By asserting a return type we're making the test a little less brittle / less likely
 		// to break due to minor modifications
-		$this->assertType('Config_Reader', $config->load($config_group));
+		$this->assertInstanceOf('Config_Reader', $config->load($config_group));
 	}
 
 	/**
@@ -236,7 +236,7 @@ Class Kohana_ConfigTest extends Unittest_TestCase
 
 		$new_config = $config->load('my_group');
 
-		$this->assertType('Config_Waffles', $new_config);
+		$this->assertInstanceOf('Config_Waffles', $new_config);
 		// Slightly taboo, testing a different api!!
 		$this->assertSame(array(), $new_config->as_array());
 	}

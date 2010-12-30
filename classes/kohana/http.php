@@ -157,10 +157,4 @@ abstract class Kohana_Http {
 
 		return implode('&', $encoded);
 	}
-
-	/**
-	 * This is a static class
-	 */
-	final private function __construct() {}
-
 } // End Kohana_Http
