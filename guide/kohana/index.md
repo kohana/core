@@ -1,7 +1,3 @@
-[!!] **We are currently in the middle of a documentation revamp.  Please check the [forums](http://forum.kohanaframework.org/discussions/tagged/documentation), and if you want to contribute read the [userguide readme](http://github.com/bluehawk/userguide/blob/docs/README.md) and fork [bluehawk's forks](http://github.com/bluehawk) of the modules.**
-
-(This page should probably be rewritten by one of the devs)
-
 # What is Kohana?
 
 Kohana is an open source, [object oriented](http://wikipedia.org/wiki/Object-Oriented_Programming) [MVC](http://wikipedia.org/wiki/Model–View–Controller "Model View Controller") [web framework](http://wikipedia.org/wiki/Web_Framework) built using [PHP5](http://php.net/manual/intro-whatis "PHP Hypertext Preprocessor") by a team of volunteers that aims to be swift, secure, and small.
@@ -18,5 +14,6 @@ To help secure your applications, tools for [XSS removal](security.xss), [input 
 
 We are working very hard to provide complete documentation. To help improve the guide, please [fork the userguide](http://github.com/kohana/userguide), make your changes, and send a pull request. If you are not familiar with git, you can also submit a [feature request](http://dev.kohanaframework.org/projects/kohana3/issues) (requires registration).
 
-## Help, I can't find the answer?
+## Unofficial Documentation
+
 If you are having trouble finding an answer here, have a look through the [unofficial wiki](http://kerkness.ca/wiki/doku.php). Your answer may also be found by searching the [forum](http://forum.kohanaphp.com/) or [stackoverflow](http://stackoverflow.com/questions/tagged/kohana) followed by asking your question on either.  Additionally, you can chat with the community of developers on the freenode [#kohana](irc://irc.freenode.net/kohana) IRC channel.  
