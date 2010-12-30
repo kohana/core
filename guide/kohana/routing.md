@@ -1,12 +1,3 @@
-This page still needs lots of example routes, you can use the following as a guide for some routes to include:
-
-<http://kohanaframework.org/guide/tutorials.urls>   
-<http://kerkness.ca/wiki/doku.php?id=routing:routing_basics>   
-<http://kerkness.ca/wiki/doku.php?id=routing:ignoring_overflow_in_a_route>   
-<http://kerkness.ca/wiki/doku.php?id=routing:building_routes_with_subdirectories>
-
-Please don't remove this section without bluehawk's permission :)
-
 # Routing
 
 Kohana provides a very powerful routing system.  In essence, routes provide an interface between the urls and your controllers and actions.  With the correct routes you could make almost any url scheme correspond to almost any arrangement of controllers, and you could change one without impacting the other.
@@ -35,7 +26,7 @@ Let's take a closer look at each of the parameters of [Route::set], which are `n
 
 The name of the route must be a **unique** string.  If it is not it will overwrite the older route with the same name. The name is used for creating urls by reverse routing, or checking which route was matched.
 
-### Uri
+### URI
 
 The uri is a string that represents the format of urls that should be matched.  The tokens surrounded with `<>` are *keys* and anything surrounded with `()` are *optional* parts of the uri. In Kohana routes, any character is allowed and treated literally aside from `()<>`.  The `/` has no meaning besides being a character that must match in the uri.  Usually the `/` is used as a static seperator but as long as the regex makes sense, there are no restrictions to how you can format your routes.
 
@@ -89,7 +80,11 @@ TODO: example of either using directory or controller where it isn't in the rout
 
 ## Examples
 
-TODO: a million billion examples, as well more explanation for these routes that were copied from the old guide:
+TODO: a million billion examples, you can use the following as a guide for some routes to include:
+
+<http://kerkness.ca/wiki/doku.php?id=routing:routing_basics>   
+<http://kerkness.ca/wiki/doku.php?id=routing:ignoring_overflow_in_a_route>   
+<http://kerkness.ca/wiki/doku.php?id=routing:building_routes_with_subdirectories>
 
 There are countless other possibilities for routes. Here are some more examples:
 
