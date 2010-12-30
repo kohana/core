@@ -16,8 +16,8 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.0.8';
-	const CODENAME = 'großen jäger';
+	const VERSION  = '3.0.9';
+	const CODENAME = 'nya året';
 
 	// Log message types
 	const ERROR    = 'ERROR';
