@@ -25,6 +25,9 @@ class Kohana_InflectorTest extends Kohana_Unittest_TestCase
 			// $value, $result
 			array('fish', TRUE),
 			array('cat', FALSE),
+			array('deer', TRUE),
+			array('bison', TRUE),
+			array('friend', FALSE),
 		);
 	}
 
