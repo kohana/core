@@ -1,0 +1,1 @@
+This will discuss models, explain what should be in a model, and give *breif* examples of extending models, like using modeling systems. 

@@ -37,7 +37,11 @@ Class Kohana_HTMLTest extends Unittest_TestCase
 			array(
 				array(),
 				''
-			)
+			),
+			array(
+				array('name' => 'field', 'checked'),
+				' name="field" checked="checked"',
+			),
 		);
 	}
 

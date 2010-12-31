@@ -10,7 +10,9 @@
  */
 class Kohana_Log_Syslog extends Log_Writer {
 
-	// The syslog identifier
+	/**
+	 * @var  string  The syslog identifier
+	 */
 	protected $_ident;
 
 	/**
