@@ -66,7 +66,7 @@ class Kohana_Upload {
 		if (Upload::$remove_spaces === TRUE)
 		{
 			// Remove spaces from the filename
-			$filename = preg_replace('/\s+/', '_', $filename);
+			$filename = preg_replace('/\s+/u', '_', $filename);
 		}
 
 		if ($directory === NULL)
