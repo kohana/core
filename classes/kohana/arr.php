@@ -199,7 +199,7 @@ class Kohana_Arr {
 	* @param mixed   $value     Value to set
 	* @param string  $delimiter Path delimiter
 	*/
-	public static function set_path(array &$array, $path, $value, $delimiter = NULL)
+	public static function set_path( & $array, $path, $value, $delimiter = NULL)
 	{
 		if ( ! $delimiter)
 		{
@@ -226,7 +226,7 @@ class Kohana_Arr {
 				$array[$key] = array();
 			}
 
-			$array = &$array[$key];
+			$array = & $array[$key];
 		}
 
 		// Set key on inner-most array
