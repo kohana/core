@@ -84,8 +84,11 @@ class Kohana_Remote {
 
 		if (isset($error))
 		{
-			throw new Kohana_Exception('Error fetching remote :url [ status :code ] :error',
-				array(':url' => $url, ':code' => $code, ':error' => $error));
+			throw new Kohana_Exception('Error fetching remote :url [ status :code ] :error', array(
+					':url' => $url,
+					':code' => $code,
+					':error' => $error,
+				), $code);
 		}
 
 		return $response;
