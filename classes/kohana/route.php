@@ -494,10 +494,18 @@ class Kohana_Route {
 
 			if ( ! isset($params[$param]))
 			{
-				// Ungrouped parameters are required
-				throw new Kohana_Exception('Required route parameter not passed: :param', array(
-					':param' => $param,
-				));
+				// Look for a default
+				if (isset($this->_defaults[$param]))
+				{
+					$params[$param] = $this->_defaults[$param];
+				}
+				else
+				{
+					// Ungrouped parameters are required
+					throw new Kohana_Exception('Required route parameter not passed: :param', array(
+						':param' => $param,
+					));
+			}
 			}
 
 			$uri = str_replace($key, $params[$param], $uri);

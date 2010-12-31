@@ -293,6 +293,20 @@ class Kohana_RouteTest extends Unittest_TestCase
 	{
 		return array(
 			array(
+				'<controller>(/<action>(/<id>))',
+				NULL,
+				array('controller' => 'welcome', 'action' => 'index'),
+				'welcome',
+				'index',
+				'unit/test/1',
+				array(
+					'controller' => 'unit',
+					'action' => 'test',
+					'id' => '1'
+				),
+				'welcome',
+			),
+			array(
 				'(<controller>(/<action>(/<id>)))',
 				NULL,
 				array('controller' => 'welcome', 'action' => 'index'),
@@ -332,13 +346,13 @@ class Kohana_RouteTest extends Unittest_TestCase
 	 * @test
 	 * @covers Route::matches
 	 */
-	public function test_defaults_are_not_used_if_params_arent_specified($uri, $regex, $defaults, $c, $a, $test_uri, $test_uri_array, $default_uri)
+	public function test_defaults_are_used_if_params_arent_specified($uri, $regex, $defaults, $c, $a, $test_uri, $test_uri_array, $default_uri)
 	{
 		$route = new Route($uri, $regex);
 		$route->defaults($defaults);
 
-		$matches = $route->matches('');
-
+		$matches = $route->matches($default_uri);
+var_dump($route->uri());
 		$this->assertInternalType('array', $matches);
 		$this->assertArrayHasKey('controller', $matches);
 		$this->assertArrayHasKey('action', $matches);
