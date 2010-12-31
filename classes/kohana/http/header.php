@@ -61,7 +61,16 @@ class Kohana_Http_Header extends ArrayObject {
 			// If the key allows commas or no commas are found
 			if (in_array($key, $header_commas_allowed) or (strpos($value, ',') === FALSE))
 			{
-				$header_values[$key] = new Http_Header_Value($value);
+				// If the key is user-agent, we don't want to parse the string
+				if ($key === 'user-agent')
+				{
+					$header_values[$key] = new Http_Header_Value($value, TRUE);
+				}
+				// Else, behave normally
+				else
+				{
+					$header_values[$key] = new Http_Header_Value($value);
+				}
 
 				// Move to next header
 				continue;

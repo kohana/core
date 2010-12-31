@@ -59,11 +59,20 @@ class Kohana_Http_Header_Value {
 	/**
 	 * Builds the header field
 	 *
-	 * @param   mixed   $value  Configuration array passed
+	 * @param   mixed    value  configuration array passed
+	 * @param   boolean  no_parse  skip parsing of the string (i.e. user-agent)
 	 * @throws  Kohana_Http_Exception
 	 */
-	public function __construct($value)
+	public function __construct($value, $no_parse = FALSE)
 	{
+		// If no parse is set, set the value and get out of here (user-agent)
+		if ($no_parse)
+		{
+			$this->key = NULL;
+			$this->value = $value;
+			return;
+		}
+
 		// If configuration array passed
 		if (is_array($value))
 		{
