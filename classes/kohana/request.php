@@ -22,12 +22,12 @@ class Kohana_Request implements Http_Request {
 	public static $client_ip = '0.0.0.0';
 
 	/**
-	 * @var  object  main request instance
+	 * @var  Request  main request instance
 	 */
 	public static $initial;
 
 	/**
-	 * @var  object  currently executing request instance
+	 * @var  Request  currently executing request instance
 	 */
 	public static $current;
 
@@ -812,7 +812,7 @@ class Kohana_Request implements Http_Request {
 	 * @uses    URL::site
 	 * @uses    Request::send_headers
 	 */
-	public function redirect($url, $code = 302)
+	public function redirect($url = '', $code = 302)
 	{
 		if (strpos($url, '://') === FALSE)
 		{

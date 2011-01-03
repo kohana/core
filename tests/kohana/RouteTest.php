@@ -352,7 +352,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 		$route->defaults($defaults);
 
 		$matches = $route->matches($default_uri);
-var_dump($route->uri());
+
 		$this->assertInternalType('array', $matches);
 		$this->assertArrayHasKey('controller', $matches);
 		$this->assertArrayHasKey('action', $matches);

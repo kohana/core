@@ -88,6 +88,8 @@ return array(
 		'blackBerry'     => 'BlackBerry',
 		'motorola'       => 'Motorola',
 		'iphone'         => 'iPhone',
+		'ipad'           => 'iPad',
+		'ipod'           => 'iPod',
 		'android'        => 'Android',
 	),
 

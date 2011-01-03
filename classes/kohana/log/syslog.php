@@ -16,6 +16,16 @@ class Kohana_Log_Syslog extends Log_Writer {
 	protected $_ident;
 
 	/**
+	 * @var  array  log levels
+	 */
+	protected $_syslog_levels = array('ERROR'    => LOG_ERR,
+	                                  'CRITICAL' => LOG_CRIT,
+	                                  'STRACE'   => LOG_ALERT,
+	                                  'ALERT'    => LOG_WARNING,
+	                                  'INFO'     => LOG_INFO,
+	                                  'DEBUG'    => LOG_DEBUG);
+
+	/**
 	 * Creates a new syslog logger.
 	 *
 	 * @see http://us2.php.net/openlog

@@ -25,7 +25,11 @@ class Kohana_Log_StdErr extends Kohana_Log_Writer {
 		foreach ($messages as $message)
 		{
 			// Writes out each message
+<<<<<<< HEAD
 			fwrite(STDERR, PHP_EOL.$message['time'].' --- '.$this->_log_levels[$message['level']].': '.$message['body']);
+=======
+			fwrite(STDERR, PHP_EOL.strtr($format, $message));
+>>>>>>> 3.0/develop
 		}
 	}
 } // End Kohana_Log_StdErr
