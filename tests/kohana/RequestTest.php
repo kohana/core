@@ -24,7 +24,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 			array('http://google.com', 'Request_Client_External'),
 		);
 	}
-	
+
 	/**
 	 * Ensures the create class is created with the correct client
 	 *
@@ -34,9 +34,8 @@ class Kohana_RequestTest extends Unittest_TestCase
 	public function test_create($uri, $client_class)
 	{
 		$request = Request::factory($uri);
-		$client = $request->get_client();
 
-		$this->assertEquals(get_class($client), $client_class);
+		$this->assertInstanceOf($client_class, $request->get_client());
 	}
 
 	/**
@@ -46,11 +45,12 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function test_param()
 	{
-		$uri = 'foo/bar';
+		$uri = 'foo/bar/id';
 		$request = Request::factory($uri);
 
+		$this->assertArrayHasKey('id', $request->param());
+		$this->assertArrayNotHasKey('foo', $matches);
 		$this->assertEquals($request->param('uri'), $uri);
-		$this->assertEquals(is_array($request->param()), TRUE);
 	}
 
 	/**
@@ -66,7 +66,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 	/**
 	 * Ensures a request creates an empty response, and binds correctly
-	 * 
+	 *
 	 * @test
 	 * @dataProvider  provider_create_response
 	 */
@@ -80,7 +80,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 	/**
 	 * Tests Request::response()
-	 * 
+	 *
 	 * @test
 	 */
 	public function test_response()
@@ -95,7 +95,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 	/**
 	 * Tests Request::method()
-	 * 
+	 *
 	 * @test
 	 */
 	public function test_method()
@@ -196,12 +196,5 @@ class Kohana_RequestTest extends Unittest_TestCase
 		));
 
 		$this->assertEquals(Request::factory($uri)->url($params, $protocol), $expected);
-	}
-}
-
-class Controller_Foo extends Controller {
-	public function action_bar()
-	{
-		$this->response->body('foo');
 	}
 }
