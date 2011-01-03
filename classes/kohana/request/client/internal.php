@@ -36,6 +36,8 @@ class Kohana_Request_Client_Internal extends Request_Client {
 	 * @throws  Kohana_Exception
 	 * @uses    [Kohana::$profiling]
 	 * @uses    [Profiler]
+	 * @deprecated passing $params to controller methods deprecated since version 3.1
+	 *             will be removed in 3.2
 	 */
 	public function execute(Request $request)
 	{
@@ -119,7 +121,12 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 			$method = $class->getMethod('action_'.$action);
 
-			// Execute the main action with the parameters
+			/**
+			 * Execute the main action with the parameters
+			 * 
+			 * @deprecated $params passing is deprecated since version 3.1
+			 *             will be removed in 3.2.
+			 */
 			$method->invokeArgs($controller, $params);
 
 			// Execute the "after action" method
