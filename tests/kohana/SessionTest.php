@@ -8,7 +8,7 @@
  * @package    Unittest
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 Class Kohana_SessionTest extends Unittest_TestCase

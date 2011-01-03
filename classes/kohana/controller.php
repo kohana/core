@@ -11,13 +11,13 @@
  *     $controller->after();
  *
  * The controller action should add the output it creates to
- * `$this->request->response`, typically in the form of a [View], during the
+ * `$this->response->body($output)`, typically in the form of a [View], during the
  * "action" part of execution.
  *
  * @package    Kohana
  * @category   Controller
  * @author     Kohana Team
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 abstract class Kohana_Controller {

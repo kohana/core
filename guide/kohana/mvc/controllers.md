@@ -53,7 +53,7 @@ You can also have a controller extend another controller to share common things,
 		
 ## $this->request
 
-Every controller has the `$this->request` property which is the [Request] object that called the controller.  You can use this to get information about the current request, as well as set the response via `$this->request->response`.
+Every controller has the `$this->request` property which is the [Request] object that called the controller.  You can use this to get information about the current request, as well as set the response body via `$this->response->body($ouput)`.
 
 Here is a partial list of the properties and methods available to `$this->request`.  These can also be accessed via `Request::instance()`, but `$this->request` is provided as a shortcut.  See the [Request] class for more information on any of these. 
 
@@ -62,23 +62,25 @@ Property/method | What it does
 [$this->request->route](../api/Request#property:route) | The [Route] that matched the current request url
 [$this->request->directory](../api/Request#property:directory), <br /> [$this->request->controller](../api/Request#property:controller), <br /> [$this->request->action](../api/Request#property:action) | The directory, controller and action that matched for the current route
 [$this->request->param()](../api/Request#param) | Any other params defined in your route
-[$this->request->response](../api/Request#property:response) | The content to return for this request
-[$this->request->status](../api/Request#property:status) | The HTTP status for the request (200, 404, 500, etc.)
-[$this->request->headers](../api/Request#property:headers) | The HTTP headers to return with the response
 [$this->request->redirect()](../api/Request#redirect) | Redirect the request to a different url
+
+## $this->response
+[$this->response->body](../api/Response#property:body) | The content to return for this request
+[$this->response->status](../api/Response#property:status) | The HTTP status for the request (200, 404, 500, etc.)
+[$this->response->headers](../api/Response#property:headers) | The HTTP headers to return with the response
 
 
 ## Actions
 
 You create actions for your controller by defining a public function with an `action_` prefix.  Any method that is not declared as `public` and prefixed with `action_` can NOT be called via routing.
 
-An action method will decide what should be done based on the current request, it *controls* the application.  Did the user want to save a blog post?  Did they provide the necesarry fields?   Do they have permission to da that?  The controller will call other classes, including models, to accomplish this.  Every action should set `$this->request->response` to the [view file](mvc/views) to be sent to the browser, unless it [redirected](../api/Request#redirect) or otherwise ended the script earlier.
+An action method will decide what should be done based on the current request, it *controls* the application.  Did the user want to save a blog post?  Did they provide the necessary fields?   Do they have permission to da that?  The controller will call other classes, including models, to accomplish this.  Every action should set `$this->response->body($view)` to the [view file](mvc/views) to be sent to the browser, unless it [redirected](../api/Request#redirect) or otherwise ended the script earlier.
 
 A very basic action method that simply loads a [view](mvc/views) file.
 
 	public function action_hello()
 	{
-		$this->request->response = View::factory('hello/world'); // This will load views/hello/world.php
+		$this->response->body(View::factory('hello/world')); // This will load views/hello/world.php
 	}
 
 ### Parameters

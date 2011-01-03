@@ -7,7 +7,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaphp.com/license
  * @since      3.1.0
  */
@@ -213,10 +213,9 @@ class Kohana_Response implements Http_Response, Serializable {
 	}
 
 	/**
-	 * Returns the body of the response
+	 * Gets or sets the body of the response
 	 *
-	 * @return  string $content
-	 * @return
+	 * @return  mixed
 	 */
 	public function body($content = NULL)
 	{
