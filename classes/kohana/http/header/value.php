@@ -129,7 +129,7 @@ class Kohana_Http_Header_Value {
 		// Unrecognised value type
 		else
 		{
-			throw new Kohana_Http_Exception(__METHOD__.' unknown header value type: :type. array or string allowed.', array(':type' => gettype($value)));
+			throw new Http_Exception(__METHOD__.' unknown header value type: :type. array or string allowed.', array(':type' => gettype($value)));
 		}
 	}
 

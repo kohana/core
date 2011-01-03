@@ -91,7 +91,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 			if ( ! class_exists($prefix.$controller))
 			{
-				throw new Kohana_Http_Exception_404;
+				throw new Http_Exception_404;
 			}
 
 			// Load the controller using reflection
@@ -116,7 +116,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			// If the action doesn't exist, it's a 404
 			if ( ! $class->hasMethod('action_'.$action))
 			{
-				throw new Kohana_Http_Exception_404;
+				throw new Http_Exception_404;
 			}
 
 			$method = $class->getMethod('action_'.$action);
