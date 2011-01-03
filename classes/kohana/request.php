@@ -912,9 +912,8 @@ class Kohana_Request implements Http_Request {
 	 * Gets and sets the requested with property, which should
 	 * be relative to the x-requested-with pseudo header.
 	 *
-	 * @param   string    requested with 
-	 * @return  string
-	 * @return  Request
+	 * @param   string    $requested_with Requested with value
+	 * @return  mixed
 	 */
 	public function requested_with($requested_with = NULL)
 	{
@@ -956,7 +955,7 @@ class Kohana_Request implements Http_Request {
 	/**
 	 * Returns whether this request is the initial request Kohana received.
 	 * Can be used to test for sub requests.
-	 * 
+	 *
 	 *     if ( ! $request->is_initial())
 	 *         // This is a sub request
 	 *
@@ -964,7 +963,7 @@ class Kohana_Request implements Http_Request {
 	 */
 	public function is_initial()
 	{
-		return (bool) ($this === Request::$initial);
+		return ($this === Request::$initial);
 	}
 
 	/**
@@ -974,7 +973,7 @@ class Kohana_Request implements Http_Request {
 	 */
 	public function is_ajax()
 	{
-		return (bool) ($this->requested_with() === 'xmlhttprequest');
+		return ($this->requested_with() === 'xmlhttprequest');
 	}
 
 	/**
@@ -1252,7 +1251,9 @@ class Kohana_Request implements Http_Request {
 
 			// Parse each
 			foreach ($this->_cookies as $key => $value)
+			{
 				$cookie_string[] = $key.'='.$value;
+			}
 
 			// Create the cookie string
 			$this->_header['cookie'] = implode('; ', $cookie_string);
