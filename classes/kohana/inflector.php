@@ -8,7 +8,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2010 Kohana Team
+ * @copyright  (c) 2007-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Inflector {

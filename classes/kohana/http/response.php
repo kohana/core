@@ -8,7 +8,7 @@
  * @category   Http
  * @author     Kohana Team
  * @since      3.1.0
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 interface Kohana_Http_Response extends Http_Interaction {
