@@ -114,18 +114,19 @@ class Kohana_Validation extends ArrayObject {
 	 * - :value - the value of the field
 	 *
 	 *     // The "username" must not be empty and have a minimum length of 4
-	 *     $validation->rule('username', 'not_empty')
+	 *     $validation->rule('username', 'not_empty', NULL, TRUE)
 	 *                ->rule('username', 'min_length', array('username', 4));
 	 *
 	 *     // The "password" field must match the "password_repeat" field
-	 *     $validation->rule('password', 'matches', array(':validation', 'password', 'password_repeat'));
+	 *     $validation->rule('password', 'matches', array(':validation', 'password', 'password_repeat'), TRUE);
 	 *
 	 * @param   string    field name
 	 * @param   callback  valid PHP callback
 	 * @param   array     extra parameters for the rule
+	 * @param   bool      whether or not to run the rule on an empty field
 	 * @return  $this
 	 */
-	public function rule($field, $rule, array $params = NULL)
+	public function rule($field, $rule, array $params = NULL, $run_if_empty = FALSE)
 	{
 		if ($params === NULL)
 		{
@@ -140,7 +141,7 @@ class Kohana_Validation extends ArrayObject {
 		}
 
 		// Store the rule and params for this rule
-		$this->_rules[$field][] = array($rule, $params);
+		$this->_rules[$field][] = array($rule, $params, $run_if_empty);
 
 		return $this;
 	}
@@ -156,7 +157,7 @@ class Kohana_Validation extends ArrayObject {
 	{
 		foreach ($rules as $rule)
 		{
-			$this->rule($field, $rule[0], Arr::get($rule, 1));
+			$this->rule($field, $rule[0], Arr::get($rule, 1), Arr::get($rule, 2, FALSE));
 		}
 
 		return $this;
@@ -271,9 +272,9 @@ class Kohana_Validation extends ArrayObject {
 			foreach ($set as $array)
 			{
 				// Rules are defined as array($rule, $params)
-				list($rule, $params) = $array;
+				list($rule, $params, $run_if_empty) = $array;
 
-				if ( ! Valid::not_empty($value))
+				if ( ! $run_if_empty AND ! Valid::not_empty($value))
 				{
 					// Skip this rule for empty fields
 					continue;
