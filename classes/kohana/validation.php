@@ -192,6 +192,25 @@ class Kohana_Validation extends ArrayObject {
 	}
 
 	/**
+	 * Helper method to quickly add 'not_empty' rules to an array of fields
+	 *
+	 *     // This provides a much shorter syntax for not_empty rules
+	 *     $validation->not_empty(array('first_name', 'last_name'));
+	 *
+	 * @param   array  array of fields to apply the 'not_empty' rule to
+	 * @return  $this
+	 */
+	public function not_empty(array $fields)
+	{
+		foreach ($fields as $field)
+		{
+			$this->rule($field, 'not_empty', NULL, TRUE);
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Executes all validation rules. This should
 	 * typically be called within an if/else block.
 	 *
