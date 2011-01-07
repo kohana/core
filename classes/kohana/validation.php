@@ -30,9 +30,6 @@ class Kohana_Validation extends ArrayObject {
 	// Field labels
 	protected $_labels = array();
 
-	// Rules that are executed even when the value is empty
-	protected $_empty_rules = array('not_empty', 'matches');
-
 	// Error list, field => rule
 	protected $_errors = array();
 
@@ -276,7 +273,7 @@ class Kohana_Validation extends ArrayObject {
 				// Rules are defined as array($rule, $params)
 				list($rule, $params) = $array;
 
-				if ( ! in_array($rule, $this->_empty_rules) AND ! Valid::not_empty($value))
+				if ( ! Valid::not_empty($value))
 				{
 					// Skip this rule for empty fields
 					continue;
