@@ -152,7 +152,7 @@ abstract class Kohana_Request_Client {
 	 */
 	public function set_cache(Response $response)
 	{
-		if ($cache_control = $response->header->offsetExists('cache-control'))
+		if ($cache_control = $response->headers()->offsetExists('cache-control'))
 		{
 			// Parse the cache control
 			$cache_control = Response::parse_cache_control( (string) $cache_control);
@@ -264,7 +264,7 @@ abstract class Kohana_Request_Client {
 		$corrected_initial_age = $corrected_received_age + $this->request_execution_time();
 
 		// Resident time
-		$resident_time = time() - $this->_response_time();
+		$resident_time = time() - $this->_response_time;
 
 		// Current age
 		$current_age = $corrected_initial_age + $resident_time;
