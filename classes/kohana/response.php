@@ -347,7 +347,7 @@ class Kohana_Response implements Http_Response, Serializable {
 		if (is_array($key))
 		{
 			reset($key);
-			while (list($_key, $_value) = each($fruit))
+			while (list($_key, $_value) = each($key))
 			{
 				$this->cookie($_key, $_value, $expiration);
 			}
