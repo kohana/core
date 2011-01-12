@@ -108,6 +108,18 @@ class Kohana_RequestTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Tests Request::route()
+	 *
+	 * @test
+	 */
+	public function test_route()
+	{
+		$request = Request::factory(''); // This should always match something, no matter what changes people make
+
+		$this->assertType('Route', $request->route());
+	}
+
+	/**
 	 * Tests Request::accept_type()
 	 *
 	 * @test

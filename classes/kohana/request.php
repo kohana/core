@@ -852,6 +852,21 @@ class Kohana_Request implements Http_Request {
 	}
 
 	/**
+	 * Sets and gets the route from the request.
+	 *
+	 * @param   string $route
+	 * @return  mixed
+	 */
+	public function route(Route $route = NULL)
+	{
+		if ( ! $route)
+			return $this->_route;
+
+		$this->_route = $route;
+		return $this;
+	}
+
+	/**
 	 * Sets and gets the directory for the controller.
 	 *
 	 * @param   string   $directory  Directory to execute the controller from
