@@ -74,9 +74,6 @@ class Kohana_Request_Client_External extends Request_Client {
 		if ($this->_cache instanceof Cache AND ($response = $this->_cache->cache_response($request)) instanceof Response)
 			return $response;
 
-		$previous = Request::$current;
-		Request::$current = $request;
-
 		if (Kohana::$profiling)
 		{
 			// Set the benchmark name
@@ -91,6 +88,10 @@ class Kohana_Request_Client_External extends Request_Client {
 			// Start benchmarking
 			$benchmark = Profiler::start('Requests', $benchmark);
 		}
+
+		// Store the current active request and replace current with new request
+		$previous = Request::$current;
+		Request::$current = $request;
 
 		// If PECL_HTTP is present, use extension to complete request
 		if (extension_loaded('http'))
