@@ -71,7 +71,7 @@ class Kohana_Request_Client_External extends Request_Client {
 	public function execute(Request $request)
 	{
 		// Check for cache existance
-		if ($this->_cache instanceof Cache AND ($response = $this->_cache->cache_response($request)) instanceof Response)
+		if ($this->_cache instanceof Cache AND ($response = $this->cache_response($request)) instanceof Response)
 			return $response;
 
 		if (Kohana::$profiling)
