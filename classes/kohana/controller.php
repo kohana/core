@@ -28,7 +28,7 @@ abstract class Kohana_Controller {
 	public $request;
 
 	/**
-	 * @var  object The response that will be returned from controller
+	 * @var  Response The response that will be returned from controller
 	 */
 	public $response;
 
