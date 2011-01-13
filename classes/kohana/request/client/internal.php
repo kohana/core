@@ -83,7 +83,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 		// Is this the initial request
 		$initial_request = ($request === Request::$initial);
-
+		
 		try
 		{
 			// Initiate response time

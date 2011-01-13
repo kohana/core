@@ -49,7 +49,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$request = Request::factory($uri);
 
 		$this->assertArrayHasKey('id', $request->param());
-		$this->assertArrayNotHasKey('foo', $matches);
+		$this->assertArrayNotHasKey('foo', $request->param());
 		$this->assertEquals($request->param('uri'), $uri);
 	}
 
@@ -116,7 +116,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	{
 		$request = Request::factory(''); // This should always match something, no matter what changes people make
 
-		$this->assertType('Route', $request->route());
+		$this->assertInstanceOf('Route', $request->route());
 	}
 
 	/**

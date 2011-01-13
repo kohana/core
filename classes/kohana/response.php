@@ -357,7 +357,7 @@ class Kohana_Response implements Http_Response, Serializable {
 		else
 		{
 			// Get the expiration value
-			$expiration = ($expiration) ? $expiration : Cookie::$expiration;
+			$expiration = $expiration ? $expiration : Cookie::$expiration;
 
 			if ( ! is_array($value))
 			{
@@ -366,7 +366,7 @@ class Kohana_Response implements Http_Response, Serializable {
 					'expiration' => $expiration
 				);
 			}
-			else if ( ! isset($value['expiration']))
+			elseif ( ! isset($value['expiration']))
 			{
 				$value['expiration'] = $expiration;
 			}
