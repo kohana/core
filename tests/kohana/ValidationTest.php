@@ -60,7 +60,7 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 
 		$this->assertNotSame($validation, $copy);
 
-		foreach(array('_rules', '_bound', '_labels', '_empty_rules', '_errors') as $attribute)
+		foreach (array('_rules', '_bound', '_labels', '_empty_rules', '_errors') as $attribute)
 		{
 			// This is just an easy way to check that the attributes are identical
 			// Without hardcoding the expected values
@@ -325,18 +325,18 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 	 */
 	public function test_errors($array, $rules, $expected)
 	{
-		$Validation = Validation::factory($array);
+		$validation = Validation::factory($array);
 
-		foreach($rules as $field => $field_rules)
+		foreach ($rules as $field => $field_rules)
 		{
-			$Validation->rules($field, $field_rules);
+			$validation->rules($field, $field_rules);
 		}
 
-		$Validation->check();
+		$validation->check();
 
-		$this->assertSame($expected, $Validation->errors('Validation', FALSE));
+		$this->assertSame($expected, $validation->errors('Validation', FALSE));
 		// Should be able to get raw errors array
-		$this->assertAttributeSame($Validation->errors(NULL), '_errors', $Validation);
+		$this->assertAttributeSame($validation->errors(NULL), '_errors', $validation);
 	}
 
 	/**

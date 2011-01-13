@@ -16,7 +16,7 @@ class Kohana_FileTest extends Unittest_TestCase
 {
 	/**
 	 * Provides test data for test_sanitize()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_mime()
@@ -43,7 +43,7 @@ class Kohana_FileTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for test_split_join()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_split_join()
@@ -68,6 +68,9 @@ class Kohana_FileTest extends Unittest_TestCase
 		$this->assertSame($expected, File::split($input, $peices));
 		$this->assertSame($expected, File::join($input));
 
-		foreach (glob(Kohana::find_file('tests', 'test_data/github', 'png') . '.*') as $file) unlink($file);
+		foreach (glob(Kohana::find_file('tests', 'test_data/github', 'png').'.*') as $file)
+		{
+			unlink($file);
+		}
 	}
 }

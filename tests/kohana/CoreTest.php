@@ -16,7 +16,7 @@
  */
 class Kohana_CoreTest extends Unittest_TestCase
 {
-	
+
 	/**
 	 * Provides test data for test_sanitize()
 	 *
@@ -316,7 +316,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 		$this->assertSame(APPPATH, reset($include_paths));
 		$this->assertSame(SYSPATH, end($include_paths));
 
-		foreach($modules as $module)
+		foreach ($modules as $module)
 		{
 			$this->assertContains($module, $include_paths);
 		}

@@ -170,7 +170,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 	 *
 	 * Technically we can't "test" this as the default regex is an empty array, this
 	 * is purely for improving test coverage
-	 * 
+	 *
 	 * @dataProvider provider_constructor_only_changes_custom_regex_if_passed
 	 *
 	 * @test
@@ -224,7 +224,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 
 	/**
 	 * Route::matches() should return false if the route doesn't match against a uri
-	 * 
+	 *
 	 * @dataProvider provider_matches_returns_false_on_failure
 	 *
 	 * @test
@@ -263,7 +263,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 	/**
 	 * Route::matches() should return an array of parameters when a match is made
 	 * An parameters that are not matched should not be present in the array of matches
-	 * 
+	 *
 	 * @dataProvider provider_matches_returns_array_of_parameters_on_successful_match
 	 *
 	 * @test
@@ -279,7 +279,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 		$this->assertArrayHasKey('controller', $matches);
 		$this->assertArrayHasKey('action', $matches);
 		$this->assertArrayNotHasKey('id', $matches);
-	//	$this->assertSame(5, count($matches));
+		// $this->assertSame(5, count($matches));
 		$this->assertSame($c, $matches['controller']);
 		$this->assertSame($a, $matches['action']);
 	}
@@ -340,7 +340,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 	/**
 	 * Defaults specified with defaults() should be used if their values aren't
 	 * present in the uri
-	 * 
+	 *
 	 * @dataProvider provider_defaults_are_used_if_params_arent_specified
 	 *
 	 * @test
@@ -357,7 +357,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 		$this->assertArrayHasKey('controller', $matches);
 		$this->assertArrayHasKey('action', $matches);
 		$this->assertArrayNotHasKey('id', $matches);
-	//	$this->assertSame(4, count($matches));
+		// $this->assertSame(4, count($matches));
 		$this->assertSame($c, $matches['controller']);
 		$this->assertSame($a, $matches['action']);
 		$this->assertSame($test_uri, $route->uri($test_uri_array));
@@ -387,7 +387,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 
 	/**
 	 * This tests that routes with required parameters will not match uris without them present
-	 * 
+	 *
 	 * @dataProvider provider_required_parameters_are_needed
 	 *
 	 * @test
@@ -406,7 +406,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 		$matches = $route->matches($matches_route2);
 
 		$this->assertInternalType('array', $matches);
-	//	$this->assertSame(5, count($matches));
+		// $this->assertSame(5, count($matches));
 		$this->assertArrayHasKey('controller', $matches);
 		$this->assertArrayHasKey('action', $matches);
 	}
@@ -439,7 +439,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 	 * if it's a static route
 	 *
 	 * A static route is a route without any parameters
-	 * 
+	 *
 	 * @dataProvider provider_reverse_routing_returns_routes_uri_if_route_is_static
 	 *
 	 * @test
@@ -477,7 +477,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 	 * When Route::uri is working on a uri that requires certain parameters to be present
 	 * (i.e. <controller> in '<controller(/<action)') then it should throw an exception
 	 * if the param was not provided
-	 * 
+	 *
 	 * @dataProvider provider_uri_throws_exception_if_required_params_are_missing
 	 *
 	 * @test
@@ -548,7 +548,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 	 *
 	 * This test asserts that Route::uri will replace required segments with provided
 	 * params
-	 * 
+	 *
 	 * @dataProvider provider_uri_fills_required_uri_segments_from_params
 	 *
 	 * @test

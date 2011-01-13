@@ -22,7 +22,7 @@ class Kohana_DebugTest extends Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	public function provider_debug()
+	public function provider_vars()
 	{
 		return array(
 			// $exception_type, $message, $is_cli, $expected
@@ -34,12 +34,12 @@ class Kohana_DebugTest extends Unittest_TestCase
 	 * Tests Debug::vars()
 	 *
 	 * @test
-	 * @dataProvider provider_debug
+	 * @dataProvider provider_vars
 	 * @covers Debug::vars
 	 * @param boolean $thing    The thing to debug
 	 * @param boolean $expected Output for Debug::vars
 	 */
-	public function testdebug($thing, $expected)
+	public function test_var($thing, $expected)
 	{
 		$this->assertEquals($expected, Debug::vars($thing));
 	}
@@ -72,7 +72,7 @@ class Kohana_DebugTest extends Unittest_TestCase
 	 * @param boolean $path     Input for Debug::path
 	 * @param boolean $expected Output for Debug::path
 	 */
-	public function testDebugPath($path, $expected)
+	public function test_debug_path($path, $expected)
 	{
 		$this->assertEquals($expected, Debug::path($path));
 	}

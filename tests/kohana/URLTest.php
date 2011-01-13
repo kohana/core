@@ -33,8 +33,8 @@ Class Kohana_URLTest extends Unittest_TestCase
 	public function provider_base()
 	{
 		return array(
-			// $index, $protocol, $expected, $enviroment
-			//
+			// $protocol, $index, $expected, $enviroment
+
 			// Test with different combinations of parameters for max code coverage
 			array(NULL,    FALSE, '/kohana/'),
 			array('http',  FALSE, 'http://example.com/kohana/'),
@@ -43,11 +43,6 @@ Class Kohana_URLTest extends Unittest_TestCase
 			array('http',  TRUE,  'http://example.com/kohana/index.php/'),
 			array('https', TRUE,  'https://example.com/kohana/index.php/'),
 			array('ftp',   TRUE,  'ftp://example.com/kohana/index.php/'),
-
-			//
-			// These tests make sure that the protocol changes when the global setting changes
-			//array(TRUE,   TRUE,   'https://example.com/kohana/index.php/', array('Http::$protocol' => 'https')),
-			//array(FALSE,  TRUE,   'https://example.com/kohana/', array('Http::$protocol' => 'https')),
 
 			// Change base url'
 			array('https', FALSE, 'https://example.com/kohana/', array('Kohana::$base_url' => 'omglol://example.com/kohana/')),
@@ -221,7 +216,7 @@ Class Kohana_URLTest extends Unittest_TestCase
 	 * @param string $separator    Seperate to replace invalid characters with
 	 * @param string $expected     Expected result
 	 */
-	public function test_Title($expected, $title, $separator, $ascii_only = FALSE)
+	public function test_title($expected, $title, $separator, $ascii_only = FALSE)
 	{
 		$this->assertSame(
 			$expected,
@@ -233,7 +228,7 @@ Class Kohana_URLTest extends Unittest_TestCase
 	 * Provides test data for URL::query()
 	 * @return array
 	 */
-	public function provider_Query()
+	public function provider_query()
 	{
 		return array(
 			array(array(), '', NULL),
