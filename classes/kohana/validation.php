@@ -258,7 +258,6 @@ class Kohana_Validation extends ArrayObject {
 		$this->bind(':validation', $this);
 
 		// Execute the rules
-
 		foreach ($rules as $field => $set)
 		{
 			// Get the field value
@@ -275,12 +274,6 @@ class Kohana_Validation extends ArrayObject {
 			{
 				// Rules are defined as array($rule, $params)
 				list($rule, $params) = $array;
-
-				if ( ! in_array($rule, $this->_empty_rules) AND ! Valid::not_empty($value))
-				{
-					// Skip this rule for empty fields
-					continue;
-				}
 
 				foreach ($params as $key => $param)
 				{
@@ -323,6 +316,10 @@ class Kohana_Validation extends ArrayObject {
 					// Call $Class::$method($this[$field], $param, ...) with Reflection
 					$passed = $method->invokeArgs(NULL, $params);
 				}
+
+				// Ignore return values from rules when the field is empty
+				if ( ! in_array($rule, $this->_empty_rules) AND ! Valid::not_empty($value))
+					continue;
 
 				if ($passed === FALSE)
 				{
