@@ -53,12 +53,12 @@ class Kohana_DebugTest extends Unittest_TestCase
 	{
 		return array(
 			array(
-				Kohana::find_file('classes', 'kohana'),
+				SYSPATH.'classes'.DIRECTORY_SEPARATOR.'kohana'.EXT,
 				'SYSPATH'.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'kohana.php'
 			),
 			array(
-				Kohana::find_file('classes', $this->dirSeparator('kohana/unittest/runner')),
-				$this->dirSeparator('MODPATH/unittest/classes/kohana/unittest/runner.php')
+				MODPATH.$this->dirSeparator('unittest/classes/kohana/unittest/runner').EXT,
+				$this->dirSeparator('MODPATH/unittest/classes/kohana/unittest/runner').EXT
 			),
 		);
 	}
