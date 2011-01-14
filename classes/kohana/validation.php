@@ -216,8 +216,11 @@ class Kohana_Validation extends ArrayObject {
 		// New data set
 		$data = $this->_errors = array();
 
+		// Store the original data because this class should not modify it post-validation
+		$original = $this->getArrayCopy();
+
 		// Get a list of the expected fields
-		$expected = Arr::merge(array_keys($this->getArrayCopy()), array_keys($this->_labels));
+		$expected = Arr::merge(array_keys($original), array_keys($this->_labels));
 
 		// Import the rules locally
 		$rules     = $this->_rules;
@@ -332,6 +335,9 @@ class Kohana_Validation extends ArrayObject {
 			}
 		}
 
+		// Restore the data to its original form
+		$this->exchangeArray($original);
+
 		if (isset($benchmark))
 		{
 			// Stop benchmarking
@@ -409,7 +415,7 @@ class Kohana_Validation extends ArrayObject {
 			// Start the translation values list
 			$values = array(
 				':field' => $label,
-				':value' => $this[$field],
+				':value' => Arr::get($this, $field),
 			);
 
 			if (is_array($values[':value']))
