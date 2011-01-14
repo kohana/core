@@ -322,3 +322,4 @@ class Kohana_CoreTest extends Unittest_TestCase
 		}
 	}
 }
+
