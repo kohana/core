@@ -444,4 +444,43 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 
 		$this->assertSame($expected, $validation->errors('Validation', FALSE));
 	}
+
+	/**
+	 * Tests Validation::check()
+	 *
+	 * @test
+	 * @covers Validation::check
+	 */
+	public function test_data_stays_unaltered()
+	{
+		$validation = Validation::factory(array('foo' => 'bar'))
+			->rule('something', 'not_empty');
+
+		$before = $validation->as_array();
+		$validation->check();
+		$after = $validation->as_array();
+
+		$expected = array('foo' => 'bar');
+
+		$this->assertSame($expected, $before);
+		$this->assertSame($expected, $after);
+	}
+
+	/**
+	 * Tests Validation::errors()
+	 *
+	 * @test
+	 * @covers Validation::errors
+	 */
+	public function test_object_parameters_not_in_messages()
+	{
+		$validation = Validation::factory(array('foo' => 'foo'))
+			->rule('bar', 'matches', array(':validation', 'foo', ':field'));
+
+		$validation->check();
+		$errors = $validation->errors('validation');
+		$expected = array('bar' => 'bar must be the same as foo');
+
+		$this->assertSame($expected, $errors);
+	}
 }
