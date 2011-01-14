@@ -217,7 +217,7 @@ class Kohana_Validation extends ArrayObject {
 		$data = $this->_errors = array();
 
 		// Get a list of the expected fields
-		$expected = array_keys($this->_labels);
+		$expected = Arr::merge(array_keys($this->getArrayCopy()), array_keys($this->_labels));
 
 		// Import the rules locally
 		$rules     = $this->_rules;
