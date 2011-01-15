@@ -9,7 +9,7 @@
  * @package    Unittest
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 Class Kohana_ValidTest extends Unittest_TestCase
@@ -410,9 +410,11 @@ Class Kohana_ValidTest extends Unittest_TestCase
 	public function test_email_domain($email, $correct)
 	{
 		if ( ! $this->hasInternet())
+		{
 			$this->markTestSkipped('An internet connection is required for this test');
+		}
 
-		if( ! Kohana::$is_windows OR version_compare(PHP_VERSION, '5.3.0', '>='))
+		if ( ! Kohana::$is_windows OR version_compare(PHP_VERSION, '5.3.0', '>='))
 		{
 			$this->assertSame(
 				$correct,

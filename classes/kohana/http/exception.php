@@ -36,47 +36,4 @@ class Kohana_Http_Exception extends Kohana_Exception {
 		parent::__construct($message, $variables, $code);
 	}
 
-	/**
-	 * Magic object-to-string method.
-	 *
-	 *     echo $exception;
-	 *
-	 * @return  string
-	 */
-	public function __toString()
-	{
-		return (string) $response;
-	}
-
-	/**
-	 * Renders this exception.
-	 *
-	 *     $response = $exception->render();
-	 *
-	 * @return  [Response]
-	 */
-	public function render()
-	{
-		$code = $this->getCode();
-		$message = $this->getMessage();
-
-		// In some edge cases, Request::current() may be NULL
-		if ( ! ($request = Request::current()) instanceof Request)
-		{
-			$request = Request::initial();
-		}
-
-		// Create response
-		$response = $request->create_response();
-		// Create view
-		$this->_http_view = new View($this->_http_view, array(
-			'http_code'    => $code,
-			'http_status'  => Response::$messages[$code],
-			'message'      => $message
-		));
-
-		// Return the response with variables applied
-		return $response->status($this->getCode())
-			->body($this->_http_view->render());
-	}
 } // End Kohana_Http_Exception

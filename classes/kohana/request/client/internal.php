@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  * @since      3.1.0
  */
@@ -42,7 +42,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 	public function execute(Request $request)
 	{
 		// Check for cache existance
-		if ($this->_cache instanceof Cache AND ($response = $this->_cache->cache_response($request)) instanceof Response)
+		if ($this->_cache instanceof Cache AND ($response = $this->cache_response($request)) instanceof Response)
 			return $response;
 
 		// Create the class prefix
@@ -83,7 +83,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 		// Is this the initial request
 		$initial_request = ($request === Request::$initial);
-
+		
 		try
 		{
 			// Initiate response time
@@ -91,7 +91,8 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 			if ( ! class_exists($prefix.$controller))
 			{
-				throw new Http_Exception_404;
+				throw new Http_Exception_404('The requested URL :uri was not found on this server.',
+													array(':uri' => $request->param('uri')));
 			}
 
 			// Load the controller using reflection
@@ -116,14 +117,15 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			// If the action doesn't exist, it's a 404
 			if ( ! $class->hasMethod('action_'.$action))
 			{
-				throw new Http_Exception_404;
+				throw new Http_Exception_404('The requested URL :uri was not found on this server.',
+													array(':uri' => $request->param('uri')));
 			}
 
 			$method = $class->getMethod('action_'.$action);
 
 			/**
 			 * Execute the main action with the parameters
-			 * 
+			 *
 			 * @deprecated $params passing is deprecated since version 3.1
 			 *             will be removed in 3.2.
 			 */

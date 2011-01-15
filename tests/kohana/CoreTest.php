@@ -11,12 +11,12 @@
  * @package    Unittest
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_CoreTest extends Unittest_TestCase
 {
-	
+
 	/**
 	 * Provides test data for test_sanitize()
 	 *
@@ -316,9 +316,10 @@ class Kohana_CoreTest extends Unittest_TestCase
 		$this->assertSame(APPPATH, reset($include_paths));
 		$this->assertSame(SYSPATH, end($include_paths));
 
-		foreach($modules as $module)
+		foreach ($modules as $module)
 		{
 			$this->assertContains($module, $include_paths);
 		}
 	}
 }
+

@@ -69,7 +69,7 @@ So this:
 would display a nice 404 error page, where:
 
 	throw new Kohana_Exception('Directory :dir must be writable',
-				array(':dir' => Kohana::debug_path(Kohana::$cache_dir)));
+				array(':dir' => Debug::path(Kohana::$cache_dir)));
 
 would display an error 500 page.
 

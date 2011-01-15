@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Security
  * @author     Kohana Team
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Validation extends ArrayObject {
@@ -216,8 +216,11 @@ class Kohana_Validation extends ArrayObject {
 		// New data set
 		$data = $this->_errors = array();
 
+		// Store the original data because this class should not modify it post-validation
+		$original = $this->getArrayCopy();
+
 		// Get a list of the expected fields
-		$expected = array_keys($this->_labels);
+		$expected = Arr::merge(array_keys($original), array_keys($this->_labels));
 
 		// Import the rules locally
 		$rules     = $this->_rules;
@@ -258,7 +261,6 @@ class Kohana_Validation extends ArrayObject {
 		$this->bind(':validation', $this);
 
 		// Execute the rules
-
 		foreach ($rules as $field => $set)
 		{
 			// Get the field value
@@ -275,12 +277,6 @@ class Kohana_Validation extends ArrayObject {
 			{
 				// Rules are defined as array($rule, $params)
 				list($rule, $params) = $array;
-
-				if ( ! in_array($rule, $this->_empty_rules) AND ! Valid::not_empty($value))
-				{
-					// Skip this rule for empty fields
-					continue;
-				}
 
 				foreach ($params as $key => $param)
 				{
@@ -324,6 +320,10 @@ class Kohana_Validation extends ArrayObject {
 					$passed = $method->invokeArgs(NULL, $params);
 				}
 
+				// Ignore return values from rules when the field is empty
+				if ( ! in_array($rule, $this->_empty_rules) AND ! Valid::not_empty($value))
+					continue;
+
 				if ($passed === FALSE)
 				{
 					// Add the rule to the errors
@@ -334,6 +334,9 @@ class Kohana_Validation extends ArrayObject {
 				}
 			}
 		}
+
+		// Restore the data to its original form
+		$this->exchangeArray($original);
 
 		if (isset($benchmark))
 		{
@@ -412,7 +415,7 @@ class Kohana_Validation extends ArrayObject {
 			// Start the translation values list
 			$values = array(
 				':field' => $label,
-				':value' => $this[$field],
+				':value' => Arr::get($this, $field),
 			);
 
 			if (is_array($values[':value']))
@@ -429,6 +432,11 @@ class Kohana_Validation extends ArrayObject {
 					{
 						// All values must be strings
 						$value = implode(', ', Arr::flatten($value));
+					}
+					elseif (is_object($value))
+					{
+						// Objects cannot be used in message files
+						continue;
 					}
 
 					// Check if a label for this parameter exists

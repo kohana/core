@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Exceptions
  * @author     Kohana Team
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Exception extends Exception {
@@ -80,77 +80,67 @@ class Kohana_Exception extends Exception {
 	{
 		try
 		{
-			if ($e instanceof Kohana_Http_Exception)
+			// Get the exception information
+			$type    = get_class($e);
+			$code    = $e->getCode();
+			$message = $e->getMessage();
+			$file    = $e->getFile();
+			$line    = $e->getLine();
+
+			// Get the exception backtrace
+			$trace = $e->getTrace();
+
+			if ($e instanceof ErrorException)
 			{
-				// Clean the output buffer if one exists
-				ob_get_level() and ob_clean();
-
-				echo $e->render()
-					->send_headers()
-					->body();
-			}
-			else
-			{
-				// Get the exception information
-				$type    = get_class($e);
-				$code    = $e->getCode();
-				$message = $e->getMessage();
-				$file    = $e->getFile();
-				$line    = $e->getLine();
-
-				// Get the exception backtrace
-				$trace = $e->getTrace();
-
-				if ($e instanceof ErrorException)
+				if (isset(Kohana_Exception::$php_errors[$code]))
 				{
-					if (isset(Kohana_Exception::$php_errors[$code]))
-					{
-						// Use the human-readable error name
-						$code = Kohana_Exception::$php_errors[$code];
-					}
+					// Use the human-readable error name
+					$code = Kohana_Exception::$php_errors[$code];
+				}
 
-					if (version_compare(PHP_VERSION, '5.3', '<'))
+				if (version_compare(PHP_VERSION, '5.3', '<'))
+				{
+					// Workaround for a bug in ErrorException::getTrace() that exists in
+					// all PHP 5.2 versions. @see http://bugs.php.net/bug.php?id=45895
+					for ($i = count($trace) - 1; $i > 0; --$i)
 					{
-						// Workaround for a bug in ErrorException::getTrace() that exists in
-						// all PHP 5.2 versions. @see http://bugs.php.net/bug.php?id=45895
-						for ($i = count($trace) - 1; $i > 0; --$i)
+						if (isset($trace[$i - 1]['args']))
 						{
-							if (isset($trace[$i - 1]['args']))
-							{
-								// Re-position the args
-								$trace[$i]['args'] = $trace[$i - 1]['args'];
+							// Re-position the args
+							$trace[$i]['args'] = $trace[$i - 1]['args'];
 
-								// Remove the args
-								unset($trace[$i - 1]['args']);
-							}
+							// Remove the args
+							unset($trace[$i - 1]['args']);
 						}
 					}
 				}
-
-				if ( ! headers_sent())
-				{
-					// Make sure the proper content type is sent with a 500 status
-					header('Content-Type: text/html; charset='.Kohana::$charset, TRUE, 500);
-				}
-
-				// Start an output buffer
-				ob_start();
-
-				// Include the exception HTML
-				if ($view_file = Kohana::find_file('views', Kohana_Exception::$error_view))
-				{
-					include $view_file;
-				}
-				else
-				{
-					throw new Kohana_Exception('Error view file does not exist: views/:file', array(
-						':file' => Kohana_Exception::$error_view,
-					));
-				}
-
-				// Display the contents of the output buffer
-				echo ob_get_clean();
 			}
+
+			if ( ! headers_sent())
+			{
+				// Make sure the proper http header is sent
+				$http_header_status = ($e instanceof Http_Exception) ? $code : 500;
+
+				header('Content-Type: text/html; charset='.Kohana::$charset, TRUE, $http_header_status);
+			}
+
+			// Start an output buffer
+			ob_start();
+
+			// Include the exception HTML
+			if ($view_file = Kohana::find_file('views', Kohana_Exception::$error_view))
+			{
+				include $view_file;
+			}
+			else
+			{
+				throw new Kohana_Exception('Error view file does not exist: views/:file', array(
+					':file' => Kohana_Exception::$error_view,
+				));
+			}
+
+			// Display the contents of the output buffer
+			echo ob_get_clean();
 
 			// Create a text version of the exception
 			$error = Kohana_Exception::text($e);

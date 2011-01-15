@@ -11,7 +11,7 @@
  * @package    Unittest
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 class Kohana_DebugTest extends Unittest_TestCase
@@ -22,7 +22,7 @@ class Kohana_DebugTest extends Unittest_TestCase
 	 *
 	 * @return array
 	 */
-	public function provider_debug()
+	public function provider_vars()
 	{
 		return array(
 			// $exception_type, $message, $is_cli, $expected
@@ -34,12 +34,12 @@ class Kohana_DebugTest extends Unittest_TestCase
 	 * Tests Debug::vars()
 	 *
 	 * @test
-	 * @dataProvider provider_debug
+	 * @dataProvider provider_vars
 	 * @covers Debug::vars
 	 * @param boolean $thing    The thing to debug
 	 * @param boolean $expected Output for Debug::vars
 	 */
-	public function testdebug($thing, $expected)
+	public function test_var($thing, $expected)
 	{
 		$this->assertEquals($expected, Debug::vars($thing));
 	}
@@ -53,12 +53,12 @@ class Kohana_DebugTest extends Unittest_TestCase
 	{
 		return array(
 			array(
-				Kohana::find_file('classes', 'kohana'),
+				SYSPATH.'classes'.DIRECTORY_SEPARATOR.'kohana'.EXT,
 				'SYSPATH'.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'kohana.php'
 			),
 			array(
-				Kohana::find_file('classes', $this->dirSeparator('kohana/unittest/runner')),
-				$this->dirSeparator('MODPATH/unittest/classes/kohana/unittest/runner.php')
+				MODPATH.$this->dirSeparator('unittest/classes/kohana/unittest/runner').EXT,
+				$this->dirSeparator('MODPATH/unittest/classes/kohana/unittest/runner').EXT
 			),
 		);
 	}
@@ -72,7 +72,7 @@ class Kohana_DebugTest extends Unittest_TestCase
 	 * @param boolean $path     Input for Debug::path
 	 * @param boolean $expected Output for Debug::path
 	 */
-	public function testDebugPath($path, $expected)
+	public function test_debug_path($path, $expected)
 	{
 		$this->assertEquals($expected, Debug::path($path));
 	}

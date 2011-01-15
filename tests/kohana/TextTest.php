@@ -49,18 +49,18 @@ Class Kohana_TextTest extends Unittest_TestCase
 	}
 
 	/**
-	 * This test makes sure that auto_p doesn't enclose HTML tags 
+	 * This test makes sure that auto_p doesn't enclose HTML tags
 	 * in paragraphs
 	 *
 	 * @test
 	 * @covers Text::auto_p
 	 * @dataProvider provider_auto_para_does_not_enclose_html_tags_in_paragraphs
-	 */ 
+	 */
 	function test_auto_para_does_not_enclose_html_tags_in_paragraphs(array $tags, $text)
 	{
 		$output = Text::auto_p($text);
-		
-		foreach($tags as $tag)
+
+		foreach ($tags as $tag)
 		{
 			$this->assertNotTag(
 				array('tag' => $tag, 'ancestor' => array('tag' => 'p')),
@@ -112,7 +112,7 @@ Class Kohana_TextTest extends Unittest_TestCase
 			array('The rain...', 'The rain in spain', 2, '...'),
 		);
 	}
-	
+
 	/**
 	 *
 	 * @test
@@ -168,7 +168,7 @@ Class Kohana_TextTest extends Unittest_TestCase
 		$this->assertSame('good', Text::alternate($val_a, $val_b, $val_c));
 		$this->assertSame('bad',  Text::alternate($val_a, $val_b, $val_c));
 		$this->assertSame('ugly', Text::alternate($val_a, $val_b, $val_c));
-		
+
 		$this->assertSame('good', Text::alternate($val_a, $val_b, $val_c));
 	}
 
@@ -181,10 +181,10 @@ Class Kohana_TextTest extends Unittest_TestCase
 	function test_alternate_resets_when_called_with_no_params_and_returns_empty_string()
 	{
 		list($val_a, $val_b, $val_c) = array('yes', 'no', 'maybe');
-		
+
 		$this->assertSame('yes', Text::alternate($val_a, $val_b, $val_c));
-		
-		$this->assertSame('', Text::alternate());	
+
+		$this->assertSame('', Text::alternate());
 
 		$this->assertSame('yes', Text::alternate($val_a, $val_b, $val_c));
 	}
@@ -192,7 +192,7 @@ Class Kohana_TextTest extends Unittest_TestCase
 	/**
 	 * Provides test data for test_reducde_slashes()
 	 *
-	 * @returns array Array of test data 
+	 * @returns array Array of test data
 	 */
 	function provider_reduce_slashes()
 	{
@@ -268,7 +268,7 @@ Class Kohana_TextTest extends Unittest_TestCase
 	/**
 	 * Tests Text::random() as well as possible
 	 *
-	 * Obviously you can't compare a randomly generated string against a 
+	 * Obviously you can't compare a randomly generated string against a
 	 * pre-generated one and check that they are the same as this goes
 	 * against the whole ethos of random.
 	 *
@@ -308,7 +308,7 @@ Class Kohana_TextTest extends Unittest_TestCase
 				$pool = '2345679ACDEFHJKLMNPRSTUVWXYZ';
 			break;
 		}
-		
+
 		$this->assertRegExp('/^['.$pool.']{'.$length.'}$/u', Text::random($type, $length));
 	}
 
@@ -416,7 +416,7 @@ Class Kohana_TextTest extends Unittest_TestCase
 						<li>voorzitter@xxxx.com</li>
 						<li>vicevoorzitter@xxxx.com</li>
 					</ul>';
-	
+
 		$this->assertFalse(strpos('vice', Text::auto_link_emails($original)));
 	}
 
@@ -454,7 +454,7 @@ Class Kohana_TextTest extends Unittest_TestCase
 	/**
 	 * Provides test data for test_auto_link_urls()
 	 *
-	 * @return array 
+	 * @return array
 	 */
 	public function provider_auto_link_urls()
 	{
@@ -508,7 +508,7 @@ Class Kohana_TextTest extends Unittest_TestCase
 	/**
 	 * Provides test data for test_auto_link_emails()
 	 *
-	 * @return array 
+	 * @return array
 	 */
 	public function provider_auto_link_emails()
 	{
@@ -573,24 +573,24 @@ Class Kohana_TextTest extends Unittest_TestCase
 	{
 		$linked_text = Text::auto_link($text);
 
-		if($urls === FALSE)
+		if ($urls === FALSE)
 		{
 			$this->assertNotContains('http://', $linked_text);
 		}
-		elseif(count($urls))
+		elseif (count($urls))
 		{
-			foreach($urls as $url)
+			foreach ($urls as $url)
 			{
 				// Assert that all the urls have been caught by text auto_link_urls()
 				$this->assertContains(Text::auto_link_urls($url), $linked_text);
 			}
 		}
 
-		foreach($emails as $email)
+		foreach ($emails as $email)
 		{
 			$this->assertNotContains($email, $linked_text);
 		}
-		
+
 	}
 
 }

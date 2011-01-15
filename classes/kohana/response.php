@@ -7,7 +7,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaphp.com/license
  * @since      3.1.0
  */
@@ -213,10 +213,9 @@ class Kohana_Response implements Http_Response, Serializable {
 	}
 
 	/**
-	 * Returns the body of the response
+	 * Gets or sets the body of the response
 	 *
-	 * @return  string $content
-	 * @return
+	 * @return  mixed
 	 */
 	public function body($content = NULL)
 	{
@@ -346,15 +345,33 @@ class Kohana_Response implements Http_Response, Serializable {
 
 		if (is_array($key))
 		{
-			$this->_cookies = $key;
+			reset($key);
+			while (list($_key, $_value) = each($key))
+			{
+				$this->cookie($_key, $_value, $expiration);
+			}
 		}
-		elseif ( ! $value)
-		{
+
+		if ( ! $value)
 			return Arr::get($this->_cookies, $key);
-		}
 		else
 		{
-			$this->_cookies[$key] = (string) $value;
+			// Get the expiration value
+			$expiration = $expiration ? $expiration : Cookie::$expiration;
+
+			if ( ! is_array($value))
+			{
+				$value = array(
+					'value' => $value,
+					'expiration' => $expiration
+				);
+			}
+			elseif ( ! isset($value['expiration']))
+			{
+				$value['expiration'] = $expiration;
+			}
+
+			$this->_cookies[$key] = $value;
 		}
 
 		return $this;

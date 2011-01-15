@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2010 Kohana Team
+ * @copyright  (c) 2007-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_URL {
@@ -86,10 +86,11 @@ class Kohana_URL {
 	 *
 	 * @param   string  $uri        Site URI to convert
 	 * @param   mixed   $protocol   Protocol string or [Request] class to use protocol from
+	 * @param   boolean $index		Include the index_page in the URL
 	 * @return  string
 	 * @uses    URL::base
 	 */
-	public static function site($uri = '', $protocol = NULL)
+	public static function site($uri = '', $protocol = NULL, $index = TRUE)
 	{
 		// Chop off possible scheme, host, port, user and pass parts
 		$path = preg_replace('~^[-a-z0-9+.]++://[^/]++/?~', '', trim($uri, '/'));
@@ -101,7 +102,7 @@ class Kohana_URL {
 		}
 
 		// Concat the URL
-		return URL::base($protocol, TRUE).$path;
+		return URL::base($protocol, $index).$path;
 	}
 
 	/**

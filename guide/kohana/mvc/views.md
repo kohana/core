@@ -20,7 +20,7 @@ View files are stored in the `views` directory of the [filesystem](files). You c
 
     public function action_about()
     {
-        $this->request->response = View::factory('pages/about');
+        $this->response->body(View::factory('pages/about'));
     }
 
 When a view is assigned as the [Request::$response], as in the example above, it will automatically be rendered when necessary. To get the rendered result of a view you can call the [View::render] method or just type cast it to a string. When a view is rendered, the view file is loaded and HTML is generated.
@@ -35,7 +35,7 @@ When a view is assigned as the [Request::$response], as in the example above, it
         // Or just type cast it to a string
         $about_page = (string) $view;
 
-        $this->request->response = $about_page;
+        $this->response->body($about_page);
     }
 
 ## Variables in Views
@@ -49,7 +49,7 @@ Once view has been loaded, variables can be assigned to it using the [View::set]
             ->bind('user', $this->user);
 
         // The view will have $places and $user variables
-        $this->request->response = $view;
+        $this->response->body($view);
     }
 
 [!!] The only difference between `set()` and `bind()` is that `bind()` assigns the variable by reference. If you `bind()` a variable before it has been defined, the variable will be created with a value of `NULL`.  
@@ -64,7 +64,7 @@ You can also assign variables directly to the View object.  This is identical to
         $view->user = $this->user;
 
         // The view will have $places and $user variables
-        $this->request->response = $view;
+        $this->response->body($view);
 	}
 
 ### Global Variables
