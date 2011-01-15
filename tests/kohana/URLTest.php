@@ -66,18 +66,18 @@ Class Kohana_URLTest extends Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_base
-	 * @param boolean $index       Parameter for Url::base()
 	 * @param boolean $protocol    Parameter for Url::base()
+	 * @param boolean $index       Parameter for Url::base()
 	 * @param string  $expected    Expected url
 	 * @param array   $enviroment  Array of enviroment vars to change @see Kohana_URLTest::setEnvironment()
 	 */
-	public function test_base($index, $protocol, $expected, array $enviroment = array())
+	public function test_base($protocol, $index, $expected, array $enviroment = array())
 	{
 		$this->setEnvironment($enviroment);
 
 		$this->assertSame(
 			$expected,
-			URL::base($index, $protocol)
+			URL::base($protocol, $index)
 		);
 	}
 

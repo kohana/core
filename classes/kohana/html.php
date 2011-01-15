@@ -124,7 +124,7 @@ class Kohana_HTML {
 			elseif ($uri[0] !== '#')
 			{
 				// Make the URI absolute for non-id anchors
-				$uri = URL::site($uri, $protocol);
+				$uri = URL::site($uri, $protocol, $index);
 			}
 		}
 
