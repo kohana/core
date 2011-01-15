@@ -1061,17 +1061,25 @@ class Kohana_Core {
 			} 
 			else
 			{
-				if ($null_pad) 
+				if ($func_param->isDefaultValueAvailable())
 				{
-					// Note that null-padding the array isn't, strictly speaking,
-					// "correct". However, if you *don't* null pad, then parameters
-					// after the missing one can't be assigned. Either way, we're
-					// dealing with undefined behavior, so we have to pick a compromise.
-					$args[] = NULL;
-				} 
+					// use the default value provided in the function signature if it exists
+					$args[] = $func_param->getDefaultValue();
+				}
 				else
 				{
-					break;
+					if ($null_pad)
+					{
+						// Note that null-padding the array isn't, strictly speaking,
+						// "correct". However, if you *don't* null pad, then parameters
+						// after the missing one can't be assigned. Either way, we're
+						// dealing with undefined behavior, so we have to pick a compromise.
+						$args[] = NULL;
+					}
+					else
+					{
+						break;
+					}
 				}
 			}
 		}
