@@ -125,14 +125,9 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 			/**
 			 * Execute the main action with the parameters
-			 *
-			 * We choose to null-pad by policy here. Unassigned parameters get
-			 * NULL rather than causing unexpected behavior, which would be
-			 * much more confusing. If you want a parameter to have a default
-			 * value, set the default in your route.
 			 */
 
-			Kohana::invoke_with_args($method,$params,$controller,TRUE);
+			Kohana::invoke_with_args($method,$params,$controller);
 
 			// Execute the "after action" method
 			$class->getMethod('after')->invoke($controller);
