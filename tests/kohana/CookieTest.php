@@ -4,14 +4,16 @@
  * Tests the cookie class
  *
  * @group kohana
+ * @group kohana.cookie
  *
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_CookieTest extends Unittest_TestCase
+class Kohana_CookieTest extends Unittest_TestCase
 {
 
 	protected $_default_salt = 'AdaoidadnA£ASDNadnaoiwdnawd';

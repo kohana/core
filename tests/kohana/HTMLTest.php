@@ -4,14 +4,16 @@
  * Tests HTML
  *
  * @group kohana
+ * @group kohana.html
  *
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_HTMLTest extends Unittest_TestCase
+class Kohana_HTMLTest extends Unittest_TestCase
 {
 	protected $environmentDefault = array(
 		'Kohana::$base_url' => '/kohana/',

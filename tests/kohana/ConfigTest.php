@@ -4,15 +4,17 @@
  * Tests the Config lib that's shipped with kohana
  *
  * @group kohana
+ * @group kohana.config
  *
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
  * @author     Matt Button <matthew@sigswitch.com>
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_ConfigTest extends Unittest_TestCase
+class Kohana_ConfigTest extends Unittest_TestCase
 {
 
 	/**

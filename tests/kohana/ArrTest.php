@@ -4,14 +4,16 @@
  * Tests the Arr lib that's shipped with kohana
  *
  * @group kohana
+ * @group kohana.arr
  *
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_ArrTest extends Unittest_TestCase
+class Kohana_ArrTest extends Unittest_TestCase
 {
 	/**
 	 * Provides test data for test_callback()

@@ -6,13 +6,14 @@
  * @group kohana
  * @group kohana.valid
  *
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_ValidTest extends Unittest_TestCase
+class Kohana_ValidTest extends Unittest_TestCase
 {
 
 	/**

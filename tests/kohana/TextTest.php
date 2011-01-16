@@ -4,8 +4,12 @@
  * Tests the kohana text class (Kohana_Text)
  *
  * @group kohana
+ * @group kohana.text
+ *
+ * @package    Kohana
+ * @category   Tests
  */
-Class Kohana_TextTest extends Unittest_TestCase
+class Kohana_TextTest extends Unittest_TestCase
 {
 
 	/**

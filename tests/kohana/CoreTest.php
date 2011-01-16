@@ -8,7 +8,8 @@
  * @group kohana
  * @group kohana.core
  *
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
  * @copyright  (c) 2008-2011 Kohana Team

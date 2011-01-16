@@ -6,7 +6,8 @@
  * @group kohana
  * @group kohana.logging
  *
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     Matt Button <matthew@sigswitch.com>
  * @copyright  (c) 2008-2011 Kohana Team
