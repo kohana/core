@@ -14,7 +14,7 @@
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_ConfigTest extends Unittest_TestCase
+class Kohana_ConfigTest extends Unittest_TestCase
 {
 
 	/**

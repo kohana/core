@@ -13,7 +13,7 @@
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_ValidationTest extends Unittest_TestCase
+class Kohana_ValidationTest extends Unittest_TestCase
 {
 	/**
 	 * Tests Validation::factory()

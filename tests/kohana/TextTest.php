@@ -9,7 +9,7 @@
  * @package    Kohana
  * @category   Tests
  */
-Class Kohana_TextTest extends Unittest_TestCase
+class Kohana_TextTest extends Unittest_TestCase
 {
 
 	/**

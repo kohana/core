@@ -12,7 +12,7 @@
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_NumTest extends Unittest_TestCase
+class Kohana_NumTest extends Unittest_TestCase
 {
 	protected $default_locale;
 

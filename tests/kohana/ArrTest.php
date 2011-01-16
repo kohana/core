@@ -13,7 +13,7 @@
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_ArrTest extends Unittest_TestCase
+class Kohana_ArrTest extends Unittest_TestCase
 {
 	/**
 	 * Provides test data for test_callback()
