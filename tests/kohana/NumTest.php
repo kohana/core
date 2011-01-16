@@ -4,7 +4,9 @@
  * Tests Num
  *
  * @group      kohana
- * @package    Unittest
+ * @group      kohana.num
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
  * @copyright  (c) 2008-2011 Kohana Team

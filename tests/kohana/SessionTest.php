@@ -1,11 +1,13 @@
 <?php defined('SYSPATH') OR die('Kohana bootstrap needs to be included before tests run');
 
 /**
- * Tests the cookie class
+ * Tests the session class
  *
  * @group kohana
+ * @group kohana.session
  *
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
  * @copyright  (c) 2008-2011 Kohana Team

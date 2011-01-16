@@ -4,8 +4,10 @@
  * Test for feed helper
  *
  * @group kohana
+ * @group kohana.feed
  *
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
  * @copyright  (c) 2008-2011 Kohana Team

@@ -4,8 +4,10 @@
  * Tests the Config lib that's shipped with kohana
  *
  * @group kohana
+ * @group kohana.config
  *
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
  * @author     Matt Button <matthew@sigswitch.com>

@@ -4,8 +4,10 @@
  * Tests the cookie class
  *
  * @group kohana
+ * @group kohana.cookie
  *
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
  * @copyright  (c) 2008-2011 Kohana Team

@@ -4,8 +4,10 @@
  * Tests the Arr lib that's shipped with kohana
  *
  * @group kohana
+ * @group kohana.arr
  *
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
  * @copyright  (c) 2008-2011 Kohana Team

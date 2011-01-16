@@ -4,6 +4,10 @@
  * Tests Kohana_Security
  *
  * @group kohana
+ * @group kohana.security
+ *
+ * @package    Kohana
+ * @category   Tests
  */
 
 Class Kohana_SecurityTest extends Unittest_TestCase

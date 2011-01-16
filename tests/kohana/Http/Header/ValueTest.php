@@ -6,9 +6,11 @@
  * @group kohana
  * @group kohana.http
  * @group kohana.http.header
+ * @group kohana.http.header.value
  *
  * @see CLI
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
  * @copyright  (c) 2008-2011 Kohana Team
