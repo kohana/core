@@ -305,7 +305,7 @@ class Kohana_Arr {
 	 * Adds a value to the beginning of an associative array.
 	 *
 	 *     // Add an empty value to the start of a select list
-	 *     Arr::unshift_assoc($array, 'none', 'Select a value');
+	 *     Arr::unshift($array, 'none', 'Select a value');
 	 *
 	 * @param   array   array to modify
 	 * @param   string  array key name
