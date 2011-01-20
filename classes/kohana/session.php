@@ -13,15 +13,34 @@ abstract class Kohana_Session {
 	/**
 	 * @var  string  default session adapter
 	 */
-	public static $default = 'native';
+	public static $default = null;
 
 	/**
 	 * @var  array  session instances
 	 */
 	protected static $instances = array();
 
+	
+	
 	/**
-	 * Creates a singleton session of the given type. Some session types
+	 * 
+	 * Function used to create a singleton instance of a session. This functionality changed in 3.0 so the function has
+	 * been renamed to conform with the  Lazy Initialization pattern as opposed to Singleton.
+	 * The result is that this function will return the same session of a given type.
+	 * 
+	 * @deprecated deprecated as it doesn't do what it says on the tin. Use getSession instead. Should be removed in next major release.
+	 * @param   string   type of session (native, cookie, etc)
+	 * @param   string   session identifier
+	 * @return  Session
+	 * @uses    self::getSession()
+	 */
+	public static function instance($type = NULL, $id = NULL)
+	{
+		return Session::getSession($type,$id);
+	}
+	
+	/**
+	 * Creates a Lazy Initialization (singleton of a given type) session of the given type. Some session types
 	 * (native, database) also support restarting a session by passing a
 	 * session id as the second parameter.
 	 *
@@ -33,20 +52,35 @@ abstract class Kohana_Session {
 	 * @param   string   session identifier
 	 * @return  Session
 	 * @uses    Kohana::config
+	 * @throws Kohana_Exception if session cookie name isn't defined in configuration or if there is a name collision.
 	 */
-	public static function instance($type = NULL, $id = NULL)
+	public static function getSession($type = NULL, $id = NULL)
 	{
+		
+		
 		if ($type === NULL)
 		{
 			// Use the default type
-			$type = Session::$default;
+			// Either from the config, or from Session::$default if it is present
+			// If both are NULL, then it will set it to native.
+			$type = Session::$default===NULL?Kohana::config("session")->get('default','native'):Session::$default;
+					
 		}
-
+		
 		if ( ! isset(Session::$instances[$type]))
 		{
+			//Check for collisions of driver cookie names.
+			$driver_names = array();
+			foreach(($config = Kohana::config("session")) as $driver => $driver_config)
+			{
+				if(!isset($driver_config['name'])||array_key_exists($driver_config['name'],$driver_names))
+					throw new Kohana_Exception("Session 'name' missing or collision error in configuration for :driver driver",array(":driver"=>$driver));
+				$driver_names[$driver_config['name']]=true;
+			}
+			
 			// Load the configuration for this type
-			$config = Kohana::config('session')->get($type);
-
+			$config = $config[$type];
+			
 			// Set the session class name
 			$class = 'Session_'.ucfirst($type);
 
@@ -56,6 +90,8 @@ abstract class Kohana_Session {
 			// Write the session at shutdown
 			register_shutdown_function(array($session, 'write'));
 		}
+		else if(isset($id)&&Session::$instances[$type]->id()!==$id)
+			throw Kohana_Exception("You can't change session IDs half way through execution");
 
 		return Session::$instances[$type];
 	}
