@@ -35,7 +35,7 @@ abstract class Kohana_Session {
 	 * @param   string   type of session (native, cookie, etc)
 	 * @param   string   session identifier
 	 * @return  Session
-	 * @uses    self::getSession()
+	 * @uses    self::get_session()
 	 */
 	public static function instance($type = NULL, $id = NULL)
 	{
@@ -57,7 +57,7 @@ abstract class Kohana_Session {
 	 * @uses    Kohana::config
 	 * @throws 	Kohana_Exception if session cookie name isn't defined in configuration or if there is a name collision.
 	 */
-	public static function getSession($type = NULL, $id = NULL)
+	public static function get_session($type = NULL, $id = NULL)
 	{
 		if ($type === NULL)
 		{
