@@ -13,7 +13,7 @@ abstract class Kohana_Session {
 	/**
 	 * @var  string  default session adapter
 	 */
-	public static $default = null;
+	public static $default = NULL;
 
 	/**
 	 * @var  array  session instances
@@ -31,7 +31,7 @@ abstract class Kohana_Session {
 	 *
 	 * [!!] [Session::write] will automatically be called when the request ends.
 	 *  
-	 * @deprecated deprecated as it doesn't do what it says on the tin. Use getSession instead. Should be removed in next major release.
+	 * @deprecated deprecated as it doesn't do what it says on the tin. Use get_session instead. Should be removed in next major release.
 	 * @param   string   type of session (native, cookie, etc)
 	 * @param   string   session identifier
 	 * @return  Session
@@ -39,7 +39,7 @@ abstract class Kohana_Session {
 	 */
 	public static function instance($type = NULL, $id = NULL)
 	{
-		return Session::getSession($type,$id);
+		return Session::getSession($type, $id);
 	}
 	
 	/**
