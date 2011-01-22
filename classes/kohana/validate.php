@@ -1031,9 +1031,10 @@ class Kohana_Validate extends ArrayObject {
 	/**
 	 * Returns the error messages. If no file is specified, the error message
 	 * will be the name of the rule that failed. When a file is specified, the
-	 * message will be loaded from "field/rule", or if no rule-specific message
-	 * exists, "field/default" will be used. If neither is set, the returned
-	 * message will be "file/field/rule".
+	 * message will be loaded from `$field.$rule`, or if no rule-specific message
+	 * exists, `$field.default` will be used. If neither is set, the returned
+	 * message will be `validate.$rule`. If `validate.$rule` is empty,
+	 * then `$file.$field.$rule` will be returned.
 	 *
 	 * By default all messages are translated using the default language.
 	 * A string can be used as the second parameter to specified the language
