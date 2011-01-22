@@ -207,7 +207,7 @@ Would map the uri `controller/id/method` to `controller/method/id`.  In 3.0 you'
 
 Angled brackets denote dynamic sections that should be parsed into variables. Rounded brackets mark an optional section which is not required. If you wanted to only match uris beginning with admin you could use:
 
-	Rouse::set('admin', 'admin(/<controller>(/<id>(/<action>)))');
+    Route::set('admin', 'admin(/<controller>(/<id>(/<action>)))');
 
 And if you wanted to force the user to specify a controller:
 
