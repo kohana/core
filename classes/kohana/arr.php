@@ -437,7 +437,7 @@ class Kohana_Arr {
 	 *     $array = Arr::overwrite($a1, $a2);
 	 *
 	 *     // The output of $array will now be:
-	 *     array('name' => 'jack', 'mood' => 'happy', 'food' => 'bacon')
+	 *     array('name' => 'jack', 'mood' => 'happy', 'food' => 'tacos')
 	 *
 	 * @param   array   master array
 	 * @param   array   input arrays that will overwrite existing values
