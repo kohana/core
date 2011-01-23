@@ -18,7 +18,7 @@ abstract class Kohana_Session {
 	/**
 	 * @var  array  session instances
 	 */
-	protected static $instances = array();
+	public static $instances = array();
 
 	/**
 	 * Creates a singleton session of the given type. Some session types
