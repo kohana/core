@@ -181,6 +181,23 @@ class Kohana_RequestTest extends Kohana_Unittest_TestCase
 
 		$this->assertEquals(Request::instance($uri)->url($params, $protocol), $expected);
 	}
+
+	/**
+	 * Tests Request::detect_uri(), see #3313
+	 *
+	 * @test
+	 * @covers Request::detect_uri
+	 */
+	public function test_detect_uri_is_string()
+	{
+		$this->setEnvironment(array(
+			'Kohana::$base_url'   => '/kohana/',
+			'Kohana::$index_file' => FALSE,
+			'_SERVER'             => array('REQUEST_URI' => '/kohana/', 'PATH_INFO' => NULL),
+		));
+
+		$this->assertInternalType('string', Request::detect_uri());
+	}
 }
 
 class Controller_Foo extends Controller {
