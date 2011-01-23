@@ -801,6 +801,13 @@ class Kohana_Request {
 				// Send the raw header
 				header($value, TRUE);
 			}
+
+			foreach (Session::$instances as $session)
+			{
+				// Sessions will most likely write cookies, which will be sent
+				// with the headers
+				$session->write();
+			}
 		}
 
 		return $this;
