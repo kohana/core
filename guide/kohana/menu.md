@@ -39,7 +39,6 @@
 - [Tutorials](tutorials)
    - [Hello World](tutorials/hello-world)
    - [Simple MVC](tutorials/simple-mvc)
-   - [Routes & Links](tutorials/routes-and-links)
    - [Custom Error Pages](tutorials/error-pages)
    - [Content Translation](tutorials/translation)
    - [Clean URLs](tutorials/clean-urls)
