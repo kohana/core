@@ -23,4 +23,5 @@ Every application follows the same flow:
 		4. Calls the controller action, which generates the request response.
 		5. Calls the [Controller::after] method.
 		    * The above 5 steps can be repeated multiple times when using [HMVC sub-requests](requests).
+3. Application flow returns to index.php
 	12. The main [Request] response is displayed

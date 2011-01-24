@@ -18,7 +18,7 @@
    - [Routing](routing)
    - [Error Handling](errors)
    - [Tips & Common Mistakes](tips)
-   - [Upgrading from v2.x](upgrading)
+   - [Upgrading from v3.0](upgrading)
 - Basic Usage
    - [Debugging](debugging)
    - [Loading Classes](autoloading)

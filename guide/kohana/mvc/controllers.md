@@ -178,10 +178,10 @@ In general, you should not have to change the `__construct()` function, as anyth
 	// You should almost never need to do this, use before() instead!
 
 	// Be sure Kohana_Request is in the params
-	public function __construct(Kohana_Request $request)
+	public function __construct(Request $request, Response $response)
 	{
 		// You must call parent::__construct at some point in your function
-		parent::__construct($request);
+		parent::__construct($request, $response);
 		
 		// Do whatever else you want
 	}
