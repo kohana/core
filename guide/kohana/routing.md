@@ -78,7 +78,7 @@ TODO: example of either using directory or controller where it isn't in the rout
 
 ### Directory
 
-## Lamda/Callback route logic
+## Lambda/Callback route logic
 
 In 3.1, you can specify advanced routing schemes by using lambda routes. Instead of a URI, you can use an anonymous function or callback syntax to specify a function that will process your routes. Here's a simple example:
 
