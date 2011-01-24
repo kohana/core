@@ -1,25 +1,14 @@
-# Friendly Error Pages <small>written by <a href="http://mathew-davies.co.uk./">Mathew Davies</a></small>
+# Friendly Error Pages
 
 By default Kohana 3 doesn't have a method to display friendly error pages like that 
-seen in Kohana 2; In this short guide I will teach you how it is done.
+seen in Kohana 2; In this short guide you will learn how it is done.
 
 ## Prerequisites 
 
 You will need `'errors' => TRUE` passed to `Kohana::init`. This will convert PHP 
 errors into exceptions which are easier to handle.
 
-## 1. A Custom Exception
-
-First off, we are going to need a custom exception class. This is so we can perform different
-actions based on it in the exception handler. I will talk more about this later.
-
-_classes/http\_response\_exception.php_
-
-	<?php defined('SYSPATH') or die('No direct access');
-
-	class HTTP_Response_Exception extends Kohana_Exception {}
-
-## 2. An Improved Exception Handler
+## 1. An Improved Exception Handler
 
 Our custom exception handler is self explanatory.
 
@@ -39,7 +28,7 @@ Our custom exception handler is self explanatory.
 				'message' => rawurlencode($e->getMessage())
 			);
 
-			if ($e instanceof HTTP_Response_Exception)
+			if ($e instanceof Http_Exception)
 			{
 				$attributes['action'] = $e->getCode();
 			}
@@ -56,7 +45,7 @@ If we are in the development environment then pass it off to Kohana otherwise:
 
 * Log the error
 * Set the route action and message attributes.
-* If a `HTTP_Response_Exception` was thrown, then override the action with the error code.
+* If a `Http_Exception` was thrown, then override the action with the error code.
 * Fire off an internal sub-request.
 
 The action will be used as the HTTP response code. By default this is: 500 (internal
@@ -64,7 +53,7 @@ server error) unless a `HTTP_Response_Exception` was thrown.
 
 So this:
 
-	throw new HTTP_Response_Exception(':file does not exist', array(':file' => 'Gaia'), 404);
+	throw new Http_Exception_404(':file does not exist', array(':file' => 'Gaia'));
 
 would display a nice 404 error page, where:
 
@@ -82,7 +71,7 @@ would display an error 500 page.
 
 ## 3. The Error Page Controller
 
-	public function  before()
+	public function before()
 	{
 		parent::before();
 
@@ -98,8 +87,10 @@ would display an error 500 page.
 		}
 		else
 		{
-			$this->request->action = 404;
+			$this->request->action(404);
 		}
+		
+		$this->response->status((int) $this->request->action());
 	}
 
 1. Set a template variable "page" so the user can see what they requested. This 
@@ -124,19 +115,17 @@ public function action_404()
 	}
 	
 	// HTTP Status code.
-	$this->request->status = 404;
+	$this->response->status(404);
 }
 
 public function action_503()
 {
 	$this->template->title = 'Maintenance Mode';
-	$this->request->status = 503;
 }
 
 public function action_500()
 {
 	$this->template->title = 'Internal Server Error';
-	$this->request->status = 500;
 }
 ~~~
 
@@ -145,7 +134,7 @@ and sets the request response code.
 
 ## 4. Handling 3rd Party Modules.
 
-Some Kohana modules will make calls to `Kohana::exception_handler`. We can redirect
+Some Kohana modules will make calls to `Kohana_exception::handler`. We can redirect
 calls made to it by extending the Kohana class and passing the exception to our handler.
 
 	<?php defined('SYSPATH') or die('No direct script access.');
@@ -165,4 +154,4 @@ calls made to it by extending the Kohana class and passing the exception to our 
 
 So that's it. Now displaying a nice error page is as easy as:
 
-	throw new HTTP_Response_Exception('The website is down', NULL, 503);
+	throw new Http_Exception_503('The website is down');
