@@ -60,3 +60,7 @@ The cookie class now throws an exception if there isn't a salt set, and no salt 
 If for some reason you are overloading your controller's constructor, it has changed to:
 
 	public function __construct(Request $request, Response $response)
+
+## index.php / bootstrap.php changes
+
+The main change here is that the request execution has been removed from bootstrap.php and moved to index.php. This allows you to use one bootstrap when doing testing. The reason for this change is that the bootstrap should only setup the environment. It shouldn't run it.
