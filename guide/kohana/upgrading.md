@@ -63,7 +63,7 @@ If for some reason you are overloading your controller's constructor, it has cha
 
 ## URL
 
-The base function has been modified.
+The "base" function has been modified.
 
 In 3.0 the function was defined as, where $protocol could be TRUE, FALSE or an string, $index was boolean:
 
@@ -74,7 +74,7 @@ In 3.1 the function is defined as, where $protocol could be NULL, instance of Re
 
         public static function base($protocol = NULL, $index = FALSE)
 
-The site function now accepts a third parameter $index and the second one $protocol accepts the same variable types as the base function.
+The "site" function now accepts a third parameter $index and the second one $protocol accepts the same variable types as the "base" function.
 
 
 ## index.php / bootstrap.php changes
