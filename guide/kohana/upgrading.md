@@ -61,6 +61,22 @@ If for some reason you are overloading your controller's constructor, it has cha
 
 	public function __construct(Request $request, Response $response)
 
+## URL
+
+The base function has been modified.
+
+In 3.0 the function was defined as, where $protocol could be TRUE, FALSE or an string, $index was boolean:
+
+        public static function base($index = FALSE, $protocol = FALSE)
+
+
+In 3.1 the function is defined as, where $protocol could be NULL, instance of Request or string (not boolean anymore) and $index could be boolean. Notice the swap in the order of arguments:
+
+        public static function base($protocol = NULL, $index = FALSE)
+
+The site function now accepts a third parameter $index and the second one $protocol accepts the same variable types as the base function.
+
+
 ## index.php / bootstrap.php changes
 
 The main change here is that the request execution has been removed from bootstrap.php and moved to index.php. This allows you to use one bootstrap when doing testing. The reason for this change is that the bootstrap should only setup the environment. It shouldn't run it.
