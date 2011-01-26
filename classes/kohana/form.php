@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Form helper class. Unless otherwise noted, all generated HTML will be made
  * safe using the [HTML::chars] method. This prevents against simple XSS
@@ -241,7 +241,7 @@ class Kohana_Form {
 	 *     echo Form::select('country', $countries, $country);
 	 *
 	 * [!!] Support for multiple selected options was added in v3.0.7.
-	 * 
+	 *
 	 * @param   string   input name
 	 * @param   array    available options
 	 * @param   mixed    selected option string, or an array of selected options
