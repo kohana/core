@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Credit card validation configuration.
  *
