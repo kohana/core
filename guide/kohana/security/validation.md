@@ -218,9 +218,9 @@ Next, we need a controller and action to process the registration, which will be
             $errors = $post->errors('user');
 
             // Display the registration form
-            $this->response->body(View::factory('user/register'))
+            $this->response->body(View::factory('user/register')
                 ->bind('post', $post)
-                ->bind('errors', $errors);
+                ->bind('errors', $errors));
         }
 
     }
