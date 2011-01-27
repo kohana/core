@@ -287,9 +287,19 @@ class Kohana_Validation extends ArrayObject {
 					}
 				}
 
-				if (is_array($rule) OR ! is_string($rule))
+				// Default the error name to be the rule (except array and lambda rules)
+				$error_name = $rule;
+
+				if (is_array($rule))
 				{
-					// This is either a callback as an array or a lambda
+					// This is an array callback, the method name is the error name
+					$error_name = $rule[1];
+					$passed = call_user_func_array($rule, $params);
+				}
+				elseif ( ! is_string($rule))
+				{
+					// This is a lambda function, there is no error name (errors must be added manually)
+					$error_name = FALSE;
 					$passed = call_user_func_array($rule, $params);
 				}
 				elseif (method_exists('Valid', $rule))
@@ -324,10 +334,10 @@ class Kohana_Validation extends ArrayObject {
 				if ( ! in_array($rule, $this->_empty_rules) AND ! Valid::not_empty($value))
 					continue;
 
-				if ($passed === FALSE)
+				if ($passed === FALSE AND $error_name !== FALSE)
 				{
 					// Add the rule to the errors
-					$this->error($field, $rule, $params);
+					$this->error($field, $error_name, $params);
 
 					// This field has an error, stop executing rules
 					break;
