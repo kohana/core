@@ -157,4 +157,5 @@ abstract class Kohana_Http {
 
 		return implode('&', $encoded);
 	}
-} // End Kohana_Http
+
+} // End Http

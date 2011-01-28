@@ -240,4 +240,4 @@ class Kohana_File {
 		return $pieces;
 	}
 
-} // End file
+} // End File

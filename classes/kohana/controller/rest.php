@@ -93,4 +93,4 @@ abstract class Kohana_Controller_REST extends Controller {
 			->headers('Allow', implode(', ', array_keys($this->_action_map)));
 	}
 
-} // End REST
+} // End Controller_REST

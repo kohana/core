@@ -11,7 +11,7 @@
  * @author     Kohana Team
  * @since      3.1.0
  * @copyright  (c) 2008-2011 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Http_Header_Value {
 
@@ -216,4 +216,4 @@ class Kohana_Http_Header_Value {
 		return $string;
 	}
 
-} // End Http_Header_Field
+} // End Http_Header_Value

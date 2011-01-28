@@ -431,4 +431,4 @@ class Kohana_Form {
 		return '<label'.HTML::attributes($attributes).'>'.$text.'</label>';
 	}
 
-} // End form
+} // End Form

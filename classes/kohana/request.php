@@ -1371,4 +1371,5 @@ class Kohana_Request implements Http_Request {
 
 		return $params;
 	}
+
 } // End Request

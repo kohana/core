@@ -187,4 +187,4 @@ class Kohana_Upload {
 		return ($file['size'] <= $size);
 	}
 
-} // End upload
+} // End Upload

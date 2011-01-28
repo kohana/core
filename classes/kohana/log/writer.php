@@ -46,4 +46,4 @@ abstract class Kohana_Log_Writer {
 		return spl_object_hash($this);
 	}
 
-} // End Kohana_Log_Writer
+} // End Log_Writer

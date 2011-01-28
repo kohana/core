@@ -100,4 +100,4 @@ class Kohana_Security {
 		return str_replace(array('<?', '?>'), array('&lt;?', '?&gt;'), $str);
 	}
 
-} // End security
+} // End Security

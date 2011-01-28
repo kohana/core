@@ -191,4 +191,4 @@ class Kohana_Exception extends Exception {
 			get_class($e), $e->getCode(), strip_tags($e->getMessage()), Debug::path($e->getFile()), $e->getLine());
 	}
 
-} // End Kohana_Exception
+} // End Exception

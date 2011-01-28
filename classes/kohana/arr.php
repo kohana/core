@@ -571,4 +571,4 @@ class Kohana_Arr {
 		return $flat;
 	}
 
-} // End arr
+} // End Arr

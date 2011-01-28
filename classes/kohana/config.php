@@ -154,4 +154,4 @@ class Kohana_Config {
 		return $this;
 	}
 
-} // End Kohana_Config
+} // End Config

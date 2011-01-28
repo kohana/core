@@ -112,4 +112,4 @@ abstract class Kohana_Config_Reader extends ArrayObject {
 		return $this;
 	}
 
-} // End Kohana_Config_Reader
+} // End Config_Reader

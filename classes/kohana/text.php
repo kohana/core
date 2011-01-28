@@ -587,4 +587,4 @@ class Kohana_Text {
 		return $str;
 	}
 
-} // End text
+} // End Text

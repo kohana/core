@@ -67,4 +67,4 @@ class Kohana_Log_Syslog extends Log_Writer {
 		closelog();
 	}
 
-} // End Kohana_Log_Syslog
+} // End Log_Syslog

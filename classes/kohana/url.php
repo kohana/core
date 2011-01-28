@@ -184,4 +184,4 @@ class Kohana_URL {
 		return trim($title, $separator);
 	}
 
-} // End url
+} // End URL

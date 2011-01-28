@@ -10,7 +10,7 @@
  * @author     Kohana Team
  * @since      3.1.0
  * @copyright  (c) 2008-2011 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Http_Header extends ArrayObject {
 
@@ -274,4 +274,5 @@ class Kohana_Http_Header extends ArrayObject {
 			return 1; // Return positive (1)
 		}
 	}
-} // End Kohana_Http_Header
+
+} // End Http_Header

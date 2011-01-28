@@ -9,6 +9,7 @@
  * @license    http://kohanaphp.com/license
  */
 class Kohana_Log_StdErr extends Kohana_Log_Writer {
+
 	/**
 	 * Writes each of the messages to STDERR.
 	 *
@@ -28,4 +29,5 @@ class Kohana_Log_StdErr extends Kohana_Log_Writer {
 			fwrite(STDERR, PHP_EOL.strtr($format, $message));
 		}
 	}
-} // End Kohana_Log_StdErr
+
+} // End Log_StdErr

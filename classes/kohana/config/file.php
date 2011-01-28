@@ -57,4 +57,4 @@ class Kohana_Config_File extends Config_Reader {
 		return parent::load($group, $config);
 	}
 
-} // End Kohana_Config_File
+} // End Config_File

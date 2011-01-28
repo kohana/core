@@ -383,4 +383,4 @@ class Kohana_HTML {
 		return $compiled;
 	}
 
-} // End html
+} // End HTML

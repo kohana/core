@@ -319,4 +319,5 @@ abstract class Kohana_Request_Client {
 
 		return $this->_response_time - $this->_request_time;
 	}
-}
+
+} // End Request_Client

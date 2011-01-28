@@ -328,4 +328,5 @@ class Kohana_Request_Client_External extends Request_Client {
 
 		return $response;
 	}
-} // End Kohana_Request_Client_External
+
+} // End Request_Client_External
