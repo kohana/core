@@ -31,7 +31,7 @@ Our custom exception handler is self explanatory.
 		}
 		else
 		{
-			Kohana::$log->add(Kohana::ERROR, Kohana::exception_text($e));
+			Kohana::$log->add(Log::ERROR, Kohana::exception_text($e));
 
 			$attributes = array
 			(

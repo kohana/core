@@ -151,7 +151,7 @@ try
 catch (Exception $e)
 {
 	// Be sure to log the error
-	Kohana::$log->add(Kohana::ERROR, Kohana::exception_text($e));
+	Kohana::$log->add(Log::ERROR, Kohana::exception_text($e));
 	
 	// If there was an error, send a 404 response and display an error
 	$request->status   = 404;
