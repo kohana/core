@@ -12,8 +12,6 @@
  *     // With parameter replacement
  *     echo __('Hello, :user', array(':user' => $username));
  *
- * [!!] The __() function is declared in `SYSPATH/base.php`.
- *
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
