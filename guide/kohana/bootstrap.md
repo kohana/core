@@ -74,7 +74,6 @@ Kohana::init(array(
 
 ... [trimmed]
 
-$request = Request::instance()->execute();
 ~~~
 
 [!!] Note: The default bootstrap will set `Kohana::$environment = $_ENV['KOHANA_ENV']` if set. Docs on how to supply this variable are available in your web server's documentation (e.g. [Apache](http://httpd.apache.org/docs/1.3/mod/mod_env.html#setenv), [Lighttpd](http://redmine.lighttpd.net/wiki/1/Docs:ModSetEnv#Options)). This is considered better practice than many alternative methods to set `Kohana::$enviroment`, as you can change the setting per server, without having to rely on config options or hostnames.
@@ -109,20 +108,4 @@ Route::set('default', '(<controller>(/<action>(/<id>)))')
 		'controller' => 'welcome',
 		'action'     => 'index',
 	));
-~~~
-
-## Execution
-
-NOTE: Execution of the request now happens in index.php.
-
-Once our environment is initialized and routes defined, it's time to execute our application. Do not be afraid to change this around to whatever suits your needs. 
-
-### Basic Example
-The most simple way to do this, and what comes default with Kohana 3 is simply:
-~~~
-// Execute the main request
-echo Request::factory()
-	->execute()
-	->send_headers()
-	->body();
 ~~~

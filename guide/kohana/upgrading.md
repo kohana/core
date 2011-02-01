@@ -55,6 +55,13 @@ The cookie class now throws an exception if there isn't a salt set, and no salt 
 
 	Cookie::$salt = 'foobar';
 
+Or define an extended cookie class in your application:
+
+	class Cookie extends Kohana_Cookie
+	{
+		public static $salt = 'foobar';
+	}
+
 ## Controller constructor
 
 If for some reason you are overloading your controller's constructor, it has changed to:
@@ -64,3 +71,7 @@ If for some reason you are overloading your controller's constructor, it has cha
 ## index.php / bootstrap.php changes
 
 The main change here is that the request execution has been removed from bootstrap.php and moved to index.php. This allows you to use one bootstrap when doing testing. The reason for this change is that the bootstrap should only setup the environment. It shouldn't run it.
+
+## 404 Handling
+
+Kohana now has built in exception support for 404 and other http status codes. If you were using ReflectionException to detect 404s, you should be using Http_Exception_404 instead. For details on how to handle 404s, see [error handling](errors).
