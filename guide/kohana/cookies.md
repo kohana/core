@@ -8,6 +8,13 @@ Kohana provides classes that make it easy to work with both cookies and sessions
 
 	Cookie::$salt = 'foobar';
 
+Or define an extended cookie class in your application:
+
+	class Cookie extends Kohana_Cookie
+	{
+		public static $salt = 'foobar';
+	}
+
 You should set the salt to a secure value. The example above is only for demonstrative purposes.
 
 Nothing stops you from using `$_COOKIE` like normal, but you can not mix using the Cookie class and the regular `$_COOKIE` global, because the hash that Kohana uses to sign cookies will not be present, and Kohana will delete the cookie.
