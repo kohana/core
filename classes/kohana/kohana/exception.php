@@ -8,7 +8,7 @@
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Exception extends Exception {
+class Kohana_Kohana_Exception extends Exception {
 
 	/**
 	 * @var  array  PHP error code => human readable name
