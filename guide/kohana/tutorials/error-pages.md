@@ -12,32 +12,34 @@ errors into exceptions which are easier to handle.
 
 Our custom exception handler is self explanatory.
 
-	public static function exception_handler(Exception $e)
-	{
-		if (Kohana::DEVELOPMENT === Kohana::$environment)
+	class Kohana_Exception extends Kohana_Kohana_Exception {
+		public static function handler(Exception $e)
 		{
-			Kohana_Core::exception_handler($e);
-		}
-		else
-		{
-			Kohana::$log->add(Log::ERROR, Kohana::exception_text($e));
-
-			$attributes = array
-			(
-				'action'  => 500,
-				'message' => rawurlencode($e->getMessage())
-			);
-
-			if ($e instanceof Http_Exception)
+			if (Kohana::DEVELOPMENT === Kohana::$environment)
 			{
-				$attributes['action'] = $e->getCode();
+				Kohana_Core::exception_handler($e);
 			}
+			else
+			{
+				Kohana::$log->add(Kohana::ERROR, Kohana::exception_text($e));
 
-			// Error sub-request.
-			echo Request::factory(Route::url('error', $attributes))
-				->execute()
-				->send_headers()
-				->response;
+				$attributes = array
+				(
+					'action'  => 500,
+					'message' => rawurlencode($e->getMessage())
+				);
+
+				if ($e instanceof Http_Exception)
+				{
+					$attributes['action'] = $e->getCode();
+				}
+
+				// Error sub-request.
+				echo Request::factory(Route::url('error', $attributes))
+					->execute()
+					->send_headers()
+					->response;
+			}
 		}
 	}
 
@@ -101,56 +103,36 @@ would display an error 500 page.
    `error/404/email%20your%20login%20information%20to%20hacker%40google.com`
 
 
-~~~
-public function action_404()
-{
-	$this->template->title = '404 Not Found';
-	
-	// Here we check to see if a 404 came from our website. This allows the
-	// webmaster to find broken links and update them in a shorter amount of time.
-	if (isset ($_SERVER['HTTP_REFERER']) AND strstr($_SERVER['HTTP_REFERER'], $_SERVER['SERVER_NAME']) !== FALSE)
+	public function action_404()
 	{
-		// Set a local flag so we can display different messages in our template.
-		$this->template->local = TRUE;
-	}
+		$this->template->title = '404 Not Found';
 	
-	// HTTP Status code.
-	$this->response->status(404);
-}
+		// Here we check to see if a 404 came from our website. This allows the
+		// webmaster to find broken links and update them in a shorter amount of time.
+		if (isset ($_SERVER['HTTP_REFERER']) AND strstr($_SERVER['HTTP_REFERER'], $_SERVER['SERVER_NAME']) !== FALSE)
+		{
+			// Set a local flag so we can display different messages in our template.
+			$this->template->local = TRUE;
+		}
+	
+		// HTTP Status code.
+		$this->response->status(404);
+	}
 
-public function action_503()
-{
-	$this->template->title = 'Maintenance Mode';
-}
+	public function action_503()
+	{
+		$this->template->title = 'Maintenance Mode';
+	}
 
-public function action_500()
-{
-	$this->template->title = 'Internal Server Error';
-}
-~~~
+	public function action_500()
+	{
+		$this->template->title = 'Internal Server Error';
+	}
 
 You will notice that each example method is named after the HTTP response code 
 and sets the request response code.
 
-## 4. Handling 3rd Party Modules.
-
-Some Kohana modules will make calls to `Kohana_exception::handler`. We can redirect
-calls made to it by extending the Kohana class and passing the exception to our handler.
-
-	<?php defined('SYSPATH') or die('No direct script access.');
-
-	class Kohana extends Kohana_Core
-	{
-		/**
-		 * Redirect to custom exception_handler
-		 */
-		public static function exception_handler(Exception $e)
-		{
-			Error::exception_handler($e);
-		}
-	}
-
-## 5. Conclusion
+## 4. Conclusion
 
 So that's it. Now displaying a nice error page is as easy as:
 
