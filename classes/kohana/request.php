@@ -1297,7 +1297,7 @@ class Kohana_Request implements Http_Request {
 				return $this;
 			}
 
-			return $this->_get[$key];
+			return Arr::get($this->_get, $key);
 		}
 		else
 		{
@@ -1325,7 +1325,7 @@ class Kohana_Request implements Http_Request {
 				return $this;
 			}
 
-			return $this->_post[$key];
+			return Arr::get($this->_post, $key);
 		}
 		else
 		{
