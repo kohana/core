@@ -74,7 +74,7 @@ abstract class Kohana_Controller_REST extends Controller {
 	 */
 	public function after()
 	{
-		if (in_array($this->request->method(), array(
+		if (in_array(Arr::get($_SERVER, 'HTTP_X_HTTP_METHOD_OVERRIDE', $this->request->method()), array(
 			Http_Request::PUT,
 			Http_Request::POST,
 			Http_Request::DELETE)))

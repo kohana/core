@@ -652,7 +652,7 @@ class Kohana_Response implements Http_Response, Serializable {
 				if (is_object(Kohana::$log))
 				{
 					// Add this exception to the log
-					Kohana::$log->add(Kohana::ERROR, $error);
+					Kohana::$log->add(Log::ERROR, $error);
 
 					// Make sure the logs are written
 					Kohana::$log->write();
