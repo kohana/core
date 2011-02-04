@@ -139,7 +139,7 @@ class Kohana_Request implements Http_Request {
 					Request::$client_ip = $_SERVER['REMOTE_ADDR'];
 				}
 
-				if ($method !== 'GET' AND $method !== 'POST')
+				if ($method !== 'GET')
 				{
 					// Ensure the raw body is saved for future use
 					$body = file_get_contents('php://input');
