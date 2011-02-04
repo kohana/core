@@ -16,7 +16,8 @@
 class Kohana_HTMLTest extends Unittest_TestCase
 {
 	protected $environmentDefault = array(
-		'Kohana::$base_url' => '/kohana/',
+		'Kohana::$base_url'    => '/kohana/',
+		'Kohana::$index_file'  => 'index.php',
 		'HTTP_HOST'	=> 'www.kohanaframework.org',
 	);
 
