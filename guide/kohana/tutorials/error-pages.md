@@ -71,7 +71,7 @@ would display an error 500 page.
 		'controller' => 'error_handler'
 	));
 
-## 3. The Error Page Controller
+## 2. The Error Page Controller
 
 	public function before()
 	{
@@ -131,7 +131,7 @@ would display an error 500 page.
 You will notice that each example method is named after the HTTP response code
 and sets the request response code.
 
-## 4. Conclusion
+## 3. Conclusion
 
 So that's it. Now displaying a nice error page is as easy as:
 
