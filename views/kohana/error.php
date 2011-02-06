@@ -27,7 +27,7 @@ $error_id = uniqid('error');
 .js .collapsed { display: none; }
 </style>
 <script type="text/javascript">
-document.documentElement.className = 'js';
+document.documentElement.className = document.documentElement.className + ' js';
 function koggle(elem)
 {
 	elem = document.getElementById(elem);
