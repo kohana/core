@@ -235,6 +235,14 @@ class Kohana_ValidationTest extends Unittest_TestCase
 				FALSE,
 				array('foo' => '1.foo.is_string'),
 			),
+			// Test array rules use method as error name
+			array(
+				array('foo' => 'test'),
+				array('foo' => array(array(array('Valid', 'min_length'), array(':value', 10)))),
+				array(),
+				FALSE,
+				array('foo' => 'foo must be at least 10 characters long'),
+			),
 		);
 	}
 
