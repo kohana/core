@@ -233,6 +233,9 @@ class Kohana_Request_Client_External extends Request_Client {
 		// Set the request method
 		$options[CURLOPT_CUSTOMREQUEST] = $request->method();
 
+		// Set the request body
+		$options[CURLOPT_POSTFIELDS] = $request->body();
+
 		// Process cookies
 		if ($cookies = $request->cookie())
 		{
