@@ -1,12 +1,12 @@
 # Cascading Filesystem
 
-The Kohana filesystem is a heirarchy of similar directory structures that cascade. The heirarchy in Kohana (used when a file is loaded by [Kohana::find_file]) is in the following order:
+The Kohana filesystem is a hierarchy of similar directory structures that cascade. The hierarchy in Kohana (used when a file is loaded by [Kohana::find_file]) is in the following order:
 
 1. **Application Path**  
    Defined as `APPPATH` in `index.php`. The default value is `application`.
 
 2. **Module Paths**  
-   This is set as an associative array using [Kohana::modules] in `APPPATH/bootstrap.php`. Each of the values of the array will be searched **in the order that the modules are added**.
+   This is set as an associative array using [Kohana::modules] in `APPPATH/bootstrap.php`. Each of the values of the array will be searched **in the order that the modules are defined**.
 
 3. **System Path**  
    Defined as `SYSPATH` in `index.php`. The default value is `system`. All of the main or "core" files and classes are defined here.

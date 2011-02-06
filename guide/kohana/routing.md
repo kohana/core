@@ -78,6 +78,35 @@ TODO: example of either using directory or controller where it isn't in the rout
 
 ### Directory
 
+## Lambda/Callback route logic
+
+In 3.1, you can specify advanced routing schemes by using lambda routes. Instead of a URI, you can use an anonymous function or callback syntax to specify a function that will process your routes. Here's a simple example:
+
+	Route::set('testing', function($uri)
+		{
+			if ($uri == 'foo/bar')
+				return array(
+					'controller' => 'welcome',
+					'action'     => 'foobar',
+				);
+		}
+	);
+
+	Route::set('testing', function($uri)
+		{
+			if ($uri == '</language regex/>(.+)')
+			{
+				Cookie::set('language', $match[1]);
+				return array(
+					'controller' => 'welcome',
+					'action'     => 'foobar'
+				);
+			}
+		}
+	);
+	
+	Route::set('testing', array('Class', 'method_to_process_my_uri'));
+
 ## Examples
 
 TODO: a million billion examples, you can use the following as a guide for some routes to include:
@@ -154,14 +183,14 @@ There are countless other possibilities for routes. Here are some more examples:
 The `directory`, `controller` and `action` can be accessed from the [Request] as public properties like so:
 
 	// From within a controller:
-	$this->request->action;
-	$this->request->controller;
-	$this->request->directory;
+	$this->request->action();
+	$this->request->controller();
+	$this->request->directory();
 	
 	// Can be used anywhere:
-	Request::instance()->action;
-	Request::instance()->controller;
-	Request::instance()->directory;
+	Request::current()->action();
+	Request::current()->controller();
+	Request::current()->directory();
 
 All other keys specified in a route can be accessed via [Request::param()]:
 
@@ -169,7 +198,7 @@ All other keys specified in a route can be accessed via [Request::param()]:
 	$this->request->param('key_name');
 	
 	// Can be used anywhere:
-	Request::instance()->param('key_name');
+	Request::current()->param('key_name');
 
 The [Request::param] method takes an optional second argument to specify a default return value in case the key is not set by the route. If no arguments are given, all keys are returned as an associative array.  In addition, `action`, `controller` and `directory` are not accessible via [Request::param()].
 

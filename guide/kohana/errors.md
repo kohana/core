@@ -17,7 +17,7 @@ Click any of the links to toggle the display of additional information:
 
 ## Disabling Error/Exception Handling
 
-If you do not want to use the internal error handling, you can disable it when calling [Kohana::init]:
+If you do not want to use the internal error handling, you can disable it (highly discouraged) when calling [Kohana::init]:
 
     Kohana::init(array('errors' => FALSE));
 
@@ -50,36 +50,36 @@ Kohana::init(array('
 ));
 ~~~
 
-So rather than displaying the Kohana error page with the stack trace, it will display the default php error. Something like:
+## HTTP Exception Handling
 
-**Fatal error: Uncaught Kohana_View_Exception [ 0 ]: The requested view errors/404 could not be found ~ SYSPATH/classes/kohana/view.php [ 215 ] thrown in /var/www/kohanut/docs.kohanaphp.com/3.0/system/classes/kohana/view.php on line 215**
+Kohana comes with a robust system for handing http errors. It includes exception classes for each http status code. To trigger a 404 in your application (the most common scenario):
 
-Keep in mind what I said earlier though: **your application should never have any uncaught exceptions**, so this should not be necesarry, though it is a good idea, simply because stack traces on a production environment are a *very* bad idea.
+	throw new Http_Exception_404('File not found!');
 
-Another solution is to always have a `catch` statement that can't fail, something like an `echo` and an `exit` or a `die()`.  This should almost never be necesarry, but it makes some people feel better at night.  You can either wrap your entire bootstrap in a try catch, or simply wrap the contents of the catch in another try catch.  For example:
+There is no default method to handle these errors in Kohana. It's recommended that you setup an exception handler (and register it) to handle these kinds of errors. Here's a simple example:
 
-~~~
-try
-{
-	// Execute the main request
-	$request->execute();
-}
-catch (Exception $e)
-{
-	try
+	class Foobar_Exception_Handler
 	{
-		// Be sure to log the error
-		Kohana::$log->add(Kohana::ERROR, Kohana::exception_text($e));
-		
-		// If there was an error, send a 404 response and display an error
-		$request->status   = 404;
-		$request->response = View::factory('errors/404');
+		function handle(Exception $e)
+		{
+			switch (get_class($e))
+			{
+				case 'Http_Exception_404':
+					$response = new Response;
+					$response->status(404);
+					$view = new View('error_404');
+					$view->message = $e->getMessage();
+					$view->title = 'File Not Found';
+					echo $response->body($view)->send_headers()->body();
+					return TRUE;
+					break;
+				default:
+					return Kohana_Exception::handler($e);
+					break;
+			}
+		}
 	}
-	catch
-	{
-		// This is completely overkill, but helps some people sleep at night
-		echo "Something went terribly wrong. Try again in a few minutes.";
-		exit;
-	}
-}
-~~~
+
+And put something like this in your bootstrap to register the handler.
+
+	set_exception_handler(array('Foobar_Exception_Handler', 'handle'));

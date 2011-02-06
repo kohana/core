@@ -139,7 +139,7 @@ class Kohana_Request implements Http_Request {
 					Request::$client_ip = $_SERVER['REMOTE_ADDR'];
 				}
 
-				if ($method !== 'GET' AND $method !== 'POST')
+				if ($method !== 'GET')
 				{
 					// Ensure the raw body is saved for future use
 					$body = file_get_contents('php://input');
@@ -692,10 +692,7 @@ class Kohana_Request implements Http_Request {
 				return;
 			}
 
-			// No matching route for this URI
-			$this->_status = 404;
-
-			throw new Kohana_Request_Exception('Unable to find a route to match the URI: :uri',
+			throw new Http_Exception_404('Unable to find a route to match the URI: :uri',
 				array(':uri' => $uri));
 		}
 		else
@@ -1300,7 +1297,7 @@ class Kohana_Request implements Http_Request {
 				return $this;
 			}
 
-			return $this->_get[$key];
+			return Arr::get($this->_get, $key);
 		}
 		else
 		{
@@ -1328,7 +1325,7 @@ class Kohana_Request implements Http_Request {
 				return $this;
 			}
 
-			return $this->_post[$key];
+			return Arr::get($this->_post, $key);
 		}
 		else
 		{

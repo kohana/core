@@ -23,7 +23,7 @@ View files are stored in the `views` directory of the [filesystem](files). You c
         $this->response->body(View::factory('pages/about'));
     }
 
-When a view is assigned as the [Request::$response], as in the example above, it will automatically be rendered when necessary. To get the rendered result of a view you can call the [View::render] method or just type cast it to a string. When a view is rendered, the view file is loaded and HTML is generated.
+When a view is assigned as the [Response::body], as in the example above, it will automatically be rendered when necessary. To get the rendered result of a view you can call the [View::render] method or just type cast it to a string. When a view is rendered, the view file is loaded and HTML is generated.
 
     public function action_index()
     {
@@ -151,11 +151,3 @@ Of course, you can also load an entire [Request] within a view:
     <?php echo Request::factory('user/login')->execute() ?>
 
 This is an example of \[HMVC], which makes it possible to create and read calls to other URLs within your application.
-
-## Differences From v2.x
-
-Unlike version 2.x of Kohana, the view is not loaded within the context of
-the [Controller], so you will not be able to access `$this` as the controller
-that loaded the view. Passing the controller to the view must be done explictly:
-
-    $view->bind('controller', $this);
