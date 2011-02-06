@@ -8,11 +8,6 @@ class Kohana_Http_Exception extends Kohana_Exception {
 	protected $_code = 0;
 
 	/**
-	 * @var     string   file of view to use for http exeception
-	 */
-	protected $_http_view = 'kohana/http/error';
-
-	/**
 	 * Creates a new translated exception.
 	 *
 	 *     throw new Kohana_Exception('Something went terrible wrong, :user',
