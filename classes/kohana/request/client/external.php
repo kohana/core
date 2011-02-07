@@ -146,6 +146,35 @@ class Kohana_Request_Client_External extends Request_Client {
 	}
 
 	/**
+	 * Set and get options for this request.
+	 *
+	 * @param   mixed    $key    Option name, or array of options
+	 * @param   mixed    $value  Option value
+	 * @return  mixed
+	 * @return  Request_Client_External
+	 */
+	public function options($key = NULL, $value = NULL)
+	{
+		if ($key === NULL)
+			return $this->_options;
+
+		if (is_array($key))
+		{
+			$this->_options = $key;
+		}
+		elseif ( ! $value)
+		{
+			return Arr::get($this->_options, $key);
+		}
+		else
+		{
+			$this->_options[$key] = $value;
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Execute the request using the PECL HTTP extension. (recommended)
 	 *
 	 * @param   Request   $request Request to execute
@@ -166,6 +195,9 @@ class Kohana_Request_Client_External extends Request_Client {
 
 		// Create an http request object
 		$http_request = new HttpRequest($request->uri(), $http_method_mapping[$request->method()]);
+
+		// Set custom options
+		$http_request->setOptions($this->_options);
 
 		// Set headers
 		$http_request->setHeaders($request->headers()->getArrayCopy());
@@ -216,19 +248,8 @@ class Kohana_Request_Client_External extends Request_Client {
 		// Reset the headers
 		Request_Client_External::$_processed_headers = array();
 
-		// Load the default remote settings
-		$defaults = Kohana::config('remote')->as_array();
-
-		if ( ! $this->_options)
-		{
-			// Use default options
-			$options = $defaults;
-		}
-		else
-		{
-			// Add default options
-			$options = $options + $defaults;
-		}
+		// Allow custom options to be set
+		$options = $this->_options;
 
 		// Set the request method
 		$options[CURLOPT_CUSTOMREQUEST] = $request->method();
@@ -317,6 +338,8 @@ class Kohana_Request_Client_External extends Request_Client {
 
 		// Create the context stream
 		$context = stream_context_create($options);
+
+		stream_context_set_option($context, $this->_options);
 
 		$stream = fopen($request->uri(), $mode, FALSE, $context);
 
