@@ -86,7 +86,7 @@ would display an error 500 page.
 		'controller' => 'error_handler'
 	));
 
-## 3. The Error Page Controller
+## 2. The Error Page Controller
 
 	public function before()
 	{
@@ -118,36 +118,36 @@ would display an error 500 page.
    `error/404/email%20your%20login%20information%20to%20hacker%40google.com`
 
 
-	public function action_404()
-	{
-		$this->template->title = '404 Not Found';
-
-		// Here we check to see if a 404 came from our website. This allows the
-		// webmaster to find broken links and update them in a shorter amount of time.
-		if (isset ($_SERVER['HTTP_REFERER']) AND strstr($_SERVER['HTTP_REFERER'], $_SERVER['SERVER_NAME']) !== FALSE)
+		public function action_404()
 		{
-			// Set a local flag so we can display different messages in our template.
-			$this->template->local = TRUE;
+			$this->template->title = '404 Not Found';
+
+			// Here we check to see if a 404 came from our website. This allows the
+			// webmaster to find broken links and update them in a shorter amount of time.
+			if (isset ($_SERVER['HTTP_REFERER']) AND strstr($_SERVER['HTTP_REFERER'], $_SERVER['SERVER_NAME']) !== FALSE)
+			{
+				// Set a local flag so we can display different messages in our template.
+				$this->template->local = TRUE;
+			}
+
+			// HTTP Status code.
+			$this->response->status(404);
 		}
 
-		// HTTP Status code.
-		$this->response->status(404);
-	}
+		public function action_503()
+		{
+			$this->template->title = 'Maintenance Mode';
+		}
 
-	public function action_503()
-	{
-		$this->template->title = 'Maintenance Mode';
-	}
-
-	public function action_500()
-	{
-		$this->template->title = 'Internal Server Error';
-	}
+		public function action_500()
+		{
+			$this->template->title = 'Internal Server Error';
+		}
 
 You will notice that each example method is named after the HTTP response code
 and sets the request response code.
 
-## 4. Conclusion
+## 3. Conclusion
 
 So that's it. Now displaying a nice error page is as easy as:
 
