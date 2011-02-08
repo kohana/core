@@ -75,3 +75,7 @@ The main change here is that the request execution has been removed from bootstr
 ## 404 Handling
 
 Kohana now has built in exception support for 404 and other http status codes. If you were using ReflectionException to detect 404s, you should be using Http_Exception_404 instead. For details on how to handle 404s, see [error handling](errors).
+
+## Form Class
+
+If you used Form::open(), the default behavior has changed. It used to default to the current URI, but now an empty parameter will default to "/" (your home page).
