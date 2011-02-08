@@ -568,14 +568,14 @@ class Kohana_Response implements Http_Response, Serializable {
 			}
 
 			// Range of bytes being sent
-			$this->_header['content-tange'] = 'bytes '.$start.'-'.$end.'/'.$size;
+			$this->_header['content-range'] = 'bytes '.$start.'-'.$end.'/'.$size;
 			$this->_header['accept-ranges'] = 'bytes';
 		}
 
 		// Set the headers for a download
 		$this->_header['content-disposition'] = $disposition.'; filename="'.$download.'"';
 		$this->_header['content-type']        = $mime;
-		$this->_header['content-length']      = ($end - $start) + 1;
+		$this->_header['content-length']      = (string) (($end - $start) + 1);
 
 		if (Request::user_agent('browser') === 'Internet Explorer')
 		{

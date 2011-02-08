@@ -90,11 +90,11 @@ class Kohana_HTTP_Header_ValueTest extends Unittest_TestCase
 	}
 	/**
 	 * If the constructor is passed a value of type other than string|array then it should
-	 * throw a Kohana_HTTP_Header_Exception
+	 * throw a Http_Exception_500
 	 *
 	 * @test
 	 * @dataProvider provider_constructor_throws_exception_if_header_value_type_not_allowed
-	 * @expectedException Kohana_Exception
+	 * @expectedException Http_Exception_500
 	 * @param mixed The header value to pass to the constructor
 	 */
 	public function test_constructor_throws_exception_if_header_value_type_not_allowed($header)
