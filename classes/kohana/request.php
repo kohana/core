@@ -959,7 +959,7 @@ class Kohana_Request implements Http_Request {
 	public function execute()
 	{
 		if ( ! $this->_client instanceof Kohana_Request_Client)
-			throw new Kohana_Request_Exception('Unable to execute :uri without a Kohana_Request_Client', array(':uri', $this->uri));
+			throw new Kohana_Request_Exception('Unable to execute :uri without a Kohana_Request_Client', array(':uri', $this->_uri));
 
 		return $this->_client->execute($this);
 	}
