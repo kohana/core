@@ -310,7 +310,7 @@ class Kohana_Response implements Http_Response, Serializable {
 		}
 		elseif ($value === NULL)
 		{
-			return $this->_header[$key];
+			return Arr::get($this->_header, $key);
 		}
 		else
 		{

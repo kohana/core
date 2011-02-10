@@ -105,7 +105,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			}
 
 			// Create a new instance of the controller
-			$controller = $class->newInstance($request, $request->create_response());
+			$controller = $class->newInstance($request, $request->response() ? $request->response() : $request->create_response());
 
 			$class->getMethod('before')->invoke($controller);
 

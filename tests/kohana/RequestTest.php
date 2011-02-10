@@ -211,4 +211,47 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 		$this->assertEquals(Request::factory($uri)->url($params, $protocol), $expected);
 	}
+
+	/**
+	 * Tests that request caching works
+	 *
+	 * @return null
+	 */
+	public function test_cache()
+	{
+		/**
+		 * Set up a mock response object to test with
+		 */
+		$response = $this->getMock('Response');
+		$response->expects($this->any())
+			->method('body')
+			->will($this->returnValue('Foo'));
+
+		/**
+		 * Sets up a mock cache object, asserts that:
+		 * 
+		 *  1. The cache set() method gets called
+		 *  2. The cache get() method will return the response above when called
+		 */
+		$cache = $this->getMock(
+			'Cache_File', array('get', 'set'), array(), 'Cache'
+		);
+		$cache->expects($this->once())
+			->method('set');
+		$cache->expects($this->any())
+			->method('get')
+			->will($this->returnValue($response));
+
+		$foo = Request::factory('', $cache);
+		$response = $foo->create_response(TRUE);
+
+		// This will assert that set() is called on the cache object
+		$response->headers('Cache-Control', 'max-age=100');
+		$foo->response($response);
+		$foo->execute();
+
+		// This will return the response from the cache mock
+		$foo = Request::factory('', $cache)->execute();
+		$this->assertSame('Foo', $foo->body());
+	}
 }

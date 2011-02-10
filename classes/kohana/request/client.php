@@ -46,7 +46,11 @@ abstract class Kohana_Request_Client {
 			{
 				if (method_exists($this, $key))
 				{
-					$this->$key($value);
+					if (property_exists($this, $key) OR property_exists($this, '_'.$key))
+					{
+						$method = trim($key, '_');
+						$this->$method($value);
+					}
 				}
 			}
 		}
@@ -152,7 +156,7 @@ abstract class Kohana_Request_Client {
 	 */
 	public function set_cache(Response $response)
 	{
-		if ($cache_control = $response->headers()->offsetExists('cache-control'))
+		if ($response->headers()->offsetExists('cache-control') AND $cache_control = $response->headers()->offsetGet('cache-control'))
 		{
 			// Parse the cache control
 			$cache_control = Response::parse_cache_control( (string) $cache_control);
@@ -280,7 +284,7 @@ abstract class Kohana_Request_Client {
 
 			if (isset($cache_control['max-age']))
 			{
-				$ttl = (int) $cache_control['max_age'];
+				$ttl = (int) $cache_control['max-age'];
 			}
 
 			if (isset($cache_control['s-maxage']) AND isset($cache_control['private']) AND $this->_allow_private_cache)

@@ -31,7 +31,7 @@ class Kohana_Request implements Http_Request {
 	 */
 	public static $current;
 
-	public static function factory($uri = TRUE, Kohana_Cache $cache = NULL)
+	public static function factory($uri = TRUE, Cache $cache = NULL)
 	{
 		// If this is the initial request
 		if ( ! Request::$initial)
@@ -626,6 +626,9 @@ class Kohana_Request implements Http_Request {
 	 * created using the [Request::instance] or [Request::factory] methods.
 	 *
 	 *     $request = new Request($uri);
+	 * 
+	 * If $cache parameter is set, the response for the request will attempt to
+	 * be retrieved from the cache.
 	 *
 	 * @param   string  $uri URI of the request
 	 * @param   Cache   $cache
@@ -634,7 +637,7 @@ class Kohana_Request implements Http_Request {
 	 * @uses    Route::all
 	 * @uses    Route::matches
 	 */
-	public function __construct($uri, Kohana_Cache $cache = NULL)
+	public function __construct($uri, Cache $cache = NULL)
 	{
 		// Initialise the header
 		$this->_header = new Http_Header(array());
