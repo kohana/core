@@ -227,16 +227,8 @@ class Kohana_Validation extends ArrayObject {
 
 		foreach ($expected as $field)
 		{
-			if (isset($this[$field]))
-			{
-				// Use the submitted value
-				$data[$field] = $this[$field];
-			}
-			else
-			{
-				// No data exists for this field
-				$data[$field] = NULL;
-			}
+			// Use the submitted value or NULL if no data exists
+			$data[$field] = Arr::get($this, $field);
 
 			if (isset($rules[TRUE]))
 			{
