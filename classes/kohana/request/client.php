@@ -186,7 +186,8 @@ abstract class Kohana_Request_Client {
 
 		if ($expires = arr::get($headers, 'expires') and ! isset($cache_control['max-age']))
 		{
-			if (strtotime( (string) $expires) >= time())
+			// Can't cache things that have expired already
+			if (strtotime( (string) $expires) <= time())
 				return FALSE;
 		}
 

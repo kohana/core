@@ -251,4 +251,89 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$foo = Request::factory('', $cache)->execute();
 		$this->assertSame('Foo', $foo->body());
 	}
+
+	/**
+	 * Data provider for test_set_cache
+	 *
+	 * @return array
+	 */
+	public function provider_set_cache()
+	{
+		return array(
+			array(
+				array('cache-control' => 'no-cache'),
+				array('no-cache' => NULL),
+				FALSE,
+			),
+			array(
+				array('cache-control' => 'no-store'),
+				array('no-store' => NULL),
+				FALSE,
+			),
+			array(
+				array('cache-control' => 'max-age=100'),
+				array('max-age' => '100'),
+				TRUE
+			),
+			array(
+				array('cache-control' => 'private'),
+				array('private' => NULL),
+				FALSE
+			),
+			array(
+				array('cache-control' => 'private, max-age=100'),
+				array('private' => NULL, 'max-age' => '100'),
+				FALSE
+			),
+			array(
+				array('cache-control' => 'private, s-maxage=100'),
+				array('private' => NULL, 's-maxage' => '100'),
+				TRUE
+			),
+			array( // We can cache things that expired yesterday (should not be able to?)
+				array(
+					'expires' => date('m/d/Y', strtotime('-1 day')),
+				),
+				array(),
+				TRUE
+			),
+			array( // We can't cache things that expires tomorrow (should be able to?)
+				array(
+					'expires' => date('m/d/Y', strtotime('+1 day')),
+				),
+				array(),
+				FALSE
+			),
+			array(
+				array(),
+				array(),
+				TRUE
+			),
+		);
+	}
+
+	/**
+	 * Tests the set_cache() method
+	 *
+	 * @test
+	 * @dataProvider provider_set_cache
+	 * 
+	 * @return null
+	 */
+	public function test_set_cache($headers, $cache_control, $expected)
+	{
+		/**
+		 * Set up a mock response object to test with
+		 */
+		$response = $this->getMock('Response');
+		$response->expects($this->any())
+			->method('parse_cache_control')
+			->will($this->returnValue($cache_control));
+		$response->expects($this->any())
+			->method('headers')
+			->will($this->returnValue($headers));
+
+		$request = new Request_Client_Internal;
+		$this->assertEquals($request->set_cache($response), $expected);
+	}
 }
