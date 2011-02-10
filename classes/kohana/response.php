@@ -810,7 +810,7 @@ class Kohana_Response implements Http_Response, Serializable {
 
 		$serialized = serialize($to_serialize);
 
-		if (is_string($string))
+		if (is_string($serialized))
 		{
 			return $string;
 		}
