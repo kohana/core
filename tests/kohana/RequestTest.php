@@ -290,19 +290,19 @@ class Kohana_RequestTest extends Unittest_TestCase
 				array('private' => NULL, 's-maxage' => '100'),
 				TRUE
 			),
-			array( // We can cache things that expired yesterday (should not be able to?)
+			array(
 				array(
 					'expires' => date('m/d/Y', strtotime('-1 day')),
 				),
 				array(),
-				TRUE
+				FALSE
 			),
-			array( // We can't cache things that expires tomorrow (should be able to?)
+			array(
 				array(
 					'expires' => date('m/d/Y', strtotime('+1 day')),
 				),
 				array(),
-				FALSE
+				TRUE
 			),
 			array(
 				array(),
