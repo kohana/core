@@ -156,7 +156,8 @@ abstract class Kohana_Request_Client {
 	 */
 	public function set_cache(Response $response)
 	{
-		if ($response->headers()->offsetExists('cache-control') AND $cache_control = $response->headers()->offsetGet('cache-control'))
+		$headers = (array) $response->headers();
+		if ($cache_control = arr::get($headers, 'cache-control'))
 		{
 			// Parse the cache control
 			$cache_control = Response::parse_cache_control( (string) $cache_control);
@@ -183,7 +184,7 @@ abstract class Kohana_Request_Client {
 				return FALSE;
 		}
 
-		if (($expires = $response->headers('expires')) and ! isset($cache_control['max-age']))
+		if ($expires = arr::get($headers, 'expires') and ! isset($cache_control['max-age']))
 		{
 			if (strtotime( (string) $expires) >= time())
 				return FALSE;
