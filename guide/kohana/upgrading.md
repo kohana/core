@@ -49,6 +49,10 @@ The third parameter now contains all parameters that get passed to the rule. If 
 
 You can use any php function as a rule if it returns a boolean value.
 
+### Filters
+
+Filters have been removed from the validation class. There is no specific replacement. If you were using it with ORM, there is a new mechanism for filtering in that module.
+
 ## Cookie salts
 
 The cookie class now throws an exception if there isn't a salt set, and no salt is the now the default. You'll need to make sure you set the salt in your bootstrap:
