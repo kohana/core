@@ -15,7 +15,7 @@ class Kohana_Debug {
 	 * variables, each wrapped in a "pre" tag:
 	 *
 	 *     // Displays the type and value of each variable
-	 *     echo Debug::debug($foo, $bar, $baz);
+	 *     echo Debug::vars($foo, $bar, $baz);
 	 *
 	 * @param   mixed   variable to debug
 	 * @param   ...

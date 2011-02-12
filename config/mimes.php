@@ -17,6 +17,7 @@ return array
 	'aif'   => array('audio/x-aiff'),
 	'aifc'  => array('audio/x-aiff'),
 	'aiff'  => array('audio/x-aiff'),
+	'amf'   => array('application/x-amf'),
 	'asf'   => array('video/x-ms-asf'),
 	'asr'   => array('video/x-ms-asf'),
 	'asx'   => array('video/x-ms-asf'),
