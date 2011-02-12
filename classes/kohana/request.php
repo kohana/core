@@ -473,6 +473,41 @@ class Kohana_Request implements Http_Request {
 	}
 
 	/**
+	 * Process URI
+	 *
+	 * @param   string  $uri     URI
+	 * @param   array   $routes  Route
+	 * @return  array
+	 */
+	public static function process_uri($uri, $routes = NULL)
+	{
+		// Load routes
+		$routes = ($routes === NULL) ? Route::all() : $routes;
+		$params = NULL;
+
+		foreach ($routes as $name => $route)
+		{
+			// We found something suitable
+			if ($params = $route->matches($uri))
+			{
+				if ( ! isset($params['uri']))
+				{
+					$params['uri'] = $uri;
+				}
+
+				if ( ! isset($params['route']))
+				{
+					$params['route'] = $route;
+				}
+
+				break;
+			}
+		}
+
+		return $params;
+	}
+
+	/**
 	 * Parses an accept header and returns an array (type => quality) of the
 	 * accepted types, ordered by quality.
 	 *
@@ -651,7 +686,7 @@ class Kohana_Request implements Http_Request {
 		 */
 		if (strpos($uri, '://') === FALSE)
 		{
-			$params = self::process_uri($uri);
+			$params = Request::process_uri($uri);
 			if ($params)
 			{
 				// Store the URI
@@ -1335,40 +1370,5 @@ class Kohana_Request implements Http_Request {
 			$this->_post[$key] = $value;
 			return $this;
 		}
-	}
-
-	/**
-	 * Process URI
-	 *
-	 * @param   string  $uri     URI
-	 * @param   array   $routes  Route
-	 * @return  array
-	 */
-	public static function process_uri($uri, $routes = NULL)
-	{
-		// Load routes
-		$routes = ($routes === NULL) ? Route::all() : $routes;
-		$params = NULL;
-
-		foreach ($routes as $name => $route)
-		{
-			// We found something suitable
-			if ($params = $route->matches($uri))
-			{
-				if ( ! isset($params['uri']))
-				{
-					$params['uri'] = $uri;
-				}
-
-				if ( ! isset($params['route']))
-				{
-					$params['route'] = $route;
-				}
-
-				break;
-			}
-		}
-
-		return $params;
 	}
 } // End Request

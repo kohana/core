@@ -422,7 +422,7 @@ class Kohana_Route {
 	 */
 	public function is_external()
 	{
-		return ! in_array($this->_defaults['host'], Route::$localhosts);
+		return ! in_array(Arr::get($this->_defaults, 'host', FALSE), Route::$localhosts);
 	}
 
 	/**

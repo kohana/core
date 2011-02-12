@@ -632,4 +632,34 @@ class Kohana_RouteTest extends Unittest_TestCase
 
 		$this->assertSame('#^(?P<controller>[a-z]+)(?:/(?P<action>[^/.,;?\n]++)(?:/(?P<id>\d+))?)?$#uD', $compiled);
 	}
+
+	/**
+	 * Tests Route::is_external(), ensuring the host can return
+	 * whether internal or external host
+	 */
+	public function test_is_external_route_from_host()
+	{
+		// Setup local route
+		Route::set('internal', 'local/test/route')
+			->defaults(array(
+				'controller' => 'foo',
+				'action'     => 'bar'
+				)
+			);
+
+		// Setup local route
+		Route::set('external', 'local/test/route')
+			->defaults(array(
+				'controller' => 'foo',
+				'action'     => 'bar',
+				'host'       => 'http://kohanaframework.org'
+				)
+			);
+
+		// Test internal route
+		$this->assertFalse(Route::get('internal')->is_external());
+
+		// Test external route
+		$this->assertTrue(Route::get('external')->is_external());
+	}
 }
