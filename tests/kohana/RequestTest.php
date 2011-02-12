@@ -336,4 +336,48 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$request = new Request_Client_Internal;
 		$this->assertEquals($request->set_cache($response), $expected);
 	}
+
+	/**
+	 * Data provider for test_set_protocol() test
+	 *
+	 * @return array
+	 */
+	public function provider_set_protocol()
+	{
+		return array(
+			array(
+				'http',
+				'http',
+			),
+			array(
+				'FTP',
+				'ftp',
+			),
+			array(
+				'hTTps',
+				'https',
+			),
+		);
+	}
+
+	/**
+	 * Tests the protocol() method
+	 *
+	 * @dataProvider provider_set_protocol
+	 * 
+	 * @return null
+	 */
+	public function test_set_protocol($protocol, $expected)
+	{
+		$request = Request::factory();
+
+		// Set the supplied protocol
+		$result = $request->protocol($protocol);
+
+		// Test the set value
+		$this->assertSame($request->protocol(), $expected);
+
+		// Test the return value
+		$this->assertTrue($request instanceof $result);
+	}
 }

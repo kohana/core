@@ -1129,7 +1129,7 @@ class Kohana_Request implements Http_Request {
 			return $this->_protocol;
 		}
 
-		$this->_protocol = strtoupper($protocol);
+		$this->_protocol = strtolower($protocol);
 		return $this;
 	}
 
