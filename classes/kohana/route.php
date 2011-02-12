@@ -259,11 +259,6 @@ class Kohana_Route {
 	protected $_uri = '';
 
 	/**
-	 * @var  mixed
-	 */
-	protected $_host;
-
-	/**
 	 * @var  array
 	 */
 	protected $_regex = array();
@@ -427,7 +422,7 @@ class Kohana_Route {
 	 */
 	public function is_external()
 	{
-		return ! in_array($this->_host, Route::$localhosts);
+		return ! in_array($this->_defaults['host'], Route::$localhosts);
 	}
 
 	/**
