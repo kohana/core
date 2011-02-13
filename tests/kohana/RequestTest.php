@@ -52,7 +52,17 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 		$this->assertArrayHasKey('id', $request->param());
 		$this->assertArrayNotHasKey('foo', $request->param());
-		$this->assertEquals($request->param('uri'), $uri);
+		$this->assertEquals($request->uri(), $uri);
+
+		// Ensure the params do not contain contamination from controller, action, route, uri etc etc
+		$params = $request->param();
+
+		// Test for illegal components
+		$this->assertArrayNotHasKey('controller', $params);
+		$this->assertArrayNotHasKey('action', $params);
+		$this->assertArrayNotHasKey('directory', $params);
+		$this->assertArrayNotHasKey('uri', $params);
+		$this->assertArrayNotHasKey('route', $params);
 	}
 
 	/**
