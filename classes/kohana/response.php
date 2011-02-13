@@ -420,6 +420,12 @@ class Kohana_Response implements Http_Response, Serializable {
 				$protocol = strtoupper(Http::$protocol).'/'.Http::$version;
 			}
 
+			// Default to text/html; charset=utf8 if no content type set
+			if ( ! $this->_header->offsetExists('content-type'))
+			{
+				$this->_header['content-type'] = Kohana::$content_type.'; charset='.Kohana::$charset;
+			}
+
 			// Add the X-Powered-By header
 			if (Kohana::$expose)
 			{
@@ -680,7 +686,7 @@ class Kohana_Response implements Http_Response, Serializable {
 		if ( ! $this->_header->offsetExists('content-type'))
 		{
 			// Add the default Content-Type header if required
-			$this->_header['content-type'] = 'text/html; charset='.Kohana::$charset;
+			$this->_header['content-type'] = Kohana::$content_type.'; charset='.Kohana::$charset;
 		}
 
 		$content_length = $this->content_length();
