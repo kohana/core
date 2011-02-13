@@ -1085,6 +1085,27 @@ class Kohana_Request implements Http_Request {
 	}
 
 	/**
+	 * Checks the browser cache to see the response needs to be returned.
+	 *
+	 *     $request->check_cache($etag);
+	 *
+	 * [!!] If the cache check succeeds, no further processing can be done!
+	 *
+	 * @param   string  $etag  Etag to check
+	 * @return  Request
+	 * @throws  Kohana_Request_Exception
+	 * @uses    Request::generate_etag
+	 * @deprecated
+	 */
+	public function check_cache($etag = null)
+	{
+		$this->create_response()
+			->check_cache($etag, $this);
+
+		return $this;
+	}
+
+	/**
 	 * Gets or sets the Http method. Usually GET, POST, PUT or DELETE in
 	 * traditional CRUD applications.
 	 *
