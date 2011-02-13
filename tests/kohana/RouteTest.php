@@ -647,7 +647,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 				)
 			);
 
-		// Setup local route
+		// Setup external route
 		Route::set('external', 'local/test/route')
 			->defaults(array(
 				'controller' => 'foo',
@@ -661,5 +661,56 @@ class Kohana_RouteTest extends Unittest_TestCase
 
 		// Test external route
 		$this->assertTrue(Route::get('external')->is_external());
+	}
+
+	/**
+	 * Provider for test_external_route_includes_params_in_uri
+	 *
+	 * @return array
+	 */
+	public function provider_external_route_includes_params_in_uri()
+	{
+		return array(
+			array(
+				'<controller>/<action>',
+				array(
+					'controller'  => 'foo',
+					'action'      => 'bar',
+					'host'        => 'kohanaframework.org'
+				),
+				'http://kohanaframework.org/foo/bar'
+			),
+			array(
+				'<controller>/<action>',
+				array(
+					'controller'  => 'foo',
+					'action'      => 'bar',
+					'host'        => 'http://kohanaframework.org'
+				),
+				'http://kohanaframework.org/foo/bar'
+			),
+			array(
+				'foo/bar',
+				array(
+					'controller'  => 'foo',
+					'host'        => 'http://kohanaframework.org'
+				),
+				'http://kohanaframework.org/foo/bar'
+			),
+		);
+	}
+
+	/**
+	 * Tests the external route include route parameters
+	 *
+	 * @dataProvider provider_external_route_includes_params_in_uri
+	 * @covers uri
+	 */
+	public function test_external_route_includes_params_in_uri($route, $defaults, $expected_uri)
+	{
+		Route::set('test', $route)
+			->defaults($defaults);
+
+		$this->assertSame($expected_uri, Route::get('test')->uri());
 	}
 }
