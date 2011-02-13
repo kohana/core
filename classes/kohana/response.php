@@ -746,13 +746,17 @@ class Kohana_Response implements Http_Response, Serializable {
 	 * @param   string   $etag Resource ETag
 	 * @param   Request  $request The request to test against
 	 * @return  Response
+	 * @throws  Kohana_Request_Exception
 	 */
-	public function check_cache($etag = NULL, Request $request)
+	public function check_cache($etag = NULL, Request $request = NULL)
 	{
 		if ( ! $etag)
 		{
 			$etag = $this->generate_etag();
 		}
+
+		if ( ! $request)
+			throw new Kohana_Request_Exception('A Request object must be supplied with an etag for evaluation');
 
 		// Set the ETag header
 		$this->_header['etag'] = $etag;
