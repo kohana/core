@@ -769,9 +769,6 @@ class Kohana_Request implements Http_Request {
 	 */
 	public function uri(array $params = NULL)
 	{
-		if ($this->_external)
-			return $this->_uri;
-
 		if ( ! isset($params['directory']))
 		{
 			// Add the current directory
