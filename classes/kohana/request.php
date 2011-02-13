@@ -719,7 +719,7 @@ class Kohana_Request implements Http_Request {
 				}
 
 				// These are accessible as public vars and can be overloaded
-				unset($params['controller'], $params['action'], $params['directory']);
+				unset($params['controller'], $params['action'], $params['directory'], $params['uri'], $params['route']);
 
 				// Params cannot be changed once matched
 				$this->_params = $params;
