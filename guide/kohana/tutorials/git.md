@@ -55,8 +55,8 @@ We don't want git to track log or cache files, so add a `.gitignore` file to eac
 
 Now we need the `index.php` and `bootstrap.php` files:
 
-    wget http://github.com/kohana/kohana/raw/master/index.php
-    wget http://github.com/kohana/kohana/raw/master/application/bootstrap.php -O application/bootstrap.php
+    wget https://github.com/kohana/kohana/raw/3.1/master/index.php --no-check-certificate
+    wget https://github.com/kohana/kohana/raw/3.1/master/application/bootstrap.php --no-check-certificate -O application/bootstrap.php
 
 Commit these changes too:
 
