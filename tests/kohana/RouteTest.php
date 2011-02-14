@@ -704,7 +704,6 @@ class Kohana_RouteTest extends Unittest_TestCase
 	 * Tests the external route include route parameters
 	 *
 	 * @dataProvider provider_external_route_includes_params_in_uri
-	 * @covers uri
 	 */
 	public function test_external_route_includes_params_in_uri($route, $defaults, $expected_uri)
 	{
