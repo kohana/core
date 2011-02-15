@@ -335,6 +335,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	 *
 	 * @param   mixed     cookie name, or array of cookie values
 	 * @param   string    value to set to cookie
+	 * @param   int       cookie expiration
 	 * @return  string
 	 * @return  [Request]
 	 */
