@@ -338,7 +338,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	 * @return  string
 	 * @return  [Request]
 	 */
-	public function cookie($key = NULL, $value = NULL)
+	public function cookie($key = NULL, $value = NULL, $expiration = NULL)
 	{
 		if ($key === NULL)
 			return $this->_cookies;
