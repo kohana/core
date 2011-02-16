@@ -259,11 +259,6 @@ class Kohana_Route {
 	protected $_uri = '';
 
 	/**
-	 * @var  mixed
-	 */
-	protected $_host;
-
-	/**
 	 * @var  array
 	 */
 	protected $_regex = array();
@@ -427,7 +422,7 @@ class Kohana_Route {
 	 */
 	public function is_external()
 	{
-		return ! in_array($this->_host, Route::$localhosts);
+		return ! in_array(Arr::get($this->_defaults, 'host', FALSE), Route::$localhosts);
 	}
 
 	/**
@@ -453,7 +448,24 @@ class Kohana_Route {
 		if (strpos($uri, '<') === FALSE AND strpos($uri, '(') === FALSE)
 		{
 			// This is a static route, no need to replace anything
-			return $uri;
+
+			if ( ! $this->is_external())
+				return $uri;
+
+			// If the localhost setting does not have a protocol
+			if (strpos($this->_defaults['host'], '://') === FALSE)
+			{
+				// Use the default defined protocol
+				$params['host'] = Route::$default_protocol.$this->_defaults['host'];
+			}
+			else
+			{
+				// Use the supplied host with protocol
+				$params['host'] = $this->_defaults['host'];
+			}
+
+			// Compile the final uri and return it
+			return rtrim($params['host'], '/').'/'.$uri;
 		}
 
 		while (preg_match('#\([^()]++\)#', $uri, $match))
@@ -467,9 +479,6 @@ class Kohana_Route {
 			while (preg_match('#'.Route::REGEX_KEY.'#', $replace, $match))
 			{
 				list($key, $param) = $match;
-
-				if ($param === 'host')
-					continue;
 
 				if (isset($params[$param]))
 				{
@@ -515,14 +524,19 @@ class Kohana_Route {
 		$uri = preg_replace('#//+#', '/', rtrim($uri, '/'));
 
 		// If the localhost setting matches a local route, return the uri as is
-		if ( ! isset($params['host']) OR in_array($params['host'], Route::$localhosts))
+		if ( ! $this->is_external())
 			return $uri;
 
 		// If the localhost setting does not have a protocol
-		if (strpos($params['host'], '://') === FALSE)
+		if (strpos($this->_defaults['host'], '://') === FALSE)
 		{
 			// Use the default defined protocol
-			$params['host'] = Route::$default_protocol.$params['host'];
+			$params['host'] = Route::$default_protocol.$this->_defaults['host'];
+		}
+		else
+		{
+			// Use the supplied host with protocol
+			$params['host'] = $this->_defaults['host'];
 		}
 
 		// Compile the final uri and return it

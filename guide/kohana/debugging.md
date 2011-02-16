@@ -2,10 +2,10 @@
 
 Kohana includes several tools to help you debug your application.
 
-The most basic of these is [Kohana::debug]. This simple method will display any number of variables, similar to [var_export](http://php.net/var_export) or [print_r](http://php.net/print_r), but using HTML for extra formatting.
+The most basic of these is [Debug::vars]. This simple method will display any number of variables, similar to [var_export](http://php.net/var_export) or [print_r](http://php.net/print_r), but using HTML for extra formatting.
 
     // Display a dump of the $foo and $bar variables
-    echo Debug::dump($foo, $bar);
+    echo Debug::vars($foo, $bar);
 
 Kohana also provides a method to show the source code of a particular file using [Debug::source].
 

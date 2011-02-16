@@ -632,4 +632,84 @@ class Kohana_RouteTest extends Unittest_TestCase
 
 		$this->assertSame('#^(?P<controller>[a-z]+)(?:/(?P<action>[^/.,;?\n]++)(?:/(?P<id>\d+))?)?$#uD', $compiled);
 	}
+
+	/**
+	 * Tests Route::is_external(), ensuring the host can return
+	 * whether internal or external host
+	 */
+	public function test_is_external_route_from_host()
+	{
+		// Setup local route
+		Route::set('internal', 'local/test/route')
+			->defaults(array(
+				'controller' => 'foo',
+				'action'     => 'bar'
+				)
+			);
+
+		// Setup external route
+		Route::set('external', 'local/test/route')
+			->defaults(array(
+				'controller' => 'foo',
+				'action'     => 'bar',
+				'host'       => 'http://kohanaframework.org'
+				)
+			);
+
+		// Test internal route
+		$this->assertFalse(Route::get('internal')->is_external());
+
+		// Test external route
+		$this->assertTrue(Route::get('external')->is_external());
+	}
+
+	/**
+	 * Provider for test_external_route_includes_params_in_uri
+	 *
+	 * @return array
+	 */
+	public function provider_external_route_includes_params_in_uri()
+	{
+		return array(
+			array(
+				'<controller>/<action>',
+				array(
+					'controller'  => 'foo',
+					'action'      => 'bar',
+					'host'        => 'kohanaframework.org'
+				),
+				'http://kohanaframework.org/foo/bar'
+			),
+			array(
+				'<controller>/<action>',
+				array(
+					'controller'  => 'foo',
+					'action'      => 'bar',
+					'host'        => 'http://kohanaframework.org'
+				),
+				'http://kohanaframework.org/foo/bar'
+			),
+			array(
+				'foo/bar',
+				array(
+					'controller'  => 'foo',
+					'host'        => 'http://kohanaframework.org'
+				),
+				'http://kohanaframework.org/foo/bar'
+			),
+		);
+	}
+
+	/**
+	 * Tests the external route include route parameters
+	 *
+	 * @dataProvider provider_external_route_includes_params_in_uri
+	 */
+	public function test_external_route_includes_params_in_uri($route, $defaults, $expected_uri)
+	{
+		Route::set('test', $route)
+			->defaults($defaults);
+
+		$this->assertSame($expected_uri, Route::get('test')->uri());
+	}
 }
