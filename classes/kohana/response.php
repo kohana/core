@@ -346,7 +346,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	 * @param   string    value to set to cookie
 	 * @return  string
 	 * @return  void
-	 * @return  [Request]
+	 * @return  [Response]
 	 */
 	public function cookie($key = NULL, $value = NULL)
 	{
