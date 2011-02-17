@@ -661,7 +661,7 @@ class Kohana_Request implements Http_Request {
 	 * created using the [Request::instance] or [Request::factory] methods.
 	 *
 	 *     $request = new Request($uri);
-	 * 
+	 *
 	 * If $cache parameter is set, the response for the request will attempt to
 	 * be retrieved from the cache.
 	 *
@@ -1082,27 +1082,6 @@ class Kohana_Request implements Http_Request {
 			return $response;
 		else
 			return $this->_response = $response;
-	}
-
-	/**
-	 * Checks the browser cache to see the response needs to be returned.
-	 *
-	 *     $request->check_cache($etag);
-	 *
-	 * [!!] If the cache check succeeds, no further processing can be done!
-	 *
-	 * @param   string  $etag  Etag to check
-	 * @return  Request
-	 * @throws  Kohana_Request_Exception
-	 * @uses    Request::generate_etag
-	 * @deprecated
-	 */
-	public function check_cache($etag = null)
-	{
-		$this->create_response()
-			->check_cache($etag, $this);
-
-		return $this;
 	}
 
 	/**
