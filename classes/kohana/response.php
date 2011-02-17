@@ -440,19 +440,22 @@ class Kohana_Response implements Http_Response, Serializable {
 				$this->_header['x-powered-by'] = 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
 			}
 
-			// HTTP status line
-			header($protocol.' '.$this->_status.' '.Response::$messages[$this->_status]);
-
-			foreach ($this->_header as $name => $value)
+			if ( ! Kohana::$is_cli)
 			{
-				if (is_string($name))
-				{
-					// Combine the name and value to make a raw header
-					$value = $name.': '.$value;
-				}
+				// HTTP status line
+				header($protocol.' '.$this->_status.' '.Response::$messages[$this->_status]);
 
-				// Send the raw header
-				header($value, TRUE);
+				foreach ($this->_header as $name => $value)
+				{
+					if (is_string($name))
+					{
+						// Combine the name and value to make a raw header
+						$value = $name.': '.$value;
+					}
+
+					// Send the raw header
+					header($value, TRUE);
+				}
 			}
 
 			// Send cookies
