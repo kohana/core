@@ -332,43 +332,51 @@ class Kohana_Response implements Http_Response, Serializable {
 
 	/**
 	 * Set and get cookies values for this response.
+	 * 
+	 *     // Get the cookies set to the response
+	 *     $cookies = $response->cookie();
+	 *     
+	 *     // Set a cookie to the response
+	 *     $response->cookie('session', array(
+	 *          'value' => $value,
+	 *          'expiration' => 12352234
+	 *     ));
 	 *
 	 * @param   mixed     cookie name, or array of cookie values
 	 * @param   string    value to set to cookie
 	 * @return  string
+	 * @return  void
 	 * @return  [Request]
 	 */
 	public function cookie($key = NULL, $value = NULL)
 	{
+		// Handle the get cookie calls
 		if ($key === NULL)
 			return $this->_cookies;
+		elseif ( ! is_array($key) AND ! $value)
+			return Arr::get($this->_cookies, $key);
 
+		// Handle the set cookie calls
 		if (is_array($key))
 		{
 			reset($key);
 			while (list($_key, $_value) = each($key))
 			{
-				$this->cookie($_key, $_value, $expiration);
+				$this->cookie($_key, $_value);
 			}
 		}
-
-		if ( ! $value)
-			return Arr::get($this->_cookies, $key);
 		else
 		{
-			// Get the expiration value
-			$expiration = $expiration ? $expiration : Cookie::$expiration;
-
 			if ( ! is_array($value))
 			{
 				$value = array(
 					'value' => $value,
-					'expiration' => $expiration
+					'expiration' => Cookie::$expiration
 				);
 			}
 			elseif ( ! isset($value['expiration']))
 			{
-				$value['expiration'] = $expiration;
+				$value['expiration'] = Cookie::$expiration;
 			}
 
 			$this->_cookies[$key] = $value;

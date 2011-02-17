@@ -77,6 +77,95 @@ class Kohana_ResponseTest extends Unittest_TestCase
 	}
 
 	/**
+	 * provider for test_cookie_set()
+	 *
+	 * @return array
+	 */
+	public function provider_cookie_set()
+	{
+		return array(
+			array(
+				'test1',
+				'foo',
+				array(
+					'test1' => array(
+						'value' => 'foo',
+						'expiration' => Cookie::$expiration
+					),
+				)
+			),
+			array(
+				array(
+					'test2' => 'stfu',
+					'test3' => array(
+						'value' => 'snafu',
+						'expiration' => 123456789
+					)
+				),
+				NULL,
+				array(
+					'test2' => array(
+						'value' => 'stfu',
+						'expiration' => Cookie::$expiration
+					),
+					'test3' => array(
+						'value' => 'snafu',
+						'expiration' => 123456789
+					)
+				)
+			)
+		);
+	}
+
+	/**
+	 * Tests the Response::cookie() method, ensures
+	 * correct values are set, including defaults
+	 *
+	 * @test
+	 * @dataProvider provider_cookie_set
+	 * @param string $key 
+	 * @param string $value 
+	 * @param string $expected 
+	 * @return void
+	 */
+	public function test_cookie_set($key, $value, $expected)
+	{
+		// Setup the Response and apply cookie
+		$response = new Response;
+		$response->cookie($key, $value);
+
+		foreach ($expected as $_key => $_value)
+		{
+			$cookie = $response->cookie($_key);
+
+			$this->assertSame($_value['value'], $cookie['value']);
+			$this->assertSame($_value['expiration'], $cookie['expiration']);
+		}
+	}
+
+	/**
+	 * Tests the Response::cookie() get functionality
+	 *
+	 * @return void
+	 */
+	public function test_cookie_get()
+	{
+		$response = new Response;
+
+		// Test for empty cookies
+		$this->assertSame(array(), $response->cookie());
+
+		// Test for no specific cookie
+		$this->assertNull($response->cookie('foobar'));
+
+		$response->cookie('foo', 'bar');
+		$cookie = $response->cookie('foo');
+
+		$this->assertSame('bar', $cookie['value']);
+		$this->assertSame(Cookie::$expiration, $cookie['expiration']);
+	}
+
+	/**
 	 * Test the content type is sent when set
 	 * 
 	 * @test
