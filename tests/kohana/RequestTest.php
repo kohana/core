@@ -198,6 +198,23 @@ class Kohana_RequestTest extends Kohana_Unittest_TestCase
 
 		$this->assertInternalType('string', Request::detect_uri());
 	}
+
+	/**
+	 * Tests Request::detect_uri() for malformed uri, see #3191
+	 *
+	 * @test
+	 * @covers Request::detect_uri
+	 */
+	public function test_malformed_uri()
+	{
+		$this->setEnvironment(array(
+			'Kohana::$base_url'   => '/kohana/',
+			'Kohana::$index_file' => FALSE,
+			'_SERVER'             => array('REQUEST_URI' => '/http://example.com/judge.php', 'PATH_INFO' => NULL),
+		));
+
+		$this->assertSame('/http://example.com/judge.php', Request::detect_uri());
+	}
 }
 
 class Controller_Foo extends Controller {

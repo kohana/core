@@ -261,8 +261,22 @@ class Kohana_Request {
 
 			if (isset($_SERVER['REQUEST_URI']))
 			{
-				// REQUEST_URI includes the query string, remove it
-				$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+				/**
+				 * We use REQUEST_URI as the fallback value. The reason
+				 * for this is we might have a malformed URL such as:
+				 *
+				 *  http://localhost/http://example.com/judge.php
+				 * 
+				 * which parse_url can't handle. So rather than leave empty
+				 * handed, we'll use this.
+				 */ 
+				$uri = $_SERVER['REQUEST_URI'];
+
+				if($request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH))
+				{
+					// Valid URL path found, set it.
+					$uri = $request_uri;
+				}
 
 				// Decode the request URI
 				$uri = rawurldecode($uri);
