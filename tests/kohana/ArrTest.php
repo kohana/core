@@ -4,16 +4,14 @@
  * Tests the Arr lib that's shipped with kohana
  *
  * @group kohana
- * @group kohana.arr
  *
- * @package    Kohana
- * @category   Tests
+ * @package    Unittest
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_ArrTest extends Unittest_TestCase
+class Kohana_ArrTest extends Kohana_Unittest_TestCase
 {
 	/**
 	 * Provides test data for test_callback()
@@ -97,42 +95,6 @@ class Kohana_ArrTest extends Unittest_TestCase
 		$this->assertSame($expected, $array);
 	}
 
-	/**
-	 * Provides test data for test_pluck
-	 *
-	 * @return array
-	 */
-	public function provider_pluck()
-	{
-		return array(
-			array(
-				array(
-					  array('id' => 20, 'name' => 'John Smith'),
-					  array('name' => 'Linda'),
-					  array('id' => 25, 'name' => 'Fred'),
-					 ),
-				'id',
-				array(20, 25)
-			),
-		);
-	}
-
-	/**
-	 * Tests Arr::pluck()
-	 *
-	 * @test
-	 * @dataProvider provider_pluck
-	 * @param array $array
-	 * @param string $key
-	 * @param array $expected
-	 */
-	public function test_pluck(array $array, $key, $expected)
-	{
-		$array = Arr::pluck($array, $key);
-
-		$this->assertSame(count($expected), count($array));
-		$this->assertSame($expected, $array);
-	}
 
 	/**
 	 * Provides test data for test_get()
@@ -241,11 +203,6 @@ class Kohana_ArrTest extends Unittest_TestCase
 				array('name' => 'mary', 'children' => array('jane')),
 			),
 			// See how it merges sub-arrays with numerical indexes
-			array(
-				array(array('test1','test3'), array('test2','test4')),
-				array(array('test1'), array('test2')),
-				array(array('test3'), array('test4')),
-			),
 			array(
 				array(array('test1','test3'), array('test2','test4')),
 				array(array('test1'), array('test2')),
@@ -362,42 +319,6 @@ class Kohana_ArrTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for test_path()
-	 *
-	 * @return array
-	 */
-	public function provider_set_path()
-	{
-		return array(
-			// Tests returns normal values
-			array(array('foo' => 'bar'), array(), 'foo', 'bar'),
-			array(array('kohana' => array('is' => 'awesome')), array(), 'kohana.is', 'awesome'),
-			array(array('kohana' => array('is' => 'cool', 'and' => 'slow')),
-				  array('kohana' => array('is' => 'cool')), 'kohana.and', 'slow'),
-			// Custom delimiters
-			array(array('kohana' => array('is' => 'awesome')), array(), 'kohana/is', 'awesome', '/'),
-			// Ensures set_path() casts ints to actual integers for keys
-			array(array('foo' => array('bar')), array('foo' => array('test')), 'foo.0', 'bar'),
-		);
-	}
-
-	/**
-	 * Tests Arr::path()
-	 *
-	 * @test
-	 * @dataProvider provider_set_path
-	 * @param string  $path       The path to follow
-	 * @param boolean $expected   The expected value
-	 * @param string  $delimiter  The path delimiter
-	 */
-	public function test_set_path($expected, $array, $path, $value, $delimiter = NULL)
-	{
-		Arr::set_path($array, $path, $value, $delimiter);
-
-		$this->assertSame($expected, $array);
-	}
-
-	/**
 	 * Provides test data for test_range()
 	 *
 	 * @return array
@@ -498,6 +419,31 @@ class Kohana_ArrTest extends Unittest_TestCase
 		$this->assertSame(
 			$expected,
 			Arr::overwrite($arr1, $arr2, $arr3, $arr4)
+		);
+	}
+
+	/**
+	 * Provides test data for test_binary_search
+	 *
+	 * @return array Test Data
+	 */
+	public function provider_binary_search()
+	{
+		return array(
+			array(2, 'john', array('mary', 'louise', 'john', 'kent'))
+		);
+	}
+
+	/**
+	 *
+	 * @test
+	 * @dataProvider provider_binary_search
+	 */
+	public function test_binary_search($expected, $needle, $haystack, $sort = FALSE)
+	{
+		$this->assertSame(
+			$expected,
+			Arr::binary_search($needle, $haystack, $sort)
 		);
 	}
 

@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2011 Kohana Team
+ * @copyright  (c) 2007-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Arr {
@@ -191,49 +191,6 @@ class Kohana_Arr {
 	}
 
 	/**
-	* Set a value on an array by path.
-	*
-	* @see Arr::path()
-	* @param array   $array     Array to update
-	* @param string  $path      Path
-	* @param mixed   $value     Value to set
-	* @param string  $delimiter Path delimiter
-	*/
-	public static function set_path( & $array, $path, $value, $delimiter = NULL)
-	{
-		if ( ! $delimiter)
-		{
-			// Use the default delimiter
-			$delimiter = Arr::$delimiter;
-		}
-
-		// Split the keys by delimiter
-		$keys = explode($delimiter, $path);
-
-		// Set current $array to inner-most array path
-		while (count($keys) > 1)
-		{
-			$key = array_shift($keys);
-
-			if (ctype_digit($key))
-			{
-				// Make the key an integer
-				$key = (int) $key;
-			}
-
-			if ( ! isset($array[$key]))
-			{
-				$array[$key] = array();
-			}
-
-			$array = & $array[$key];
-		}
-
-		// Set key on inner-most array
-		$array[array_shift($keys)] = $value;
-	}
-
-	/**
 	 * Fill an array with a range of numbers.
 	 *
 	 *     // Fill an array with values 5, 10, 15, 20
@@ -326,6 +283,22 @@ class Kohana_Arr {
 		}
 
 		return $values;
+	}
+
+	/**
+	 * Binary search algorithm.
+	 *
+	 * @deprecated  Use [array_search](http://php.net/array_search) instead
+	 *
+	 * @param   mixed    the value to search for
+	 * @param   array    an array of values to search in
+	 * @param   boolean  sort the array now
+	 * @return  integer  the index of the match
+	 * @return  FALSE    no matching index found
+	 */
+	public static function binary_search($needle, $haystack, $sort = FALSE)
+	{
+		return array_search($needle, $haystack);
 	}
 
 	/**

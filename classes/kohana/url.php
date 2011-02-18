@@ -5,43 +5,43 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2011 Kohana Team
+ * @copyright  (c) 2007-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_URL {
 
 	/**
-	 * Gets the base URL to the application.
-	 * To specify a protocol, provide the protocol as a string or request object.
+	 * Gets the base URL to the application. To include the current protocol,
+	 * use TRUE. To specify a protocol, provide the protocol as a string.
 	 * If a protocol is used, a complete URL will be generated using the
 	 * `$_SERVER['HTTP_HOST']` variable.
 	 *
-	 *     // Absolute URL path with no host or protocol
+	 *     // Absolute relative, no host or protocol
 	 *     echo URL::base();
 	 *
-	 *     // Absolute URL path with host, https protocol and index.php if set
-	 *     echo URL::base('https', TRUE);
+	 *     // Complete relative, with host and protocol
+	 *     echo URL::base(TRUE, TRUE);
 	 *
-	 *     // Absolute URL path with host and protocol from $request
-	 *     echo URL::base($request);
+	 *     // Complete relative, with host and "https" protocol
+	 *     echo URL::base(TRUE, 'https');
 	 *
-	 * @param   mixed    $protocol Protocol string, or [Request]
-	 * @param   boolean  $index    Add index file to URL?
+	 * @param   boolean  add index file to URL?
+	 * @param   mixed    protocol string or boolean, add protocol and domain?
 	 * @return  string
 	 * @uses    Kohana::$index_file
-	 * @uses    Request::protocol()
+	 * @uses    Request::$protocol
 	 */
-	public static function base($protocol = NULL, $index = FALSE)
+	public static function base($index = FALSE, $protocol = FALSE)
 	{
 		// Start with the configured base URL
 		$base_url = Kohana::$base_url;
 
-		if ($protocol instanceof Request)
+		if ($protocol === TRUE)
 		{
 			// Use the current protocol
-			$protocol = $protocol->protocol();
+			$protocol = Request::$protocol;
 		}
-		elseif ($protocol === NULL AND $scheme = parse_url($base_url, PHP_URL_SCHEME))
+		elseif ($protocol === FALSE AND $scheme = parse_url($base_url, PHP_URL_SCHEME))
 		{
 			// Use the configured default protocol
 			$protocol = $scheme;
@@ -84,13 +84,12 @@ class Kohana_URL {
 	 *
 	 *     echo URL::site('foo/bar');
 	 *
-	 * @param   string  $uri        Site URI to convert
-	 * @param   mixed   $protocol   Protocol string or [Request] class to use protocol from
-	 * @param   boolean $index		Include the index_page in the URL
+	 * @param   string  site URI to convert
+	 * @param   mixed   protocol string or boolean, add protocol and domain?
 	 * @return  string
 	 * @uses    URL::base
 	 */
-	public static function site($uri = '', $protocol = NULL, $index = TRUE)
+	public static function site($uri = '', $protocol = FALSE)
 	{
 		// Chop off possible scheme, host, port, user and pass parts
 		$path = preg_replace('~^[-a-z0-9+.]++://[^/]++/?~', '', trim($uri, '/'));
@@ -102,7 +101,7 @@ class Kohana_URL {
 		}
 
 		// Concat the URL
-		return URL::base($protocol, $index).$path;
+		return URL::base(TRUE, $protocol).$path;
 	}
 
 	/**
@@ -117,8 +116,8 @@ class Kohana_URL {
 	 *
 	 * [!!] Parameters with a NULL value are left out.
 	 *
-	 * @param   array    $params   Array of GET parameters
-	 * @param   boolean  $use_get  Include current request GET parameters
+	 * @param   array    array of GET parameters
+	 * @param   boolean  include current request GET parameters
 	 * @return  string
 	 */
 	public static function query(array $params = NULL, $use_get = TRUE)
@@ -155,9 +154,9 @@ class Kohana_URL {
 	 *
 	 *     echo URL::title('My Blog Post'); // "my-blog-post"
 	 *
-	 * @param   string   $title       Phrase to convert
-	 * @param   string   $separator   Word separator (any single character)
-	 * @param   boolean  $ascii_only  Transliterate to ASCII?
+	 * @param   string   phrase to convert
+	 * @param   string   word separator (any single character)
+	 * @param   boolean  transliterate to ASCII?
 	 * @return  string
 	 * @uses    UTF8::transliterate_to_ascii
 	 */

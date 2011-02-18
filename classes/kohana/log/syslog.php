@@ -8,7 +8,7 @@
  * @copyright  (c) 2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Log_Syslog extends Log_Writer {
+class Kohana_Log_Syslog extends Kohana_Log_Writer {
 
 	/**
 	 * @var  string  The syslog identifier
@@ -52,7 +52,7 @@ class Kohana_Log_Syslog extends Log_Writer {
 	{
 		foreach ($messages as $message)
 		{
-			syslog($message['level'], $message['body']);
+			syslog($this->_syslog_levels[$message['type']], $message['body']);
 		}
 	}
 

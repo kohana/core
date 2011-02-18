@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Controller
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 abstract class Kohana_Controller_Template extends Controller {
@@ -41,7 +41,7 @@ abstract class Kohana_Controller_Template extends Controller {
 	{
 		if ($this->auto_render === TRUE)
 		{
-			$this->response->body($this->template->render());
+			$this->request->response = $this->template;
 		}
 
 		return parent::after();

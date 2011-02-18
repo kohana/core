@@ -10,26 +10,48 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.1.1';
-	const CODENAME = 'aesalon';
+	const VERSION  = '3.0.9';
+	const CODENAME = 'nya året';
+
+	// Log message types
+	const ERROR    = 'ERROR';
+	const DEBUG    = 'DEBUG';
+	const INFO     = 'INFO';
+	const CRITICAL = 'CRITICAL';
+	const STRACE   = 'STRACE';
+	const ALERT    = 'ALERT';
 
 	// Common environment type constants for consistency and convenience
-	const PRODUCTION  = 1;
-	const STAGING     = 2;
-	const TESTING     = 3;
-	const DEVELOPMENT = 4;
+	const PRODUCTION  = 'production';
+	const STAGING     = 'staging';
+	const TESTING     = 'testing';
+	const DEVELOPMENT = 'development';
 
 	// Security check that is added to all generated PHP files
 	const FILE_SECURITY = '<?php defined(\'SYSPATH\') or die(\'No direct script access.\');';
 
 	// Format of cache files: header, cache name, and data
 	const FILE_CACHE = ":header \n\n// :name\n\n:data\n";
+
+	/**
+	 * @var  array  Codes to turn PHP error codes into readable names.
+	 */
+	public static $php_errors = array(
+		E_ERROR              => 'Fatal Error',
+		E_USER_ERROR         => 'User Error',
+		E_PARSE              => 'Parse Error',
+		E_WARNING            => 'Warning',
+		E_USER_WARNING       => 'User Warning',
+		E_STRICT             => 'Strict',
+		E_NOTICE             => 'Notice',
+		E_RECOVERABLE_ERROR  => 'Recoverable Error',
+	);
 
 	/**
 	 * @var  string  Current environment name
@@ -62,27 +84,12 @@ class Kohana_Core {
 	public static $safe_mode = FALSE;
 
 	/**
-	 * @var  string
-	 */
-	public static $content_type = 'text/html';
-
-	/**
-	 * @var  string  character set of input and output
+	 * @var  string  Character set of input and output. Set by [Kohana::init]
 	 */
 	public static $charset = 'utf-8';
 
 	/**
-	 * @var  string  the name of the server Kohana is hosted upon
-	 */
-	public static $server_name = '';
-
-	/**
-	 * @var  array   list of valid host names for this instance
-	 */
-	public static $hostnames = array();
-
-	/**
-	 * @var  string  base URL to the application
+	 * @var  string  Base URL to the application. Set by [Kohana::init]
 	 */
 	public static $base_url = '/';
 
@@ -117,22 +124,27 @@ class Kohana_Core {
 	public static $errors = TRUE;
 
 	/**
+	 * @var  string  Error rendering view when Kohana catches PHP errors and exceptions. Set by [Kohana::init]
+	 */
+	public static $error_view = 'kohana/error';
+
+	/**
 	 * @var  array  Types of errors to display at shutdown
 	 */
 	public static $shutdown_errors = array(E_PARSE, E_ERROR, E_USER_ERROR);
 
 	/**
-	 * @var  boolean  set the X-Powered-By header
+	 * @var  boolean  escape quotes in Kohana::debug?
 	 */
-	public static $expose = FALSE;
+	public static $debug_escape_quotes = FALSE;
 
 	/**
-	 * @var  Log  logging object
+	 * @var  Kohana_Log  logging object
 	 */
 	public static $log;
 
 	/**
-	 * @var  Config  config object
+	 * @var  Kohana_Config  config object
 	 */
 	public static $config;
 
@@ -180,7 +192,9 @@ class Kohana_Core {
 	 * `string`  | cache_dir  | Kohana's cache directory.  Used by [Kohana::cache] for simple internal caching, like [Fragments](kohana/fragments) and **\[caching database queries](this should link somewhere)**.  This has nothing to do with the [Cache module](cache). | `APPPATH."cache"`
 	 * `integer` | cache_life | Lifetime, in seconds, of items cached by [Kohana::cache]         | `60`
 	 * `boolean` | errors     | Should Kohana catch PHP errors and uncaught Exceptions and show the `error_view`. See [Error Handling](kohana/errors) for more info. <br /> <br /> Recommended setting: `TRUE` while developing, `FALSE` on production servers. | `TRUE`
-	 * `boolean` | profile    | Whether to enable the [Profiler](kohana/profiling). <br /> <br />Recommended setting: `TRUE` while developing, `FALSE` on production servers. | `TRUE`	 * `boolean` | caching    | Cache file locations to speed up [Kohana::find_file].  This has nothing to do with [Kohana::cache], [Fragments](kohana/fragments) or the [Cache module](cache).  <br /> <br />  Recommended setting: `FALSE` while developing, `TRUE` on production servers. | `FALSE`
+	 * `string`  | error_view | The view to use to display errors.  Only used when `errors` is `TRUE`. | `"kohana/error"`
+	 * `boolean` | profile    | Whether to enable the [Profiler](kohana/profiling). <br /> <br />Recommended setting: `TRUE` while developing, `FALSE` on production servers. | `TRUE`
+	 * `boolean` | caching    | Cache file locations to speed up [Kohana::find_file].  This has nothing to do with [Kohana::cache], [Fragments](kohana/fragments) or the [Cache module](cache).  <br /> <br />  Recommended setting: `FALSE` while developing, `TRUE` on production servers. | `FALSE`
 	 *
 	 * @throws  Kohana_Exception
 	 * @param   array   Array of settings.  See above.
@@ -210,6 +224,12 @@ class Kohana_Core {
 		// Start an output buffer
 		ob_start();
 
+		if (defined('E_DEPRECATED'))
+		{
+			// E_DEPRECATED only exists in PHP >= 5.3.0
+			Kohana::$php_errors[E_DEPRECATED] = 'Deprecated';
+		}
+
 		if (isset($settings['errors']))
 		{
 			// Enable error handling
@@ -219,7 +239,7 @@ class Kohana_Core {
 		if (Kohana::$errors === TRUE)
 		{
 			// Enable Kohana exception handling, adds stack traces and error source.
-			set_exception_handler(array('Kohana_Exception', 'handler'));
+			set_exception_handler(array('Kohana', 'exception_handler'));
 
 			// Enable Kohana error handling, converts all PHP errors to exceptions.
 			set_error_handler(array('Kohana', 'error_handler'));
@@ -228,15 +248,23 @@ class Kohana_Core {
 		// Enable the Kohana shutdown handler, which catches E_FATAL errors.
 		register_shutdown_function(array('Kohana', 'shutdown_handler'));
 
+		if (isset($settings['error_view']))
+		{
+			if ( ! Kohana::find_file('views', $settings['error_view']))
+			{
+				throw new Kohana_Exception('Error view file does not exist: views/:file', array(
+					':file' => $settings['error_view'],
+				));
+			}
+
+			// Change the default error rendering
+			Kohana::$error_view = (string) $settings['error_view'];
+		}
+
 		if (ini_get('register_globals'))
 		{
 			// Reverse the effects of register_globals
 			Kohana::globals();
-		}
-
-		if (isset($settings['expose']))
-		{
-			Kohana::$expose = (bool) $settings['expose'];
 		}
 
 		// Determine if we are running in a command line environment
@@ -263,7 +291,7 @@ class Kohana_Core {
 				catch (Exception $e)
 				{
 					throw new Kohana_Exception('Could not create cache directory :dir',
-						array(':dir' => Debug::path($settings['cache_dir'])));
+						array(':dir' => Kohana::debug_path($settings['cache_dir'])));
 				}
 			}
 
@@ -279,7 +307,7 @@ class Kohana_Core {
 		if ( ! is_writable(Kohana::$cache_dir))
 		{
 			throw new Kohana_Exception('Directory :dir must be writable',
-				array(':dir' => Debug::path(Kohana::$cache_dir)));
+				array(':dir' => Kohana::debug_path(Kohana::$cache_dir)));
 		}
 
 		if (isset($settings['cache_life']))
@@ -333,10 +361,10 @@ class Kohana_Core {
 		$_COOKIE = Kohana::sanitize($_COOKIE);
 
 		// Load the logger
-		Kohana::$log = Log::instance();
+		Kohana::$log = Kohana_Log::instance();
 
 		// Load the config
-		Kohana::$config = Config::instance();
+		Kohana::$config = Kohana_Config::instance();
 	}
 
 	/**
@@ -504,7 +532,7 @@ class Kohana_Core {
 		}
 		catch (Exception $e)
 		{
-			Kohana_Exception::handler($e);
+			Kohana::exception_handler($e);
 			die;
 		}
 	}
@@ -803,7 +831,7 @@ class Kohana_Core {
 	 *     $host = Kohana::config('database.default.connection.hostname')
 	 *
 	 * @param   string   group name
-	 * @return  Config
+	 * @return  Kohana_Config
 	 */
 	public static function config($group)
 	{
@@ -997,9 +1025,107 @@ class Kohana_Core {
 	}
 
 	/**
+	 * Inline exception handler, displays the error message, source of the
+	 * exception, and the stack trace of the error.
+	 *
+	 * @uses    Kohana::exception_text
+	 * @param   object   exception object
+	 * @return  boolean
+	 */
+	public static function exception_handler(Exception $e)
+	{
+		try
+		{
+			// Get the exception information
+			$type    = get_class($e);
+			$code    = $e->getCode();
+			$message = $e->getMessage();
+			$file    = $e->getFile();
+			$line    = $e->getLine();
+
+			// Create a text version of the exception
+			$error = Kohana::exception_text($e);
+
+			if (is_object(Kohana::$log))
+			{
+				// Add this exception to the log
+				Kohana::$log->add(Kohana::ERROR, $error);
+
+				// Make sure the logs are written
+				Kohana::$log->write();
+			}
+
+			if (Kohana::$is_cli)
+			{
+				// Just display the text of the exception
+				echo "\n{$error}\n";
+
+				return TRUE;
+			}
+
+			// Get the exception backtrace
+			$trace = $e->getTrace();
+
+			if ($e instanceof ErrorException)
+			{
+				if (isset(Kohana::$php_errors[$code]))
+				{
+					// Use the human-readable error name
+					$code = Kohana::$php_errors[$code];
+				}
+
+				if (version_compare(PHP_VERSION, '5.3', '<'))
+				{
+					// Workaround for a bug in ErrorException::getTrace() that exists in
+					// all PHP 5.2 versions. @see http://bugs.php.net/bug.php?id=45895
+					for ($i = count($trace) - 1; $i > 0; --$i)
+					{
+						if (isset($trace[$i - 1]['args']))
+						{
+							// Re-position the args
+							$trace[$i]['args'] = $trace[$i - 1]['args'];
+
+							// Remove the args
+							unset($trace[$i - 1]['args']);
+						}
+					}
+				}
+			}
+
+			if ( ! headers_sent())
+			{
+				// Make sure the proper content type is sent with a 500 status
+				header('Content-Type: text/html; charset='.Kohana::$charset, TRUE, 500);
+			}
+
+			// Start an output buffer
+			ob_start();
+
+			// Include the exception HTML
+			include Kohana::find_file('views', Kohana::$error_view);
+
+			// Display the contents of the output buffer
+			echo ob_get_clean();
+
+			return TRUE;
+		}
+		catch (Exception $e)
+		{
+			// Clean the output buffer if one exists
+			ob_get_level() and ob_clean();
+
+			// Display the exception text
+			echo Kohana::exception_text($e), "\n";
+
+			// Exit with an error status
+			exit(1);
+		}
+	}
+
+	/**
 	 * Catches errors that are not caught by the error handler, such as E_PARSE.
 	 *
-	 * @uses    Kohana_Exception::handler
+	 * @uses    Kohana::exception_handler
 	 * @return  void
 	 */
 	public static function shutdown_handler()
@@ -1021,7 +1147,7 @@ class Kohana_Core {
 		catch (Exception $e)
 		{
 			// Pass the exception to the handler
-			Kohana_Exception::handler($e);
+			Kohana::exception_handler($e);
 		}
 
 		if (Kohana::$errors AND $error = error_get_last() AND in_array($error['type'], Kohana::$shutdown_errors))
@@ -1030,11 +1156,482 @@ class Kohana_Core {
 			ob_get_level() and ob_clean();
 
 			// Fake an exception for nice debugging
-			Kohana_Exception::handler(new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']));
+			Kohana::exception_handler(new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']));
 
 			// Shutdown now to avoid a "death loop"
 			exit(1);
 		}
+	}
+
+	/**
+	 * Get a single line of text representing the exception:
+	 *
+	 * Error [ Code ]: Message ~ File [ Line ]
+	 *
+	 * @param   object  Exception
+	 * @return  string
+	 */
+	public static function exception_text(Exception $e)
+	{
+		return sprintf('%s [ %s ]: %s ~ %s [ %d ]',
+			get_class($e), $e->getCode(), strip_tags($e->getMessage()), Kohana::debug_path($e->getFile()), $e->getLine());
+	}
+
+	/**
+	 * Returns an HTML string of debugging information about any number of
+	 * variables, each wrapped in a "pre" tag:
+	 *
+	 *     // Displays the type and value of each variable
+	 *     echo Kohana::debug($foo, $bar, $baz);
+	 *
+	 * @param   mixed   variable to debug
+	 * @param   ...
+	 * @return  string
+	 */
+	public static function debug()
+	{
+		if (func_num_args() === 0)
+			return;
+
+		// Get all passed variables
+		$variables = func_get_args();
+
+		$output = array();
+		foreach ($variables as $var)
+		{
+			$output[] = Kohana::_dump($var, 1024);
+		}
+
+		return '<pre class="debug">'.implode("\n", $output).'</pre>';
+	}
+
+	/**
+	 * Returns an HTML string of information about a single variable.
+	 *
+	 * Borrows heavily on concepts from the Debug class of [Nette](http://nettephp.com/).
+	 *
+	 * @param   mixed    variable to dump
+	 * @param   integer  maximum length of strings
+	 * @return  string
+	 */
+	public static function dump($value, $length = 128)
+	{
+		return Kohana::_dump($value, $length);
+	}
+
+	/**
+	 * Helper for Kohana::dump(), handles recursion in arrays and objects.
+	 *
+	 * @param   mixed    variable to dump
+	 * @param   integer  maximum length of strings
+	 * @param   integer  recursion level (internal)
+	 * @return  string
+	 */
+	protected static function _dump( & $var, $length = 128, $level = 0)
+	{
+		if ($var === NULL)
+		{
+			return '<small>NULL</small>';
+		}
+		elseif (is_bool($var))
+		{
+			return '<small>bool</small> '.($var ? 'TRUE' : 'FALSE');
+		}
+		elseif (is_float($var))
+		{
+			return '<small>float</small> '.$var;
+		}
+		elseif (is_resource($var))
+		{
+			if (($type = get_resource_type($var)) === 'stream' AND $meta = stream_get_meta_data($var))
+			{
+				$meta = stream_get_meta_data($var);
+
+				if (isset($meta['uri']))
+				{
+					$file = $meta['uri'];
+
+					if (function_exists('stream_is_local'))
+					{
+						// Only exists on PHP >= 5.2.4
+						if (stream_is_local($file))
+						{
+							$file = Kohana::debug_path($file);
+						}
+					}
+
+					return '<small>resource</small><span>('.$type.')</span> '.htmlspecialchars($file, ENT_NOQUOTES, Kohana::$charset);
+				}
+			}
+			else
+			{
+				return '<small>resource</small><span>('.$type.')</span>';
+			}
+		}
+		elseif (is_string($var))
+		{
+			// Clean invalid multibyte characters. iconv is only invoked
+			// if there are non ASCII characters in the string, so this
+			// isn't too much of a hit.
+			$var = UTF8::clean($var, Kohana::$charset);
+
+			if (UTF8::strlen($var) > $length)
+			{
+				// Encode the truncated string
+				$str = htmlspecialchars(UTF8::substr($var, 0, $length), ENT_NOQUOTES, Kohana::$charset).'&nbsp;&hellip;';
+			}
+			else
+			{
+				// Encode the string
+				$str = htmlspecialchars($var, ENT_NOQUOTES, Kohana::$charset);
+			}
+
+			if (Kohana::$debug_escape_quotes)
+			{
+				// Escape strings (for syntax highlighters, mostly)
+				$str = str_replace('"', '\\"', $str);
+			}
+
+			return '<small>string</small><span>('.strlen($var).')</span> "'.$str.'"';
+		}
+		elseif (is_array($var))
+		{
+			$output = array();
+
+			// Indentation for this variable
+			$space = str_repeat($s = '    ', $level);
+
+			static $marker;
+
+			if ($marker === NULL)
+			{
+				// Make a unique marker
+				$marker = uniqid("\x00");
+			}
+
+			if (empty($var))
+			{
+				// Do nothing
+			}
+			elseif (isset($var[$marker]))
+			{
+				$output[] = "(\n$space$s*RECURSION*\n$space)";
+			}
+			elseif ($level < 5)
+			{
+				$output[] = "<span>(";
+
+				$var[$marker] = TRUE;
+				foreach ($var as $key => & $val)
+				{
+					if ($key === $marker) continue;
+					if ( ! is_int($key))
+					{
+						$key = '"'.htmlspecialchars($key, ENT_NOQUOTES, self::$charset).'"';
+					}
+
+					$output[] = "$space$s$key => ".Kohana::_dump($val, $length, $level + 1);
+				}
+				unset($var[$marker]);
+
+				$output[] = "$space)</span>";
+			}
+			else
+			{
+				// Depth too great
+				$output[] = "(\n$space$s...\n$space)";
+			}
+
+			return '<small>array</small><span>('.count($var).')</span> '.implode("\n", $output);
+		}
+		elseif (is_object($var))
+		{
+			// Copy the object as an array
+			$array = (array) $var;
+
+			$output = array();
+
+			// Indentation for this variable
+			$space = str_repeat($s = '    ', $level);
+
+			$hash = spl_object_hash($var);
+
+			// Objects that are being dumped
+			static $objects = array();
+
+			if (empty($var))
+			{
+				// Do nothing
+			}
+			elseif (isset($objects[$hash]))
+			{
+				$output[] = "{\n$space$s*RECURSION*\n$space}";
+			}
+			elseif ($level < 10)
+			{
+				$output[] = "<code>{";
+
+				$objects[$hash] = TRUE;
+				foreach ($array as $key => & $val)
+				{
+					if ($key[0] === "\x00")
+					{
+						// Determine if the access is protected or protected
+						$access = '<small>'.(($key[1] === '*') ? 'protected' : 'private').'</small>';
+
+						// Remove the access level from the variable name
+						$key = substr($key, strrpos($key, "\x00") + 1);
+					}
+					else
+					{
+						$access = '<small>public</small>';
+					}
+
+					$output[] = "$space$s$access $key => ".Kohana::_dump($val, $length, $level + 1);
+				}
+				unset($objects[$hash]);
+
+				$output[] = "$space}</code>";
+			}
+			else
+			{
+				// Depth too great
+				$output[] = "{\n$space$s...\n$space}";
+			}
+
+			return '<small>object</small> <span>'.get_class($var).'('.count($array).')</span> '.implode("\n", $output);
+		}
+		else
+		{
+			return '<small>'.gettype($var).'</small> '.htmlspecialchars(print_r($var, TRUE), ENT_NOQUOTES, Kohana::$charset);
+		}
+	}
+
+	/**
+	 * Removes application, system, modpath, or docroot from a filename,
+	 * replacing them with the plain text equivalents. Useful for debugging
+	 * when you want to display a shorter path.
+	 *
+	 *     // Displays SYSPATH/classes/kohana.php
+	 *     echo Kohana::debug_path(Kohana::find_file('classes', 'kohana'));
+	 *
+	 * @param   string  path to debug
+	 * @return  string
+	 */
+	public static function debug_path($file)
+	{
+		if (strpos($file, APPPATH) === 0)
+		{
+			$file = 'APPPATH'.DIRECTORY_SEPARATOR.substr($file, strlen(APPPATH));
+		}
+		elseif (strpos($file, SYSPATH) === 0)
+		{
+			$file = 'SYSPATH'.DIRECTORY_SEPARATOR.substr($file, strlen(SYSPATH));
+		}
+		elseif (strpos($file, MODPATH) === 0)
+		{
+			$file = 'MODPATH'.DIRECTORY_SEPARATOR.substr($file, strlen(MODPATH));
+		}
+		elseif (strpos($file, DOCROOT) === 0)
+		{
+			$file = 'DOCROOT'.DIRECTORY_SEPARATOR.substr($file, strlen(DOCROOT));
+		}
+
+		return $file;
+	}
+
+	/**
+	 * Returns an HTML string, highlighting a specific line of a file, with some
+	 * number of lines padded above and below.
+	 *
+	 *     // Highlights the current line of the current file
+	 *     echo Kohana::debug_source(__FILE__, __LINE__);
+	 *
+	 * @param   string   file to open
+	 * @param   integer  line number to highlight
+	 * @param   integer  number of padding lines
+	 * @return  string   source of file
+	 * @return  FALSE    file is unreadable
+	 */
+	public static function debug_source($file, $line_number, $padding = 5)
+	{
+		if ( ! $file OR ! is_readable($file))
+		{
+			// Continuing will cause errors
+			return FALSE;
+		}
+
+		// Open the file and set the line position
+		$file = fopen($file, 'r');
+		$line = 0;
+
+		// Set the reading range
+		$range = array('start' => $line_number - $padding, 'end' => $line_number + $padding);
+
+		// Set the zero-padding amount for line numbers
+		$format = '% '.strlen($range['end']).'d';
+
+		$source = '';
+		while (($row = fgets($file)) !== FALSE)
+		{
+			// Increment the line number
+			if (++$line > $range['end'])
+				break;
+
+			if ($line >= $range['start'])
+			{
+				// Make the row safe for output
+				$row = htmlspecialchars($row, ENT_NOQUOTES, Kohana::$charset);
+
+				// Trim whitespace and sanitize the row
+				$row = '<span class="number">'.sprintf($format, $line).'</span> '.$row;
+
+				if ($line === $line_number)
+				{
+					// Apply highlighting to this row
+					$row = '<span class="line highlight">'.$row.'</span>';
+				}
+				else
+				{
+					$row = '<span class="line">'.$row.'</span>';
+				}
+
+				// Add to the captured source
+				$source .= $row;
+			}
+		}
+
+		// Close the file
+		fclose($file);
+
+		return '<pre class="source"><code>'.$source.'</code></pre>';
+	}
+
+	/**
+	 * Returns an array of HTML strings that represent each step in the backtrace.
+	 *
+	 *     // Displays the entire current backtrace
+	 *     echo implode('<br/>', Kohana::trace());
+	 *
+	 * @param   string  path to debug
+	 * @return  string
+	 */
+	public static function trace(array $trace = NULL)
+	{
+		if ($trace === NULL)
+		{
+			// Start a new trace
+			$trace = debug_backtrace();
+		}
+
+		// Non-standard function calls
+		$statements = array('include', 'include_once', 'require', 'require_once');
+
+		$output = array();
+		foreach ($trace as $step)
+		{
+			if ( ! isset($step['function']))
+			{
+				// Invalid trace step
+				continue;
+			}
+
+			if (isset($step['file']) AND isset($step['line']))
+			{
+				// Include the source of this step
+				$source = Kohana::debug_source($step['file'], $step['line']);
+			}
+
+			if (isset($step['file']))
+			{
+				$file = $step['file'];
+
+				if (isset($step['line']))
+				{
+					$line = $step['line'];
+				}
+			}
+
+			// function()
+			$function = $step['function'];
+
+			if (in_array($step['function'], $statements))
+			{
+				if (empty($step['args']))
+				{
+					// No arguments
+					$args = array();
+				}
+				else
+				{
+					// Sanitize the file path
+					$args = array(Kohana::debug_path($step['args'][0]));
+				}
+			}
+			elseif (isset($step['args']))
+			{
+				if ( ! function_exists($step['function']) OR strpos($step['function'], '{closure}') !== FALSE)
+				{
+					// Introspection on closures or language constructs in a stack trace is impossible
+					$params = NULL;
+				}
+				else
+				{
+					if (isset($step['class']))
+					{
+						if (method_exists($step['class'], $step['function']))
+						{
+							$reflection = new ReflectionMethod($step['class'], $step['function']);
+						}
+						else
+						{
+							$reflection = new ReflectionMethod($step['class'], '__call');
+						}
+					}
+					else
+					{
+						$reflection = new ReflectionFunction($step['function']);
+					}
+
+					// Get the function parameters
+					$params = $reflection->getParameters();
+				}
+
+				$args = array();
+
+				foreach ($step['args'] as $i => $arg)
+				{
+					if (isset($params[$i]))
+					{
+						// Assign the argument by the parameter name
+						$args[$params[$i]->name] = $arg;
+					}
+					else
+					{
+						// Assign the argument by number
+						$args[$i] = $arg;
+					}
+				}
+			}
+
+			if (isset($step['class']))
+			{
+				// Class->method() or Class::method()
+				$function = $step['class'].$step['type'].$step['function'];
+			}
+
+			$output[] = array(
+				'function' => $function,
+				'args'     => isset($args)   ? $args : NULL,
+				'file'     => isset($file)   ? $file : NULL,
+				'line'     => isset($line)   ? $line : NULL,
+				'source'   => isset($source) ? $source : NULL,
+			);
+
+			unset($function, $args, $file, $line, $source);
+		}
+
+		return $output;
 	}
 
 } // End Kohana

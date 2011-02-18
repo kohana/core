@@ -8,7 +8,7 @@ The default Kohana classes, and many extensions, use this definition so that alm
 
 [!!] You should **never** modify any of the files that are distributed with Kohana. Always make modifications to classes using transparent extension to prevent upgrade issues.
 
-For instance, if you wanted to create method that sets encrypted cookies using the [Encrypt] class, you would create a file at `application/classes/cookie.php` that extends Kohana_Cookie, and adds your functions:
+For instance, if you wanted to create method that sets encrypted cookies using the [Encrypt] class, you would creat a file at `application/classes/cookie.php` that extends Kohana_Cookie, and adds your functions:
 
     <?php defined('SYSPATH') or die('No direct script access.');
 
@@ -74,11 +74,11 @@ If you are using the [Cookie](cookies) class, and want to change a setting, you 
 
 ## Example: TODO: an example
 
-Just post the code and brief description of what function it adds, you don't have to do the "How it works" like above.
+Just post the code and breif descript of what function it adds, you don't have to do the "How it works" like above.
 
 ## Example: TODO: something else
 
-Just post the code and brief description of what function it adds, you don't have to do the "How it works" like above.
+Just post the code and breif descript of what function it adds, you don't have to do the "How it works" like above.
 
 ## More examples
 

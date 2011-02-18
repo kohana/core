@@ -37,33 +37,51 @@ Validation also comes with several default rules:
 
 Rule name                 | Function
 ------------------------- |-------------------------------------------------
-[Valid::not_empty]     | Value must be a non-empty value
-[Valid::regex]         | Match the value against a regular expression
-[Valid::min_length]    | Minimum number of characters for value
-[Valid::max_length]    | Maximum number of characters for value
-[Valid::exact_length]  | Value must be an exact number of characters
-[Valid::email]         | An email address is required
+[Validate::not_empty]     | Value must be a non-empty value
+[Validate::regex]         | Match the value against a regular expression
+[Validate::min_length]    | Minimum number of characters for value
+[Validate::max_length]    | Maximum number of characters for value
+[Validate::exact_length]  | Value must be an exact number of characters
+[Validate::email]         | An email address is required
 [Validate::email_domain]  | Check that the domain of the email exists
-[Valid::url]           | Value must be a URL
-[Valid::ip]            | Value must be an IP address
-[Valid::phone]         | Value must be a phone number
-[Valid::credit_card]   | Require a credit card number
-[Valid::date]          | Value must be a date (and time)
-[Valid::alpha]         | Only alpha characters allowed
-[Valid::alpha_dash]    | Only alpha and hyphens allowed
-[Valid::alpha_numeric] | Only alpha and numbers allowed
-[Valid::digit]         | Value must be an integer digit
-[Valid::decimal]       | Value must be a decimal or float value
-[Valid::numeric]       | Only numeric characters allowed
-[Valid::range]         | Value must be within a range
-[Valid::color]         | Value must be a valid HEX color
-[Valid::matches]       | Value matches another field value
+[Validate::url]           | Value must be a URL
+[Validate::ip]            | Value must be an IP address
+[Validate::phone]         | Value must be a phone number
+[Validate::credit_card]   | Require a credit card number
+[Validate::date]          | Value must be a date (and time)
+[Validate::alpha]         | Only alpha characters allowed
+[Validate::alpha_dash]    | Only alpha and hyphens allowed
+[Validate::alpha_numeric] | Only alpha and numbers allowed
+[Validate::digit]         | Value must be an integer digit
+[Validate::decimal]       | Value must be a decimal or float value
+[Validate::numeric]       | Only numeric characters allowed
+[Validate::range]         | Value must be within a range
+[Validate::color]         | Value must be a valid HEX color
+[Validate::matches]       | Value matches another field value
+
+[!!] Any method that exists within the [Validate] class may be used as a validation rule without specifying a complete callback. For example, adding `'not_empty'` is the same as `array('Validate', 'not_empty')`.
+
+## Adding Filters
+
+All validation filters are defined as a field name, a method or function (using the [PHP callback](http://php.net/manual/language.pseudo-types.php#language.types.callback) syntax), and an array of parameters:
+
+    $object->filter($field, $callback, $parameter);
+
+Filters modify the field value before it is checked using rules or callbacks.
+
+If we wanted to convert the "username" field to lowercase:
+
+    $post->filter('username', 'strtolower');
+
+If we wanted to remove all leading and trailing whitespace from *all* fields:
+
+    $post->filter(TRUE, 'trim');
 
 ## Adding Rules
 
 All validation rules are defined as a field name, a method or function (using the [PHP callback](http://php.net/callback) syntax), and an array of parameters:
 
-    $object->rule($field, $callback, array($parameter1, $parameter2));
+    $object->rule($field, $callback, $parameter);
 
 To start our example, we will perform validation on a `$_POST` array that contains user registration information:
 
@@ -76,14 +94,14 @@ Next we need to process the POST'ed information using [Validate]. To start, we n
         ->rule('username', 'regex', array('/^[a-z_.]++$/iD'))
 
         ->rule('password', 'not_empty')
-        ->rule('password', 'min_length', array(':field', '6'))
-        ->rule('confirm',  'matches', array(':validate', 'confirm', 'password'))
+        ->rule('password', 'min_length', array('6'))
+        ->rule('confirm',  'matches', array('password'))
 
         ->rule('use_ssl', 'not_empty');
 
 Any existing PHP function can also be used a rule. For instance, if we want to check if the user entered a proper value for the SSL question:
 
-    $post->rule('use_ssl', 'in_array', array(':validate', array('yes', 'no')));
+    $post->rule('use_ssl', 'in_array', array(array('yes', 'no')));
 
 Note that all array parameters must still be wrapped in an array! Without the wrapping array, `in_array` would be called as `in_array($value, 'yes', 'no')`, which would result in a PHP error.
 
@@ -200,7 +218,7 @@ Next, we need a controller and action to process the registration, which will be
             $errors = $post->errors('user');
 
             // Display the registration form
-            $this->response->body(View::factory('user/register'))
+            $this->request->response = View::factory('user/register')
                 ->bind('post', $post)
                 ->bind('errors', $errors);
         }

@@ -1,6 +1,6 @@
 # Helpers
 
-Kohana comes with many static "helper" functions to make certain tasks easier.
+Kohana comes with many static helper functions to make certain tasks easier.
 
 You can make your own helpers by simply making a class and putting it in the `classes` directory, and you can also extend any helper to modify or add new functions using transparent extension.
 

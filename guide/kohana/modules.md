@@ -8,8 +8,6 @@ Kolanos has created [kohana-universe](http://github.com/kolanos/kohana-universe/
 
 Mon Geslani created a [very nice site](http://kohana.mongeslani.com/) that allows you to sort Github modules by activity, watchers, forks, etc.  It seems to not be as comprehensive as kohana-universe.
 
-Andrew Hutchings has created [kohana-modules](http://www.kohana-modules.com) which is similar to the above sites.
-
 ## Enabling modules
 
 Modules are enabled by calling [Kohana::modules] and passing an array of `'name' => 'path'`.  The name isn't important, but the path obviously is.  A module's path does not have to be in `MODPATH`, but usually is.  You can only call [Kohana::modules] once.

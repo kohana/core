@@ -13,7 +13,9 @@ There are a few things you'll want to do with your application before moving int
    This covers most of the global settings that would change between environments.
    As a general rule, you should enable caching and disable profiling ([Kohana::init] settings) for production sites.
    [Route::cache] can also help if you have a lot of routes.
-2. Turn on APC or some kind of opcode caching.
+2. Catch all exceptions in `application/bootstrap.php`, so that sensitive data is cannot be leaked by stack traces.
+   See the example below which was taken from Shadowhand's [wingsc.com source](http://github.com/shadowhand/wingsc).
+3. Turn on APC or some kind of opcode caching.
    This is the single easiest performance boost you can make to PHP itself. The more complex your application, the bigger the benefit of using opcode caching.
 
 		/**
@@ -30,16 +32,34 @@ There are a few things you'll want to do with your application before moving int
 			'caching'    => Kohana::$environment === Kohana::PRODUCTION,
 		));
 
-`index.php`:
-
 		/**
 		 * Execute the main request using PATH_INFO. If no URI source is specified,
 		 * the URI will be automatically detected.
 		 */
 		$request = Request::instance($_SERVER['PATH_INFO']);
 
-		// Attempt to execute the response
-		$request->execute();
+		try
+		{
+			// Attempt to execute the response
+			$request->execute();
+		}
+		catch (Exception $e)
+		{
+			if (Kohana::$environment === Kohana::DEVELOPMENT)
+			{
+				// Just re-throw the exception
+				throw $e;
+			}
+
+			// Log the error
+			Kohana::$log->add(Kohana::ERROR, Kohana::exception_text($e));
+
+			// Create a 404 response
+			$request->status = 404;
+			$request->response = View::factory('template')
+			  ->set('title', '404')
+			  ->set('content', View::factory('errors/404'));
+		}
 
 		if ($request->send_headers()->response)
 		{

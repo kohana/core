@@ -24,7 +24,7 @@ spl_autoload_register(array('Kohana', 'auto_load'));
 ini_set('unserialize_callback_func', 'spl_autoload_call');
 ~~~
 
-## Initialization and Configuration
+## Initilization and Configuration
 
 Kohana is then initialized by calling [Kohana::init], and the log and [config](files/config) reader/writers are enabled. 
 
@@ -74,6 +74,18 @@ Kohana::init(array(
 
 ... [trimmed]
 
+try
+{
+	$request = Request::instance()->execute();
+}
+catch (Exception $e)
+{
+	// If we are in development and the error wasn't a 404, show the stack trace.
+	if ( Kohana::$environment == "development" AND $e->getCode() != 404 )
+	{
+		throw $e;
+	}
+...[trimmed]
 ~~~
 
 [!!] Note: The default bootstrap will set `Kohana::$environment = $_ENV['KOHANA_ENV']` if set. Docs on how to supply this variable are available in your web server's documentation (e.g. [Apache](http://httpd.apache.org/docs/1.3/mod/mod_env.html#setenv), [Lighttpd](http://redmine.lighttpd.net/wiki/1/Docs:ModSetEnv#Options)). This is considered better practice than many alternative methods to set `Kohana::$enviroment`, as you can change the setting per server, without having to rely on config options or hostnames.
@@ -108,4 +120,45 @@ Route::set('default', '(<controller>(/<action>(/<id>)))')
 		'controller' => 'welcome',
 		'action'     => 'index',
 	));
+~~~
+
+## Execution
+
+Once our environment is initialized and routes defined, it's time to execute our application.  This area of the bootstrap is very flexible.  Do not be afraid to change this around to whatever suits your needs. 
+
+### Basic Example
+The most simple way to do this, and what comes default with Kohana 3 is simply:
+~~~
+// Execute the main request
+echo Request::instance()
+	->execute()
+	->send_headers()
+	->response;
+~~~
+
+### Catching Exceptions
+
+**See [Error Handling](errors) for a more detailed description and more examples.**
+
+The previous example provides no error catching, which means if an error occurs a stack trace would be shown which could show sensitive info, as well as be unfriendly for the user.  One way to solve this is to add a `try catch` block.  If we get an exception, we will show the view located at `views/errors/404.php`.  **Note: Because we catch the exception, Kohana will not log the error!  It is your responsibility to log the error.**
+
+~~~
+try
+{
+	// Execute the main request
+	$request = Request::instance()->execute();
+}
+catch (Exception $e)
+{
+	// Be sure to log the error
+	Kohana::$log->add(Kohana::ERROR, Kohana::exception_text($e));
+	
+	// If there was an error, send a 404 response and display an error
+	$request->status   = 404;
+	$request->response = View::factory('errors/404');
+}
+
+// Send the headers and echo the response
+$request->send_headers();
+echo $request->response;
 ~~~

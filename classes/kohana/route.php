@@ -30,7 +30,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Route {
@@ -45,29 +45,12 @@ class Kohana_Route {
 	const REGEX_ESCAPE  = '[.\\+*?[^\\]${}=!|]';
 
 	/**
-	 * @var  string  default protocol for all routes
-	 *
-	 * @example  'http://'
-	 */
-	public static $default_protocol = 'http://';
-
-	/**
-	 * @var  array   list of valid localhost entries
-	 */
-	public static $localhosts = array(FALSE, '', 'local', 'localhost');
-
-	/**
 	 * @var  string  default action for all routes
 	 */
 	public static $default_action = 'index';
 
 	/**
-	 * @var  bool Indicates whether routes are cached
-	 */
-	public static $cache = FALSE;
-
-	/**
-	 * @var  array 
+	 * @var  array  list of route objects
 	 */
 	protected static $_routes = array();
 
@@ -85,9 +68,9 @@ class Kohana_Route {
 	 * @param   array    regex patterns for route keys
 	 * @return  Route
 	 */
-	public static function set($name, $uri_callback = NULL, $regex = NULL)
+	public static function set($name, $uri, array $regex = NULL)
 	{
-		return Route::$_routes[$name] = new Route($uri_callback, $regex);
+		return Route::$_routes[$name] = new Route($uri, $regex);
 	}
 
 	/**
@@ -165,12 +148,12 @@ class Kohana_Route {
 				Route::$_routes = $routes;
 
 				// Routes were cached
-				return Route::$cache = TRUE;
+				return TRUE;
 			}
 			else
 			{
 				// Routes were not cached
-				return Route::$cache = FALSE;
+				return FALSE;
 			}
 		}
 	}
@@ -189,88 +172,20 @@ class Kohana_Route {
 	 */
 	public static function url($name, array $params = NULL, $protocol = NULL)
 	{
-		$route = Route::get($name);
-
 		// Create a URI with the route and convert it to a URL
-		if ($route->is_external())
-			return Route::get($name)->uri($params);
-		else
-			return URL::site(Route::get($name)->uri($params), $protocol);
+		return URL::site(Route::get($name)->uri($params), $protocol);
 	}
 
-	/**
-	 * Returns the compiled regular expression for the route. This translates
-	 * keys and optional groups to a proper PCRE regular expression.
-	 *
-	 *     $compiled = Route::compile(
-	 *        '<controller>(/<action>(/<id>))',
-	 *         array(
-	 *           'controller' => '[a-z]+',
-	 *           'id' => '\d+',
-	 *         )
-	 *     );
-	 *
-	 * @return  string
-	 * @uses    Route::REGEX_ESCAPE
-	 * @uses    Route::REGEX_SEGMENT
-	 */
-	public static function compile($uri, array $regex = NULL)
-	{
-		if ( ! is_string($uri))
-			return;
-
-		// The URI should be considered literal except for keys and optional parts
-		// Escape everything preg_quote would escape except for : ( ) < >
-		$expression = preg_replace('#'.Route::REGEX_ESCAPE.'#', '\\\\$0', $uri);
-
-		if (strpos($expression, '(') !== FALSE)
-		{
-			// Make optional parts of the URI non-capturing and optional
-			$expression = str_replace(array('(', ')'), array('(?:', ')?'), $expression);
-		}
-
-		// Insert default regex for keys
-		$expression = str_replace(array('<', '>'), array('(?P<', '>'.Route::REGEX_SEGMENT.')'), $expression);
-
-		if ($regex)
-		{
-			$search = $replace = array();
-			foreach ($regex as $key => $value)
-			{
-				$search[]  = "<$key>".Route::REGEX_SEGMENT;
-				$replace[] = "<$key>$value";
-			}
-
-			// Replace the default regex with the user-specified regex
-			$expression = str_replace($search, $replace, $expression);
-		}
-
-		return '#^'.$expression.'$#uD';
-	}
-
-	/**
-	 * @var  callback     The callback method for routes
-	 */
-	protected $_callback;
-
-	/**
-	 * @var  string  route URI
-	 */
+	// Route URI string
 	protected $_uri = '';
 
-	/**
-	 * @var  array
-	 */
+	// Regular expressions for route keys
 	protected $_regex = array();
 
-	/**
-	 * @var  array
-	 */
-	protected $_defaults = array('action' => 'index', 'host' => FALSE);
+	// Default values for route keys
+	protected $_defaults = array('action' => 'index');
 
-	/**
-	 * @var  string
-	 */
+	// Compiled regex cache
 	protected $_route_regex;
 
 	/**
@@ -280,31 +195,12 @@ class Kohana_Route {
 	 *
 	 *     $route = new Route($uri, $regex);
 	 *
-	 * The $uri parameter can either be a string for basic regex matching or it
-	 * can be a valid callback or anonymous function (php 5.3+). If you use a
-	 * callback or anonymous function, your method should return an array
-	 * containing the proper keys for the route. If you want the route to be
-	 * "reversable", you need to return a 'uri' key in the standard syntax.
-	 *
-	 *     $route = new Route(function($uri)
-	 *     {
-	 *     	if (list($controller, $action, $param) = explode('/', $uri) AND $controller == 'foo' AND $action == 'bar')
-	 *     	{
-	 *     		return array(
-	 *     			'controller' => 'foobar',
-	 *     			'action' => $action,
-	 *     			'id' => $param,
-	 *     			'uri' => 'foo/bar/<id>.html
-	 *     		);
-	 *     	}
-	 *     });
-	 *
-	 * @param   mixed    route URI pattern or lambda/callback function
+	 * @param   string   route URI pattern
 	 * @param   array    key patterns
 	 * @return  void
 	 * @uses    Route::_compile
 	 */
-	public function __construct($uri = NULL, $regex = NULL)
+	public function __construct($uri = NULL, array $regex = NULL)
 	{
 		if ($uri === NULL)
 		{
@@ -312,24 +208,16 @@ class Kohana_Route {
 			return;
 		}
 
-		if ( ! is_string($uri) AND is_callable($uri))
-		{
-			$this->_callback = $uri;
-			$this->_uri = $regex;
-			$regex = NULL;
-		}
-		elseif ( ! empty($uri))
-		{
-			$this->_uri = $uri;
-		}
-
 		if ( ! empty($regex))
 		{
 			$this->_regex = $regex;
 		}
 
+		// Store the URI that this route will match
+		$this->_uri = $uri;
+
 		// Store the compiled regex locally
-		$this->_route_regex = Route::compile($uri, $regex);
+		$this->_route_regex = $this->_compile();
 	}
 
 	/**
@@ -372,31 +260,20 @@ class Kohana_Route {
 	 */
 	public function matches($uri)
 	{
-		if ($this->_callback)
-		{
-			$closure = $this->_callback;
-			$params = call_user_func($closure, $uri);
+		if ( ! preg_match($this->_route_regex, $uri, $matches))
+			return FALSE;
 
-			if ( ! is_array($params))
-				return FALSE;
-		}
-		else
+		$params = array();
+		foreach ($matches as $key => $value)
 		{
-			if ( ! preg_match($this->_route_regex, $uri, $matches))
-				return FALSE;
-
-			$params = array();
-			foreach ($matches as $key => $value)
+			if (is_int($key))
 			{
-				if (is_int($key))
-				{
-					// Skip all unnamed keys
-					continue;
-				}
-
-				// Set the value for all matched keys
-				$params[$key] = $value;
+				// Skip all unnamed keys
+				continue;
 			}
+
+			// Set the value for all matched keys
+			$params[$key] = $value;
 		}
 
 		foreach ($this->_defaults as $key => $value)
@@ -408,21 +285,7 @@ class Kohana_Route {
 			}
 		}
 
-		$params['uri'] = $uri;
-		$params['route'] = $this;
-
 		return $params;
-	}
-
-	/**
-	 * Returns whether this route is an external route
-	 * to a remote controller.
-	 *
-	 * @return  boolean
-	 */
-	public function is_external()
-	{
-		return ! in_array(Arr::get($this->_defaults, 'host', FALSE), Route::$localhosts);
 	}
 
 	/**
@@ -442,30 +305,24 @@ class Kohana_Route {
 	 */
 	public function uri(array $params = NULL)
 	{
+		if ($params === NULL)
+		{
+			// Use the default parameters
+			$params = $this->_defaults;
+		}
+		else
+		{
+			// Add the default parameters
+			$params += $this->_defaults;
+		}
+
 		// Start with the routed URI
 		$uri = $this->_uri;
 
 		if (strpos($uri, '<') === FALSE AND strpos($uri, '(') === FALSE)
 		{
 			// This is a static route, no need to replace anything
-
-			if ( ! $this->is_external())
-				return $uri;
-
-			// If the localhost setting does not have a protocol
-			if (strpos($this->_defaults['host'], '://') === FALSE)
-			{
-				// Use the default defined protocol
-				$params['host'] = Route::$default_protocol.$this->_defaults['host'];
-			}
-			else
-			{
-				// Use the supplied host with protocol
-				$params['host'] = $this->_defaults['host'];
-			}
-
-			// Compile the final uri and return it
-			return rtrim($params['host'], '/').'/'.$uri;
+			return $uri;
 		}
 
 		while (preg_match('#\([^()]++\)#', $uri, $match))
@@ -503,18 +360,9 @@ class Kohana_Route {
 
 			if ( ! isset($params[$param]))
 			{
-				// Look for a default
-				if (isset($this->_defaults[$param]))
-				{
-					$params[$param] = $this->_defaults[$param];
-				}
-				else
-				{
-					// Ungrouped parameters are required
-					throw new Kohana_Exception('Required route parameter not passed: :param', array(
-						':param' => $param,
-					));
-			}
+				// Ungrouped parameters are required
+				throw new Kohana_Exception('Required route parameter not passed: :param',
+					array(':param' => $param));
 			}
 
 			$uri = str_replace($key, $params[$param], $uri);
@@ -523,24 +371,48 @@ class Kohana_Route {
 		// Trim all extra slashes from the URI
 		$uri = preg_replace('#//+#', '/', rtrim($uri, '/'));
 
-		// If the localhost setting matches a local route, return the uri as is
-		if ( ! $this->is_external())
-			return $uri;
+		return $uri;
+	}
 
-		// If the localhost setting does not have a protocol
-		if (strpos($this->_defaults['host'], '://') === FALSE)
+	/**
+	 * Returns the compiled regular expression for the route. This translates
+	 * keys and optional groups to a proper PCRE regular expression.
+	 *
+	 *     $regex = $route->_compile();
+	 *
+	 * @return  string
+	 * @uses    Route::REGEX_ESCAPE
+	 * @uses    Route::REGEX_SEGMENT
+	 */
+	protected function _compile()
+	{
+		// The URI should be considered literal except for keys and optional parts
+		// Escape everything preg_quote would escape except for : ( ) < >
+		$regex = preg_replace('#'.Route::REGEX_ESCAPE.'#', '\\\\$0', $this->_uri);
+
+		if (strpos($regex, '(') !== FALSE)
 		{
-			// Use the default defined protocol
-			$params['host'] = Route::$default_protocol.$this->_defaults['host'];
-		}
-		else
-		{
-			// Use the supplied host with protocol
-			$params['host'] = $this->_defaults['host'];
+			// Make optional parts of the URI non-capturing and optional
+			$regex = str_replace(array('(', ')'), array('(?:', ')?'), $regex);
 		}
 
-		// Compile the final uri and return it
-		return rtrim($params['host'], '/').'/'.$uri;
+		// Insert default regex for keys
+		$regex = str_replace(array('<', '>'), array('(?P<', '>'.Route::REGEX_SEGMENT.')'), $regex);
+
+		if ( ! empty($this->_regex))
+		{
+			$search = $replace = array();
+			foreach ($this->_regex as $key => $value)
+			{
+				$search[]  = "<$key>".Route::REGEX_SEGMENT;
+				$replace[] = "<$key>$value";
+			}
+
+			// Replace the default regex with the user-specified regex
+			$regex = str_replace($search, $replace, $regex);
+		}
+
+		return '#^'.$regex.'$#uD';
 	}
 
 } // End Route

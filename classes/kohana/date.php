@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2011 Kohana Team
+ * @copyright  (c) 2007-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Date {
@@ -17,10 +17,6 @@ class Kohana_Date {
 	const DAY    = 86400;
 	const HOUR   = 3600;
 	const MINUTE = 60;
-
-	// Available formats for Date::months()
-	const MONTHS_LONG  = '%B';
-	const MONTHS_SHORT = '%b';
 
 	/**
 	 * Default timestamp format for formatted_time
@@ -254,42 +250,14 @@ class Kohana_Date {
 	 * Number of months in a year. Typically used as a shortcut for generating
 	 * a list that can be used in a form.
 	 *
-	 * By default a mirrored array of $month_number => $month_number is returned
-	 *
-	 *     Date::months();
-	 *     // aray(1 => 1, 2 => 2, 3 => 3, ..., 12 => 12)
-	 *
-	 * But you can customise this by passing in either Date::MONTHS_LONG
-	 *
-	 *     Date::months(Date::MONTHS_LONG);
-	 *     // array(1 => 'January', 2 => 'February', ..., 12 => 'December')
-	 *
-	 * Or Date::MONTHS_SHORT
-	 *
-	 *     Date::months(Date::MONTHS_SHORT);
-	 *     // array(1 => 'Jan', 2 => 'Feb', ..., 12 => 'Dec')
+	 *     Date::months(); // 01, 02, 03, ..., 10, 11, 12
 	 *
 	 * @uses    Date::hours
-	 * @param   string The format to use for months
-	 * @return  array  An array of months based on the specified format
+	 * @return  array  A mirrored (foo => foo) array from 1-12.
 	 */
-	public static function months($format = NULL)
+	public static function months()
 	{
-		$months = array();
-
-		if ($format === DATE::MONTHS_LONG OR $format === DATE::MONTHS_SHORT)
-		{
-			for ($i = 1; $i <= 12; ++$i)
-			{
-				$months[$i] = strftime($format, mktime(0, 0, 0, $i, 1));
-			}
-		}
-		else
-		{
-			$months = Date::hours();
-		}
-
-		return $months;
+		return Date::hours();
 	}
 
 	/**

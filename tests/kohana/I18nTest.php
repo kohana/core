@@ -6,14 +6,13 @@
  * @group kohana
  * @group kohana.i18n
  *
- * @package    Kohana
- * @category   Tests
+ * @package    Unittest
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_I18nTest extends Unittest_TestCase
+class Kohana_I18nTest extends Kohana_Unittest_TestCase
 {
 
 	/**

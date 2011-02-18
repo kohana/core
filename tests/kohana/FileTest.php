@@ -6,18 +6,17 @@
  * @group kohana
  * @group kohana.url
  *
- * @package    Kohana
- * @category   Tests
+ * @package    Unittest
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_FileTest extends Unittest_TestCase
+class Kohana_FileTest extends Kohana_Unittest_Testcase
 {
 	/**
 	 * Provides test data for test_sanitize()
-	 *
+	 * 
 	 * @return array
 	 */
 	public function provider_mime()
@@ -44,7 +43,7 @@ class Kohana_FileTest extends Unittest_TestCase
 
 	/**
 	 * Provides test data for test_split_join()
-	 *
+	 * 
 	 * @return array
 	 */
 	public function provider_split_join()
@@ -69,9 +68,6 @@ class Kohana_FileTest extends Unittest_TestCase
 		$this->assertSame($expected, File::split($input, $peices));
 		$this->assertSame($expected, File::join($input));
 
-		foreach (glob(Kohana::find_file('tests', 'test_data/github', 'png').'.*') as $file)
-		{
-			unlink($file);
-		}
+		foreach (glob(Kohana::find_file('tests', 'test_data/github', 'png') . '.*') as $file) unlink($file);
 	}
 }

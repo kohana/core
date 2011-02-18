@@ -11,13 +11,13 @@
  *     $controller->after();
  *
  * The controller action should add the output it creates to
- * `$this->response->body($output)`, typically in the form of a [View], during the
+ * `$this->request->response`, typically in the form of a [View], during the
  * "action" part of execution.
  *
  * @package    Kohana
  * @category   Controller
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 abstract class Kohana_Controller {
@@ -28,25 +28,16 @@ abstract class Kohana_Controller {
 	public $request;
 
 	/**
-	 * @var  Response The response that will be returned from controller
-	 */
-	public $response;
-
-	/**
 	 * Creates a new controller instance. Each controller must be constructed
 	 * with the request object that created it.
 	 *
-	 * @param   Request   $request  Request that created the controller
-	 * @param   Response  $response The request's response
+	 * @param   Request  Request that created the controller
 	 * @return  void
 	 */
-	public function __construct(Request $request, Response $response)
+	public function __construct(Request $request)
 	{
 		// Assign the request to the controller
 		$this->request = $request;
-
-		// Assign a response to the controller
-		$this->response = $response;
 	}
 
 	/**

@@ -6,7 +6,7 @@ The first step to preventing [XSS](http://wikipedia.org/wiki/Cross-Site_Scriptin
 
 ## Prevention
 
-There are a few simple rules to follow to guard your application HTML against XSS. If you do not want HTML in a variable, use [strip_tags](http://php.net/strip_tags) to remove all unwanted HTML tags from a value.
+There are a few simple rules to follow to guard your application HTML against XSS. The first is to use the [Security::xss] method to clean any input data that comes from a global variable. If you do not want HTML in a variable, use [strip_tags](http://php.net/strip_tags) to remove all unwanted HTML tags from a value.
 
 [!!] If you allow users to submit HTML to your application, it is highly recommended to use an HTML cleaning tool such as [HTML Purifier](http://htmlpurifier.org/) or [HTML Tidy](http://php.net/tidy).
 

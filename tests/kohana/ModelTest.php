@@ -1,35 +1,30 @@
 <?php defined('SYSPATH') OR die('Kohana bootstrap needs to be included before tests run');
 
 /**
- * This test only really exists for code coverage.
+ * This test only really exists for code coverage. No tests really apply to base model.
+ * We can't even test Model because database doesn't exist!
  *
  * @group kohana
- * @group kohana.model
  *
- * @package    Kohana
- * @category   Tests
+ * @package    Unittest
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_ModelTest extends Unittest_TestCase
+class Kohana_ModelTest extends Kohana_Unittest_TestCase
 {
 	/**
-	 * Test the model's factory.
-	 *
 	 * @test
-	 * @covers Model::factory
 	 */
-	public function test_create()
+	public function test_construct()
 	{
-		$foobar = Model::factory('Foobar');
-
-		$this->assertEquals(TRUE, $foobar instanceof Model);
+		#$model = new Model_Foobar('foo');
+		#$model = Model::factory('Foobar', 'foo');
 	}
 }
 
 class Model_Foobar extends Model
 {
-
+	
 }

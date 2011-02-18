@@ -1,8 +1,8 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Upload helper class for working with uploaded files and [Validation].
+ * Upload helper class for working with uploaded files and [Validate].
  *
- *     $array = Validation::factory($_FILES);
+ *     $array = Validate::factory($_FILES);
  *
  * [!!] Remember to define your form with "enctype=multipart/form-data" or file
  * uploading will not work!
@@ -15,7 +15,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2011 Kohana Team
+ * @copyright  (c) 2007-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Upload {
@@ -78,7 +78,7 @@ class Kohana_Upload {
 		if ( ! is_dir($directory) OR ! is_writable(realpath($directory)))
 		{
 			throw new Kohana_Exception('Directory :dir must be writable',
-				array(':dir' => Debug::path($directory)));
+				array(':dir' => Kohana::debug_path($directory)));
 		}
 
 		// Make the filename into a complete path
@@ -131,7 +131,8 @@ class Kohana_Upload {
 		return (isset($file['error'])
 			AND isset($file['tmp_name'])
 			AND $file['error'] === UPLOAD_ERR_OK
-			AND is_uploaded_file($file['tmp_name']));
+			AND is_uploaded_file($file['tmp_name'])
+		);
 	}
 
 	/**
@@ -155,22 +156,20 @@ class Kohana_Upload {
 
 	/**
 	 * Validation rule to test if an uploaded file is allowed by file size.
-	 * File sizes are defined as: SB, where S is the size (1, 8.5, 300, etc.)
-	 * and B is the byte unit (K, MiB, GB, etc.). All valid byte units are
-	 * defined in Num::$byte_units
+	 * File sizes are defined as: SB, where S is the size (1, 15, 300, etc) and
+	 * B is the byte modifier: (B)ytes, (K)ilobytes, (M)egabytes, (G)igabytes.
 	 *
 	 *     $array->rule('file', 'Upload::size', array('1M'))
-	 *     $array->rule('file', 'Upload::size', array('2.5KiB'))
 	 *
 	 * @param   array    $_FILES item
-	 * @param   string   maximum file size allowed
+	 * @param   string   maximum file size
 	 * @return  bool
 	 */
 	public static function size(array $file, $size)
 	{
 		if ($file['error'] === UPLOAD_ERR_INI_SIZE)
 		{
-			// Upload is larger than PHP allowed size (upload_max_filesize)
+			// Upload is larger than PHP allowed size
 			return FALSE;
 		}
 
@@ -180,8 +179,32 @@ class Kohana_Upload {
 			return TRUE;
 		}
 
-		// Convert the provided size to bytes for comparison
-		$size = Num::bytes($size);
+		// Only one size is allowed
+		$size = strtoupper(trim($size));
+
+		if ( ! preg_match('/^[0-9]++[BKMG]$/', $size))
+		{
+			throw new Kohana_Exception('Size does not contain a digit and a byte value: :size', array(
+				':size' => $size,
+			));
+		}
+
+		// Make the size into a power of 1024
+		switch (substr($size, -1))
+		{
+			case 'G':
+				$size = intval($size) * pow(1024, 3);
+			break;
+			case 'M':
+				$size = intval($size) * pow(1024, 2);
+			break;
+			case 'K':
+				$size = intval($size) * pow(1024, 1);
+			break;
+			default:
+				$size = intval($size);
+			break;
+		}
 
 		// Test that the file is under or equal to the max size
 		return ($file['size'] <= $size);

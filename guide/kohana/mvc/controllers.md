@@ -53,39 +53,37 @@ You can also have a controller extend another controller to share common things,
 		
 ## $this->request
 
-Every controller has the `$this->request` property which is the [Request] object that called the controller.  You can use this to get information about the current request, as well as set the response body via `$this->response->body($ouput)`.
+Every controller has the `$this->request` property which is the [Request] object that called the controller.  You can use this to get information about the current request, as well as set the response via `$this->request->response`.
 
 Here is a partial list of the properties and methods available to `$this->request`.  These can also be accessed via `Request::instance()`, but `$this->request` is provided as a shortcut.  See the [Request] class for more information on any of these. 
 
 Property/method | What it does
 --- | ---
-[$this->request->route()](../api/Request#property:route) | The [Route] that matched the current request url
-[$this->request->directory()](../api/Request#property:directory), <br /> [$this->request->controller](../api/Request#property:controller), <br /> [$this->request->action](../api/Request#property:action) | The directory, controller and action that matched for the current route
+[$this->request->route](../api/Request#property:route) | The [Route] that matched the current request url
+[$this->request->directory](../api/Request#property:directory), <br /> [$this->request->controller](../api/Request#property:controller), <br /> [$this->request->action](../api/Request#property:action) | The directory, controller and action that matched for the current route
 [$this->request->param()](../api/Request#param) | Any other params defined in your route
+[$this->request->response](../api/Request#property:response) | The content to return for this request
+[$this->request->status](../api/Request#property:status) | The HTTP status for the request (200, 404, 500, etc.)
+[$this->request->headers](../api/Request#property:headers) | The HTTP headers to return with the response
 [$this->request->redirect()](../api/Request#redirect) | Redirect the request to a different url
-
-## $this->response
-[$this->response->body()](../api/Response#property:body) | The content to return for this request
-[$this->response->status()](../api/Response#property:status) | The HTTP status for the request (200, 404, 500, etc.)
-[$this->response->headers()](../api/Response#property:headers) | The HTTP headers to return with the response
 
 
 ## Actions
 
 You create actions for your controller by defining a public function with an `action_` prefix.  Any method that is not declared as `public` and prefixed with `action_` can NOT be called via routing.
 
-An action method will decide what should be done based on the current request, it *controls* the application.  Did the user want to save a blog post?  Did they provide the necessary fields?   Do they have permission to do that?  The controller will call other classes, including models, to accomplish this.  Every action should set `$this->response->body($view)` to the [view file](mvc/views) to be sent to the browser, unless it [redirected](../api/Request#redirect) or otherwise ended the script earlier.
+An action method will decide what should be done based on the current request, it *controls* the application.  Did the user want to save a blog post?  Did they provide the necesarry fields?   Do they have permission to da that?  The controller will call other classes, including models, to accomplish this.  Every action should set `$this->request->response` to the [view file](mvc/views) to be sent to the browser, unless it [redirected](../api/Request#redirect) or otherwise ended the script earlier.
 
 A very basic action method that simply loads a [view](mvc/views) file.
 
 	public function action_hello()
 	{
-		$this->response->body(View::factory('hello/world')); // This will load views/hello/world.php
+		$this->request->response = View::factory('hello/world'); // This will load views/hello/world.php
 	}
 
 ### Parameters
 
-Parameters are accessed by calling `$this->request->param('name')` where `name` is the name defined in the route.
+Parameters can be accessed in two ways.  The first is by calling `$this->request->param('name')` where `name` is the name defined in the route.
 
 	// Assuming Route::set('example','<controller>(/<action>(/<id>(/<new>)))');
 	
@@ -101,6 +99,48 @@ If that parameter is not set it will be returned as NULL.  You can provide a sec
 		// $id will be false if it was not supplied in the url
 		$id = $this->request->param('user',FALSE);
 
+The second way you can access route parameters is from the actions function definition.  Any extra keys in your route (keys besides `<directory>`, `<controller>`, and `<action>`) are passed as parameters to your action *in the order they appear in the route*.  
+
+	// Assuming Route::set('example','<controller>(/<action>(/<id>(/<new>)))');
+	
+	public function action_foobar($id, $new)
+	{
+
+Note that the names do not actually matter, *only the order*.  You could name the parameters anything you want in both the route and the function definition, they don't even need to match.  The following code is identical in function to the previous example.
+
+	// Assuming Route::set('example','<controller>(/<action>(/<num>(/<word>)))');
+	
+	public function action_foobar($foo, $bar)
+	{
+
+You can provide default values in the same way you do for any php function.
+
+	public function action_foobar($id = 0, $new = NULL)
+	{
+
+You can use whichever method you prefer.  Using function params is quick and easy and saves on `$this->request->param()` calls, but keep in mind that if your routes ever change it could change the paramater order and break things.  Therefore, it is recommended you use `$this->request->param()`.  For example, assuming the following route
+
+	Route::set('example','<controller>(/<action>(/<id>(/<new>)))');
+	
+If you called "example/foobar/4/bobcat" you could access the parameters by either:
+
+	public function action_foobar($id, $new) 
+	{
+	
+	// OR
+	
+	public function action_foobar()
+	{
+		$id = $this->request->param('id');
+		$new = $this->request->param('new');
+
+Then, let's say sometime in the future you change your url schemes and your routes.  The new route is:
+
+	// Note that id and new are switched
+	Route::set('example','<controller>(/<action>(/<new>(/<id>)))');
+
+Because the `<new>` and `<id>` keys are in a different order, you will need to fix your function definition to be `action_foobar($new, $id)` whereas the function that used `$this->request->param()` calls would continue to function as desired.
+	
 ### Examples
 
 TODO: some examples of actions
@@ -136,10 +176,10 @@ In general, you should not have to change the `__construct()` function, as anyth
 	// You should almost never need to do this, use before() instead!
 
 	// Be sure Kohana_Request is in the params
-	public function __construct(Request $request, Response $response)
+	public function __construct(Kohana_Request $request)
 	{
 		// You must call parent::__construct at some point in your function
-		parent::__construct($request, $response);
+		parent::__construct($request);
 		
 		// Do whatever else you want
 	}
