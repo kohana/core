@@ -634,17 +634,17 @@ class Kohana_Request implements Http_Request {
 	/**
 	 * @var  array   parameters from the route
 	 */
-	protected $_params;
+	protected $_params = array();
 
 	/**
 	 * @var array    query parameters
 	 */
-	protected $_get;
+	protected $_get = array();
 
 	/**
 	 * @var array    post parameters
 	 */
-	protected $_post;
+	protected $_post = array();
 
 	/**
 	 * @var array    cookies to send with the request
