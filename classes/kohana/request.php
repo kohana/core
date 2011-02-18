@@ -6,7 +6,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Request implements Http_Request {
@@ -201,8 +201,22 @@ class Kohana_Request implements Http_Request {
 
 			if (isset($_SERVER['REQUEST_URI']))
 			{
-				// REQUEST_URI includes the query string, remove it
-				$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+				/**
+				 * We use REQUEST_URI as the fallback value. The reason
+				 * for this is we might have a malformed URL such as:
+				 *
+				 *  http://localhost/http://example.com/judge.php
+				 * 
+				 * which parse_url can't handle. So rather than leave empty
+				 * handed, we'll use this.
+				 */ 
+				$uri = $_SERVER['REQUEST_URI'];
+
+				if($request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH))
+				{
+					// Valid URL path found, set it.
+					$uri = $request_uri;
+				}
 
 				// Decode the request URI
 				$uri = rawurldecode($uri);
@@ -827,7 +841,58 @@ class Kohana_Request implements Http_Request {
 			return $this->_params;
 		}
 
-		return Arr::get($this->_params, $key, $default);
+		return isset($this->_params[$key]) ? $this->_params[$key] : $default;
+	}
+
+	/**
+	 * Sends the response status and all set headers. The current server
+	 * protocol (HTTP/1.0 or HTTP/1.1) will be used when available. If not
+	 * available, HTTP/1.1 will be used.
+	 *
+	 *     $request->send_headers();
+	 *
+	 * @return  $this
+	 * @uses    Request::$messages
+	 */
+	public function send_headers()
+	{
+		if ( ! headers_sent())
+		{
+			if (isset($_SERVER['SERVER_PROTOCOL']))
+			{
+				// Use the default server protocol
+				$protocol = $_SERVER['SERVER_PROTOCOL'];
+			}
+			else
+			{
+				// Default to using newer protocol
+				$protocol = 'HTTP/1.1';
+			}
+
+			// HTTP status line
+			header($protocol.' '.$this->status.' '.Request::$messages[$this->status]);
+
+			foreach ($this->headers as $name => $value)
+			{
+				if (is_string($name))
+				{
+					// Combine the name and value to make a raw header
+					$value = "{$name}: {$value}";
+				}
+
+				// Send the raw header
+				header($value, TRUE);
+			}
+
+			foreach (Session::$instances as $session)
+			{
+				// Sessions will most likely write cookies, which will be sent
+				// with the headers
+				$session->write();
+			}
+		}
+
+		return $this;
 	}
 
 	/**
