@@ -627,10 +627,10 @@ class Kohana_Core {
 		// Create a partial path of the filename
 		$path = $dir.DIRECTORY_SEPARATOR.$file.$ext;
 
-		if (Kohana::$caching === TRUE AND isset(Kohana::$_files[$path]))
+		if (Kohana::$caching === TRUE AND isset(Kohana::$_files[$path.($array ? '_array' : '_path')]))
 		{
 			// This path has been cached
-			return Kohana::$_files[$path];
+			return Kohana::$_files[$path.($array ? '_array' : '_path')];
 		}
 
 		if (Kohana::$profiling === TRUE AND class_exists('Profiler', FALSE))
@@ -677,7 +677,7 @@ class Kohana_Core {
 		if (Kohana::$caching === TRUE)
 		{
 			// Add the path to the cache
-			Kohana::$_files[$path] = $found;
+			Kohana::$_files[$path.($array ? '_array' : '_path')] = $found;
 
 			// Files have been changed
 			Kohana::$_files_changed = TRUE;
