@@ -219,13 +219,11 @@ class Kohana_Response implements Http_Response, Serializable {
 	 */
 	public function body($content = NULL)
 	{
-		if ($content)
-		{
-			$this->_body = (string) $content;
-			return $this;
-		}
+		if ($content === NULL)
+			return $this->_body;
 
-		return $this->_body;
+		$this->_body = (string) $content;
+		return $this;
 	}
 
 	/**

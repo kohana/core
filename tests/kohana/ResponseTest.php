@@ -75,6 +75,37 @@ class Kohana_ResponseTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Provides data for test_body_string_zero()
+	 *
+	 * @return array
+	 */
+	public function provider_body_string_zero()
+	{
+		return array(
+			array('0', '0'),
+			array("0", '0'),
+			array(0, '0')
+		);
+	}
+
+	/**
+	 * Test that Response::body() handles numerics correctly
+	 *
+	 * @test
+	 * @dataProvider provider_body_string_zero
+	 * @param string $string 
+	 * @param string $expected 
+	 * @return void
+	 */
+	public function test_body_string_zero($string, $expected)
+	{
+		$response = new Response;
+		$response->body($string);
+
+		$this->assertSame($expected, $response->body());
+	}
+
+	/**
 	 * provider for test_cookie_set()
 	 *
 	 * @return array
