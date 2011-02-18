@@ -12,7 +12,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_URLTest extends Kohana_Unittest_TestCase
+class Kohana_URLTest extends Kohana_Unittest_TestCase
 {
 	/**
 	 * Default values for the environment, see setEnvironment

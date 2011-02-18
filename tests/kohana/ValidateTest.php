@@ -12,7 +12,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_ValidateTest extends Kohana_Unittest_TestCase
+class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 {
 
 	/**
