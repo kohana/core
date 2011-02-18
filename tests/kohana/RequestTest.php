@@ -58,6 +58,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$params = $request->param();
 
 		// Test for illegal components
+		var_dump($request);
 		$this->assertArrayNotHasKey('controller', $params);
 		$this->assertArrayNotHasKey('action', $params);
 		$this->assertArrayNotHasKey('directory', $params);

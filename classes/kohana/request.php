@@ -749,6 +749,9 @@ class Kohana_Request implements Http_Request {
 		}
 		else
 		{
+			// Create a route
+			$this->_route = new Route($uri);
+
 			// Store the URI
 			$this->_uri = $uri;
 
