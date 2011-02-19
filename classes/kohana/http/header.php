@@ -273,12 +273,12 @@ class Kohana_Http_Header extends ArrayObject {
 		// If a < b
 		elseif ($a < $b)
 		{
-			return 1; // Return negative (-1)
+			return 1; // Return positive (1)
 		}
 		// If a > b
 		elseif ($a > $b)
 		{
-			return -1; // Return positive (1)
+			return -1; // Return negative (-1)
 		}
 	}
 } // End Kohana_Http_Header
