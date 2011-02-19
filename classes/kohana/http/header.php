@@ -186,7 +186,9 @@ class Kohana_Http_Header extends ArrayObject {
 	 */
 	public function offsetSet($index, $newval)
 	{
-		if ( ! $newval instanceof Http_Header_Value)
+		if (is_array($newval) AND (current($newval) instanceof Http_Header_Value))
+			return parent::offsetSet(strtolower($index), $newval);
+		elseif ( ! $newval instanceof Http_Header_Value)
 		{
 			$newval = new Http_Header_Value($newval);
 		}
@@ -224,7 +226,10 @@ class Kohana_Http_Header extends ArrayObject {
 		foreach ($values as $key => $value)
 		{
 			if ( ! is_array($value) or ! in_array($key, Http_Header::$default_sort_filter))
+			{
+				unset($values[$key]);
 				continue;
+			}
 
 			// Sort them by comparison
 			uasort($value, array($this, '_sort_by_comparison'));
@@ -238,8 +243,10 @@ class Kohana_Http_Header extends ArrayObject {
 			Http_Header::$default_sort_filter = $previous_filter;
 		}
 
-		// Exchange the array for the sorted values
-		$this->exchangeArray($values);
+		foreach ($values as $key => $value)
+		{
+			$this[$key] = $value;
+		}
 
 		// Return this
 		return $this;
@@ -266,12 +273,12 @@ class Kohana_Http_Header extends ArrayObject {
 		// If a < b
 		elseif ($a < $b)
 		{
-			return -1; // Return negative (-1)
+			return 1; // Return negative (-1)
 		}
 		// If a > b
 		elseif ($a > $b)
 		{
-			return 1; // Return positive (1)
+			return -1; // Return positive (1)
 		}
 	}
 } // End Kohana_Http_Header
