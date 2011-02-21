@@ -159,7 +159,7 @@ class Kohana_Request implements HTTP_Request {
 
 			if (isset($protocol))
 			{
-				// Set the requst protocol
+				// Set the request protocol
 				$request->protocol($protocol);
 			}
 
@@ -172,7 +172,7 @@ class Kohana_Request implements HTTP_Request {
 			if (isset($referrer))
 			{
 				// Set the referrer
-				$requst->referrer($referrer);
+				$request->referrer($referrer);
 			}
 
 			if (isset($requested_with))
