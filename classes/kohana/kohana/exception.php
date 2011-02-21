@@ -115,11 +115,31 @@ class Kohana_Kohana_Exception extends Exception {
 					}
 				}
 			}
+			
+			// Create a text version of the exception
+			$error = Kohana_Exception::text($e);
+
+			if (is_object(Kohana::$log))
+			{
+				// Add this exception to the log
+				Kohana::$log->add(Log::ERROR, $error);
+
+				// Make sure the logs are written
+				Kohana::$log->write();
+			}
+			
+			if (Kohana::$is_cli)
+			{
+				// Just display the text of the exception
+				echo "\n{$error}\n";
+
+				return TRUE;
+			}
 
 			if ( ! headers_sent())
 			{
 				// Make sure the proper http header is sent
-				$http_header_status = ($e instanceof Http_Exception) ? $code : 500;
+				$http_header_status = ($e instanceof HTTP_Exception) ? $code : 500;
 
 				header('Content-Type: text/html; charset='.Kohana::$charset, TRUE, $http_header_status);
 			}
@@ -141,27 +161,7 @@ class Kohana_Kohana_Exception extends Exception {
 
 			// Display the contents of the output buffer
 			echo ob_get_clean();
-
-			// Create a text version of the exception
-			$error = Kohana_Exception::text($e);
-
-			if (is_object(Kohana::$log))
-			{
-				// Add this exception to the log
-				Kohana::$log->add(Log::ERROR, $error);
-
-				// Make sure the logs are written
-				Kohana::$log->write();
-			}
-
-			if (Kohana::$is_cli)
-			{
-				// Just display the text of the exception
-				echo "\n{$error}\n";
-
-				return TRUE;
-			}
-
+			
 			return TRUE;
 		}
 		catch (Exception $e)

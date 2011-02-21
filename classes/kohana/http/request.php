@@ -1,17 +1,17 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
  * A HTTP Request specific interface that adds the methods required
- * by HTTP requests. Over and above [Kohana_Http_Interaction], this
+ * by HTTP requests. Over and above [Kohana_HTTP_Interaction], this
  * interface provides method, uri, get and post methods.
  *
  * @package    Kohana
- * @category   Http
+ * @category   HTTP
  * @author     Kohana Team
  * @since      3.1.0
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaphp.com/license
  */
-interface Kohana_Http_Request extends Http_Interaction {
+interface Kohana_HTTP_Request extends HTTP_Interaction {
 
 	// HTTP Methods
 	const GET       = 'GET';
@@ -24,7 +24,7 @@ interface Kohana_Http_Request extends Http_Interaction {
 	const CONNECT   = 'CONNECT';
 
 	/**
-	 * Gets or sets the Http method. Usually GET, POST, PUT or DELETE in
+	 * Gets or sets the HTTP method. Usually GET, POST, PUT or DELETE in
 	 * traditional CRUD applications.
 	 *
 	 * @param   string   $method  Method to use for this request

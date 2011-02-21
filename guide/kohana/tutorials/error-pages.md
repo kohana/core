@@ -32,7 +32,7 @@ Our custom exception handler is self explanatory.
 						'message' => rawurlencode($e->getMessage())
 					);
 
-					if ($e instanceof Http_Exception)
+					if ($e instanceof HTTP_Exception)
 					{
 						$attributes['action'] = $e->getCode();
 					}
@@ -62,7 +62,7 @@ If we are in the development environment then pass it off to Kohana otherwise:
 
 * Log the error
 * Set the route action and message attributes.
-* If a `Http_Exception` was thrown, then override the action with the error code.
+* If a `HTTP_Exception` was thrown, then override the action with the error code.
 * Fire off an internal sub-request.
 
 The action will be used as the HTTP response code. By default this is: 500 (internal
@@ -70,7 +70,7 @@ server error) unless a `HTTP_Response_Exception` was thrown.
 
 So this:
 
-	throw new Http_Exception_404(':file does not exist', array(':file' => 'Gaia'));
+	throw new HTTP_Exception_404(':file does not exist', array(':file' => 'Gaia'));
 
 would display a nice 404 error page, where:
 
@@ -151,4 +151,4 @@ and sets the request response code.
 
 So that's it. Now displaying a nice error page is as easy as:
 
-	throw new Http_Exception_503('The website is down');
+	throw new HTTP_Exception_503('The website is down');

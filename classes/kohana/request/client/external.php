@@ -183,18 +183,18 @@ class Kohana_Request_Client_External extends Request_Client {
 	protected function _http_execute(Request $request)
 	{
 		$http_method_mapping = array(
-			Http_Request::GET     => HttpRequest::METH_GET,
-			Http_Request::HEAD    => HttpRequest::METH_HEAD,
-			Http_Request::POST    => HttpRequest::METH_POST,
-			Http_Request::PUT     => HttpRequest::METH_PUT,
-			Http_Request::DELETE  => HttpRequest::METH_DELETE,
-			Http_Request::OPTIONS => HttpRequest::METH_OPTIONS,
-			Http_Request::TRACE   => HttpRequest::METH_TRACE,
-			Http_Request::CONNECT => HttpRequest::METH_CONNECT,
+			HTTP_Request::GET     => HTTPRequest::METH_GET,
+			HTTP_Request::HEAD    => HTTPRequest::METH_HEAD,
+			HTTP_Request::POST    => HTTPRequest::METH_POST,
+			HTTP_Request::PUT     => HTTPRequest::METH_PUT,
+			HTTP_Request::DELETE  => HTTPRequest::METH_DELETE,
+			HTTP_Request::OPTIONS => HTTPRequest::METH_OPTIONS,
+			HTTP_Request::TRACE   => HTTPRequest::METH_TRACE,
+			HTTP_Request::CONNECT => HTTPRequest::METH_CONNECT,
 		);
 
 		// Create an http request object
-		$http_request = new HttpRequest($request->uri(), $http_method_mapping[$request->method()]);
+		$http_request = new HTTPRequest($request->uri(), $http_method_mapping[$request->method()]);
 
 		// Set custom options
 		$http_request->setOptions($this->_options);
@@ -212,15 +212,15 @@ class Kohana_Request_Client_External extends Request_Client {
 		{
 			$http_request->send();
 		}
-		catch (HttpRequestException $e)
+		catch (HTTPRequestException $e)
 		{
 			throw new Kohana_Request_Exception($e->getMessage());
 		}
-		catch (HttpMalformedHeaderException $e)
+		catch (HTTPMalformedHeaderException $e)
 		{
 			throw new Kohana_Request_Exception($e->getMessage());
 		}
-		catch (HttpEncodingException $e)
+		catch (HTTPEncodingException $e)
 		{
 			throw new Kohana_Request_Exception($e->getMessage());
 		}
@@ -318,7 +318,7 @@ class Kohana_Request_Client_External extends Request_Client {
 		Request_Client_External::$_processed_headers = array();
 
 		// Calculate stream mode
-		$mode = ($request->method() === Http_Request::GET) ? 'r' : 'r+';
+		$mode = ($request->method() === HTTP_Request::GET) ? 'r' : 'r+';
 
 		// Process cookies
 		if ($cookies = $request->cookie())

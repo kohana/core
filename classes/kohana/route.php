@@ -523,24 +523,22 @@ class Kohana_Route {
 		// Trim all extra slashes from the URI
 		$uri = preg_replace('#//+#', '/', rtrim($uri, '/'));
 
-		// If the localhost setting matches a local route, return the uri as is
-		if ( ! $this->is_external())
-			return $uri;
-
-		// If the localhost setting does not have a protocol
-		if (strpos($this->_defaults['host'], '://') === FALSE)
+		if ($this->is_external())
 		{
-			// Use the default defined protocol
-			$params['host'] = Route::$default_protocol.$this->_defaults['host'];
-		}
-		else
-		{
-			// Use the supplied host with protocol
-			$params['host'] = $this->_defaults['host'];
+			// Need to add the host to the URI
+			$host = $this->_defaults['host'];
+
+			if (strpos($host, '://') === FALSE)
+			{
+				// Use the default defined protocol
+				$host = Route::$default_protocol.$host;
+			}
+
+			// Clean up the host and prepend it to the URI
+			$uri = rtrim($host, '/').'/'.$uri;
 		}
 
-		// Compile the final uri and return it
-		return rtrim($params['host'], '/').'/'.$uri;
+		return $uri;
 	}
 
 } // End Route

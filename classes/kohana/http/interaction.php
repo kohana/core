@@ -4,13 +4,13 @@
  * should be implemented by any HTTP request or response class.
  *
  * @package    Kohana
- * @category   Http
+ * @category   HTTP
  * @author     Kohana Team
  * @since      3.1.0
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaphp.com/license
  */
-interface Kohana_Http_Interaction {
+interface Kohana_HTTP_Interaction {
 
 	/**
 	 * Gets or sets the HTTP protocol. The standard protocol to use
@@ -44,7 +44,7 @@ interface Kohana_Http_Interaction {
 	public function body($content = NULL);
 
 	/**
-	 * Renders the Http_Interaction to a string, producing
+	 * Renders the HTTP_Interaction to a string, producing
 	 *
 	 *  - Protocol
 	 *  - Headers

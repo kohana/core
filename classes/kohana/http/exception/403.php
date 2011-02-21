@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Kohana_Http_Exception_403 extends Http_Exception {
+class Kohana_HTTP_Exception_403 extends HTTP_Exception {
 
 	/**
 	 * @var   integer    HTTP 403 Forbidden
