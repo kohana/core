@@ -9,7 +9,7 @@
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Request implements Http_Request {
+class Kohana_Request implements HTTP_Request {
 
 	/**
 	 * @var  string  client user agent
@@ -87,7 +87,7 @@ class Kohana_Request implements Http_Request {
 				else
 				{
 					// Default to GET
-					$method = Http_Request::GET;
+					$method = HTTP_Request::GET;
 				}
 
 				if ( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
@@ -611,7 +611,7 @@ class Kohana_Request implements Http_Request {
 	protected $_response;
 
 	/**
-	 * @var  Kohana_Http_Header  headers to sent as part of the request
+	 * @var  Kohana_HTTP_Header  headers to sent as part of the request
 	 */
 	protected $_header;
 
@@ -689,7 +689,7 @@ class Kohana_Request implements Http_Request {
 	public function __construct($uri, Cache $cache = NULL)
 	{
 		// Initialise the header
-		$this->_header = new Http_Header(array());
+		$this->_header = new HTTP_Header(array());
 
 		// Remove trailing slashes from the URI
 		$uri = trim($uri, '/');
@@ -744,7 +744,7 @@ class Kohana_Request implements Http_Request {
 				return;
 			}
 
-			throw new Http_Exception_404('Unable to find a route to match the URI: :uri',
+			throw new HTTP_Exception_404('Unable to find a route to match the URI: :uri',
 				array(':uri' => $uri));
 		}
 		else
@@ -1132,7 +1132,7 @@ class Kohana_Request implements Http_Request {
 
 	/**
 	 * Creates a response based on the type of request, i.e. an
-	 * Request_Http will produce a Response_Http, and the same applies
+	 * Request_HTTP will produce a Response_HTTP, and the same applies
 	 * to CLI.
 	 *
 	 *      // Create a response to the request
@@ -1153,7 +1153,7 @@ class Kohana_Request implements Http_Request {
 	}
 
 	/**
-	 * Gets or sets the Http method. Usually GET, POST, PUT or DELETE in
+	 * Gets or sets the HTTP method. Usually GET, POST, PUT or DELETE in
 	 * traditional CRUD applications.
 	 *
 	 * @param   string   $method  Method to use for this request
@@ -1181,7 +1181,7 @@ class Kohana_Request implements Http_Request {
 		{
 			if ($this->_protocol === NULL)
 			{
-				$this->_protocol = Http::$protocol;
+				$this->_protocol = HTTP::$protocol;
 			}
 
 			return $this->_protocol;
@@ -1203,7 +1203,7 @@ class Kohana_Request implements Http_Request {
 	 */
 	public function headers($key = NULL, $value = NULL)
 	{
-		if ($key instanceof Http_Header)
+		if ($key instanceof HTTP_Header)
 		{
 			$this->_header = $key;
 			return $this;
@@ -1217,7 +1217,7 @@ class Kohana_Request implements Http_Request {
 		// We need to check for initial request (lazy load)
 		if ($this === Request::$initial and $this->_header->count() < 1)
 		{
-			$this->_header = Http::request_headers();
+			$this->_header = HTTP::request_headers();
 		}
 
 		if ($key === NULL)
@@ -1281,7 +1281,7 @@ class Kohana_Request implements Http_Request {
 	}
 
 	/**
-	 * Renders the Http_Interaction to a string, producing
+	 * Renders the HTTP_Interaction to a string, producing
 	 *
 	 *  - Protocol
 	 *  - Headers
@@ -1305,7 +1305,7 @@ class Kohana_Request implements Http_Request {
 		else
 		{
 			$this->_header['content-type'] = 'application/x-www-form-urlencoded';
-			$body = Http::www_form_urlencode($this->_post);
+			$body = HTTP::www_form_urlencode($this->_post);
 		}
 
 		if ( ! $this->_get)
@@ -1314,7 +1314,7 @@ class Kohana_Request implements Http_Request {
 		}
 		else
 		{
-			$query_string = '?'.Http::www_form_urlencode($this->query());
+			$query_string = '?'.HTTP::www_form_urlencode($this->query());
 		}
 
 		// Prepare cookies

@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Kohana_Http_Exception_408 extends Http_Exception {
+class Kohana_HTTP_Exception_408 extends HTTP_Exception {
 
 	/**
 	 * @var   integer    HTTP 408 Request Timeout

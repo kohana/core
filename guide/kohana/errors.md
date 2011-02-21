@@ -54,7 +54,7 @@ Kohana::init(array('
 
 Kohana comes with a robust system for handing http errors. It includes exception classes for each http status code. To trigger a 404 in your application (the most common scenario):
 
-	throw new Http_Exception_404('File not found!');
+	throw new HTTP_Exception_404('File not found!');
 
 There is no default method to handle these errors in Kohana. It's recommended that you setup an exception handler (and register it) to handle these kinds of errors. Here's a simple example:
 
@@ -64,7 +64,7 @@ There is no default method to handle these errors in Kohana. It's recommended th
 		{
 			switch (get_class($e))
 			{
-				case 'Http_Exception_404':
+				case 'HTTP_Exception_404':
 					$response = new Response;
 					$response->status(404);
 					$view = new View('error_404');

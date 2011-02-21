@@ -11,7 +11,7 @@
  * @license    http://kohanaphp.com/license
  * @since      3.1.0
  */
-class Kohana_Response implements Http_Response, Serializable {
+class Kohana_Response implements HTTP_Response, Serializable {
 
 	/**
 	 * Factory method to create a new [Response]. Pass properties
@@ -157,7 +157,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	protected $_status = 200;
 
 	/**
-	 * @var  Http_Header  Headers returned in the response
+	 * @var  HTTP_Header  Headers returned in the response
 	 */
 	protected $_header;
 
@@ -184,7 +184,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	 */
 	public function __construct(array $config = array())
 	{
-		$this->_header = new Http_Header(array());
+		$this->_header = new HTTP_Header(array());
 
 		foreach ($config as $key => $value)
 		{
@@ -423,7 +423,7 @@ class Kohana_Response implements Http_Response, Serializable {
 			else
 			{
 				// Default to using newer protocol
-				$protocol = strtoupper(Http::$protocol).'/'.Http::$version;
+				$protocol = strtoupper(HTTP::$protocol).'/'.HTTP::$version;
 			}
 
 			// Default to text/html; charset=utf8 if no content type set
@@ -682,7 +682,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	}
 
 	/**
-	 * Renders the Http_Interaction to a string, producing
+	 * Renders the HTTP_Interaction to a string, producing
 	 *
 	 *  - Protocol
 	 *  - Headers
@@ -782,7 +782,7 @@ class Kohana_Response implements Http_Response, Serializable {
 		{
 			if (is_array($this->_header['cache-control']))
 			{
-				$this->_header['cache-control'][] = new Http_Header_Value('must-revalidate');
+				$this->_header['cache-control'][] = new HTTP_Header_Value('must-revalidate');
 			}
 			else
 			{

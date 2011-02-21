@@ -139,7 +139,7 @@ class Kohana_Kohana_Exception extends Exception {
 			if ( ! headers_sent())
 			{
 				// Make sure the proper http header is sent
-				$http_header_status = ($e instanceof Http_Exception) ? $code : 500;
+				$http_header_status = ($e instanceof HTTP_Exception) ? $code : 500;
 
 				header('Content-Type: text/html; charset='.Kohana::$charset, TRUE, $http_header_status);
 			}
