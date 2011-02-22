@@ -15,6 +15,54 @@
  */
 class Kohana_RequestTest extends Unittest_TestCase
 {
+	public function test_initial()
+	{
+		$original = array(
+			'Kohana::$is_cli' => Kohana::$is_cli,
+			'Request::$initial' => Request::$initial,
+			'Request::$client_ip' => Request::$client_ip,
+			'Request::$user_agent' => Request::$user_agent,
+			'_SERVER' => $_SERVER,
+			'_GET' => $_GET,
+			'_POST' => $_POST,
+		);
+
+		$this->setEnvironment(array(
+			'Kohana::$is_cli' => FALSE,
+			'Request::$initial' => NULL,
+			'Request::$client_ip' => NULL,
+			'Request::$user_agent' => NULL,
+			'_SERVER' => array(
+				'PATH_INFO' => '/',
+				'HTTP_REFERER' => 'http://example.com/',
+				'HTTP_USER_AGENT' => 'whatever (Mozilla 5.0/compatible)',
+				'REMOTE_ADDR' => '127.0.0.1',
+				'REQUEST_METHOD' => 'GET',
+				'HTTP_X_REQUESTED_WITH' => 'ajax-or-something',
+			),
+			'_GET' => array(),
+			'_POST' => array(),
+		));
+
+		$request = Request::factory();
+
+		$this->assertEquals(Request::$initial, $request);
+
+		$this->assertEquals(Request::$client_ip, '127.0.0.1');
+
+		$this->assertEquals(Request::$user_agent, 'whatever (Mozilla 5.0/compatible)');
+
+		$this->assertEquals($request->referrer(), 'http://example.com/');
+
+		$this->assertEquals($request->requested_with(), 'ajax-or-something');
+
+		$this->assertEquals($request->query(), array());
+
+		$this->assertEquals($request->post(), array());
+
+		$this->setEnvironment($original);
+	}
+
 	/**
 	 * Provides the data for test_create()
 	 * @return  array
@@ -231,7 +279,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	{
 		/**
 		 * Sets up a mock cache object, asserts that:
-		 * 
+		 *
 		 *  1. The cache set() method gets called
 		 *  2. The cache get() method will return the response above when called
 		 */
@@ -327,7 +375,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_set_cache
-	 * 
+	 *
 	 * @return null
 	 */
 	public function test_set_cache($headers, $cache_control, $expected)
@@ -374,7 +422,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 * Tests the protocol() method
 	 *
 	 * @dataProvider provider_set_protocol
-	 * 
+	 *
 	 * @return null
 	 */
 	public function test_set_protocol($protocol, $expected)
