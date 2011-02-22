@@ -33,6 +33,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 			'Request::$client_ip' => NULL,
 			'Request::$user_agent' => NULL,
 			'_SERVER' => array(
+				'HTTPS' => NULL,
 				'PATH_INFO' => '/',
 				'HTTP_REFERER' => 'http://example.com/',
 				'HTTP_USER_AGENT' => 'whatever (Mozilla 5.0/compatible)',
@@ -51,6 +52,8 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$this->assertEquals(Request::$client_ip, '127.0.0.1');
 
 		$this->assertEquals(Request::$user_agent, 'whatever (Mozilla 5.0/compatible)');
+
+		$this->assertEquals($request->protocol(), 'http');
 
 		$this->assertEquals($request->referrer(), 'http://example.com/');
 
