@@ -19,15 +19,8 @@ Once your install page reports that your environment is set up correctly you nee
 
 ![Welcome Page](welcome.png "Example of welcome page")
 
-## Installing Kohana 3.0 From GitHub
+## Installing Kohana 3.1 From GitHub
 
-The [source code](http://github.com/kohana/kohana) for Kohana 3.0 is hosted with [GitHub](http://github.com).  To install Kohana using the github source code first you need to install git.  Visit [http://help.github.com](http://help.github.com) for details on how to install git on your platform.
+The [source code](http://github.com/kohana/kohana) for Kohana 3.1 is hosted with [GitHub](http://github.com).  To install Kohana using the github source code first you need to install git.  Visit [http://help.github.com](http://help.github.com) for details on how to install git on your platform.
 
-To install the last stable release of Kohana using git run these commands:
-
-    git clone git://github.com/kohana/kohana.git
-    cd kohana/
-    git submodule init
-    git submodule update
-
-[!!] For more information on using Git and Kohana see the [Working with Git](tutorials/git) tutorial.
+[!!] For more information on installing Kohana using git submodules, see the [Working with Git](tutorials/git) tutorial.
