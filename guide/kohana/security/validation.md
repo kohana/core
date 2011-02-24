@@ -2,38 +2,27 @@
 
 *This page needs to be reviewed for accuracy by the development team. Better examples would be helpful.*
 
-Validation can be performed on any array using the [Validate] class. Labels, filters, rules, and callbacks can be attached to a Validate object by the array key, called a "field name".
+Validation can be performed on any array using the [Validation] class. Labels and rules can be attached to a Validate object by the array key, called a "field name".
 
 labels
 :  A label is a human-readable version of the field name.
 
-filters
-:  A filter modifies the value of an field before rules and callbacks are run.
-
 rules
-:  A rule is a check on a field that returns `TRUE` or `FALSE`. If a rule
-   returns `FALSE`, an error will be added to the field.
+:  A rule is a callback used to decide whether or not to add an error to a field
 
-callbacks
-:  A callback is custom method that can access the entire Validate object.
-   The return value of a callback is ignored. Instead, the callback must
-   manually add an error to the object using [Validate::error] on failure.
+[!!] Note that any valid [PHP callback](http://php.net/manual/language.pseudo-types.php#language.types.callback) can be used as a rule.
 
-[!!] Note that [Validate] callbacks and [PHP callbacks](http://php.net/manual/language.pseudo-types.php#language.types.callback) are not the same.
+Using `TRUE` as the field name when adding a filter or rule will be applied to all named fields.
 
-Using `TRUE` as the field name when adding a filter, rule, or callback will by applied to all named fields.
+Creating a validation object is done using the [Validation::factory] method:
 
-**The [Validate] object will remove all fields from the array that have not been specifically named by a label, filter, rule, or callback. This prevents access to fields that have not been validated as a security precaution.**
-
-Creating a validation object is done using the [Validate::factory] method:
-
-    $post = Validate::factory($_POST);
+    $post = Validation::factory($_POST);
 
 [!!] The `$post` object will be used for the rest of this tutorial. This tutorial will show you how to validate the registration of a new user.
 
-### Default Rules
+### Provided Rules
 
-Validation also comes with several default rules:
+Kohana provides a set of useful rules in the [Valid] class:
 
 Rule name                 | Function
 ------------------------- |-------------------------------------------------
@@ -67,31 +56,27 @@ All validation rules are defined as a field name, a method or function (using th
 
 To start our example, we will perform validation on a `$_POST` array that contains user registration information:
 
-    $post = Validate::factory($_POST);
+    $post = Validation::factory($_POST);
 
-Next we need to process the POST'ed information using [Validate]. To start, we need to add some rules:
+Next we need to process the POST'ed information using [Validation]. To start, we need to add some rules:
 
     $post
         ->rule('username', 'not_empty')
-        ->rule('username', 'regex', array('/^[a-z_.]++$/iD'))
-
+        ->rule('username', 'regex', array(':value', '/^[a-z_.]++$/iD'))
         ->rule('password', 'not_empty')
-        ->rule('password', 'min_length', array(':field', '6'))
-        ->rule('confirm',  'matches', array(':validate', 'confirm', 'password'))
-
+        ->rule('password', 'min_length', array(':value', '6'))
+        ->rule('confirm',  'matches', array(':validation', 'confirm', 'password'))
         ->rule('use_ssl', 'not_empty');
 
 Any existing PHP function can also be used a rule. For instance, if we want to check if the user entered a proper value for the SSL question:
 
-    $post->rule('use_ssl', 'in_array', array(':validate', array('yes', 'no')));
+    $post->rule('use_ssl', 'in_array', array(':value', array('yes', 'no')));
 
 Note that all array parameters must still be wrapped in an array! Without the wrapping array, `in_array` would be called as `in_array($value, 'yes', 'no')`, which would result in a PHP error.
 
 Any custom rules can be added using a [PHP callback](http://php.net/manual/language.pseudo-types.php#language.types.callback]:
 
     $post->rule('username', 'User_Model::unique_username');
-
-[!!] Currently (v3.0.7) it is not possible to use an object for a rule, only static methods and functions.
 
 The method `User_Model::unique_username()` would be defined similar to:
 
@@ -106,27 +91,6 @@ The method `User_Model::unique_username()` would be defined similar to:
     }
 
 [!!] Custom rules allow many additional checks to be reused for multiple purposes. These methods will almost always exist in a model, but may be defined in any class.
-
-## Adding callbacks
-
-All validation callbacks are defined as a field name and a method or function (using the [PHP callback](http://php.net/manual/language.pseudo-types.php#language.types.callback) syntax):
-
-    $object->callback($field, $callback);
-
-The user password must be hashed if it validates, so we will hash it using a callback:
-
-    $post->callback('password', array($model, 'hash_password'));
-
-This would assume that the `$model->hash_password()` method would be defined similar to:
-
-    public function hash_password(Validate $array, $field)
-    {
-        if ($array[$field])
-        {
-            // Hash the password if it exists
-            $array[$field] = sha1($array[$field]);
-        }
-    }
 
 # A Complete Example
 
@@ -171,21 +135,18 @@ Next, we need a controller and action to process the registration, which will be
 
             $post = Validate::factory($_POST)
                 ->filter(TRUE, 'trim')
-
                 ->filter('username', 'strtolower')
 
                 ->rule('username', 'not_empty')
-                ->rule('username', 'regex', array('/^[a-z_.]++$/iD'))
+                ->rule('username', 'regex', array(':value', '/^[a-z_.]++$/iD'))
                 ->rule('username', array($user, 'unique_username'))
 
                 ->rule('password', 'not_empty')
-                ->rule('password', 'min_length', array('6'))
-                ->rule('confirm',  'matches', array('password'))
+                ->rule('password', 'min_length', array(':value', 6))
+                ->rule('confirm',  'matches', array(':validation', ':field', 'password'))
 
                 ->rule('use_ssl', 'not_empty')
-                ->rule('use_ssl', 'in_array', array(array('yes', 'no')))
-
-                ->callback('password', array($user, 'hash_password'));
+                ->rule('use_ssl', 'in_array', array(':value', array('yes', 'no')));
 
             if ($post->check())
             {
