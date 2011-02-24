@@ -54,10 +54,16 @@ All validation rules are defined as a field name, a method or function (using th
 
     $object->rule($field, $callback, array($parameter1, $parameter2));
 
-If no parameters are specified, the field value will be passed to the callback. The following two rules are equivalent.
+If no parameters are specified, the field value will be passed to the callback. The following two rules are equivalent:
 
     $object->rule($field, 'not_empty');
     $object->rule($field, 'not_empty', array(':value'));
+
+Rules defined in the [Valid] class can be added by using the method name alone. The following three rules are equivalent:
+
+    $object->rule('number', 'phone');
+    $object->rule('number', array('Valid', 'phone'));
+    $object->rule('number', 'Valid::phone');
 
 ## Binding Variables
 
@@ -72,6 +78,28 @@ By default, the validation object will automatically bind the following values f
 - `:validation` - references the validation object
 - `:field` - references the field name the rule is for
 - `:value` - references the value of the field the rule is for
+
+## Adding Errors
+
+The [Validation] class will add an error for a field if any of the rules associated to it return `FALSE`. This allows many built in PHP functions to be used as rules, like `in_array`.
+
+    $object->rule('color', 'in_array', array(':value', array('red', 'green', 'blue')));
+
+Rules added to empty fields will run, but returning `FALSE` will not automatically add an error for the field. In order for a rule to affect empty fields, you must add the error manually by calling the [Validation::error] method. In order to do this, you must pass the validation object to the rule.
+
+    $object->rule($field, 'the_rule', array(':validation', ':field'));
+    
+    public function the_rule($validation, $field)
+    {
+        if (something went wrong)
+        {
+            $validation->error($field, 'the_rule');
+        }
+    }
+
+[!!] `not_empty` and `matches` are the only rules that will run on empty fields and add errors by returning `FALSE`.
+
+## Example
 
 To start our example, we will perform validation on a `$_POST` array that contains user registration information:
 
