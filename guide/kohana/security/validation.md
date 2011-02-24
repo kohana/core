@@ -12,7 +12,7 @@ rules
 
 [!!] Note that any valid [PHP callback](http://php.net/manual/language.pseudo-types.php#language.types.callback) can be used as a rule.
 
-Using `TRUE` as the field name when adding a filter or rule will be applied to all named fields.
+Using `TRUE` as the field name when adding a rule will be applied to all named fields.
 
 Creating a validation object is done using the [Validation::factory] method:
 
