@@ -20,7 +20,7 @@ Creating a validation object is done using the [Validation::factory] method:
 
 [!!] The `$post` object will be used for the rest of this tutorial. This tutorial will show you how to validate the registration of a new user.
 
-### Provided Rules
+## Provided Rules
 
 Kohana provides a set of useful rules in the [Valid] class:
 
@@ -53,6 +53,25 @@ Rule name                 | Function
 All validation rules are defined as a field name, a method or function (using the [PHP callback](http://php.net/callback) syntax), and an array of parameters:
 
     $object->rule($field, $callback, array($parameter1, $parameter2));
+
+If no parameters are specified, the field value will be passed to the callback. The following two rules are equivalent.
+
+    $object->rule($field, 'not_empty');
+    $object->rule($field, 'not_empty', array(':value'));
+
+## Binding Variables
+
+The [Validation] class allows you to bind variables to certain strings so that they can be used when defining rules. Variables are bound by calling the [Validation::bind] method.
+
+    $object->bind(':model', $user_model);
+    // Future code will be able to use :model to reference the object
+    $object->rule('username', 'some_rule', array(':model'));
+
+By default, the validation object will automatically bind the following values for you to use as rule parameters:
+
+- `:validation` - references the validation object
+- `:field` - references the field name the rule is for
+- `:value` - references the value of the field the rule is for
 
 To start our example, we will perform validation on a `$_POST` array that contains user registration information:
 
