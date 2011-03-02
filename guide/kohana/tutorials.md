@@ -6,6 +6,8 @@
 
 ### Ellisgl's KO3 tutorial on dealtaker.com:
 
+(note that these tutorials were written for 3.0 and will not work if you are using 3.1)
+
 1. [Install and Basic Usage](http://www.dealtaker.com/blog/2009/11/20/kohana-php-3-0-ko3-tutorial-part-1/)
 2. [Views](http://www.dealtaker.com/blog/2009/12/07/kohana-php-3-0-ko3-tutorial-part-2/)
 3. [Controllers](http://www.dealtaker.com/blog/2009/12/30/kohana-php-3-0-ko3-tutorial-part-3/)
