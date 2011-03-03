@@ -148,7 +148,7 @@ The nested array is indented one tab to the right, following the single dimensio
 		...
 		))
 
-As noted above, single line syntax is also valid.
+As noted at the start of the array bracket section, single line syntax is also valid.
 
 	// Correct
 	do(array(...))
