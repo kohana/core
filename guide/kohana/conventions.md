@@ -29,20 +29,133 @@ Form                  | classes/form.php
 In order to produce highly consistent source code, we ask that everyone follow the coding standards as closely as possible.
 
 ### Brackets
-Please use [BSD/Allman Style](http://en.wikipedia.org/wiki/Indent_style#BSD.2FAllman_style) bracketing.  Brackets are always on their own line.  The exception to this rule is the opening bracket for a class, which can be on the same line.
 
-	if ($foo == 'bar')
+Please use [BSD/Allman Style](http://en.wikipedia.org/wiki/Indent_style#BSD.2FAllman_style) bracketing.  
+
+#### Curly Brackets
+
+Curly brackets are placed on their own line, indented to the same level as the control statement.
+
+	// Correct
+	if ($a === $b)
 	{
-		$baz->bar();
+		...
 	}
 	else
 	{
-		$baz->default();
+		...
 	}
-	
-	// The opening bracket for a class can be on the same line
-	Class Foobar {
 
+	// Incorrect
+	if ($a === $b) {
+		...
+	} else {
+		...
+	}
+
+#### Class Brackets
+
+The only exception to the curly bracket rule is, the opening bracket of a class goes on the same line.
+
+	// Correct
+	class Foo {
+
+	// Incorrect
+	class Foo
+	{
+
+#### Empty Brackets
+
+Don't put any characters inside empty brackets.
+
+	// Correct
+	class Foo {}
+
+	// Incorrect
+	class Foo { }
+
+#### Array Brackets
+
+Arrays may be single line or multi-line.
+
+	array('a' => 'b', 'c' => 'd')
+	
+	array(
+		'a' => 'b', 
+		'c' => 'd',
+	)
+
+##### Opening Parenthesis
+
+The opening array parenthesis goes on the same line.
+
+	// Correct
+	array(
+		...
+	)
+
+	// Incorrect:
+	array
+	(
+		...
+	)
+
+##### Closing parenthesis
+
+###### Single Dimension
+
+The closing parenthesis of a multi-line single dimension array is placed on its own line, indented to the same level as the assignment or statement.
+
+	// Correct
+	$array = array(
+		...
+	)
+
+	// Incorrect
+	$array = array(
+		...
+		)
+
+###### Multidimensional
+
+The nested array is indented one tab to the right, following the single dimension rules.
+
+	// Correct
+	array(
+		'arr' => array(
+			...
+		),
+		'arr' => array(
+			...
+		),
+	)
+	
+	array(
+		'arr' => array(...),
+		'arr' => array(...),
+	)
+	
+##### Arrays as Function Arguments
+
+
+	// Correct
+	do(array(
+		...
+	))
+	
+	// Incorrect
+	do(array(
+		...
+		))
+
+As noted at the start of the array bracket section, single line syntax is also valid.
+
+	// Correct
+	do(array(...))
+	
+	// Alternative for wrapping long lines
+	do($bar, 'this is a very long line',
+		array(...));
 
 ### Naming Conventions
 
@@ -97,7 +210,7 @@ Vertical spacing (for multi-line) is done with spaces. Tabs are not good for ver
 		  .'but vertical alignment should be completed with spaces, after '
 		  .'indenting with tabs.';
 
-### String concatenation
+### String Concatenation
 
 Do not put spaces around the concatenation operator:
 
@@ -147,7 +260,7 @@ Please use elseif, not else if:
 	// Incorrect:
 	else if($bar)
 
-### Switch structures
+### Switch Structures
 
 Each case, break and default should be on a separate line. The block inside a case or default must be indented by 1 tab.
 
@@ -260,7 +373,7 @@ Since we are reading left to right, it simply doesn't make sense to put the cons
 
 ### Comments
 
-#### One-line comments
+#### One-line Comments
 
 Use //, preferably above the line of code you're commenting on. Leave a space after it and start with a capital. Never use #.
 
@@ -270,7 +383,7 @@ Use //, preferably above the line of code you're commenting on. Leave a space af
 	// incorrect
 	# Incorrect
 
-### Regular expressions
+### Regular Expressions
 
 When coding regular expressions please use PCRE rather than the POSIX flavor. PCRE is considered more powerful and faster.
 
