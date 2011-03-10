@@ -114,6 +114,11 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$this->assertArrayNotHasKey('directory', $params);
 		$this->assertArrayNotHasKey('uri', $params);
 		$this->assertArrayNotHasKey('route', $params);
+
+		$route = new Route('(<uri>)', array('uri' => '.+'));
+		$route->defaults(array('controller' => 'foobar', 'action' => 'index'));
+		$request = Request::factory('foobar', NULL, array($route));
+		$this->assertSame('foobar', $request->param('uri'));
 	}
 
 	/**
