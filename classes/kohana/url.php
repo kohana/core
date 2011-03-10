@@ -25,7 +25,7 @@ class Kohana_URL {
 	 *     // Absolute URL path with host and protocol from $request
 	 *     echo URL::base($request);
 	 *
-	 * @param   mixed    $protocol Protocol string, or [Request]
+	 * @param   mixed    $protocol Protocol string, [Request], or boolean
 	 * @param   boolean  $index    Add index file to URL?
 	 * @return  string
 	 * @uses    Kohana::$index_file
@@ -36,15 +36,22 @@ class Kohana_URL {
 		// Start with the configured base URL
 		$base_url = Kohana::$base_url;
 
+		if ($protocol === TRUE)
+		{
+			// Use the initial request to get the protocol
+			$protocol = Request::$initial;
+		}
+
 		if ($protocol instanceof Request)
 		{
 			// Use the current protocol
 			$protocol = $protocol->protocol();
 		}
-		elseif ($protocol === NULL AND $scheme = parse_url($base_url, PHP_URL_SCHEME))
+
+		if ( ! $protocol)
 		{
 			// Use the configured default protocol
-			$protocol = $scheme;
+			$protocol = parse_url($base_url, PHP_URL_SCHEME);
 		}
 
 		if ($index === TRUE AND ! empty(Kohana::$index_file))
