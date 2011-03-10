@@ -181,9 +181,6 @@ Next, we need a controller and action to process the registration, which will be
             $user = Model::factory('user');
 
             $post = Validate::factory($_POST)
-                ->filter(TRUE, 'trim')
-                ->filter('username', 'strtolower')
-
                 ->rule('username', 'not_empty')
                 ->rule('username', 'regex', array(':value', '/^[a-z_.]++$/iD'))
                 ->rule('username', array($user, 'unique_username'))
