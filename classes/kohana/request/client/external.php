@@ -254,8 +254,30 @@ class Kohana_Request_Client_External extends Request_Client {
 		// Set the request method
 		$options[CURLOPT_CUSTOMREQUEST] = $request->method();
 
-		// Set the request body
-		$options[CURLOPT_POSTFIELDS] = $request->body();
+		switch ($request->method())
+		{
+			case Request::POST:
+				// Set the request post fields
+				$options[CURLOPT_POSTFIELDS] = http_build_query($request->post(), NULL, '&');
+			break;
+			case Request::PUT:
+				// Create a temporary file to hold the body
+				$body = tmpfile();
+
+				// Write the request body into the temp file
+				fwrite($body, $request->body());
+
+				// Get the length of the content
+				$length = ftell($body);
+
+				// Rewind to the beginning of the file
+				fseek($body, 0);
+
+				// Set the request body
+				$options[CURLOPT_INFILE]     = $body;
+				$options[CURLOPT_INFILESIZE] = $length;
+			break;
+		}
 
 		// Process cookies
 		if ($cookies = $request->cookie())
