@@ -118,6 +118,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$route = new Route('(<uri>)', array('uri' => '.+'));
 		$route->defaults(array('controller' => 'foobar', 'action' => 'index'));
 		$request = Request::factory('foobar', NULL, array($route));
+
 		$this->assertSame('foobar', $request->param('uri'));
 	}
 

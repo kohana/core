@@ -408,9 +408,6 @@ class Kohana_Route {
 			}
 		}
 
-		$params['uri'] = $uri;
-		$params['route'] = $this;
-
 		return $params;
 	}
 

@@ -538,21 +538,14 @@ class Kohana_Request implements HTTP_Request {
 			// We found something suitable
 			if ($params = $route->matches($uri))
 			{
-				if ( ! isset($params['uri']))
-				{
-					$params['uri'] = $uri;
-				}
-
-				if ( ! isset($params['route']))
-				{
-					$params['route'] = $route;
-				}
-
-				break;
+				return array(
+					'params' => $params,
+					'route' => $route,
+				);
 			}
 		}
 
-		return $params;
+		return NULL;
 	}
 
 	/**
@@ -743,9 +736,9 @@ class Kohana_Request implements HTTP_Request {
 		 */
 		if (strpos($uri, '://') === FALSE)
 		{
-			$params = Request::process_uri($uri, $this->_injected_routes);
+			$processed_uri = Request::process_uri($uri, $this->_injected_routes);
 
-			if ( ! $params)
+			if ($processed_uri === NULL)
 			{
 				throw new HTTP_Exception_404('Unable to find a route to match the URI: :uri', array(
 					':uri' => $uri,
@@ -753,10 +746,11 @@ class Kohana_Request implements HTTP_Request {
 			}
 
 			// Store the URI
-			$this->_uri = $params['uri'];
+			$this->_uri = $uri;
 
 			// Store the matching route
-			$this->_route = $params['route'];
+			$this->_route = $processed_uri['route'];
+			$params = $processed_uri['params'];
 
 			// Is this route external?
 			$this->_external = $this->_route->is_external();
@@ -782,7 +776,7 @@ class Kohana_Request implements HTTP_Request {
 			}
 
 			// These are accessible as public vars and can be overloaded
-			unset($params['controller'], $params['action'], $params['directory'], $params['uri'], $params['route']);
+			unset($params['controller'], $params['action'], $params['directory']);
 
 			// Params cannot be changed once matched
 			$this->_params = $params;
