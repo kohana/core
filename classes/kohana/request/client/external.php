@@ -279,6 +279,19 @@ class Kohana_Request_Client_External extends Request_Client {
 			break;
 		}
 
+		// Process headers
+		if ($headers = $request->headers())
+		{
+			$http_headers = array();
+
+			foreach ($headers as $key => $value)
+			{
+				$http_headers[] = $key.': '.$value;
+			}
+
+			$options[CURLOPT_HTTPHEADER] = $http_headers;
+		}
+
 		// Process cookies
 		if ($cookies = $request->cookie())
 		{
