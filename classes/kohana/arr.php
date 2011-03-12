@@ -22,7 +22,7 @@ class Kohana_Arr {
 	 *     Arr::is_assoc(array('username' => 'john.doe'));
 	 *
 	 *     // Returns FALSE
-	 *     Arr::is_assoc('foo', 'bar');
+	 *     Arr::is_assoc(array('foo', 'bar'));
 	 *
 	 * @param   array   array to check
 	 * @return  boolean
