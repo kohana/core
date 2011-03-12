@@ -1128,15 +1128,15 @@ class Kohana_Validate extends ArrayObject {
 				}
 			}
 
-			if ($message = Kohana::message($file, "{$field}.{$error}"))
+			if ($message = Kohana::message($file, "{$field}.{$error}") AND is_string($message))
 			{
 				// Found a message for this field and error
 			}
-			elseif ($message = Kohana::message($file, "{$field}.default"))
+			elseif ($message = Kohana::message($file, "{$field}.default") AND is_string($message))
 			{
 				// Found a default message for this field
 			}
-			elseif ($message = Kohana::message($file, $error))
+			elseif ($message = Kohana::message($file, $error) AND is_string($message))
 			{
 				// Found a default message for this error
 			}
