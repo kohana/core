@@ -248,9 +248,6 @@ class Kohana_Request_Client_External extends Request_Client {
 		// Reset the headers
 		Request_Client_External::$_processed_headers = array();
 
-		// Allow custom options to be set
-		$options = $this->_options;
-
 		// Set the request method
 		$options[CURLOPT_CUSTOMREQUEST] = $request->method();
 
@@ -300,6 +297,9 @@ class Kohana_Request_Client_External extends Request_Client {
 
 		// The transfer must always be returned
 		$options[CURLOPT_RETURNTRANSFER] = TRUE;
+
+		// Apply any additional options set to Request_Client_External::$_options
+		$options += $this->_options;
 
 		// Open a new remote connection
 		$curl = curl_init($request->uri());
