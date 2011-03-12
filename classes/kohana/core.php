@@ -1455,7 +1455,7 @@ class Kohana_Core {
 	 */
 	public static function debug_source($file, $line_number, $padding = 5)
 	{
-		if ( ! $file OR ! is_readable($file))
+		if ( ! $file OR ! is_file($file) OR ! is_readable($file))
 		{
 			// Continuing will cause errors
 			return FALSE;
