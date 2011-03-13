@@ -535,4 +535,67 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$this->assertSame($request->uri(), $expected);
 	}
 
+	/**
+	 * Data provider for test_options_set_to_external_client()
+	 *
+	 * @return  array
+	 */
+	public function provider_options_set_to_external_client()
+	{
+		return array(
+			array(
+				array(
+					CURLOPT_PROXYPORT   => 8080,
+					CURLOPT_PROXYTYPE   => CURLPROXY_HTTP,
+					CURLOPT_VERBOSE     => TRUE
+				),
+				array(
+					CURLOPT_PROXYPORT   => 8080,
+					CURLOPT_PROXYTYPE   => CURLPROXY_HTTP,
+					CURLOPT_VERBOSE     => TRUE
+				)
+			),
+			array(
+				array(
+					'proxyhost'         => 'http://localhost:8080',
+					'proxytype'         => HTTP_PROXY_HTTP,
+					'redirect'          => 2
+				),
+				array(
+					'proxyhost'         => 'http://localhost:8080',
+					'proxytype'         => HTTP_PROXY_HTTP,
+					'redirect'          => 2
+				)
+			)
+		);
+	}
+
+	/**
+	 * Test for Request_Client_External::options() to ensure options
+	 * can be set to the external client (for cURL and PECL_HTTP)
+	 *
+	 * @dataProvider provider_options_set_to_external_client
+	 * 
+	 * @param   array    settings 
+	 * @param   array    expected 
+	 * @return void
+	 */
+	public function test_options_set_to_external_client($settings, $expected)
+	{
+		$request = Request::factory('http://www.kohanaframework.org');
+		$request_client = $request->get_client();
+
+		// Test for empty array
+		$this->assertSame($request_client->options(), array());
+
+		// Test that set works as expected
+		$this->assertSame($request_client->options($settings), $request_client);
+
+		// Test that each setting is present and returned
+		foreach ($expected as $key => $value)
+		{
+			$this->assertSame($request_client->options($key), $value);
+		}
+	}
+
 } // End Kohana_RequestTest
