@@ -494,4 +494,45 @@ class Kohana_RequestTest extends Unittest_TestCase
 		// Test the post_max_size_exceeded() method
 		$this->assertSame(Request::post_max_size_exceeded(), $expected);
 	}
-}
+
+	/**
+	 * Provides data for test_uri_only_trimed_on_internal()
+	 *
+	 * @return  array
+	 */
+	public function provider_uri_only_trimed_on_internal()
+	{
+		return array(
+			array(
+				new Request('http://www.google.com'),
+				'http://www.google.com'
+			),
+			array(
+				new Request('http://www.google.com/'),
+				'http://www.google.com/'
+			),
+			array(
+				new Request('foo/bar/'),
+				'foo/bar'
+			),
+			array(
+				new Request('foo/bar'),
+				'foo/bar'
+			)
+		);
+	}
+
+	/**
+	 * Tests that the uri supplied to Request is only trimed
+	 * for internal requests.
+	 * 
+	 * @dataProvider provider_uri_only_trimed_on_internal
+	 *
+	 * @return void
+	 */
+	public function test_uri_only_trimed_on_internal($request, $expected)
+	{
+		$this->assertSame($request->uri(), $expected);
+	}
+
+} // End Kohana_RequestTest

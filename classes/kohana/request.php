@@ -724,9 +724,6 @@ class Kohana_Request implements HTTP_Request {
 		// Initialise the header
 		$this->_header = new HTTP_Header(array());
 
-		// Remove trailing slashes from the URI
-		$uri = trim($uri, '/');
-
 		// Assign injected routes
 		$this->_injected_routes = $injected_routes;
 
@@ -736,6 +733,9 @@ class Kohana_Request implements HTTP_Request {
 		 */
 		if (strpos($uri, '://') === FALSE)
 		{
+			// Remove trailing slashes from the URI
+			$uri = trim($uri, '/');
+
 			$processed_uri = Request::process_uri($uri, $this->_injected_routes);
 
 			if ($processed_uri === NULL)
