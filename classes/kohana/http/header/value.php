@@ -216,4 +216,4 @@ class Kohana_HTTP_Header_Value {
 		return $string;
 	}
 
-} // End HTTP_Header_Field
+} // End Kohana_HTTP_Header_Value
