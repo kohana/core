@@ -1,19 +1,19 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Kohana_Http_Header_Value represents a value assigned to an HTTP header, i.e.
+ * Kohana_HTTP_Header_Value represents a value assigned to an HTTP header, i.e.
  *
  *      Accept: [key=]value[; property[=property_value][; ...]]
  *
  * Values are either single values,
  *
  * @package    Kohana
- * @category   Http
+ * @category   HTTP
  * @author     Kohana Team
  * @since      3.1.0
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaphp.com/license
  */
-class Kohana_Http_Header_Value {
+class Kohana_HTTP_Header_Value {
 
 	/**
 	 * @var     float    The default quality header property value
@@ -61,7 +61,7 @@ class Kohana_Http_Header_Value {
 	 *
 	 * @param   mixed    value  configuration array passed
 	 * @param   boolean  no_parse  skip parsing of the string (i.e. user-agent)
-	 * @throws  Kohana_Http_Exception
+	 * @throws  Kohana_HTTP_Exception
 	 */
 	public function __construct($value, $no_parse = FALSE)
 	{
@@ -105,7 +105,7 @@ class Kohana_Http_Header_Value {
 				foreach ($parts as $part)
 				{
 					// Merge the parsed values
-					$properties = array_merge(Http_Header_Value::parse_key_value($part), $properties);
+					$properties = array_merge(HTTP_Header_Value::parse_key_value($part), $properties);
 				}
 
 				// Apply the parsed values
@@ -113,7 +113,7 @@ class Kohana_Http_Header_Value {
 			}
 
 			// Parse the value and get key
-			$value = Http_Header_Value::parse_key_value($value);
+			$value = HTTP_Header_Value::parse_key_value($value);
 			$key = key($value);
 
 			// If the key is a string
@@ -129,7 +129,7 @@ class Kohana_Http_Header_Value {
 		// Unrecognised value type
 		else
 		{
-			throw new Http_Exception_500(__METHOD__.' unknown header value type: :type. array or string allowed.', array(':type' => gettype($value)));
+			throw new HTTP_Exception_500(__METHOD__.' unknown header value type: :type. array or string allowed.', array(':type' => gettype($value)));
 		}
 	}
 
@@ -216,4 +216,4 @@ class Kohana_Http_Header_Value {
 		return $string;
 	}
 
-} // End Http_Header_Field
+} // End Kohana_HTTP_Header_Value

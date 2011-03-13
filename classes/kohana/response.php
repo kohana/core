@@ -11,7 +11,7 @@
  * @license    http://kohanaphp.com/license
  * @since      3.1.0
  */
-class Kohana_Response implements Http_Response, Serializable {
+class Kohana_Response implements HTTP_Response, Serializable {
 
 	/**
 	 * Factory method to create a new [Response]. Pass properties
@@ -157,7 +157,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	protected $_status = 200;
 
 	/**
-	 * @var  Http_Header  Headers returned in the response
+	 * @var  HTTP_Header  Headers returned in the response
 	 */
 	protected $_header;
 
@@ -184,7 +184,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	 */
 	public function __construct(array $config = array())
 	{
-		$this->_header = new Http_Header(array());
+		$this->_header = new HTTP_Header(array());
 
 		foreach ($config as $key => $value)
 		{
@@ -219,13 +219,11 @@ class Kohana_Response implements Http_Response, Serializable {
 	 */
 	public function body($content = NULL)
 	{
-		if ($content)
-		{
-			$this->_body = (string) $content;
-			return $this;
-		}
+		if ($content === NULL)
+			return $this->_body;
 
-		return $this->_body;
+		$this->_body = (string) $content;
+		return $this;
 	}
 
 	/**
@@ -346,7 +344,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	 * @param   string    value to set to cookie
 	 * @return  string
 	 * @return  void
-	 * @return  [Request]
+	 * @return  [Response]
 	 */
 	public function cookie($key = NULL, $value = NULL)
 	{
@@ -425,7 +423,7 @@ class Kohana_Response implements Http_Response, Serializable {
 			else
 			{
 				// Default to using newer protocol
-				$protocol = strtoupper(Http::$protocol).'/'.Http::$version;
+				$protocol = strtoupper(HTTP::$protocol).'/'.HTTP::$version;
 			}
 
 			// Default to text/html; charset=utf8 if no content type set
@@ -440,19 +438,22 @@ class Kohana_Response implements Http_Response, Serializable {
 				$this->_header['x-powered-by'] = 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
 			}
 
-			// HTTP status line
-			header($protocol.' '.$this->_status.' '.Response::$messages[$this->_status]);
-
-			foreach ($this->_header as $name => $value)
+			if ( ! Kohana::$is_cli)
 			{
-				if (is_string($name))
-				{
-					// Combine the name and value to make a raw header
-					$value = $name.': '.$value;
-				}
+				// HTTP status line
+				header($protocol.' '.$this->_status.' '.Response::$messages[$this->_status]);
 
-				// Send the raw header
-				header($value, TRUE);
+				foreach ($this->_header as $name => $value)
+				{
+					if (is_string($name))
+					{
+						// Combine the name and value to make a raw header
+						$value = $name.': '.$value;
+					}
+
+					// Send the raw header
+					header($value, TRUE);
+				}
 			}
 
 			// Send cookies
@@ -681,7 +682,7 @@ class Kohana_Response implements Http_Response, Serializable {
 	}
 
 	/**
-	 * Renders the Http_Interaction to a string, producing
+	 * Renders the HTTP_Interaction to a string, producing
 	 *
 	 *  - Protocol
 	 *  - Headers
@@ -781,7 +782,7 @@ class Kohana_Response implements Http_Response, Serializable {
 		{
 			if (is_array($this->_header['cache-control']))
 			{
-				$this->_header['cache-control'][] = new Http_Header_Value('must-revalidate');
+				$this->_header['cache-control'][] = new HTTP_Header_Value('must-revalidate');
 			}
 			else
 			{
@@ -830,7 +831,7 @@ class Kohana_Response implements Http_Response, Serializable {
 
 		if (is_string($serialized))
 		{
-			return $string;
+			return $serialized;
 		}
 		else
 		{

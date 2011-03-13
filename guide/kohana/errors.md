@@ -54,17 +54,17 @@ Kohana::init(array('
 
 Kohana comes with a robust system for handing http errors. It includes exception classes for each http status code. To trigger a 404 in your application (the most common scenario):
 
-	throw new Http_Exception_404('File not found!');
+	throw new HTTP_Exception_404('File not found!');
 
-There is no default method to handle these errors in Kohana. It's recommended that you setup an exception handler (and register it) to handle these kinds of errors. Here's a simple example:
+There is no default method to handle these errors in Kohana. It's recommended that you setup an exception handler (and register it) to handle these kinds of errors. Here's a simple example that would go in */application/classes/foobar/exception/handler.php*:
 
 	class Foobar_Exception_Handler
 	{
-		function handle(Exception $e)
+		public static function handle(Exception $e)
 		{
 			switch (get_class($e))
 			{
-				case 'Http_Exception_404':
+				case 'HTTP_Exception_404':
 					$response = new Response;
 					$response->status(404);
 					$view = new View('error_404');
@@ -83,3 +83,7 @@ There is no default method to handle these errors in Kohana. It's recommended th
 And put something like this in your bootstrap to register the handler.
 
 	set_exception_handler(array('Foobar_Exception_Handler', 'handle'));
+
+ > *Note:* Be sure to place `set_exception_handler()` **after** `Kohana::init()` in your bootstrap, or it won't work.
+ 
+ > If you receive *Fatal error: Exception thrown without a stack frame in Unknown on line 0*, it means there was an error within your exception handler. If using the example above, be sure *404.php* exists under */application/views/error/*.

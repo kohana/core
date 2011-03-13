@@ -91,7 +91,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 			if ( ! class_exists($prefix.$controller))
 			{
-				throw new Http_Exception_404('The requested URL :uri was not found on this server.',
+				throw new HTTP_Exception_404('The requested URL :uri was not found on this server.',
 													array(':uri' => $request->uri()));
 			}
 
@@ -117,7 +117,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			// If the action doesn't exist, it's a 404
 			if ( ! $class->hasMethod('action_'.$action))
 			{
-				throw new Http_Exception_404('The requested URL :uri was not found on this server.',
+				throw new HTTP_Exception_404('The requested URL :uri was not found on this server.',
 													array(':uri' => $request->uri()));
 			}
 

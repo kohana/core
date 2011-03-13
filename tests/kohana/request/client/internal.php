@@ -67,7 +67,7 @@ class Kohana_Request_Client_InternalTest extends Unittest_TestCase
 		{
 			$internal_client->execute($request);
 		}
-		catch(Http_Exception_404 $e)
+		catch(HTTP_Exception_404 $e)
 		{
 			if ($e->getMessage() !== $expected)
 			{
@@ -84,6 +84,6 @@ class Kohana_Request_Client_InternalTest extends Unittest_TestCase
 			return;
 		}
 
-		$this->fail('A Http_Exception_404 or Kohana_Exception exception was expected.');
+		$this->fail('A HTTP_Exception_404 or Kohana_Exception exception was expected.');
 	}
 }

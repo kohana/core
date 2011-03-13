@@ -82,6 +82,8 @@ TODO: example of either using directory or controller where it isn't in the rout
 
 In 3.1, you can specify advanced routing schemes by using lambda routes. Instead of a URI, you can use an anonymous function or callback syntax to specify a function that will process your routes. Here's a simple example:
 
+If you want to use reverse routing with lambda routes, you must pass the third parameter:
+
 	Route::set('testing', function($uri)
 		{
 			if ($uri == 'foo/bar')
@@ -89,8 +91,11 @@ In 3.1, you can specify advanced routing schemes by using lambda routes. Instead
 					'controller' => 'welcome',
 					'action'     => 'foobar',
 				);
-		}
+		},
+		'foo/bar'
 	);
+
+As you can see in the below route, the reverse uri parameter might not make sense.
 
 	Route::set('testing', function($uri)
 		{
@@ -102,18 +107,15 @@ In 3.1, you can specify advanced routing schemes by using lambda routes. Instead
 					'action'     => 'foobar'
 				);
 			}
-		}
+		},
+		'<language>/<rest_of_uri>
 	);
-	
+
+If you are using php 5.2, you can still use callbacks for this behavior (this example omits the reverse route):
+
 	Route::set('testing', array('Class', 'method_to_process_my_uri'));
 
 ## Examples
-
-TODO: a million billion examples, you can use the following as a guide for some routes to include:
-
-<http://kerkness.ca/wiki/doku.php?id=routing:routing_basics>   
-<http://kerkness.ca/wiki/doku.php?id=routing:ignoring_overflow_in_a_route>   
-<http://kerkness.ca/wiki/doku.php?id=routing:building_routes_with_subdirectories>
 
 There are countless other possibilities for routes. Here are some more examples:
 

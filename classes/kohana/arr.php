@@ -332,7 +332,7 @@ class Kohana_Arr {
 	 * Adds a value to the beginning of an associative array.
 	 *
 	 *     // Add an empty value to the start of a select list
-	 *     Arr::unshift_assoc($array, 'none', 'Select a value');
+	 *     Arr::unshift($array, 'none', 'Select a value');
 	 *
 	 * @param   array   array to modify
 	 * @param   string  array key name
@@ -464,7 +464,7 @@ class Kohana_Arr {
 	 *     $array = Arr::overwrite($a1, $a2);
 	 *
 	 *     // The output of $array will now be:
-	 *     array('name' => 'jack', 'mood' => 'happy', 'food' => 'bacon')
+	 *     array('name' => 'jack', 'mood' => 'happy', 'food' => 'tacos')
 	 *
 	 * @param   array   master array
 	 * @param   array   input arrays that will overwrite existing values

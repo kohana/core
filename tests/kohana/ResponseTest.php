@@ -22,8 +22,6 @@ class Kohana_ResponseTest extends Unittest_TestCase
 	 */
 	public function test_expose()
 	{
-		$this->markTestSkipped('send_headers() can only be executed once, test will never pass in current API');
-
 		Kohana::$expose = TRUE;
 		$response = new Response;
 		$headers = $response->send_headers()->headers();
@@ -74,6 +72,37 @@ class Kohana_ResponseTest extends Unittest_TestCase
 
 		$response = (string) $response;
 		$this->assertSame($response, $expected);
+	}
+
+	/**
+	 * Provides data for test_body_string_zero()
+	 *
+	 * @return array
+	 */
+	public function provider_body_string_zero()
+	{
+		return array(
+			array('0', '0'),
+			array("0", '0'),
+			array(0, '0')
+		);
+	}
+
+	/**
+	 * Test that Response::body() handles numerics correctly
+	 *
+	 * @test
+	 * @dataProvider provider_body_string_zero
+	 * @param string $string 
+	 * @param string $expected 
+	 * @return void
+	 */
+	public function test_body_string_zero($string, $expected)
+	{
+		$response = new Response;
+		$response->body($string);
+
+		$this->assertSame($expected, $response->body());
 	}
 
 	/**
@@ -166,14 +195,34 @@ class Kohana_ResponseTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Tests that the headers are not sent by PHP in CLI mode
+	 *
+	 * @return void
+	 */
+	public function test_send_headers_cli()
+	{
+		if (Kohana::$is_cli)
+		{
+			$content_type = 'application/json';
+			$response = new Response;
+			$response->headers('content-type', $content_type)
+				->send_headers();
+
+			$this->assertFalse(headers_sent());
+		}
+		else
+		{
+			$this->markTestSkipped('Unable to perform test outside of CLI mode');
+		}
+	}
+
+	/**
 	 * Test the content type is sent when set
 	 * 
 	 * @test
 	 */
 	public function test_content_type_when_set()
 	{
-		$this->markTestSkipped('send_headers() can only be executed once, test will never pass in current API');
-
 		$content_type = 'application/json';
 		$response = new Response;
 		$response->headers('content-type', $content_type);
@@ -188,8 +237,6 @@ class Kohana_ResponseTest extends Unittest_TestCase
 	 */
 	public function test_default_content_type_when_not_set()
 	{
-		$this->markTestSkipped('send_headers() can only be executed once, test will never pass in current API');
-
 		$response = new Response;
 		$headers = $response->send_headers()->headers();
 		$this->assertSame(Kohana::$content_type.'; charset='.Kohana::$charset, (string) $headers['content-type']);

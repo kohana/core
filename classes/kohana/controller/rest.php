@@ -35,10 +35,10 @@ abstract class Kohana_Controller_REST extends Controller {
 	 */
 	protected $_action_map = array
 	(
-		Http_Request::GET    => 'index',
-		Http_Request::PUT    => 'update',
-		Http_Request::POST   => 'create',
-		Http_Request::DELETE => 'delete',
+		HTTP_Request::GET    => 'index',
+		HTTP_Request::PUT    => 'update',
+		HTTP_Request::POST   => 'create',
+		HTTP_Request::DELETE => 'delete',
 	);
 
 	/**
@@ -75,9 +75,9 @@ abstract class Kohana_Controller_REST extends Controller {
 	public function after()
 	{
 		if (in_array(Arr::get($_SERVER, 'HTTP_X_HTTP_METHOD_OVERRIDE', $this->request->method()), array(
-			Http_Request::PUT,
-			Http_Request::POST,
-			Http_Request::DELETE)))
+			HTTP_Request::PUT,
+			HTTP_Request::POST,
+			HTTP_Request::DELETE)))
 		{
 			$this->response->headers('cache-control', 'no-cache, no-store, max-age=0, must-revalidate');
 		}
