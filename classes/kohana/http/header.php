@@ -50,10 +50,44 @@ class Kohana_HTTP_Header extends ArrayObject {
 			{
 				$values = array();
 
-				foreach ($value as $k => $v)
+				if (Arr::is_assoc($value))
 				{
-					$values[] = HTTP_Header::parse_header_values($v);
+
+					foreach ($value as $k => $v)
+					{
+						$values[] = HTTP_Header::parse_header_values($v);
+					}
 				}
+				else
+				{
+					// RFC 2616 allows multiple headers with same name if they can be
+					// concatinated using commas without altering the original message.
+					// This usually occurs with multiple Set-Cookie: headers
+					$array = array();
+					foreach ($value as $k => $v)
+					{
+						// Break value into component parts
+						$v = explode(';', $v);
+
+						// Do some nasty parsing to flattern the array into components,
+						// parsing key values
+						$array = Arr::flatten(array_map('HTTP_Header_Value::parse_key_value', $v));
+
+						// Get the K/V component and extract the first element
+						$key_value_component = array_slice($array, 0, 1, TRUE);
+						array_shift($array);
+
+						// Create the HTTP_Header_Value component array
+						$http_header['key']        = key($key_value_component);
+						$http_header['value']      = current($key_value_component);
+						$http_header['properties'] = $array;
+
+						// Create the HTTP_Header_Value
+						$values[] = new HTTP_Header_Value($http_header);
+					}
+				}
+
+				// Assign HTTP_Header_Value array to the header
 				$header_values[$key] = $values;
 				continue;
 			}
@@ -265,20 +299,12 @@ class Kohana_HTTP_Header extends ArrayObject {
 		$a = (float) Arr::get($value_a->properties, 'q', HTTP_Header_Value::$default_quality);
 		$b = (float) Arr::get($value_b->properties, 'q', HTTP_Header_Value::$default_quality);
 
-		// If a == b
 		if ($a == $b)
-		{
-			return 0; // Return neutral (0)
-		}
-		// If a < b
+			return 0;
 		elseif ($a < $b)
-		{
-			return 1; // Return positive (1)
-		}
-		// If a > b
+			return 1;
 		elseif ($a > $b)
-		{
-			return -1; // Return negative (-1)
-		}
+			return -1;
 	}
+
 } // End Kohana_HTTP_Header
