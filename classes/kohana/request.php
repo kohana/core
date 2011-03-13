@@ -510,7 +510,7 @@ class Kohana_Request implements HTTP_Request {
 	public static function post_max_size_exceeded()
 	{
 		// Make sure the request method is POST
-		if (Request::$initial->method() !== 'POST')
+		if (Request::$initial->method() !== HTTP_Request::POST)
 			return FALSE;
 
 		// Get the post_max_size in bytes
