@@ -447,4 +447,51 @@ class Kohana_RequestTest extends Unittest_TestCase
 		// Test the return value
 		$this->assertTrue($request instanceof $result);
 	}
+
+	/**
+	 * Provides data for test_post_max_size_exceeded()
+	 * 
+	 * @return  array
+	 */
+	public function provider_post_max_size_exceeded()
+	{
+		// Get the post max size
+		$post_max_size = Num::bytes(ini_get('post_max_size'));
+
+		return array(
+			array(
+				$post_max_size+200000,
+				TRUE
+			),
+			array(
+				$post_max_size-20,
+				FALSE
+			),
+			array(
+				$post_max_size,
+				FALSE
+			)
+		);
+	}
+
+	/**
+	 * Tests the post_max_size_exceeded() method
+	 * 
+	 * @dataProvider provider_post_max_size_exceeded
+	 *
+	 * @param   int      content_length 
+	 * @param   bool     expected 
+	 * @return  void
+	 */
+	public function test_post_max_size_exceeded($content_length, $expected)
+	{
+		// Ensure the request method is set to POST
+		Request::$initial->method(HTTP_Request::POST);
+
+		// Set the content length
+		$_SERVER['CONTENT_LENGTH'] = $content_length;
+
+		// Test the post_max_size_exceeded() method
+		$this->assertSame(Request::post_max_size_exceeded(), $expected);
+	}
 }
