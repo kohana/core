@@ -239,7 +239,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for testExceptionHandler()
+	 * Provides test data for test_exception_handler()
 	 * 
 	 * @return array
 	 */
@@ -266,7 +266,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * @param boolean $expected          Output for Kohana::exception_handler
 	 * @param string  $expexcted_message What to look for in the output string
 	 */
-	public function teste_exception_handler($exception_type, $message, $is_cli, $expected, $expected_message)
+	public function test_exception_handler($exception_type, $message, $is_cli, $expected, $expected_message)
 	{
 		try
 		{
@@ -321,12 +321,12 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	{
 		return array(
 			array(
-				Kohana::find_file('classes', 'kohana'), 
+				SYSPATH.'classes'.DIRECTORY_SEPARATOR.'kohana'.EXT,
 				'SYSPATH'.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'kohana.php'
 			),
 			array(
-				Kohana::find_file('classes', $this->dirSeparator('kohana/unittest/runner')), 
-				$this->dirSeparator('MODPATH/unittest/classes/kohana/unittest/runner.php')
+				MODPATH.$this->dirSeparator('unittest/classes/kohana/unittest/runner').EXT,
+				$this->dirSeparator('MODPATH/unittest/classes/kohana/unittest/runner').EXT
 			),
 		);
 	}

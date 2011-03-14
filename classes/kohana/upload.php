@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Upload helper class for working with uploaded files and [Validate].
  *
@@ -66,7 +66,7 @@ class Kohana_Upload {
 		if (Upload::$remove_spaces === TRUE)
 		{
 			// Remove spaces from the filename
-			$filename = preg_replace('/\s+/', '_', $filename);
+			$filename = preg_replace('/\s+/u', '_', $filename);
 		}
 
 		if ($directory === NULL)

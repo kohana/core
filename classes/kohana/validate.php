@@ -87,7 +87,7 @@ class Kohana_Validate extends ArrayObject {
 	}
 
 	/**
-	 * CHecks that a field is exactly the value required.
+	 * Checks that a field is exactly the value required.
 	 *
 	 * @param   string   value
 	 * @param   string   required value
@@ -806,7 +806,7 @@ class Kohana_Validate extends ArrayObject {
 				}
 
 				// Append the filters
-				$filters[$field] += $filters[TRUE];
+				$filters[$field] = array_merge($filters[$field], $filters[TRUE]);
 			}
 
 			if (isset($rules[TRUE]))
@@ -818,7 +818,7 @@ class Kohana_Validate extends ArrayObject {
 				}
 
 				// Append the rules
-				$rules[$field] += $rules[TRUE];
+				$rules[$field] = array_merge($rules[$field], $rules[TRUE]);
 			}
 
 			if (isset($callbacks[TRUE]))
@@ -830,7 +830,7 @@ class Kohana_Validate extends ArrayObject {
 				}
 
 				// Append the callbacks
-				$callbacks[$field] += $callbacks[TRUE];
+				$callbacks[$field] = array_merge($callbacks[$field], $callbacks[TRUE]);
 			}
 		}
 
@@ -1031,9 +1031,10 @@ class Kohana_Validate extends ArrayObject {
 	/**
 	 * Returns the error messages. If no file is specified, the error message
 	 * will be the name of the rule that failed. When a file is specified, the
-	 * message will be loaded from "field/rule", or if no rule-specific message
-	 * exists, "field/default" will be used. If neither is set, the returned
-	 * message will be "file/field/rule".
+	 * message will be loaded from `$field.$rule`, or if no rule-specific message
+	 * exists, `$field.default` will be used. If neither is set, the returned
+	 * message will be `validate.$rule`. If `validate.$rule` is empty,
+	 * then `$file.$field.$rule` will be returned.
 	 *
 	 * By default all messages are translated using the default language.
 	 * A string can be used as the second parameter to specified the language
@@ -1127,15 +1128,15 @@ class Kohana_Validate extends ArrayObject {
 				}
 			}
 
-			if ($message = Kohana::message($file, "{$field}.{$error}"))
+			if ($message = Kohana::message($file, "{$field}.{$error}") AND is_string($message))
 			{
 				// Found a message for this field and error
 			}
-			elseif ($message = Kohana::message($file, "{$field}.default"))
+			elseif ($message = Kohana::message($file, "{$field}.default") AND is_string($message))
 			{
 				// Found a default message for this field
 			}
-			elseif ($message = Kohana::message($file, $error))
+			elseif ($message = Kohana::message($file, $error) AND is_string($message))
 			{
 				// Found a default message for this error
 			}

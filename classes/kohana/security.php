@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Security helper class.
  *
@@ -138,7 +138,7 @@ class Kohana_Security {
 		if ($new === TRUE OR ! $token)
 		{
 			// Generate a new unique token
-			$token = uniqid('security');
+			$token = sha1(uniqid(NULL, TRUE));
 
 			// Store the new token
 			$session->set(Security::$token_name, $token);
