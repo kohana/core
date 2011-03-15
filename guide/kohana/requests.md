@@ -47,7 +47,7 @@ You can use this to scrape HTML from a remote site, or make a REST call to a thi
 	$request = Request::factory('http://example.com/put_api')->method(Request::PUT)->body(json_encode('the body'))->headers('Content-Type', 'application/json');
 
 	// This uses POST
-	$request = Request::factory('http://example.com/post_api')->method(Request::POST)->query(array('foo' => 'bar', 'bar' => 'baz'));
+	$request = Request::factory('http://example.com/post_api')->method(Request::POST)->post(array('foo' => 'bar', 'bar' => 'baz'));
 
 ## Executing Requests
 
