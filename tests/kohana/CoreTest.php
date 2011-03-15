@@ -171,7 +171,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 					'ip'            => ':field must be an ip address',
 					'matches'       => ':field must be the same as :param1',
 					'min_length'    => ':field must be at least :param1 characters long',
-					'max_length'    => ':field must be less than :param1 characters long',
+					'max_length'    => ':field must not exceed :param1 characters long',
 					'not_empty'     => ':field must not be empty',
 					'numeric'       => ':field must be numeric',
 					'phone'         => ':field must be a phone number',
@@ -247,10 +247,13 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	{
 		return array(
 			// $exception_type, $message, $is_cli, $expected
-			array('Kohana_Exception', 'hello, world!', TRUE, TRUE, 'hello, world!'),
-			array('ErrorException', 'hello, world!', TRUE, TRUE, 'hello, world!'),
+			array('Kohana_Exception', 'hello, world!', array('Kohana::$is_cli' => TRUE), TRUE, "\nKohana_Exception [ 0 ]: hello, world! ~ SYSPATH/tests/kohana/CoreTest.php [ 278 ]\n", TRUE),
+			array('Kohana_Exception', 'hello, world!', array('Kohana::$is_cli' => FALSE), TRUE, 'hello, world!', FALSE),
+			// # 3818
+			array('Kohana_Exception', 'hello, world!', array('Request::$is_ajax' => TRUE), TRUE, "\nKohana_Exception [ 0 ]: hello, world! ~ SYSPATH/tests/kohana/CoreTest.php [ 278 ]\n", TRUE),
+			array('ErrorException', 'hello, world!', array('Kohana::$is_cli' => TRUE), TRUE, 'hello, world!', FALSE),
 			// #3016
-			array('Kohana_Exception', '<hello, world!>', FALSE, TRUE, '&lt;hello, world!&gt;'),
+			array('Kohana_Exception', '<hello, world!>', array('Kohana::$is_cli' => FALSE), TRUE, '&lt;hello, world!&gt;', FALSE),
 		);
 	}
 
@@ -266,11 +269,12 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	 * @param boolean $expected          Output for Kohana::exception_handler
 	 * @param string  $expexcted_message What to look for in the output string
 	 */
-	public function test_exception_handler($exception_type, $message, $is_cli, $expected, $expected_message)
+	public function test_exception_handler($exception_type, $message, $env, $expected, $expected_message, $test_complete_output)
 	{
+		$this->setEnvironment($env);
+
 		try
 		{
-			Kohana::$is_cli = $is_cli;
 			throw new $exception_type($message);
 		}
 		catch (Exception $e)
@@ -279,7 +283,15 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 			$this->assertEquals($expected, Kohana::exception_handler($e));
 			$view = ob_get_contents();
 			ob_clean();
-			$this->assertContains($expected_message, $view);
+
+			if ($test_complete_output)
+			{
+				$this->assertSame($expected_message, $view);
+			}
+			else
+			{
+				$this->assertContains($expected_message, $view);
+			}
 		}
 
 		Kohana::$is_cli = TRUE;

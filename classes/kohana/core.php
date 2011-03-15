@@ -1055,7 +1055,21 @@ class Kohana_Core {
 				Kohana::$log->write();
 			}
 
-			if (Kohana::$is_cli)
+			if (Kohana::$is_cli === TRUE)
+			{
+				// Just display the text of the exception
+				echo "\n{$error}\n";
+
+				return TRUE;
+			}
+
+			if ( ! headers_sent())
+			{
+				// Make sure the proper content type is sent with a 500 status
+				header('Content-Type: text/html; charset='.Kohana::$charset, TRUE, 500);
+			}
+
+			if (Request::$is_ajax === TRUE)
 			{
 				// Just display the text of the exception
 				echo "\n{$error}\n";
@@ -1090,12 +1104,6 @@ class Kohana_Core {
 						}
 					}
 				}
-			}
-
-			if ( ! headers_sent())
-			{
-				// Make sure the proper content type is sent with a 500 status
-				header('Content-Type: text/html; charset='.Kohana::$charset, TRUE, 500);
 			}
 
 			// Start an output buffer
