@@ -132,11 +132,11 @@ During the development of a project, the source of a submodule may change for an
 
 2. in your source tree's root run:
 
-    git submodule sync
+		git submodule sync
 
 3. run `git init` to update the project's repository configuration with the new URLs:
 
-	git submodule init
+		git submodule init
 
 And it's done, now you can continue pushing and pulling your submodules with no problems.
 
