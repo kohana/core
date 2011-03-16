@@ -86,6 +86,30 @@ class Kohana_RequestTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Tests that with an empty request, cli requests are routed properly
+	 *
+	 * @return null
+	 */
+	public function test_empty_cli_requests_route_properly()
+	{
+		$this->setEnvironment(
+			array(
+				'Kohana::$is_cli' => TRUE,
+				'Request::$initial' => NULL,
+			)
+		);
+
+		$route = new Route('(<controller>(/<action>))');
+		$route->defaults(array(
+			'controller' => 'welcome',
+			'action'     => 'index',
+		));
+
+		$request = Request::factory(TRUE, NULL, array($route));
+		$response = $request->execute();
+	}
+
+	/**
 	 * Provides the data for test_create()
 	 * @return  array
 	 */
