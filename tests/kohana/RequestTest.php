@@ -67,6 +67,25 @@ class Kohana_RequestTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Tests that an initial request won't use an external client
+	 * 
+	 * @expectedException HTTP_Exception_404
+	 *
+	 * @return null
+	 */
+	public function test_initial_request_only_loads_internal()
+	{
+		$this->setEnvironment(
+			array(
+				'Kohana::$is_cli' => FALSE,
+				'Request::$initial' => NULL,
+			)
+		);
+
+		$request = new Request('http://www.google.com/');
+	}
+
+	/**
 	 * Provides the data for test_create()
 	 * @return  array
 	 */
