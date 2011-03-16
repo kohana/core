@@ -17,7 +17,7 @@ return array(
 	'ip'            => ':field must be an ip address',
 	'matches'       => ':field must be the same as :param2',
 	'min_length'    => ':field must be at least :param2 characters long',
-	'max_length'    => ':field must be less than :param2 characters long',
+	'max_length'    => ':field must not exceed :param2 characters long',
 	'not_empty'     => ':field must not be empty',
 	'numeric'       => ':field must be numeric',
 	'phone'         => ':field must be a phone number',

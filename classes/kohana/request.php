@@ -66,6 +66,10 @@ class Kohana_Request implements HTTP_Request {
 					// Use the specified URI
 					$uri = $options['uri'];
 				}
+				elseif ($uri === TRUE)
+				{
+					$uri = '';
+				}
 
 				if (isset($options['method']))
 				{
@@ -729,9 +733,12 @@ class Kohana_Request implements HTTP_Request {
 
 		// Detect protocol (if present)
 		/**
+		 * Always default to an internal request if we don't have an initial.
+		 * This prevents the default index.php from being able to proxy external pages.
+		 * 
 		 * @todo   make this smarter, search for localhost etc
 		 */
-		if (strpos($uri, '://') === FALSE)
+		if (Request::$initial === NULL OR strpos($uri, '://') === FALSE)
 		{
 			// Remove trailing slashes from the URI
 			$uri = trim($uri, '/');
