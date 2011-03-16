@@ -115,7 +115,7 @@ class Kohana_Kohana_Exception extends Exception {
 					}
 				}
 			}
-			
+
 			// Create a text version of the exception
 			$error = Kohana_Exception::text($e);
 
@@ -127,7 +127,7 @@ class Kohana_Kohana_Exception extends Exception {
 				// Make sure the logs are written
 				Kohana::$log->write();
 			}
-			
+
 			if (Kohana::$is_cli)
 			{
 				// Just display the text of the exception
@@ -142,6 +142,14 @@ class Kohana_Kohana_Exception extends Exception {
 				$http_header_status = ($e instanceof HTTP_Exception) ? $code : 500;
 
 				header('Content-Type: text/html; charset='.Kohana::$charset, TRUE, $http_header_status);
+			}
+
+			if (Request::$current !== NULL AND Request::current()->is_ajax() === TRUE)
+			{
+				// Just display the text of the exception
+				echo "\n{$error}\n";
+
+				return TRUE;
 			}
 
 			// Start an output buffer
@@ -161,7 +169,7 @@ class Kohana_Kohana_Exception extends Exception {
 
 			// Display the contents of the output buffer
 			echo ob_get_clean();
-			
+
 			return TRUE;
 		}
 		catch (Exception $e)

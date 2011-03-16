@@ -284,7 +284,7 @@ class Kohana_Route {
 	 * can be a valid callback or anonymous function (php 5.3+). If you use a
 	 * callback or anonymous function, your method should return an array
 	 * containing the proper keys for the route. If you want the route to be
-	 * "reversable", you need to return a 'uri' key in the standard syntax.
+	 * "reversable", you need pass the route string as the third parameter.
 	 *
 	 *     $route = new Route(function($uri)
 	 *     {
@@ -294,9 +294,9 @@ class Kohana_Route {
 	 *     			'controller' => 'foobar',
 	 *     			'action' => $action,
 	 *     			'id' => $param,
-	 *     			'uri' => 'foo/bar/<id>.html
 	 *     		);
-	 *     	}
+	 *     	},
+	 *     	'foo/bar/<id>'
 	 *     });
 	 *
 	 * @param   mixed    route URI pattern or lambda/callback function
@@ -407,9 +407,6 @@ class Kohana_Route {
 				$params[$key] = $value;
 			}
 		}
-
-		$params['uri'] = $uri;
-		$params['route'] = $this;
 
 		return $params;
 	}

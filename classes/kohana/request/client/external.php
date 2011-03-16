@@ -248,14 +248,46 @@ class Kohana_Request_Client_External extends Request_Client {
 		// Reset the headers
 		Request_Client_External::$_processed_headers = array();
 
-		// Allow custom options to be set
-		$options = $this->_options;
-
 		// Set the request method
 		$options[CURLOPT_CUSTOMREQUEST] = $request->method();
 
-		// Set the request body
-		$options[CURLOPT_POSTFIELDS] = $request->body();
+		switch ($request->method())
+		{
+			case Request::POST:
+				// Set the request post fields
+				$options[CURLOPT_POSTFIELDS] = http_build_query($request->post(), NULL, '&');
+			break;
+			case Request::PUT:
+				// Create a temporary file to hold the body
+				$body = tmpfile();
+
+				// Write the request body into the temp file
+				fwrite($body, $request->body());
+
+				// Get the length of the content
+				$length = ftell($body);
+
+				// Rewind to the beginning of the file
+				fseek($body, 0);
+
+				// Set the request body
+				$options[CURLOPT_INFILE]     = $body;
+				$options[CURLOPT_INFILESIZE] = $length;
+			break;
+		}
+
+		// Process headers
+		if ($headers = $request->headers())
+		{
+			$http_headers = array();
+
+			foreach ($headers as $key => $value)
+			{
+				$http_headers[] = $key.': '.$value;
+			}
+
+			$options[CURLOPT_HTTPHEADER] = $http_headers;
+		}
 
 		// Process cookies
 		if ($cookies = $request->cookie())
@@ -265,6 +297,9 @@ class Kohana_Request_Client_External extends Request_Client {
 
 		// The transfer must always be returned
 		$options[CURLOPT_RETURNTRANSFER] = TRUE;
+
+		// Apply any additional options set to Request_Client_External::$_options
+		$options += $this->_options;
 
 		// Open a new remote connection
 		$curl = curl_init($request->uri());

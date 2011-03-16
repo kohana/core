@@ -15,18 +15,21 @@
 class Kohana_ExceptionTest extends Unittest_TestCase
 {
 	/**
-	 * Provides test data for testExceptionHandler()
-	 *
+	 * Provides test data for test_handler()
+	 * 
 	 * @return array
 	 */
 	public function provider_handler()
 	{
 		return array(
 			// $exception_type, $message, $is_cli, $expected
-			array('Kohana_Exception', 'hello, world!', TRUE, TRUE, 'hello, world!'),
-			array('ErrorException', 'hello, world!', TRUE, TRUE, 'hello, world!'),
+			array('Kohana_Exception', 'hello, world!', array('Kohana::$is_cli' => TRUE), FALSE, TRUE, "\nKohana_Exception [ 0 ]: hello, world! ~ SYSPATH/tests/kohana/ExceptionTest.php [ 60 ]\n", TRUE),
+			array('Kohana_Exception', 'hello, world!', array('Kohana::$is_cli' => FALSE), FALSE, TRUE, 'hello, world!', FALSE),
+			// # 3818
+			array('Kohana_Exception', 'hello, world!', array('Request::$current' => Request::factory()), TRUE, TRUE, "\nKohana_Exception [ 0 ]: hello, world! ~ SYSPATH/tests/kohana/ExceptionTest.php [ 60 ]\n", TRUE),
+			array('ErrorException', 'hello, world!', array('Kohana::$is_cli' => TRUE), FALSE, TRUE, 'hello, world!', FALSE),
 			// #3016
-			array('Kohana_Exception', '<hello, world!>', FALSE, TRUE, '&lt;hello, world!&gt;'),
+			array('Kohana_Exception', '<hello, world!>', array('Kohana::$is_cli' => FALSE), FALSE, TRUE, '&lt;hello, world!&gt;', FALSE),
 		);
 	}
 
@@ -39,14 +42,21 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 	 * @param boolean $exception_type    Exception type to throw
 	 * @param boolean $message           Message to pass to exception
 	 * @param boolean $is_cli            Use cli mode?
-	 * @param boolean $expected          Output for Kohana_Exception::handler
-	 * @param string  $expected_message  What to look for in the output string
+	 * @param boolean $expected          Output for Kohana::exception_handler
+	 * @param string  $expexcted_message What to look for in the output string
 	 */
-	public function teste_handler($exception_type, $message, $is_cli, $expected, $expected_message)
+	public function test_handler($exception_type, $message, $env, $ajax, $expected, $expected_message, $test_complete_output)
 	{
+		$this->setEnvironment($env);
+
+		if ($ajax)
+		{
+			$original_ajax = Request::$current->requested_with();
+			Request::$current->requested_with('xmlhttprequest');
+		}
+
 		try
 		{
-			Kohana::$is_cli = $is_cli;
 			throw new $exception_type($message);
 		}
 		catch (Exception $e)
@@ -55,10 +65,23 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 			$this->assertEquals($expected, Kohana_Exception::handler($e));
 			$view = ob_get_contents();
 			ob_clean();
-			$this->assertContains($expected_message, $view);
+
+			if ($test_complete_output)
+			{
+				$this->assertSame($expected_message, $view);
+			}
+			else
+			{
+				$this->assertContains($expected_message, $view);
+			}
 		}
 
 		Kohana::$is_cli = TRUE;
+
+		if ($ajax)
+		{
+			Request::$current->requested_with($original_ajax);
+		}
 	}
 
 	/**

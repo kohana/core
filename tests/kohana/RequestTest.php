@@ -15,6 +15,57 @@
  */
 class Kohana_RequestTest extends Unittest_TestCase
 {
+	public function test_initial()
+	{
+		$original = array(
+			'Kohana::$is_cli' => Kohana::$is_cli,
+			'Request::$initial' => Request::$initial,
+			'Request::$client_ip' => Request::$client_ip,
+			'Request::$user_agent' => Request::$user_agent,
+			'_SERVER' => $_SERVER,
+			'_GET' => $_GET,
+			'_POST' => $_POST,
+		);
+
+		$this->setEnvironment(array(
+			'Kohana::$is_cli' => FALSE,
+			'Request::$initial' => NULL,
+			'Request::$client_ip' => NULL,
+			'Request::$user_agent' => NULL,
+			'_SERVER' => array(
+				'HTTPS' => NULL,
+				'PATH_INFO' => '/',
+				'HTTP_REFERER' => 'http://example.com/',
+				'HTTP_USER_AGENT' => 'whatever (Mozilla 5.0/compatible)',
+				'REMOTE_ADDR' => '127.0.0.1',
+				'REQUEST_METHOD' => 'GET',
+				'HTTP_X_REQUESTED_WITH' => 'ajax-or-something',
+			),
+			'_GET' => array(),
+			'_POST' => array(),
+		));
+
+		$request = Request::factory();
+
+		$this->assertEquals(Request::$initial, $request);
+
+		$this->assertEquals(Request::$client_ip, '127.0.0.1');
+
+		$this->assertEquals(Request::$user_agent, 'whatever (Mozilla 5.0/compatible)');
+
+		$this->assertEquals($request->protocol(), 'http');
+
+		$this->assertEquals($request->referrer(), 'http://example.com/');
+
+		$this->assertEquals($request->requested_with(), 'ajax-or-something');
+
+		$this->assertEquals($request->query(), array());
+
+		$this->assertEquals($request->post(), array());
+
+		$this->setEnvironment($original);
+	}
+
 	/**
 	 * Provides the data for test_create()
 	 * @return  array
@@ -63,6 +114,12 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$this->assertArrayNotHasKey('directory', $params);
 		$this->assertArrayNotHasKey('uri', $params);
 		$this->assertArrayNotHasKey('route', $params);
+
+		$route = new Route('(<uri>)', array('uri' => '.+'));
+		$route->defaults(array('controller' => 'foobar', 'action' => 'index'));
+		$request = Request::factory('foobar', NULL, array($route));
+
+		$this->assertSame('foobar', $request->param('uri'));
 	}
 
 	/**
@@ -231,7 +288,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	{
 		/**
 		 * Sets up a mock cache object, asserts that:
-		 * 
+		 *
 		 *  1. The cache set() method gets called
 		 *  2. The cache get() method will return the response above when called
 		 */
@@ -327,7 +384,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_set_cache
-	 * 
+	 *
 	 * @return null
 	 */
 	public function test_set_cache($headers, $cache_control, $expected)
@@ -374,7 +431,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 * Tests the protocol() method
 	 *
 	 * @dataProvider provider_set_protocol
-	 * 
+	 *
 	 * @return null
 	 */
 	public function test_set_protocol($protocol, $expected)
@@ -390,4 +447,155 @@ class Kohana_RequestTest extends Unittest_TestCase
 		// Test the return value
 		$this->assertTrue($request instanceof $result);
 	}
-}
+
+	/**
+	 * Provides data for test_post_max_size_exceeded()
+	 * 
+	 * @return  array
+	 */
+	public function provider_post_max_size_exceeded()
+	{
+		// Get the post max size
+		$post_max_size = Num::bytes(ini_get('post_max_size'));
+
+		return array(
+			array(
+				$post_max_size+200000,
+				TRUE
+			),
+			array(
+				$post_max_size-20,
+				FALSE
+			),
+			array(
+				$post_max_size,
+				FALSE
+			)
+		);
+	}
+
+	/**
+	 * Tests the post_max_size_exceeded() method
+	 * 
+	 * @dataProvider provider_post_max_size_exceeded
+	 *
+	 * @param   int      content_length 
+	 * @param   bool     expected 
+	 * @return  void
+	 */
+	public function test_post_max_size_exceeded($content_length, $expected)
+	{
+		// Ensure the request method is set to POST
+		Request::$initial->method(HTTP_Request::POST);
+
+		// Set the content length
+		$_SERVER['CONTENT_LENGTH'] = $content_length;
+
+		// Test the post_max_size_exceeded() method
+		$this->assertSame(Request::post_max_size_exceeded(), $expected);
+	}
+
+	/**
+	 * Provides data for test_uri_only_trimed_on_internal()
+	 *
+	 * @return  array
+	 */
+	public function provider_uri_only_trimed_on_internal()
+	{
+		return array(
+			array(
+				new Request('http://www.google.com'),
+				'http://www.google.com'
+			),
+			array(
+				new Request('http://www.google.com/'),
+				'http://www.google.com/'
+			),
+			array(
+				new Request('foo/bar/'),
+				'foo/bar'
+			),
+			array(
+				new Request('foo/bar'),
+				'foo/bar'
+			)
+		);
+	}
+
+	/**
+	 * Tests that the uri supplied to Request is only trimed
+	 * for internal requests.
+	 * 
+	 * @dataProvider provider_uri_only_trimed_on_internal
+	 *
+	 * @return void
+	 */
+	public function test_uri_only_trimed_on_internal($request, $expected)
+	{
+		$this->assertSame($request->uri(), $expected);
+	}
+
+	/**
+	 * Data provider for test_options_set_to_external_client()
+	 *
+	 * @return  array
+	 */
+	public function provider_options_set_to_external_client()
+	{
+		return array(
+			array(
+				array(
+					CURLOPT_PROXYPORT   => 8080,
+					CURLOPT_PROXYTYPE   => CURLPROXY_HTTP,
+					CURLOPT_VERBOSE     => TRUE
+				),
+				array(
+					CURLOPT_PROXYPORT   => 8080,
+					CURLOPT_PROXYTYPE   => CURLPROXY_HTTP,
+					CURLOPT_VERBOSE     => TRUE
+				)
+			),
+			array(
+				array(
+					'proxyhost'         => 'http://localhost:8080',
+					'proxytype'         => HTTP_PROXY_HTTP,
+					'redirect'          => 2
+				),
+				array(
+					'proxyhost'         => 'http://localhost:8080',
+					'proxytype'         => HTTP_PROXY_HTTP,
+					'redirect'          => 2
+				)
+			)
+		);
+	}
+
+	/**
+	 * Test for Request_Client_External::options() to ensure options
+	 * can be set to the external client (for cURL and PECL_HTTP)
+	 *
+	 * @dataProvider provider_options_set_to_external_client
+	 * 
+	 * @param   array    settings 
+	 * @param   array    expected 
+	 * @return void
+	 */
+	public function test_options_set_to_external_client($settings, $expected)
+	{
+		$request = Request::factory('http://www.kohanaframework.org');
+		$request_client = $request->get_client();
+
+		// Test for empty array
+		$this->assertSame($request_client->options(), array());
+
+		// Test that set works as expected
+		$this->assertSame($request_client->options($settings), $request_client);
+
+		// Test that each setting is present and returned
+		foreach ($expected as $key => $value)
+		{
+			$this->assertSame($request_client->options($key), $value);
+		}
+	}
+
+} // End Kohana_RequestTest
