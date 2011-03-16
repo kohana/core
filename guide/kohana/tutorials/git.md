@@ -123,3 +123,21 @@ To remove a submodule that is no longer needed complete the following steps:
         git rm --cached modules/auth
 
 **Note:** Do not put a trailing slash at the end of path. If you put a trailing slash at the end of the command, it will fail.
+
+## Updating Remote Repository URL
+
+During the development of a project, the source of a submodule may change for any reason (you've created your own fork, the server URL changed, the repository’s name or path changed, etc…) and you’ll have to update those changes. To do so, you'll need to perform the following steps:
+
+1. edit the .gitmodules file, and change the URL for the submodules which changed.
+
+2. in your source tree’s root run:
+
+    git submodule sync
+
+3. run `git init` to update the project’s repository configuration with the new URLs:
+
+	git submodule init
+
+And it’s done, now you can continue pushing and pulling your submodules with no problems.
+
+Source: http://jtrancas.wordpress.com/2011/02/06/git-submodule-location/
