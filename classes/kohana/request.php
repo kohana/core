@@ -66,6 +66,10 @@ class Kohana_Request implements HTTP_Request {
 					// Use the specified URI
 					$uri = $options['uri'];
 				}
+				elseif ($uri === TRUE)
+				{
+					$uri = '';
+				}
 
 				if (isset($options['method']))
 				{
