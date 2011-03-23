@@ -1,4 +1,4 @@
-# Friendly Error Pages
+# Custom Error Pages
 
 By default Kohana 3 doesn't have a method to display friendly error pages like that
 seen in Kohana 2; In this short guide you will learn how it is done.
@@ -16,7 +16,7 @@ Our custom exception handler is self explanatory.
 
 		public static function handler(Exception $e)
 		{
-			if (Kohana::DEVELOPMENT === Kohana::$environment)
+			if (Kohana::$environment === Kohana::DEVELOPMENT)
 			{
 				parent::handler($e);
 			}
@@ -26,7 +26,7 @@ Our custom exception handler is self explanatory.
 				{
 					Kohana::$log->add(Log::ERROR, parent::text($e));
 
-					$attributes = array
+					$params = array
 					(
 						'action'  => 500,
 						'message' => rawurlencode($e->getMessage())
@@ -34,14 +34,17 @@ Our custom exception handler is self explanatory.
 
 					if ($e instanceof HTTP_Exception)
 					{
-						$attributes['action'] = $e->getCode();
+						$params['action'] = $e->getCode();
 					}
 
+					// Get the error uri
+					$uri = Route::get('error')->uri($params);
+
 					// Error sub-request.
-					echo Request::factory(Route::url('error', $attributes))
-					->execute()
-					->send_headers()
-					->body();
+					echo Request::factory($uri)
+						->execute()
+						->send_headers()
+						->body();
 				}
 				catch (Exception $e)
 				{
@@ -61,7 +64,7 @@ Our custom exception handler is self explanatory.
 If we are in the development environment then pass it off to Kohana otherwise:
 
 * Log the error
-* Set the route action and message attributes.
+* Set the route action and message parameters.
 * If a `HTTP_Exception` was thrown, then override the action with the error code.
 * Fire off an internal sub-request.
 
@@ -92,10 +95,10 @@ would display an error 500 page.
 	{
 		parent::before();
 
-		$this->template->page = URL::site(rawurldecode(Request::$instance->uri));
+		$this->template->page = rawurldecode(Request::$initial->uri());
 
 		// Internal request only!
-		if (Request::$instance !== Request::$current)
+		if ( ! $this->request->is_initial())
 		{
 			if ($message = rawurldecode($this->request->param('message')))
 			{
