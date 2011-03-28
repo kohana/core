@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Form helper class. Unless otherwise noted, all generated HTML will be made
  * safe using the [HTML::chars] method. This prevents against simple XSS
@@ -8,7 +8,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2010 Kohana Team
+ * @copyright  (c) 2007-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Form {
@@ -25,7 +25,7 @@ class Kohana_Form {
 	 *     // When "file" inputs are present, you must include the "enctype"
 	 *     echo Form::open(NULL, array('enctype' => 'multipart/form-data'));
 	 *
-	 * @param   string  form action, defaults to the current request URI
+	 * @param   mixed   form action, defaults to the current request URI, or [Request] class to use
 	 * @param   array   html attributes
 	 * @return  string
 	 * @uses    Request::instance
@@ -34,10 +34,10 @@ class Kohana_Form {
 	 */
 	public static function open($action = NULL, array $attributes = NULL)
 	{
-		if ($action === NULL)
+		if ($action instanceof Request)
 		{
 			// Use the current URI
-			$action = Request::current()->uri;
+			$action = $action->uri();
 		}
 
 		if ($action === '')
@@ -241,7 +241,7 @@ class Kohana_Form {
 	 *     echo Form::select('country', $countries, $country);
 	 *
 	 * [!!] Support for multiple selected options was added in v3.0.7.
-	 * 
+	 *
 	 * @param   string   input name
 	 * @param   array    available options
 	 * @param   mixed    selected option string, or an array of selected options

@@ -4,37 +4,131 @@
  * Unit tests for request class
  *
  * @group kohana
+ * @group kohana.request
  *
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_RequestTest extends Unittest_TestCase
 {
 	/**
-	 * Route::matches() should return false if the route doesn't match against a uri
+	 * Provides the data for test_create()
+	 * @return  array
+	 */
+	public function provider_create()
+	{
+		return array(
+			array('foo/bar', 'Request_Client_Internal'),
+			array('http://google.com', 'Request_Client_External'),
+		);
+	}
+
+	/**
+	 * Ensures the create class is created with the correct client
+	 *
+	 * @test
+	 * @dataProvider provider_create
+	 */
+	public function test_create($uri, $client_class)
+	{
+		$request = Request::factory($uri);
+
+		$this->assertInstanceOf($client_class, $request->get_client());
+	}
+
+	/**
+	 * Ensure that parameters can be read
 	 *
 	 * @test
 	 */
-	public function test_create()
+	public function test_param()
 	{
-		$request = Request::factory('foo/bar')->execute();
+		$uri = 'foo/bar/id';
+		$request = Request::factory($uri);
 
-		$this->assertEquals(200, $request->status);
-		$this->assertEquals('foo', $request->response);
+		$this->assertArrayHasKey('id', $request->param());
+		$this->assertArrayNotHasKey('foo', $request->param());
+		$this->assertEquals($request->uri(), $uri);
 
-		try
-		{
-			$request = new Request('bar/foo');
-			$request->execute();
-		}
-		catch (Exception $e)
-		{
-			$this->assertEquals(TRUE, $e instanceof ReflectionException);
-			$this->assertEquals('404', $request->status);
-		}
+		// Ensure the params do not contain contamination from controller, action, route, uri etc etc
+		$params = $request->param();
+
+		// Test for illegal components
+		$this->assertArrayNotHasKey('controller', $params);
+		$this->assertArrayNotHasKey('action', $params);
+		$this->assertArrayNotHasKey('directory', $params);
+		$this->assertArrayNotHasKey('uri', $params);
+		$this->assertArrayNotHasKey('route', $params);
+	}
+
+	/**
+	 * Provides data for Request::create_response()
+	 */
+	public function provider_create_response()
+	{
+		return array(
+			array('foo/bar', TRUE, TRUE),
+			array('foo/bar', FALSE, FALSE)
+		);
+	}
+
+	/**
+	 * Ensures a request creates an empty response, and binds correctly
+	 *
+	 * @test
+	 * @dataProvider  provider_create_response
+	 */
+	public function test_create_response($uri, $bind, $equality)
+	{
+		$request = Request::factory($uri);
+		$response = $request->create_response($bind);
+
+		$this->assertEquals(($request->response() === $response), $equality);
+	}
+
+	/**
+	 * Tests Request::response()
+	 *
+	 * @test
+	 */
+	public function test_response()
+	{
+		$request = Request::factory('foo/bar');
+		$response = $request->create_response(FALSE);
+
+		$this->assertEquals($request->response(), NULL);
+		$this->assertEquals(($request->response($response) === $request), TRUE);
+		$this->assertEquals(($request->response() === $response), TRUE);
+	}
+
+	/**
+	 * Tests Request::method()
+	 *
+	 * @test
+	 */
+	public function test_method()
+	{
+		$request = Request::factory('foo/bar');
+
+		$this->assertEquals($request->method(), 'GET');
+		$this->assertEquals(($request->method('post') === $request), TRUE);
+		$this->assertEquals(($request->method() === 'POST'), TRUE);
+	}
+
+	/**
+	 * Tests Request::route()
+	 *
+	 * @test
+	 */
+	public function test_route()
+	{
+		$request = Request::factory(''); // This should always match something, no matter what changes people make
+
+		$this->assertInstanceOf('Route', $request->route());
 	}
 
 	/**
@@ -46,60 +140,6 @@ class Kohana_RequestTest extends Unittest_TestCase
 	public function test_accept_type()
 	{
 		$this->assertEquals(array('*/*' => 1), Request::accept_type());
-	}
-
-	/**
-	 * Provides test data for test_instance()
-	 * 
-	 * @return array
-	 */
-	public function provider_instance()
-	{
-		return array(
-			// $route, $is_cli, $_server, $status, $response
-			array('foo/bar', TRUE, array(), 200, ''), // Shouldn't this be 'foo' ?
-			array('foo/foo', TRUE, array(), 200, ''), // Shouldn't this be a 404?
-			array(
-				'foo/bar',
-				FALSE,
-				array(
-					'REQUEST_METHOD' => 'get',
-					'HTTP_REFERER' => 'http://www.kohanaframework.org',
-					'HTTP_USER_AGENT' => 'Kohana Unit Test',
-					'REMOTE_ADDR' => '127.0.0.1',
-				), 200, ''), // Shouldn't this be 'foo' ?
-		);
-	}
-
-	/**
-	 * Tests Request::instance()
-	 *
-	 * @test
-	 * @dataProvider provider_instance
-	 * @covers Request::instance
-	 * @param boolean $value  Input for Kohana::sanitize
-	 * @param boolean $result Output for Kohana::sanitize
-	 */
-	public function test_instance($route, $is_cli, $server, $status, $response)
-	{
-		$this->setEnvironment(array(
-			'_SERVER'            => $server+array('argc' => $_SERVER['argc']),
-			'Kohana::$is_cli'    => $is_cli,
-			'Request::$instance' => NULL
-		));
-	
-		$request = Request::instance($route);
-
-		$this->assertEquals($status, $request->status);
-		$this->assertEquals($response, $request->response);
-		$this->assertEquals($route, $request->uri);
-
-		if ( ! $is_cli)
-		{
-			$this->assertEquals($server['REQUEST_METHOD'], Request::$method);
-			$this->assertEquals($server['HTTP_REFERER'], Request::$referrer);
-			$this->assertEquals($server['HTTP_USER_AGENT'], Request::$user_agent);
-		}
 	}
 
 	/**
@@ -179,13 +219,175 @@ class Kohana_RequestTest extends Unittest_TestCase
 			'Kohana::$is_cli'    => $is_cli,
 		));
 
-		$this->assertEquals(Request::instance($uri)->url($params, $protocol), $expected);
+		$this->assertEquals(Request::factory($uri)->url($params, $protocol), $expected);
 	}
-}
 
-class Controller_Foo extends Controller {
-	public function action_bar()
+	/**
+	 * Tests that request caching works
+	 *
+	 * @return null
+	 */
+	public function test_cache()
 	{
-		$this->request->response = 'foo';
+		/**
+		 * Sets up a mock cache object, asserts that:
+		 * 
+		 *  1. The cache set() method gets called
+		 *  2. The cache get() method will return the response above when called
+		 */
+		$cache = $this->getMock('Cache_File', array('get', 'set'), array(), 'Cache');
+		$cache->expects($this->once())
+			->method('set');
+
+		$foo = Request::factory('', $cache);
+		$response = $foo->create_response(TRUE);
+
+		$response->headers('Cache-Control', 'max-age=100');
+		$foo->response($response);
+		$foo->execute();
+
+		/**
+		 * Set up a mock response object to test with
+		 */
+		$response = $this->getMock('Response');
+		$response->expects($this->any())
+			->method('body')
+			->will($this->returnValue('Foo'));
+
+		$cache->expects($this->any())
+			->method('get')
+			->will($this->returnValue($response));
+
+		$foo = Request::factory('', $cache)->execute();
+		$this->assertSame('Foo', $foo->body());
+	}
+
+	/**
+	 * Data provider for test_set_cache
+	 *
+	 * @return array
+	 */
+	public function provider_set_cache()
+	{
+		return array(
+			array(
+				array('cache-control' => 'no-cache'),
+				array('no-cache' => NULL),
+				FALSE,
+			),
+			array(
+				array('cache-control' => 'no-store'),
+				array('no-store' => NULL),
+				FALSE,
+			),
+			array(
+				array('cache-control' => 'max-age=100'),
+				array('max-age' => '100'),
+				TRUE
+			),
+			array(
+				array('cache-control' => 'private'),
+				array('private' => NULL),
+				FALSE
+			),
+			array(
+				array('cache-control' => 'private, max-age=100'),
+				array('private' => NULL, 'max-age' => '100'),
+				FALSE
+			),
+			array(
+				array('cache-control' => 'private, s-maxage=100'),
+				array('private' => NULL, 's-maxage' => '100'),
+				TRUE
+			),
+			array(
+				array(
+					'expires' => date('m/d/Y', strtotime('-1 day')),
+				),
+				array(),
+				FALSE
+			),
+			array(
+				array(
+					'expires' => date('m/d/Y', strtotime('+1 day')),
+				),
+				array(),
+				TRUE
+			),
+			array(
+				array(),
+				array(),
+				TRUE
+			),
+		);
+	}
+
+	/**
+	 * Tests the set_cache() method
+	 *
+	 * @test
+	 * @dataProvider provider_set_cache
+	 * 
+	 * @return null
+	 */
+	public function test_set_cache($headers, $cache_control, $expected)
+	{
+		/**
+		 * Set up a mock response object to test with
+		 */
+		$response = $this->getMock('Response');
+		$response->expects($this->any())
+			->method('parse_cache_control')
+			->will($this->returnValue($cache_control));
+		$response->expects($this->any())
+			->method('headers')
+			->will($this->returnValue($headers));
+
+		$request = new Request_Client_Internal;
+		$this->assertEquals($request->set_cache($response), $expected);
+	}
+
+	/**
+	 * Data provider for test_set_protocol() test
+	 *
+	 * @return array
+	 */
+	public function provider_set_protocol()
+	{
+		return array(
+			array(
+				'http',
+				'http',
+			),
+			array(
+				'FTP',
+				'ftp',
+			),
+			array(
+				'hTTps',
+				'https',
+			),
+		);
+	}
+
+	/**
+	 * Tests the protocol() method
+	 *
+	 * @dataProvider provider_set_protocol
+	 * 
+	 * @return null
+	 */
+	public function test_set_protocol($protocol, $expected)
+	{
+		$request = Request::factory();
+
+		// Set the supplied protocol
+		$result = $request->protocol($protocol);
+
+		// Test the set value
+		$this->assertSame($request->protocol(), $expected);
+
+		// Test the return value
+		$this->assertTrue($request instanceof $result);
 	}
 }

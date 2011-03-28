@@ -8,14 +8,16 @@
  * @group kohana
  * @group kohana.core
  *
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_CoreTest extends Unittest_TestCase
 {
+
 	/**
 	 * Provides test data for test_sanitize()
 	 *
@@ -60,7 +62,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 		// EXT is manually appened to the _file name_, not passed as the extension
 		$path = Kohana::find_file('classes', $file = 'kohana/core'.EXT, FALSE);
 
-		$this->assertType('string', $path);
+		$this->assertInternalType('string', $path);
 
 		$this->assertStringEndsWith($file, $path);
 	}
@@ -90,7 +92,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 	{
 		$files = Kohana::list_files('config');
 
-		$this->assertType('array', $files);
+		$this->assertInternalType('array', $files);
 		$this->assertGreaterThan(3, count($files));
 
 		$this->assertSame(array(), Kohana::list_files('geshmuck'));
@@ -256,7 +258,6 @@ class Kohana_CoreTest extends Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_modules_sets_and_returns_valid_modules
-	 * @covers Kohana::modules
 	 * @param boolean $source   Input for Kohana::modules
 	 * @param boolean $expected Output for Kohana::modules
 	 */
@@ -264,7 +265,16 @@ class Kohana_CoreTest extends Unittest_TestCase
 	{
 		$modules = Kohana::modules();
 
-		$this->assertEquals($expected, Kohana::modules($source));
+		try
+		{
+			$this->assertEquals($expected, Kohana::modules($source));
+		}
+		catch(Exception $e)
+		{
+			Kohana::modules($modules);
+
+			throw $e;
+		}
 
 		Kohana::modules($modules);
 	}
@@ -281,7 +291,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 	{
 		$modules = Kohana::modules();
 
-		$this->assertType('array', $modules);
+		$this->assertInternalType('array', $modules);
 
 		$this->assertArrayHasKey('unittest', $modules);
 	}
@@ -298,7 +308,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 		$include_paths = Kohana::include_paths();
 		$modules       = Kohana::modules();
 
-		$this->assertType('array', $include_paths);
+		$this->assertInternalType('array', $include_paths);
 
 		// We must have at least 2 items in include paths (APP / SYS)
 		$this->assertGreaterThan(2, count($include_paths));
@@ -307,9 +317,10 @@ class Kohana_CoreTest extends Unittest_TestCase
 		$this->assertSame(APPPATH, reset($include_paths));
 		$this->assertSame(SYSPATH, end($include_paths));
 
-		foreach($modules as $module)
+		foreach ($modules as $module)
 		{
 			$this->assertContains($module, $include_paths);
 		}
 	}
 }
+

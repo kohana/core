@@ -10,7 +10,8 @@
  * @package    Kohana
  * @category   Http
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
+ * @since      3.1.0
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 abstract class Kohana_Http {
@@ -18,13 +19,18 @@ abstract class Kohana_Http {
 	/**
 	 * @var  The default protocol to use if it cannot be detected
 	 */
-	public static $protocal = 'HTTP/1.1';
+	public static $protocol = 'http';
+
+	/**
+	 * @var  The default protocol version to use if cannot be detected
+	 */
+	public static $version = '1.1';
 
 	/**
 	 * Parses a HTTP header string into an associative array
 	 *
-	 * @param   string   header string to parse
-	 * @return  [Kohana_Http_Header]
+	 * @param   string   $header_string  Header string to parse
+	 * @return  Http_Header
 	 */
 	public static function parse_header_string($header_string)
 	{
@@ -79,12 +85,11 @@ abstract class Kohana_Http {
 	 * Parses the the HTTP request headers and returns an array containing
 	 * key value pairs. This method is slow, but provides an accurate
 	 * representation of the HTTP request.
-	 * 
+	 *
 	 *      // Get http headers into the request
 	 *      $request->headers = Http::request_headers();
 	 *
-	 * @return  [Kohana_Http_Header]
-	 * @since   3.1.0
+	 * @return  Http_Header
 	 */
 	public static function request_headers()
 	{
@@ -95,7 +100,7 @@ abstract class Kohana_Http {
 			return new Http_Header(apache_request_headers());
 		}
 		// If the PECL HTTP tools are installed
-		else if (extension_loaded('http'))
+		elseif (extension_loaded('http'))
 		{
 			// Return the much faster method
 			return new Http_Header(http_get_request_headers());
@@ -105,7 +110,7 @@ abstract class Kohana_Http {
 		$headers = array();
 
 		// Parse the content type
-		if( ! empty($_SERVER['CONTENT_TYPE']))
+		if ( ! empty($_SERVER['CONTENT_TYPE']))
 		{
 			$headers['content-type'] = $_SERVER['CONTENT_TYPE'];
 		}
@@ -132,8 +137,24 @@ abstract class Kohana_Http {
 	}
 
 	/**
-	 * This is a static class
+	 * Processes an array of key value pairs and encodes
+	 * the values to meet RFC 3986
+	 *
+	 * @param   array   $params  Params
+	 * @return  string
 	 */
-	final private function __construct() {}
+	public static function www_form_urlencode(array $params = array())
+	{
+		if ( ! $params)
+			return;
 
+		$encoded = array();
+
+		foreach ($params as $key => $value)
+		{
+			$encoded[] = $key.'='.rawurlencode($value);
+		}
+
+		return implode('&', $encoded);
+	}
 } // End Kohana_Http

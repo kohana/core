@@ -4,14 +4,16 @@
  * Tests the Arr lib that's shipped with kohana
  *
  * @group kohana
+ * @group kohana.arr
  *
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_ArrTest extends Unittest_TestCase
+class Kohana_ArrTest extends Unittest_TestCase
 {
 	/**
 	 * Provides test data for test_callback()
@@ -357,6 +359,42 @@ Class Kohana_ArrTest extends Unittest_TestCase
 			$expected,
 			Arr::path($array, $path, $default, $delimiter)
 		);
+	}
+
+	/**
+	 * Provides test data for test_path()
+	 *
+	 * @return array
+	 */
+	public function provider_set_path()
+	{
+		return array(
+			// Tests returns normal values
+			array(array('foo' => 'bar'), array(), 'foo', 'bar'),
+			array(array('kohana' => array('is' => 'awesome')), array(), 'kohana.is', 'awesome'),
+			array(array('kohana' => array('is' => 'cool', 'and' => 'slow')),
+				  array('kohana' => array('is' => 'cool')), 'kohana.and', 'slow'),
+			// Custom delimiters
+			array(array('kohana' => array('is' => 'awesome')), array(), 'kohana/is', 'awesome', '/'),
+			// Ensures set_path() casts ints to actual integers for keys
+			array(array('foo' => array('bar')), array('foo' => array('test')), 'foo.0', 'bar'),
+		);
+	}
+
+	/**
+	 * Tests Arr::path()
+	 *
+	 * @test
+	 * @dataProvider provider_set_path
+	 * @param string  $path       The path to follow
+	 * @param boolean $expected   The expected value
+	 * @param string  $delimiter  The path delimiter
+	 */
+	public function test_set_path($expected, $array, $path, $value, $delimiter = NULL)
+	{
+		Arr::set_path($array, $path, $value, $delimiter);
+
+		$this->assertSame($expected, $array);
 	}
 
 	/**

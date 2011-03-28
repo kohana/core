@@ -8,7 +8,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2009-2010 Kohana Team
+ * @copyright  (c) 2009-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Profiler {
@@ -18,7 +18,9 @@ class Kohana_Profiler {
 	 */
 	public static $rollover = 1000;
 
-	// Collected benchmarks
+	/**
+	 * @var  array  collected benchmarks
+	 */
 	protected static $_marks = array();
 
 	/**

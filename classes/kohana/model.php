@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Models
  * @author     Kohana Team
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 abstract class Kohana_Model {
@@ -23,7 +23,7 @@ abstract class Kohana_Model {
 		// Add the model prefix
 		$class = 'Model_'.$name;
 
-		return new $class();
+		return new $class;
 	}
 
 } // End Model

@@ -9,13 +9,14 @@
  * @group kohana.cli
  *
  * @see CLI
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_CLITest extends Unittest_TestCase
+class Kohana_CLITest extends Unittest_TestCase
 {
 	
 	/**

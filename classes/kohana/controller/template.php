@@ -5,13 +5,13 @@
  * @package    Kohana
  * @category   Controller
  * @author     Kohana Team
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 abstract class Kohana_Controller_Template extends Controller {
 
 	/**
-	 * @var  string  page template
+	 * @var  View  page template
 	 */
 	public $template = 'template';
 
@@ -41,7 +41,7 @@ abstract class Kohana_Controller_Template extends Controller {
 	{
 		if ($this->auto_render === TRUE)
 		{
-			$this->response->body = $this->template;
+			$this->response->body($this->template->render());
 		}
 
 		return parent::after();

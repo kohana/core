@@ -6,13 +6,14 @@
  * @group kohana
  * @group kohana.validation
  *
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_ValidationTest extends Unittest_TestCase
+class Kohana_ValidationTest extends Unittest_TestCase
 {
 	/**
 	 * Tests Validation::factory()
@@ -60,7 +61,7 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 
 		$this->assertNotSame($validation, $copy);
 
-		foreach(array('_rules', '_bound', '_labels', '_empty_rules', '_errors') as $attribute)
+		foreach (array('_rules', '_bound', '_labels', '_empty_rules', '_errors') as $attribute)
 		{
 			// This is just an easy way to check that the attributes are identical
 			// Without hardcoding the expected values
@@ -234,6 +235,14 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 				FALSE,
 				array('foo' => '1.foo.is_string'),
 			),
+			// Test array rules use method as error name
+			array(
+				array('foo' => 'test'),
+				array('foo' => array(array(array('Valid', 'min_length'), array(':value', 10)))),
+				array(),
+				FALSE,
+				array('foo' => 'foo must be at least 10 characters long'),
+			),
 		);
 	}
 
@@ -325,18 +334,18 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 	 */
 	public function test_errors($array, $rules, $expected)
 	{
-		$Validation = Validation::factory($array);
+		$validation = Validation::factory($array);
 
-		foreach($rules as $field => $field_rules)
+		foreach ($rules as $field => $field_rules)
 		{
-			$Validation->rules($field, $field_rules);
+			$validation->rules($field, $field_rules);
 		}
 
-		$Validation->check();
+		$validation->check();
 
-		$this->assertSame($expected, $Validation->errors('Validation', FALSE));
+		$this->assertSame($expected, $validation->errors('Validation', FALSE));
 		// Should be able to get raw errors array
-		$this->assertAttributeSame($Validation->errors(NULL), '_errors', $Validation);
+		$this->assertAttributeSame($validation->errors(NULL), '_errors', $validation);
 	}
 
 	/**
@@ -443,5 +452,44 @@ Class Kohana_ValidationTest extends Unittest_TestCase
 		$expected = array('foo' => 'foo must equal one, two');
 
 		$this->assertSame($expected, $validation->errors('Validation', FALSE));
+	}
+
+	/**
+	 * Tests Validation::check()
+	 *
+	 * @test
+	 * @covers Validation::check
+	 */
+	public function test_data_stays_unaltered()
+	{
+		$validation = Validation::factory(array('foo' => 'bar'))
+			->rule('something', 'not_empty');
+
+		$before = $validation->as_array();
+		$validation->check();
+		$after = $validation->as_array();
+
+		$expected = array('foo' => 'bar');
+
+		$this->assertSame($expected, $before);
+		$this->assertSame($expected, $after);
+	}
+
+	/**
+	 * Tests Validation::errors()
+	 *
+	 * @test
+	 * @covers Validation::errors
+	 */
+	public function test_object_parameters_not_in_messages()
+	{
+		$validation = Validation::factory(array('foo' => 'foo'))
+			->rule('bar', 'matches', array(':validation', 'foo', ':field'));
+
+		$validation->check();
+		$errors = $validation->errors('validation');
+		$expected = array('bar' => 'bar must be the same as foo');
+
+		$this->assertSame($expected, $errors);
 	}
 }

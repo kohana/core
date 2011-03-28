@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Security
  * @author     Kohana Team
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Validation extends ArrayObject {
@@ -108,11 +108,20 @@ class Kohana_Validation extends ArrayObject {
 
 	/**
 	 * Overwrites or appends rules to a field. Each rule will be executed once.
-	 * All rules must be string names of functions method names.
+	 * All rules must be string names of functions method names. Parameters must
+	 * match the parameters of the callback function exactly
+	 *
+	 * Aliases you can use in callback parameters:
+	 * - :validation - the validation object
+	 * - :field - the field name
+	 * - :value - the value of the field
 	 *
 	 *     // The "username" must not be empty and have a minimum length of 4
 	 *     $validation->rule('username', 'not_empty')
-	 *                ->rule('username', 'min_length', array(4));
+	 *                ->rule('username', 'min_length', array('username', 4));
+	 *
+	 *     // The "password" field must match the "password_repeat" field
+	 *     $validation->rule('password', 'matches', array(':validation', 'password', 'password_repeat'));
 	 *
 	 * @param   string    field name
 	 * @param   callback  valid PHP callback
@@ -207,24 +216,19 @@ class Kohana_Validation extends ArrayObject {
 		// New data set
 		$data = $this->_errors = array();
 
+		// Store the original data because this class should not modify it post-validation
+		$original = $this->getArrayCopy();
+
 		// Get a list of the expected fields
-		$expected = array_keys($this->_labels);
+		$expected = Arr::merge(array_keys($original), array_keys($this->_labels));
 
 		// Import the rules locally
 		$rules     = $this->_rules;
 
 		foreach ($expected as $field)
 		{
-			if (isset($this[$field]))
-			{
-				// Use the submitted value
-				$data[$field] = $this[$field];
-			}
-			else
-			{
-				// No data exists for this field
-				$data[$field] = NULL;
-			}
+			// Use the submitted value or NULL if no data exists
+			$data[$field] = Arr::get($this, $field);
 
 			if (isset($rules[TRUE]))
 			{
@@ -249,7 +253,6 @@ class Kohana_Validation extends ArrayObject {
 		$this->bind(':validation', $this);
 
 		// Execute the rules
-
 		foreach ($rules as $field => $set)
 		{
 			// Get the field value
@@ -267,12 +270,6 @@ class Kohana_Validation extends ArrayObject {
 				// Rules are defined as array($rule, $params)
 				list($rule, $params) = $array;
 
-				if ( ! in_array($rule, $this->_empty_rules) AND ! Valid::not_empty($value))
-				{
-					// Skip this rule for empty fields
-					continue;
-				}
-
 				foreach ($params as $key => $param)
 				{
 					if (is_string($param) AND array_key_exists($param, $this->_bound))
@@ -282,9 +279,19 @@ class Kohana_Validation extends ArrayObject {
 					}
 				}
 
-				if (is_array($rule) OR ! is_string($rule))
+				// Default the error name to be the rule (except array and lambda rules)
+				$error_name = $rule;
+
+				if (is_array($rule))
 				{
-					// This is either a callback as an array or a lambda
+					// This is an array callback, the method name is the error name
+					$error_name = $rule[1];
+					$passed = call_user_func_array($rule, $params);
+				}
+				elseif ( ! is_string($rule))
+				{
+					// This is a lambda function, there is no error name (errors must be added manually)
+					$error_name = FALSE;
 					$passed = call_user_func_array($rule, $params);
 				}
 				elseif (method_exists('Valid', $rule))
@@ -315,16 +322,23 @@ class Kohana_Validation extends ArrayObject {
 					$passed = $method->invokeArgs(NULL, $params);
 				}
 
-				if ($passed === FALSE)
+				// Ignore return values from rules when the field is empty
+				if ( ! in_array($rule, $this->_empty_rules) AND ! Valid::not_empty($value))
+					continue;
+
+				if ($passed === FALSE AND $error_name !== FALSE)
 				{
 					// Add the rule to the errors
-					$this->error($field, $rule, $params);
+					$this->error($field, $error_name, $params);
 
 					// This field has an error, stop executing rules
 					break;
 				}
 			}
 		}
+
+		// Restore the data to its original form
+		$this->exchangeArray($original);
 
 		if (isset($benchmark))
 		{
@@ -403,7 +417,7 @@ class Kohana_Validation extends ArrayObject {
 			// Start the translation values list
 			$values = array(
 				':field' => $label,
-				':value' => $this[$field],
+				':value' => Arr::get($this, $field),
 			);
 
 			if (is_array($values[':value']))
@@ -420,6 +434,11 @@ class Kohana_Validation extends ArrayObject {
 					{
 						// All values must be strings
 						$value = implode(', ', Arr::flatten($value));
+					}
+					elseif (is_object($value))
+					{
+						// Objects cannot be used in message files
+						continue;
 					}
 
 					// Check if a label for this parameter exists

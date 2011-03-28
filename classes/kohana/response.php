@@ -7,11 +7,11 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaphp.com/license
  * @since      3.1.0
  */
-class Kohana_Response implements Serializable {
+class Kohana_Response implements Http_Response, Serializable {
 
 	/**
 	 * Factory method to create a new [Response]. Pass properties
@@ -23,8 +23,8 @@ class Kohana_Response implements Serializable {
 	 *      // Create a new response with headers
 	 *      $response = Response::factory(array('status' => 200));
 	 *
-	 * @param   array    setup the response object
-	 * @return  [Kohana_Response]
+	 * @param   array    $config Setup the response object
+	 * @return  Response
 	 */
 	public static function factory(array $config = array())
 	{
@@ -43,10 +43,10 @@ class Kohana_Response implements Serializable {
 	 *     );
 	 *
 	 *     // Create the cache control header, creates :
-	 *     // Cache-Control: max-age=3600, must-revalidate, public
-	 *     $response->headers['Cache-Control'] = Response::create_cache_control($cache_control);
+	 *     // cache-control: max-age=3600, must-revalidate, public
+	 *     $response->header['cache-control'] = Response::create_cache_control($cache_control);
 	 *
-	 * @param   array    cache_control parts to render
+	 * @param   array    $cache_control Cache_control parts to render
 	 * @return  string
 	 */
 	public static function create_cache_control(array $cache_control)
@@ -58,7 +58,7 @@ class Kohana_Response implements Serializable {
 		foreach ($cache_control as $key => $value)
 		{
 			// Create a cache control fragment
-			$parts[] = empty($value) ? $key : $key.'='.$value;
+			$parts[] = empty($value) ? $key : ($key.'='.$value);
 		}
 		// Return the rendered parts
 		return implode(', ', $parts);
@@ -69,42 +69,22 @@ class Kohana_Response implements Serializable {
 	 * header.
 	 *
 	 *     // Create the cache control header
-	 *     $response->headers['Cache-Control'] = 'max-age=3600, must-revalidate, public';
+	 *     $response->header['cache-control'] = 'max-age=3600, must-revalidate, public';
 	 *
 	 *     // Parse the cache control header
-	 *     if($cache_control = Request::parse_cache_control($response->headers))
+	 *     if ($cache_control = Request::parse_cache_control($response->header['cache-control']))
 	 *     {
 	 *          // Cache-Control header was found
 	 *          $maxage = $cache_control['max-age'];
 	 *     }
 	 *
-	 * @param   array    headers
-	 * @return  boolean|array
-	 * @since   3.1.0
+	 * @param   array   $cache_control Array of headers
+	 * @return  mixed
 	 */
-	public static function parse_cache_control(array $headers)
+	public static function parse_cache_control($cache_control)
 	{
-		// If there is no Cache-Control header
-		if ( ! isset($headers['Cache-Control']))
-		{
-			if (isset($headers['Expires']) and ($timestamp = strtotime($headers['Expires'])) !== FALSE)
-			{
-				// Return a parsed version of the Expires header
-				return Response::create_cache_control(array(
-					'max-age'          => $timestamp - time(),
-					'must-revalidate'  => NULL,
-					'public'           => NULL
-				));
-			}
-			else
-			{
-				// return
-				return FALSE;
-			}
-		}
-
 		// If no Cache-Control parts are detected
-		if ( (bool) preg_match_all('/(?<key>[a-z\-]+)=?(?<value>\w+)?/', $headers['Cache-Control'], $matches))
+		if ( (bool) preg_match_all('/(?<key>[a-z\-]+)=?(?<value>\w+)?/', $cache_control, $matches))
 		{
 			// Return combined cache-control key/value pairs
 			return array_combine($matches['key'], $matches['value']);
@@ -172,69 +152,98 @@ class Kohana_Response implements Serializable {
 	);
 
 	/**
-	 * @var  integer     the response http status
+	 * @var  integer     The response http status
 	 */
-	public $status = 200;
+	protected $_status = 200;
 
 	/**
-	 * @var  array       headers returned in the response
+	 * @var  Http_Header  Headers returned in the response
 	 */
-	public $headers = array();
+	protected $_header;
 
 	/**
-	 * @var  string      the response body
+	 * @var  string      The response body
 	 */
-	public $body = NULL;
+	protected $_body = '';
 
 	/**
-	 * @var  array       cookies to be returned in the response
+	 * @var  array       Cookies to be returned in the response
 	 */
 	protected $_cookies = array();
 
 	/**
+	 * @var  string      The response protocol
+	 */
+	protected $_protocol;
+
+	/**
 	 * Sets up the response object
 	 *
-	 * @param   array $config
+	 * @param   array $config Setup the response object
 	 * @return  void
 	 */
 	public function __construct(array $config = array())
 	{
+		$this->_header = new Http_Header(array());
+
 		foreach ($config as $key => $value)
 		{
 			if (property_exists($this, $key))
 			{
-				$this->$key = $value;
+				if ($key == '_header')
+				{
+					$this->headers($value);
+				}
+				else
+				{
+					$this->$key = $value;
+				}
 			}
-		}
-
-		// Add the default Content-Type header if required
-		$this->headers += array('Content-Type' => 'text/html; charset='.Kohana::$charset);
-
-		// Add the X-Powered-By header
-		if (Kohana::$expose)
-		{
-			$this->headers += array('X-Powered-By' => 'Kohana Framework '.Kohana::VERSION);
 		}
 	}
 
 	/**
 	 * Outputs the body when cast to string
 	 *
-	 * @return void
+	 * @return string
 	 */
 	public function __toString()
 	{
-		return (string) $this->body;
+		return $this->_body;
 	}
 
 	/**
-	 * Returns the body of the response
+	 * Gets or sets the body of the response
 	 *
-	 * @return  string
+	 * @return  mixed
 	 */
-	public function body()
+	public function body($content = NULL)
 	{
-		return (string) $this->body;
+		if ($content)
+		{
+			$this->_body = (string) $content;
+			return $this;
+		}
+
+		return $this->_body;
+	}
+
+	/**
+	 * Gets or sets the HTTP protocol. The standard protocol to use
+	 * is `HTTP/1.1`.
+	 *
+	 * @param   string   $protocol Protocol to set to the request/response
+	 * @return  mixed
+	 */
+	public function protocol($protocol = NULL)
+	{
+		if ($protocol)
+		{
+			$this->_protocol = $protocol;
+			return $this;
+		}
+
+		return $this->_protocol;
 	}
 
 	/**
@@ -247,18 +256,18 @@ class Kohana_Response implements Serializable {
 	 *      // Get the current status
 	 *      $status = $response->status();
 	 *
-	 * @param   integer  status to set to this response
-	 * @return  integer|self
+	 * @param   integer  $status Status to set to this response
+	 * @return  mixed
 	 */
 	public function status($status = NULL)
 	{
 		if ($status === NULL)
 		{
-			return $this->status;
+			return $this->_status;
 		}
-		else if (array_key_exists($status, Response::$messages))
+		elseif (array_key_exists($status, Response::$messages))
 		{
-			$this->status = (int) $status;
+			$this->_status = (int) $status;
 			return $this;
 		}
 		else
@@ -284,101 +293,106 @@ class Kohana_Response implements Serializable {
 	 *       // Set multiple headers
 	 *       $response->headers(array('Content-Type' => 'text/html', 'Cache-Control' => 'no-cache'));
 	 *
-	 * @param string $key
+	 * @param mixed $key
 	 * @param string $value
-	 * @return void
+	 * @return mixed
 	 */
 	public function headers($key = NULL, $value = NULL)
 	{
 		if ($key === NULL)
 		{
-			return $this->headers;
+			return $this->_header;
 		}
-		else if (is_array($key))
+		elseif (is_array($key))
 		{
-			$this->headers = $key;
+			$this->_header->exchangeArray($key);
 			return $this;
 		}
-		else if ($value === NULL)
+		elseif ($value === NULL)
 		{
-			return $this->headers[$key];
+			return Arr::get($this->_header, $key);
 		}
 		else
 		{
-			$this->headers[$key] = $value;
+			$this->_header[$key] = $value;
 			return $this;
 		}
 	}
 
 	/**
-	 * Sets a cookie to the response
+	 * Returns the length of the body for use with
+	 * content header
 	 *
-	 * @param   string   name
-	 * @param   string   value
-	 * @param   int      expiration
-	 * @return  self
+	 * @return  integer
 	 */
-	public function set_cookie($name, $value, $expiration = NULL)
+	public function content_length()
 	{
-		if ($expiration === NULL)
+		return strlen($this->_body);
+	}
+
+	/**
+	 * Set and get cookies values for this response.
+	 *
+	 * @param   mixed     cookie name, or array of cookie values
+	 * @param   string    value to set to cookie
+	 * @return  string
+	 * @return  [Request]
+	 */
+	public function cookie($key = NULL, $value = NULL)
+	{
+		if ($key === NULL)
+			return $this->_cookies;
+
+		if (is_array($key))
 		{
-			$expiration = Cookie::$expiration;
-		}
-		else if ($expiration !== 0)
-		{
-			$expiration += time();
+			reset($key);
+			while (list($_key, $_value) = each($key))
+			{
+				$this->cookie($_key, $_value, $expiration);
+			}
 		}
 
-		$this->_cookies[$name] = array(
-			'value'      => $value,
-			'expiration' => $expiration
-		);
+		if ( ! $value)
+			return Arr::get($this->_cookies, $key);
+		else
+		{
+			// Get the expiration value
+			$expiration = $expiration ? $expiration : Cookie::$expiration;
+
+			if ( ! is_array($value))
+			{
+				$value = array(
+					'value' => $value,
+					'expiration' => $expiration
+				);
+			}
+			elseif ( ! isset($value['expiration']))
+			{
+				$value['expiration'] = $expiration;
+			}
+
+			$this->_cookies[$key] = $value;
+		}
 
 		return $this;
-	}
-
-	/**
-	 * Returns a cookie by name
-	 *
-	 * @param   string $name
-	 * @param   string $default
-	 * @return  mixed
-	 */
-	public function get_cookie($name, $default = NULL)
-	{
-		return isset($this->_cookies[$name]) ? $this->_cookies[$name]['value'] : $default;
-	}
-
-	/**
-	 * Get all the cookies
-	 *
-	 * @return  array
-	 */
-	public function get_cookies()
-	{
-		return $this->_cookies;
 	}
 
 	/**
 	 * Deletes a cookie set to the response
 	 *
 	 * @param   string   name
-	 * @return  self
+	 * @return  Response
 	 */
 	public function delete_cookie($name)
 	{
-		if (isset($this->_cookies[$name]))
-		{
-			unset($this->_cookies[$name]);
-		}
-
+		unset($this->_cookies[$name]);
 		return $this;
 	}
 
 	/**
 	 * Deletes all cookies from this response
 	 *
-	 * @return  self
+	 * @return  Response
 	 */
 	public function delete_cookies()
 	{
@@ -389,7 +403,7 @@ class Kohana_Response implements Serializable {
 	/**
 	 * Sends the response status and all set headers.
 	 *
-	 * @return  $this
+	 * @return  Response
 	 */
 	public function send_headers()
 	{
@@ -403,18 +417,30 @@ class Kohana_Response implements Serializable {
 			else
 			{
 				// Default to using newer protocol
-				$protocol = 'HTTP/1.1';
+				$protocol = strtoupper(Http::$protocol).'/'.Http::$version;
+			}
+
+			// Default to text/html; charset=utf8 if no content type set
+			if ( ! $this->_header->offsetExists('content-type'))
+			{
+				$this->_header['content-type'] = Kohana::$content_type.'; charset='.Kohana::$charset;
+			}
+
+			// Add the X-Powered-By header
+			if (Kohana::$expose)
+			{
+				$this->_header['x-powered-by'] = 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
 			}
 
 			// HTTP status line
-			header($protocol.' '.$this->status.' '.Response::$messages[$this->status]);
+			header($protocol.' '.$this->_status.' '.Response::$messages[$this->_status]);
 
-			foreach ($this->headers as $name => $value)
+			foreach ($this->_header as $name => $value)
 			{
 				if (is_string($name))
 				{
 					// Combine the name and value to make a raw header
-					$value = "{$name}: {$value}";
+					$value = $name.': '.$value;
 				}
 
 				// Send the raw header
@@ -449,7 +475,7 @@ class Kohana_Response implements Serializable {
 	 *
 	 * Download generated content as a file:
 	 *
-	 *     $request->response = $content;
+	 *     $request->response($content);
 	 *     $request->send_file(TRUE, $filename);
 	 *
 	 * [!!] No further processing can be done after this method is called!
@@ -488,7 +514,7 @@ class Kohana_Response implements Serializable {
 			}
 
 			// Force the data to be rendered if
-			$file_data = (string) $this->response;
+			$file_data = (string) $this->_body;
 
 			// Get the content size
 			$size = strlen($file_data);
@@ -541,35 +567,35 @@ class Kohana_Response implements Serializable {
 
 		if ( ! empty($options['resumable']))
 		{
-			if($start > 0 OR $end < ($size - 1))
+			if ($start > 0 OR $end < ($size - 1))
 			{
 				// Partial Content
-				$this->status = 206;
+				$this->_status = 206;
 			}
 
 			// Range of bytes being sent
-			$this->headers['Content-Range'] = 'bytes '.$start.'-'.$end.'/'.$size;
-			$this->headers['Accept-Ranges'] = 'bytes';
+			$this->_header['content-range'] = 'bytes '.$start.'-'.$end.'/'.$size;
+			$this->_header['accept-ranges'] = 'bytes';
 		}
 
 		// Set the headers for a download
-		$this->headers['Content-Disposition'] = $disposition.'; filename="'.$download.'"';
-		$this->headers['Content-Type']        = $mime;
-		$this->headers['Content-Length']      = ($end - $start) + 1;
+		$this->_header['content-disposition'] = $disposition.'; filename="'.$download.'"';
+		$this->_header['content-type']        = $mime;
+		$this->_header['content-length']      = (string) (($end - $start) + 1);
 
 		if (Request::user_agent('browser') === 'Internet Explorer')
 		{
 			// Naturally, IE does not act like a real browser...
-			if (Request::$protocol === 'https')
+			if (Request::$initial->protocol() === 'https')
 			{
 				// http://support.microsoft.com/kb/316431
-				$this->headers['Pragma'] = $this->headers['Cache-Control'] = 'public';
+				$this->_header['pragma'] = $this->_header['cache-control'] = 'public';
 			}
 
 			if (version_compare(Request::user_agent('version'), '8.0', '>='))
 			{
 				// http://ajaxian.com/archives/ie-8-security
-				$this->headers['X-Content-Type-Options'] = 'nosniff';
+				$this->_header['x-content-type-options'] = 'nosniff';
 			}
 		}
 
@@ -632,7 +658,7 @@ class Kohana_Response implements Serializable {
 				if (is_object(Kohana::$log))
 				{
 					// Add this exception to the log
-					Kohana::$log->add(Kohana::ERROR, $error);
+					Kohana::$log->add(Log::ERROR, $error);
 
 					// Make sure the logs are written
 					Kohana::$log->write();
@@ -644,6 +670,192 @@ class Kohana_Response implements Serializable {
 
 		// Stop execution
 		exit;
+	}
+
+	/**
+	 * Renders the Http_Interaction to a string, producing
+	 *
+	 *  - Protocol
+	 *  - Headers
+	 *  - Body
+	 *
+	 * @return  string
+	 */
+	public function render()
+	{
+		if ( ! $this->_header->offsetExists('content-type'))
+		{
+			// Add the default Content-Type header if required
+			$this->_header['content-type'] = Kohana::$content_type.'; charset='.Kohana::$charset;
+		}
+
+		$content_length = $this->content_length();
+
+		// Set the content length for the body if required
+		if ($content_length > 0)
+		{
+			$this->_header['content-length'] = (string) $content_length;
+		}
+
+		// Prepare cookies
+		if ($this->_cookies)
+		{
+			if (extension_loaded('http'))
+			{
+				$this->_header['set-cookie'] = http_build_cookie($this->_cookies);
+			}
+			else
+			{
+				$cookies = array();
+
+				// Parse each
+				foreach ($this->_cookies as $key => $value)
+				{
+					$string = $key.'='.$value['value'].'; expires='.date('l, d M Y H:i:s T', $value['expiration']);
+					$cookies[] = $string;
+				}
+
+				// Create the cookie string
+				$this->_header['set-cookie'] = $cookies;
+			}
+		}
+
+		$output = $this->_protocol.' '.$this->_status.' '.Response::$messages[$this->_status]."\n";
+		$output .= (string) $this->_header;
+		$output .= $this->_body;
+
+		return $output;
+	}
+
+	/**
+	 * Generate ETag
+	 * Generates an ETag from the response ready to be returned
+	 *
+	 * @throws Kohana_Request_Exception
+	 * @return String Generated ETag
+	 */
+	public function generate_etag()
+	{
+	    if ($this->_body === NULL)
+		{
+			throw new Kohana_Request_Exception('No response yet associated with request - cannot auto generate resource ETag');
+		}
+
+		// Generate a unique hash for the response
+		return '"'.sha1($this->render()).'"';
+	}
+
+	/**
+	 * Check Cache
+	 * Checks the browser cache to see the response needs to be returned
+	 *
+	 * @param   string   $etag Resource ETag
+	 * @param   Request  $request The request to test against
+	 * @return  Response
+	 * @throws  Kohana_Request_Exception
+	 */
+	public function check_cache($etag = NULL, Request $request = NULL)
+	{
+		if ( ! $etag)
+		{
+			$etag = $this->generate_etag();
+		}
+
+		if ( ! $request)
+			throw new Kohana_Request_Exception('A Request object must be supplied with an etag for evaluation');
+
+		// Set the ETag header
+		$this->_header['etag'] = $etag;
+
+		// Add the Cache-Control header if it is not already set
+		// This allows etags to be used with max-age, etc
+		if ($this->_header->offsetExists('cache-control'))
+		{
+			if (is_array($this->_header['cache-control']))
+			{
+				$this->_header['cache-control'][] = new Http_Header_Value('must-revalidate');
+			}
+			else
+			{
+				$this->_header['cache-control'] = $this->_header['cache-control'].', must-revalidate';
+			}
+		}
+		else
+		{
+			$this->_header['cache-control'] = 'must-revalidate';
+		}
+
+		if ($request->headers('if-none-match') AND (string) $request->headers('if-none-match') === $etag)
+		{
+			// No need to send data again
+			$this->_status = 304;
+			$this->send_headers();
+
+			// Stop execution
+			exit;
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Serializes the object to json - handy if you
+	 * need to pass the response data to other
+	 * systems
+	 *
+	 * @param   array    array of data to serialize
+	 * @return  string
+	 * @throws  Kohana_Exception
+	 */
+	public function serialize(array $to_serialize = array())
+	{
+		// Serialize the class properties
+		$to_serialize += array
+		(
+			'_status'  => $this->_status,
+			'_header'  => $this->_header,
+			'_cookies' => $this->_cookies,
+			'_body'    => $this->_body
+		);
+
+		$serialized = serialize($to_serialize);
+
+		if (is_string($serialized))
+		{
+			return $string;
+		}
+		else
+		{
+			throw new Kohana_Exception('Unable to serialize object');
+		}
+	}
+
+	/**
+	 * JSON encoded object
+	 *
+	 * @param   string   json encoded object
+	 * @return  bool
+	 * @throws  Kohana_Exception
+	 */
+	public function unserialize($string)
+	{
+		// Unserialise object
+		$unserialized = unserialize($string);
+
+		// If failed
+		if ($unserialized === NULL)
+		{
+			// Throw exception
+			throw new Kohana_Exception('Unable to correctly unserialize string: :string', array(':string' => $string));
+		}
+
+		// Foreach key/value pair
+		foreach ($unserialized as $key => $value)
+		{
+			$this->$key = $value;
+		}
+
+		return TRUE;
 	}
 
 	/**
@@ -679,7 +891,7 @@ class Kohana_Response implements Serializable {
 		$start = 0;
 		$end = $size - 1;
 
-		if($range = $this->_parse_byte_range())
+		if ($range = $this->_parse_byte_range())
 		{
 			// We have a byte range from HTTP_RANGE
 			$start = $range[1];
@@ -705,128 +917,8 @@ class Kohana_Response implements Serializable {
 		$end = min(abs(intval($end)), $size - 1);
 
 		// Keep the start in bounds.
-		$start = $end < $start ? 0 : max($start, 0);
+		$start = ($end < $start) ? 0 : max($start, 0);
 
 		return array($start, $end);
 	}
-
-	/**
-	 * Generate ETag
-	 * Generates an ETag from the response ready to be returned
-	 *
-	 * @throws Kohana_Request_Exception
-	 * @return String Generated ETag
-	 */
-	public function generate_etag()
-	{
-	    if ($this->response === NULL)
-		{
-			throw new Kohana_Request_Exception('No response yet associated with request - cannot auto generate resource ETag');
-		}
-
-		// Generate a unique hash for the response
-		return '"'.sha1($this->body).'"';
-	}
-
-	/**
-	 * Check Cache
-	 * Checks the browser cache to see the response needs to be returned
-	 *
-	 * @param String Resource ETag
-	 * @throws Kohana_Request_Exception
-	 * @chainable
-	 */
-	public function check_cache($etag = null)
-	{
-		if (empty($etag))
-		{
-			$etag = $this->generate_etag();
-		}
-
-		// Set the ETag header
-		$this->headers['ETag'] = $etag;
-
-		// Add the Cache-Control header if it is not already set
-		// This allows etags to be used with Max-Age, etc
-		$this->headers += array(
-			'Cache-Control' => 'must-revalidate',
-		);
-
-		if (isset($_SERVER['HTTP_IF_NONE_MATCH']) AND $_SERVER['HTTP_IF_NONE_MATCH'] === $etag)
-		{
-			// No need to send data again
-			$this->status = 304;
-			$this->send_headers();
-
-			// Stop execution
-			exit;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Serializes the object to json - handy if you
-	 * need to pass the response data to other
-	 * systems
-	 *
-	 * @param   array    array of data to serialize
-	 * @return  string
-	 * @throws  Kohana_Exception
-	 */
-	public function serialize(array $toSerialize = array())
-	{
-		// Serialize the class properties
-		$toSerialize += array
-		(
-			'status'  => $this->status,
-			'headers' => $this->headers,
-			'cookies' => $this->_cookies,
-			'body'    => $this->body
-		);
-
-		$string = json_encode($toSerialize);
-
-		if (is_string($string))
-		{
-			return $string;
-		}
-		else
-		{
-			throw new Kohana_Exception('Unable to correctly encode object to json');
-		}
-	}
-
-	/**
-	 * JSON encoded object
-	 *
-	 * @param   string   json encoded object
-	 * @return  bool
-	 * @throws  Kohana_Exception
-	 */
-	public function unserialize($string)
-	{
-		// Unserialise object
-		$unserialized = json_decode($string);
-
-		// If failed
-		if ($unserialized === NULL)
-		{
-			// Throw exception
-			throw new Kohana_Exception('Unable to correctly decode object from json');
-		}
-
-		// Foreach key/value pair
-		foreach ($unserialized as $key => $value)
-		{
-			// If it belongs here
-			if (property_exists($this, $key))
-			{
-				// Apply it
-				$this->$key = $value;
-			}
-		}
-
-		return TRUE;
-	}
-}
+} // End Kohana_Response

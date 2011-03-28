@@ -5,19 +5,21 @@
  * @package    Kohana
  * @category   Logging
  * @author     Kohana Team
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Log_File extends Kohana_Log_Writer {
+class Kohana_Log_File extends Log_Writer {
 
-	// Directory to place log files in
+	/**
+	 * @var  string  Directory to place log files in
+	 */
 	protected $_directory;
 
 	/**
 	 * Creates a new file logger. Checks that the directory exists and
 	 * is writable.
 	 *
-	 *     $writer = new Kohana_Log_File($directory);
+	 *     $writer = new Log_File($directory);
 	 *
 	 * @param   string  log directory
 	 * @return  void
@@ -82,13 +84,11 @@ class Kohana_Log_File extends Kohana_Log_Writer {
 			chmod($filename, 0666);
 		}
 
-		// Set the log line format
-		$format = 'time --- type: body';
-
 		foreach ($messages as $message)
 		{
 			// Write each message into the log file
-			file_put_contents($filename, PHP_EOL.strtr($format, $message), FILE_APPEND);
+			// Format: time --- level: body
+			file_put_contents($filename, PHP_EOL.$message['time'].' --- '.$this->_log_levels[$message['level']].': '.$message['body'], FILE_APPEND);
 		}
 	}
 

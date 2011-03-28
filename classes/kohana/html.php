@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * HTML helper class. Provides generic methods for generating various HTML
  * tags and making output HTML safe.
@@ -6,7 +6,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2010 Kohana Team
+ * @copyright  (c) 2007-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_HTML {
@@ -88,16 +88,17 @@ class Kohana_HTML {
 	 *
 	 *     echo HTML::anchor('/user/profile', 'My Profile');
 	 *
-	 * @param   string  URL or URI string
-	 * @param   string  link text
-	 * @param   array   HTML anchor attributes
-	 * @param   string  use a specific protocol
+	 * @param   string   URL or URI string
+	 * @param   string   link text
+	 * @param   array    HTML anchor attributes
+	 * @param   mixed    protocol to pass to URL::base()
+	 * @param   boolean  include the index page
 	 * @return  string
 	 * @uses    URL::base
 	 * @uses    URL::site
 	 * @uses    HTML::attributes
 	 */
-	public static function anchor($uri, $title = NULL, array $attributes = NULL, $protocol = NULL)
+	public static function anchor($uri, $title = NULL, array $attributes = NULL, $protocol = NULL, $index = FALSE)
 	{
 		if ($title === NULL)
 		{
@@ -108,7 +109,7 @@ class Kohana_HTML {
 		if ($uri === '')
 		{
 			// Only use the base URL
-			$uri = URL::base(FALSE, $protocol);
+			$uri = URL::base($protocol, $index);
 		}
 		else
 		{
@@ -123,7 +124,7 @@ class Kohana_HTML {
 			elseif ($uri[0] !== '#')
 			{
 				// Make the URI absolute for non-id anchors
-				$uri = URL::site($uri, $protocol);
+				$uri = URL::site($uri, $protocol, $index);
 			}
 		}
 
@@ -142,12 +143,13 @@ class Kohana_HTML {
 	 * @param   string  name of file to link to
 	 * @param   string  link text
 	 * @param   array   HTML anchor attributes
-	 * @param   string  non-default protocol, eg: ftp
+	 * @param   mixed    protocol to pass to URL::base()
+	 * @param   boolean  include the index page
 	 * @return  string
 	 * @uses    URL::base
 	 * @uses    HTML::attributes
 	 */
-	public static function file_anchor($file, $title = NULL, array $attributes = NULL, $protocol = NULL)
+	public static function file_anchor($file, $title = NULL, array $attributes = NULL, $protocol = NULL, $index = FALSE)
 	{
 		if ($title === NULL)
 		{
@@ -156,7 +158,7 @@ class Kohana_HTML {
 		}
 
 		// Add the file link to the attributes
-		$attributes['href'] = URL::base(FALSE, $protocol).$file;
+		$attributes['href'] = URL::base($protocol, $index).$file;
 
 		return '<a'.HTML::attributes($attributes).'>'.$title.'</a>';
 	}
@@ -247,19 +249,20 @@ class Kohana_HTML {
 	 *
 	 *     echo HTML::style('media/css/screen.css');
 	 *
-	 * @param   string  file name
-	 * @param   array   default attributes
+	 * @param   string   file name
+	 * @param   array    default attributes
+	 * @param   mixed    protocol to pass to URL::base()
 	 * @param   boolean  include the index page
 	 * @return  string
 	 * @uses    URL::base
 	 * @uses    HTML::attributes
 	 */
-	public static function style($file, array $attributes = NULL, $index = FALSE)
+	public static function style($file, array $attributes = NULL, $protocol = NULL, $index = FALSE)
 	{
 		if (strpos($file, '://') === FALSE)
 		{
 			// Add the base URL
-			$file = URL::base($index).$file;
+			$file = URL::base($protocol, $index).$file;
 		}
 
 		// Set the stylesheet link
@@ -281,17 +284,18 @@ class Kohana_HTML {
 	 *
 	 * @param   string   file name
 	 * @param   array    default attributes
+	 * @param   mixed    protocol to pass to URL::base()
 	 * @param   boolean  include the index page
 	 * @return  string
 	 * @uses    URL::base
 	 * @uses    HTML::attributes
 	 */
-	public static function script($file, array $attributes = NULL, $index = FALSE)
+	public static function script($file, array $attributes = NULL, $protocol = NULL, $index = FALSE)
 	{
 		if (strpos($file, '://') === FALSE)
 		{
 			// Add the base URL
-			$file = URL::base($index).$file;
+			$file = URL::base($protocol, $index).$file;
 		}
 
 		// Set the script link
@@ -310,16 +314,18 @@ class Kohana_HTML {
 	 *
 	 * @param   string   file name
 	 * @param   array    default attributes
+	 * @param   mixed    protocol to pass to URL::base()
+	 * @param   boolean  include the index page
 	 * @return  string
 	 * @uses    URL::base
 	 * @uses    HTML::attributes
 	 */
-	public static function image($file, array $attributes = NULL, $index = FALSE)
+	public static function image($file, array $attributes = NULL, $protocol = NULL, $index = FALSE)
 	{
 		if (strpos($file, '://') === FALSE)
 		{
 			// Add the base URL
-			$file = URL::base($index).$file;
+			$file = URL::base($protocol, $index).$file;
 		}
 
 		// Add the image link
@@ -362,6 +368,12 @@ class Kohana_HTML {
 			{
 				// Skip attributes that have NULL values
 				continue;
+			}
+
+			if (is_int($key))
+			{
+				// Assume non-associative keys are mirrored attributes
+				$key = $value;
 			}
 
 			// Add the attribute value

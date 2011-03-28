@@ -19,19 +19,19 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2007-2010 Kohana Team
+ * @copyright  (c) 2007-2011 Kohana Team
  * @copyright  (c) 2005 Harry Fuecks
  * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
  */
 class Kohana_UTF8 {
 
 	/**
-	 * @var  boolean  does the server support UTF-8 natively?
+	 * @var  boolean  Does the server support UTF-8 natively?
 	 */
 	public static $server_utf8 = NULL;
 
 	/**
-	 * @var  array  list of called methods
+	 * @var  array  List of called methods that have had their required file included.
 	 */
 	public static $called = array();
 

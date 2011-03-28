@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * A list of mime types. Our list is generally more complete and accurate than
  * the operating system MIME list.
@@ -17,6 +17,7 @@ return array
 	'aif'   => array('audio/x-aiff'),
 	'aifc'  => array('audio/x-aiff'),
 	'aiff'  => array('audio/x-aiff'),
+	'amf'   => array('application/x-amf'),
 	'asf'   => array('video/x-ms-asf'),
 	'asr'   => array('video/x-ms-asf'),
 	'asx'   => array('video/x-ms-asf'),

@@ -13,7 +13,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2009-2010 Kohana Team
+ * @copyright  (c) 2009-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  * @uses       Kohana::cache
  */
@@ -29,7 +29,9 @@ class Kohana_Fragment {
 	 */
 	public static $i18n = FALSE;
 
-	// List of buffer => cache key
+	/**
+	 * @var  array  list of buffer => cache key
+	 */
 	protected static $_caches = array();
 
 	/**

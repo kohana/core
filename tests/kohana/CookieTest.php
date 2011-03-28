@@ -4,14 +4,16 @@
  * Tests the cookie class
  *
  * @group kohana
+ * @group kohana.cookie
  *
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_CookieTest extends Unittest_TestCase
+class Kohana_CookieTest extends Unittest_TestCase
 {
 
 	protected $_default_salt = 'AdaoidadnA£ASDNadnaoiwdnawd';
@@ -71,7 +73,7 @@ Class Kohana_CookieTest extends Unittest_TestCase
 	 */
 	public function provider_get()
 	{
-		// setUp is called after the provider so we need to specify a 
+		// setUp is called after the provider so we need to specify a
 		// salt here in order to use it in the provider
 		Cookie::$salt = $this->_default_salt;
 
@@ -96,7 +98,9 @@ Class Kohana_CookieTest extends Unittest_TestCase
 	{
 		// Force $_COOKIE
 		if ($key !== NULL)
+		{
 			$_COOKIE[$key] = $value;
+		}
 
 		$this->assertSame($expected, cookie::get($key));
 	}

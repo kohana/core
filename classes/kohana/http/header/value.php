@@ -10,20 +10,21 @@
  * @category   Http
  * @author     Kohana Team
  * @since      3.1.0
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 class Kohana_Http_Header_Value {
 
 	/**
-	 * @var     float    the default quality header property value
+	 * @var     float    The default quality header property value
 	 */
 	public static $default_quality = 1.0;
 
 	/**
 	 * Detects and returns key/value pairs
 	 *
-	 * @param   string   string to parse
+	 * @param   string   $string String to parse
+	 * @param   string   $separator
 	 * @return  array
 	 */
 	public static function parse_key_value($string, $separator = '=')
@@ -58,11 +59,20 @@ class Kohana_Http_Header_Value {
 	/**
 	 * Builds the header field
 	 *
-	 * @param   string|array   value string|values
+	 * @param   mixed    value  configuration array passed
+	 * @param   boolean  no_parse  skip parsing of the string (i.e. user-agent)
 	 * @throws  Kohana_Http_Exception
 	 */
-	public function __construct($value)
+	public function __construct($value, $no_parse = FALSE)
 	{
+		// If no parse is set, set the value and get out of here (user-agent)
+		if ($no_parse)
+		{
+			$this->key = NULL;
+			$this->value = $value;
+			return;
+		}
+
 		// If configuration array passed
 		if (is_array($value))
 		{
@@ -79,7 +89,7 @@ class Kohana_Http_Header_Value {
 
 		}
 		// If value is a string
-		else if (is_string($value))
+		elseif (is_string($value))
 		{
 			// Detect properties
 			if (strpos($value, ';') !== FALSE)
@@ -119,15 +129,15 @@ class Kohana_Http_Header_Value {
 		// Unrecognised value type
 		else
 		{
-			throw new Kohana_Http_Exception(__METHOD__.' unknown header value type: :type. array or string allowed.', array(':type' => gettype($value)));
+			throw new Http_Exception_500(__METHOD__.' unknown header value type: :type. array or string allowed.', array(':type' => gettype($value)));
 		}
 	}
 
 	/**
 	 * Provides direct access to the key of this header value
 	 *
-	 * @param   string   key value to set
-	 * @return  voic|string|self
+	 * @param   string   $key  Key value to set
+	 * @return  mixed
 	 */
 	public function key($key = NULL)
 	{
@@ -145,8 +155,8 @@ class Kohana_Http_Header_Value {
 	/**
 	 * Provides direct access to the value of this header value
 	 *
-	 * @param   string   value to set
-	 * @return  string|self
+	 * @param   string   $value Value to set
+	 * @return  mixed
 	 */
 	public function value($value = NULL)
 	{
@@ -164,12 +174,12 @@ class Kohana_Http_Header_Value {
 	/**
 	 * Provides direct access to the properties of this header value
 	 *
-	 * @param   array    properties to set to this value
-	 * @return  array
+	 * @param   array    $properties Properties to set to this value
+	 * @return  mixed
 	 */
-	public function properties(array $properties = NULL)
+	public function properties(array $properties = array())
 	{
-		if ($properties === NULL)
+		if ( ! $properties)
 		{
 			return $this->properties;
 		}
@@ -191,14 +201,14 @@ class Kohana_Http_Header_Value {
 	public function __toString()
 	{
 
-		$string = ($this->key !== NULL) ? $this->key.'='.$this->value : $this->value;
+		$string = ($this->key !== NULL) ? ($this->key.'='.$this->value) : $this->value;
 
 		if ($this->properties)
 		{
 			$props = array($string);
 			foreach ($this->properties as $k => $v)
 			{
-				$props[] = is_int($k) ? $v : $k.'='.$v;
+				$props[] = is_int($k) ? $v : ($k.'='.$v);
 			}
 			$string = implode('; ', $props);
 		}

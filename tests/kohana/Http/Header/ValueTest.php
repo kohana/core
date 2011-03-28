@@ -6,15 +6,17 @@
  * @group kohana
  * @group kohana.http
  * @group kohana.http.header
+ * @group kohana.http.header.value
  *
  * @see CLI
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2009 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaphp.com/license
  */
-Class Kohana_HTTP_Header_ValueTest extends Unittest_TestCase
+class Kohana_HTTP_Header_ValueTest extends Unittest_TestCase
 {
 	/**
 	 * If the header value is composed of a key value pair then the parser
@@ -88,11 +90,11 @@ Class Kohana_HTTP_Header_ValueTest extends Unittest_TestCase
 	}
 	/**
 	 * If the constructor is passed a value of type other than string|array then it should
-	 * throw a Kohana_HTTP_Header_Exception
+	 * throw a Http_Exception_500
 	 *
 	 * @test
 	 * @dataProvider provider_constructor_throws_exception_if_header_value_type_not_allowed
-	 * @expectedException Kohana_HTTP_Exception
+	 * @expectedException Http_Exception_500
 	 * @param mixed The header value to pass to the constructor
 	 */
 	public function test_constructor_throws_exception_if_header_value_type_not_allowed($header)

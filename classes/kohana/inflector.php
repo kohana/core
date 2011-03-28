@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Inflector helper class. Inflection is changing the form of a word based on
  * the context it is used in. For example, changing a word into a plural form.
@@ -8,16 +8,24 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2010 Kohana Team
+ * @copyright  (c) 2007-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Inflector {
 
-	// Cached inflections
+	/**
+	 * @var  array  cached inflections
+	 */
 	protected static $cache = array();
 
-	// Uncountable and irregular words
+	/**
+	 * @var  array  uncountable words
+	 */
 	protected static $uncountable;
+
+	/**
+	 * @var  array  irregular words
+	 */
 	protected static $irregular;
 
 	/**
@@ -190,7 +198,7 @@ class Kohana_Inflector {
 		}
 
 		// Convert to uppsecase if nessasary
-		if($is_uppercase)
+		if ($is_uppercase)
 		{
 			$str = strtoupper($str);
 		}

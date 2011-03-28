@@ -1,11 +1,11 @@
-<?php defined('SYSPATH') or die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Array helper.
  *
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2010 Kohana Team
+ * @copyright  (c) 2007-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Arr {
@@ -188,6 +188,49 @@ class Kohana_Arr {
 
 		// Unable to find the value requested
 		return $default;
+	}
+
+	/**
+	* Set a value on an array by path.
+	*
+	* @see Arr::path()
+	* @param array   $array     Array to update
+	* @param string  $path      Path
+	* @param mixed   $value     Value to set
+	* @param string  $delimiter Path delimiter
+	*/
+	public static function set_path( & $array, $path, $value, $delimiter = NULL)
+	{
+		if ( ! $delimiter)
+		{
+			// Use the default delimiter
+			$delimiter = Arr::$delimiter;
+		}
+
+		// Split the keys by delimiter
+		$keys = explode($delimiter, $path);
+
+		// Set current $array to inner-most array path
+		while (count($keys) > 1)
+		{
+			$key = array_shift($keys);
+
+			if (ctype_digit($key))
+			{
+				// Make the key an integer
+				$key = (int) $key;
+			}
+
+			if ( ! isset($array[$key]))
+			{
+				$array[$key] = array();
+			}
+
+			$array = & $array[$key];
+		}
+
+		// Set key on inner-most array
+		$array[array_shift($keys)] = $value;
 	}
 
 	/**

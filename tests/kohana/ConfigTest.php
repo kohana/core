@@ -4,15 +4,17 @@
  * Tests the Config lib that's shipped with kohana
  *
  * @group kohana
+ * @group kohana.config
  *
- * @package    Unittest
+ * @package    Kohana
+ * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
  * @author     Matt Button <matthew@sigswitch.com>
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-Class Kohana_ConfigTest extends Unittest_TestCase
+class Kohana_ConfigTest extends Unittest_TestCase
 {
 
 	/**
@@ -20,11 +22,11 @@ Class Kohana_ConfigTest extends Unittest_TestCase
 	 * no readers attached
 	 *
 	 * @test
-	 * @covers Kohana_Config
+	 * @covers Config
 	 */
 	public function test_initially_there_are_no_sources()
 	{
-		$config = new Kohana_Config;
+		$config = new Config;
 
 		$this->assertAttributeSame(array(), '_sources', $config);
 	}
@@ -34,12 +36,12 @@ Class Kohana_ConfigTest extends Unittest_TestCase
 	 * adds the specified reader to the config object
 	 *
 	 * @test
-	 * @covers Kohana_Config::attach
+	 * @covers Config::attach
 	 */
 	public function test_attach_adds_reader_and_returns_this()
 	{
-		$config = new Kohana_Config;
-		$reader = $this->getMock('Kohana_Config_Reader');
+		$config = new Config;
+		$reader = $this->getMock('Config_Reader');
 
 		$this->assertSame($config, $config->attach($reader));
 
@@ -51,14 +53,14 @@ Class Kohana_ConfigTest extends Unittest_TestCase
 	 * should prepend the reader to the front of the readers queue
 	 *
 	 * @test
-	 * @covers Kohana_Config::attach
+	 * @covers Config::attach
 	 */
 	public function test_attach_adds_reader_to_front_of_queue()
 	{
-		$config  = new Kohana_Config;
+		$config  = new Config;
 
-		$reader1 = $this->getMock('Kohana_Config_Reader');
-		$reader2 = $this->getMock('Kohana_Config_Reader');
+		$reader1 = $this->getMock('Config_Reader');
+		$reader2 = $this->getMock('Config_Reader');
 
 		$config->attach($reader1);
 		$config->attach($reader2);
@@ -68,7 +70,7 @@ Class Kohana_ConfigTest extends Unittest_TestCase
 		$this->assertAttributeSame(array($reader2, $reader1), '_sources', $config);
 
 		// Now we test using the second parameter
-		$config = new Kohana_Config;
+		$config = new Config;
 
 		$config->attach($reader1);
 		$config->attach($reader2, TRUE);
@@ -81,13 +83,13 @@ Class Kohana_ConfigTest extends Unittest_TestCase
 	 * phpunit to append the reader rather than prepend
 	 *
 	 * @test
-	 * @covers Kohana_Config::attach
+	 * @covers Config::attach
 	 */
 	public function test_attach_can_add_reader_to_end_of_queue()
 	{
-		$config  = new Kohana_Config;
-		$reader1 = $this->getMock('Kohana_Config_Reader');
-		$reader2 = $this->getMock('Kohana_Config_Reader');
+		$config  = new Config;
+		$reader1 = $this->getMock('Config_Reader');
+		$reader2 = $this->getMock('Config_Reader');
 
 		$config->attach($reader1);
 		$config->attach($reader2, FALSE);
@@ -99,19 +101,19 @@ Class Kohana_ConfigTest extends Unittest_TestCase
 	 * Calling detach() on a config object should remove it from the queue of readers
 	 *
 	 * @test
-	 * @covers Kohana_Config::detach
+	 * @covers Config::detach
 	 */
 	public function test_detach_removes_reader_and_returns_this()
 	{
-		$config  = new Kohana_Config;
+		$config  = new Config;
 
 		// Due to the way phpunit mock generator works if you try and mock a class
 		// that has already been used then it just re-uses the first's name
-		//
+
 		// To get around this we have to specify a totally random name for the second mock object
-		$reader1 = $this->getMock('Kohana_Config_Reader');
-		$reader2 = $this->getMock('Kohana_Config_Reader', array(), array(), 'MY_AWESOME_READER');
-		
+		$reader1 = $this->getMock('Config_Reader');
+		$reader2 = $this->getMock('Config_Reader', array(), array(), 'MY_AWESOME_READER');
+
 		$config->attach($reader1);
 		$config->attach($reader2);
 
@@ -129,12 +131,12 @@ Class Kohana_ConfigTest extends Unittest_TestCase
 	 * detach() should return $this even if the specified reader does not exist
 	 *
 	 * @test
-	 * @covers Kohana_Config::detach
+	 * @covers Config::detach
 	 */
 	public function test_detach_returns_this_even_when_reader_dnx()
 	{
-		$config = new Kohana_Config;
-		$reader = $this->getMock('Kohana_Config_Reader');
+		$config = new Config;
+		$reader = $this->getMock('Config_Reader');
 
 		$this->assertSame($config, $config->detach($reader));
 	}
@@ -142,9 +144,9 @@ Class Kohana_ConfigTest extends Unittest_TestCase
 	/**
 	 * If load() is called and there are no readers present then it should throw
 	 * a kohana exception
-	 * 
+	 *
 	 * @test
-	 * @covers Kohana_Config::load
+	 * @covers Config::load
 	 * @expectedException Kohana_Exception
 	 */
 	public function test_load_throws_exception_if_there_are_no_sources()
@@ -191,7 +193,7 @@ Class Kohana_ConfigTest extends Unittest_TestCase
 	 * of the stack is overriden by config at the top
 	 *
 	 * @test
-	 * @covers Kohana_Config::load
+	 * @covers Config::load
 	 */
 	public function test_config_is_loaded_from_top_to_bottom_of_stack()
 	{
@@ -238,7 +240,7 @@ Class Kohana_ConfigTest extends Unittest_TestCase
 	 * a group is requested more than once the first instance should be returned
 	 *
 	 * @test
-	 * @covers Kohana_Config::load
+	 * @covers Config::load
 	 */
 	public function test_load_reuses_config_groups()
 	{

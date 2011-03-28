@@ -6,7 +6,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2009-2010 Kohana Team
+ * @copyright  (c) 2009-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Num {
@@ -134,7 +134,7 @@ class Kohana_Num {
 	 */
 	public static function round($value, $precision = 0, $mode = self::ROUND_HALF_UP, $native = true)
 	{
-		if (version_compare(PHP_VERSION, '5.3', '>=') && $native)
+		if (version_compare(PHP_VERSION, '5.3', '>=') AND $native)
 		{
 			return round($value, $precision, $mode);
 		}
@@ -166,7 +166,7 @@ class Kohana_Num {
 							// Round up if the integer is odd and the round mode is set to even
 							// or the integer is even and the round mode is set to odd.
 							// Any other instance round down.
-							$up = (!!(floor($value * $factor) & 1) === ($mode === self::ROUND_HALF_EVEN));
+							$up = ( ! ( ! (floor($value * $factor) & 1)) === ($mode === self::ROUND_HALF_EVEN));
 						}
 
 						if ($up)
@@ -205,7 +205,7 @@ class Kohana_Num {
 	public static function bytes($size)
 	{
 		// Prepare the size
-		$size = trim((string) $size);
+		$size = trim( (string) $size);
 
 		// Construct an OR list of byte units for the regex
 		$accepted = implode('|', array_keys(Num::$byte_units));

@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2009 Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 class Kohana_Debug {
@@ -15,7 +15,7 @@ class Kohana_Debug {
 	 * variables, each wrapped in a "pre" tag:
 	 *
 	 *     // Displays the type and value of each variable
-	 *     echo Debug::debug($foo, $bar, $baz);
+	 *     echo Debug::vars($foo, $bar, $baz);
 	 *
 	 * @param   mixed   variable to debug
 	 * @param   ...
@@ -204,7 +204,7 @@ class Kohana_Debug {
 					if ($key[0] === "\x00")
 					{
 						// Determine if the access is protected or protected
-						$access = '<small>'.($key[1] === '*' ? 'protected' : 'private').'</small>';
+						$access = '<small>'.(($key[1] === '*') ? 'protected' : 'private').'</small>';
 
 						// Remove the access level from the variable name
 						$key = substr($key, strrpos($key, "\x00") + 1);

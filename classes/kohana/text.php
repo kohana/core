@@ -1,11 +1,11 @@
-<?php defined('SYSPATH') or die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
  * Text helper class. Provides simple methods for working with text.
  *
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2010 Kohana Team
+ * @copyright  (c) 2007-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Text {
@@ -476,7 +476,7 @@ class Kohana_Text {
 		}
 
 		// Determine unit to use
-		if (($power = array_search((string) $force_unit, $units)) === FALSE)
+		if (($power = array_search( (string) $force_unit, $units)) === FALSE)
 		{
 			$power = ($bytes > 0) ? floor(log($bytes, $mod)) : 0;
 		}
