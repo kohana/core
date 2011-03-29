@@ -68,7 +68,7 @@ class Kohana_Config {
 	}
 
 	/**
-	 * Load a configuration group. 	Searches all the config sources, merging all the 
+	 * Load a configuration group. Searches all the config sources, merging all the 
 	 * directives found into a single config group.  Any changes made to the config 
 	 * in this group will be mirrored across all writable sources.  
 	 *
@@ -101,7 +101,10 @@ class Kohana_Config {
 		{
 			if ($source instanceof Kohana_Config_Reader)
 			{
-				$config = Arr::merge($config, $source->load($group));
+				if ($source_config = $source->load($group))
+				{
+					$config = Arr::merge($config, $source_config);
+				}
 			}
 		}
 
