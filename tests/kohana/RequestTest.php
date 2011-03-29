@@ -585,7 +585,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function provider_options_set_to_external_client()
 	{
-		return array(
+		$provider = array(
 			array(
 				array(
 					CURLOPT_PROXYPORT   => 8080,
@@ -596,21 +596,27 @@ class Kohana_RequestTest extends Unittest_TestCase
 					CURLOPT_PROXYPORT   => 8080,
 					CURLOPT_PROXYTYPE   => CURLPROXY_HTTP,
 					CURLOPT_VERBOSE     => TRUE
-				)
-			),
-			array(
-				array(
-					'proxyhost'         => 'http://localhost:8080',
-					'proxytype'         => HTTP_PROXY_HTTP,
-					'redirect'          => 2
-				),
-				array(
-					'proxyhost'         => 'http://localhost:8080',
-					'proxytype'         => HTTP_PROXY_HTTP,
-					'redirect'          => 2
 				)
 			)
 		);
+
+		if (extension_loaded('http'))
+		{
+			$provider[] = array(
+				array(
+					'proxyhost'         => 'http://localhost:8080',
+					'proxytype'         => HTTP_PROXY_HTTP,
+					'redirect'          => 2
+				),
+				array(
+					'proxyhost'         => 'http://localhost:8080',
+					'proxytype'         => HTTP_PROXY_HTTP,
+					'redirect'          => 2
+				)
+			);
+		}
+
+		return $provider;
 	}
 
 	/**
