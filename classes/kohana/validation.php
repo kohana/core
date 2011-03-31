@@ -323,6 +323,12 @@ class Kohana_Validation extends ArrayObject {
 
 					// Call $Class::$method($this[$field], $param, ...) with Reflection
 					$passed = $method->invokeArgs(NULL, $params);
+
+					if (strtolower($class) == 'valid')
+					{
+						// Calling a Valid member method statically; set $error_name for default rules
+						$error_name = $rule;
+					}
 				}
 
 				// Ignore return values from rules when the field is empty

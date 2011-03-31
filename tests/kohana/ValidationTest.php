@@ -182,6 +182,16 @@ class Kohana_ValidationTest extends Unittest_TestCase
 				array(),
 			),
 			array(
+				array('foo' => ''),
+				// Test static Valid calls
+				array('foo' => array(array('Valid::not_empty'))),
+				array(),
+				FALSE,
+				array(
+					'foo' => 'foo must not be empty',
+				),
+			),
+			array(
 				array('unit' => 'test'),
 				array(
 					'foo'  => array(array('not_empty', NULL)),
