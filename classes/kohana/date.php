@@ -579,8 +579,9 @@ class Kohana_Date {
 	 *     $time = Date::formatted_time('5 minutes ago');
 	 *
 	 * @see     http://php.net/manual/en/datetime.construct.php
-	 * @param   string  datetime_str     datetime string
-	 * @param   string  timestamp_format timestamp format
+	 * @param   string  datetime string
+	 * @param   string  timestamp format
+	 * @param   string  timezone identifier
 	 * @return  string
 	 */
 	public static function formatted_time($datetime_str = 'now', $timestamp_format = NULL, $timezone = NULL)
@@ -588,9 +589,13 @@ class Kohana_Date {
 		$timestamp_format = ($timestamp_format == NULL) ? Date::$timestamp_format : $timestamp_format;
 		$timezone         = ($timezone === NULL) ? Date::$timezone : $timezone;
 
-		$time = new DateTime($datetime_str, new DateTimeZone(
-			$timezone ? $timezone : date_default_timezone_get()
-		));
+		$tz   = new DateTimeZone($timezone ? $timezone : date_default_timezone_get());
+		$time = new DateTime($datetime_str, $tz);
+
+		if ($time->getTimeZone()->getName() !== $tz->getName())
+		{
+			$time->setTimeZone($tz);
+		}
 
 		return $time->format($timestamp_format);
 	}
