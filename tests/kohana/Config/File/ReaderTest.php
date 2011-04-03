@@ -88,6 +88,6 @@ Class Kohana_Config_File_ReaderTest extends Kohana_Unittest_TestCase {
 		// actual output.  Therefore to increase compatability we just 
 		// check that we've got an array and that it's not empty
 		$this->assertNotSame(array(), $values);
-		$this->assertType('array',    $values);
+		$this->assertInternalType('array',    $values);
 	}
 }
