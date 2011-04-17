@@ -41,7 +41,7 @@ class Kohana_ExceptionTest extends Kohana_Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_constructor
-	 * @covers Kohana_Kohana_Exception::__construct
+	 * @covers Kohana_Exception::__construct
 	 * @param array             $arguments          Arguments
 	 * @param string            $expected_message   Value from getMessage()
 	 * @param integer|string    $expected_code      Value from getCode()
