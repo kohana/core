@@ -205,8 +205,27 @@ class Kohana_Request_Client_External extends Request_Client {
 		// Set cookies
 		$http_request->setCookies($request->cookie());
 
-		// Set body
-		$http_request->setBody($request->body());
+		// Resolve the HTTP request type
+		switch ($http_request->getMethod())
+		{
+			// If POST, apply the post fields
+			case HTTPRequest::METH_POST:
+				$http_request->setPostFields($request->post());
+			break;
+			// If PUT, apply the data according the to data set,
+			// post fields take precedence over body
+			case HTTPRequest::METH_PUT:
+				if ($post = $request->post())
+				{
+					$http_request->setPutData(http_build_query($post, NULL, '&'));
+					$http_request->setContentType('application/x-www-form-urlencoded');
+				}
+				else
+				{
+					$http_request->setPutData($request->body());
+				}
+			break;
+		}
 
 		try
 		{
@@ -361,12 +380,26 @@ class Kohana_Request_Client_External extends Request_Client {
 			$request->headers('cookie', http_build_query($cookies, NULL, '; '));
 		}
 
+		// Resolve the request body, POST fields take precedence
+		if ($post = $request->post())
+		{
+			$body = http_build_query($post, NULL, '&');
+			$request->headers('content-type', 'application/x-www-form-urlencoded');
+		}
+		else
+		{
+			$body = $request->body();
+		}
+
+		// Set the content length
+		$request->headers('content-length', strlen($body));
+
 		// Create the context
 		$options = array(
 			$request->protocol() => array(
 				'method'     => $request->method(),
 				'header'     => (string) $request->headers(),
-				'content'    => $request->body(),
+				'content'    => $body,
 				'user-agent' => 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')'
 			)
 		);

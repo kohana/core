@@ -67,6 +67,49 @@ class Kohana_RequestTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Tests that an initial request won't use an external client
+	 * 
+	 * @expectedException HTTP_Exception_404
+	 *
+	 * @return null
+	 */
+	public function test_initial_request_only_loads_internal()
+	{
+		$this->setEnvironment(
+			array(
+				'Kohana::$is_cli' => FALSE,
+				'Request::$initial' => NULL,
+			)
+		);
+
+		$request = new Request('http://www.google.com/');
+	}
+
+	/**
+	 * Tests that with an empty request, cli requests are routed properly
+	 *
+	 * @return null
+	 */
+	public function test_empty_cli_requests_route_properly()
+	{
+		$this->setEnvironment(
+			array(
+				'Kohana::$is_cli' => TRUE,
+				'Request::$initial' => NULL,
+			)
+		);
+
+		$route = new Route('(<controller>(/<action>))');
+		$route->defaults(array(
+			'controller' => 'welcome',
+			'action'     => 'index',
+		));
+
+		$request = Request::factory(TRUE, NULL, array($route));
+		$response = $request->execute();
+	}
+
+	/**
 	 * Provides the data for test_create()
 	 * @return  array
 	 */
@@ -542,7 +585,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function provider_options_set_to_external_client()
 	{
-		return array(
+		$provider = array(
 			array(
 				array(
 					CURLOPT_PROXYPORT   => 8080,
@@ -553,21 +596,27 @@ class Kohana_RequestTest extends Unittest_TestCase
 					CURLOPT_PROXYPORT   => 8080,
 					CURLOPT_PROXYTYPE   => CURLPROXY_HTTP,
 					CURLOPT_VERBOSE     => TRUE
-				)
-			),
-			array(
-				array(
-					'proxyhost'         => 'http://localhost:8080',
-					'proxytype'         => HTTP_PROXY_HTTP,
-					'redirect'          => 2
-				),
-				array(
-					'proxyhost'         => 'http://localhost:8080',
-					'proxytype'         => HTTP_PROXY_HTTP,
-					'redirect'          => 2
 				)
 			)
 		);
+
+		if (extension_loaded('http'))
+		{
+			$provider[] = array(
+				array(
+					'proxyhost'         => 'http://localhost:8080',
+					'proxytype'         => HTTP_PROXY_HTTP,
+					'redirect'          => 2
+				),
+				array(
+					'proxyhost'         => 'http://localhost:8080',
+					'proxytype'         => HTTP_PROXY_HTTP,
+					'redirect'          => 2
+				)
+			);
+		}
+
+		return $provider;
 	}
 
 	/**
