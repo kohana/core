@@ -15,6 +15,56 @@
 class Kohana_ExceptionTest extends Unittest_TestCase
 {
 	/**
+	 * Provides test data for test_constructor()
+	 *
+	 * @return array
+	 */
+	public function provider_constructor()
+	{
+		return array(
+			array(array(''), '', 0),
+			array(array(':a'), ':a', 0),
+
+			array(array(':a', NULL), ':a', 0),
+			array(array(':a', array()), ':a', 0),
+			array(array(':a', array(':a' => 'b')), 'b', 0),
+			array(array(':a :b', array(':a' => 'c', ':b' => 'd')), 'c d', 0),
+
+			array(array(':a', NULL, 5), ':a', 5),
+			// #3927
+			array(array(':a', NULL, 'b'), ':a', 'b'),
+		);
+	}
+
+	/**
+	 * Tests Kohana_Kohana_Exception::__construct()
+	 *
+	 * @test
+	 * @dataProvider provider_constructor
+	 * @covers Kohana_Kohana_Exception::__construct
+	 * @param array             $arguments          Arguments
+	 * @param string            $expected_message   Value from getMessage()
+	 * @param integer|string    $expected_code      Value from getCode()
+	 */
+	public function test_constructor($arguments, $expected_message, $expected_code)
+	{
+		switch (count($arguments))
+		{
+			case 1:
+				$exception = new Kohana_Exception(reset($arguments));
+			break;
+			case 2:
+				$exception = new Kohana_Exception(reset($arguments), next($arguments));
+			break;
+			default:
+				$exception = new Kohana_Exception(reset($arguments), next($arguments), next($arguments));
+		}
+
+		$this->assertSame($expected_code, $exception->getCode());
+		$this->assertSame($expected_message, $exception->getMessage());
+	}
+
+	/**
 	 * Provides test data for test_handler()
 	 * 
 	 * @return array
@@ -23,10 +73,10 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 	{
 		return array(
 			// $exception_type, $message, $is_cli, $expected
-			array('Kohana_Exception', 'hello, world!', array('Kohana::$is_cli' => TRUE), FALSE, TRUE, "\nKohana_Exception [ 0 ]: hello, world! ~ SYSPATH/tests/kohana/ExceptionTest.php [ 60 ]\n", TRUE),
+			array('Kohana_Exception', 'hello, world!', array('Kohana::$is_cli' => TRUE), FALSE, TRUE, "\nKohana_Exception [ 0 ]: hello, world! ~ SYSPATH/tests/kohana/ExceptionTest.php [ 110 ]\n", TRUE),
 			array('Kohana_Exception', 'hello, world!', array('Kohana::$is_cli' => FALSE), FALSE, TRUE, 'hello, world!', FALSE),
 			// # 3818
-			array('Kohana_Exception', 'hello, world!', array('Request::$current' => Request::factory()), TRUE, TRUE, "\nKohana_Exception [ 0 ]: hello, world! ~ SYSPATH/tests/kohana/ExceptionTest.php [ 60 ]\n", TRUE),
+			array('Kohana_Exception', 'hello, world!', array('Request::$current' => Request::factory()), TRUE, TRUE, "\nKohana_Exception [ 0 ]: hello, world! ~ SYSPATH/tests/kohana/ExceptionTest.php [ 110 ]\n", TRUE),
 			array('ErrorException', 'hello, world!', array('Kohana::$is_cli' => TRUE), FALSE, TRUE, 'hello, world!', FALSE),
 			// #3016
 			array('Kohana_Exception', '<hello, world!>', array('Kohana::$is_cli' => FALSE), FALSE, TRUE, '&lt;hello, world!&gt;', FALSE),
