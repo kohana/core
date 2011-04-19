@@ -239,65 +239,6 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for test_exception_handler()
-	 * 
-	 * @return array
-	 */
-	public function provider_exception_handler()
-	{
-		return array(
-			// $exception_type, $message, $is_cli, $expected
-			array('Kohana_Exception', 'hello, world!', array('Kohana::$is_cli' => TRUE), TRUE, "\nKohana_Exception [ 0 ]: hello, world! ~ SYSPATH/tests/kohana/CoreTest.php [ 278 ]\n", TRUE),
-			array('Kohana_Exception', 'hello, world!', array('Kohana::$is_cli' => FALSE), TRUE, 'hello, world!', FALSE),
-			// # 3818
-			array('Kohana_Exception', 'hello, world!', array('Request::$is_ajax' => TRUE), TRUE, "\nKohana_Exception [ 0 ]: hello, world! ~ SYSPATH/tests/kohana/CoreTest.php [ 278 ]\n", TRUE),
-			array('ErrorException', 'hello, world!', array('Kohana::$is_cli' => TRUE), TRUE, 'hello, world!', FALSE),
-			// #3016
-			array('Kohana_Exception', '<hello, world!>', array('Kohana::$is_cli' => FALSE), TRUE, '&lt;hello, world!&gt;', FALSE),
-		);
-	}
-
-	/**
-	 * Tests Kohana::exception_handler()
-	 *
-	 * @test
-	 * @dataProvider provider_exception_handler
-	 * @covers Kohana::exception_handler
-	 * @param boolean $exception_type    Exception type to throw
-	 * @param boolean $message           Message to pass to exception
-	 * @param boolean $is_cli            Use cli mode?
-	 * @param boolean $expected          Output for Kohana::exception_handler
-	 * @param string  $expexcted_message What to look for in the output string
-	 */
-	public function test_exception_handler($exception_type, $message, $env, $expected, $expected_message, $test_complete_output)
-	{
-		$this->setEnvironment($env);
-
-		try
-		{
-			throw new $exception_type($message);
-		}
-		catch (Exception $e)
-		{
-			ob_start();
-			$this->assertEquals($expected, Kohana::exception_handler($e));
-			$view = ob_get_contents();
-			ob_clean();
-
-			if ($test_complete_output)
-			{
-				$this->assertSame($expected_message, $view);
-			}
-			else
-			{
-				$this->assertContains($expected_message, $view);
-			}
-		}
-
-		Kohana::$is_cli = TRUE;
-	}
-
-	/**
 	 * Provides test data for test_debug()
 	 * 
 	 * @return array
