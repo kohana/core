@@ -1060,7 +1060,7 @@ class Kohana_Core {
 				// Just display the text of the exception
 				echo "\n{$error}\n";
 
-				return TRUE;
+				exit(1);
 			}
 
 			if ( ! headers_sent())
@@ -1074,7 +1074,7 @@ class Kohana_Core {
 				// Just display the text of the exception
 				echo "\n{$error}\n";
 
-				return TRUE;
+				exit(1);
 			}
 
 			// Get the exception backtrace
@@ -1115,7 +1115,7 @@ class Kohana_Core {
 			// Display the contents of the output buffer
 			echo ob_get_clean();
 
-			return TRUE;
+			exit(1);
 		}
 		catch (Exception $e)
 		{
