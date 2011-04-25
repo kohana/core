@@ -38,7 +38,7 @@ Our custom exception handler is self explanatory.
 					}
 
 					// Error sub-request.
-					echo Request::factory(Route::url('error', $attributes))
+					echo Request::factory(Route::get('error')->uri($attributes))
 					->execute()
 					->send_headers()
 					->body();
@@ -92,10 +92,10 @@ would display an error 500 page.
 	{
 		parent::before();
 
-		$this->template->page = URL::site(rawurldecode(Request::$instance->uri));
+		$this->template->page = URL::site(rawurldecode(Request::$initial->uri()));
 
 		// Internal request only!
-		if (Request::$instance !== Request::$current)
+		if (Request::$initial !== Request::$current)
 		{
 			if ($message = rawurldecode($this->request->param('message')))
 			{
