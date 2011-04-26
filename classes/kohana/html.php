@@ -341,9 +341,10 @@ class Kohana_HTML {
 	 *     echo '<div'.HTML::attributes($attrs).'>'.$content.'</div>';
 	 *
 	 * @param   array   attribute list
+	 * @param	boolean	escape the attribute values or not
 	 * @return  string
 	 */
-	public static function attributes(array $attributes = NULL)
+	public static function attributes(array $attributes = NULL, $escape_attributes = TRUE)
 	{
 		if (empty($attributes))
 			return '';
@@ -362,22 +363,45 @@ class Kohana_HTML {
 		$attributes = $sorted + $attributes;
 
 		$compiled = '';
-		foreach ($attributes as $key => $value)
+		if ($escape_attributes)
 		{
-			if ($value === NULL)
+			foreach ($attributes as $key => $value)
 			{
-				// Skip attributes that have NULL values
-				continue;
-			}
+				if ($value === NULL)
+				{
+					// Skip attributes that have NULL values
+					continue;
+				}
 
-			if (is_int($key))
+				if (is_int($key))
+				{
+					// Assume non-associative keys are mirrored attributes
+					$key = $value;
+				}
+
+				// Escape and add the attribute value
+				$compiled .= ' '.$key.'="'.HTML::chars($value).'"';
+			}
+		}
+		else
+		{
+			foreach ($attributes as $key => $value)
 			{
-				// Assume non-associative keys are mirrored attributes
-				$key = $value;
-			}
+				if ($value === NULL)
+				{
+					// Skip attributes that have NULL values
+					continue;
+				}
 
-			// Add the attribute value
-			$compiled .= ' '.$key.'="'.HTML::chars($value).'"';
+				if (is_int($key))
+				{
+					// Assume non-associative keys are mirrored attributes
+					$key = $value;
+				}
+
+				// Escape and add the attribute value without escaping
+				$compiled .= ' '.$key.'="'.$value.'"';
+			}
 		}
 
 		return $compiled;

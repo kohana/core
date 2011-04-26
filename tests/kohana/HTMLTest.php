@@ -45,6 +45,11 @@ class Kohana_HTMLTest extends Unittest_TestCase
 				array('name' => 'field', 'checked'),
 				' name="field" checked="checked"',
 			),
+			array(
+				array('name' => 'unes"caped'),
+				' name="unes"caped"',
+				FALSE
+			)
 		);
 	}
 
@@ -56,11 +61,11 @@ class Kohana_HTMLTest extends Unittest_TestCase
 	 * @param array  $attributes  Attributes to use
 	 * @param string $expected    Expected output
 	 */
-	public function test_attributes($attributes, $expected)
+	public function test_attributes($attributes, $expected, $escape_attributes = TRUE)
 	{
 		$this->assertSame(
 			$expected,
-			HTML::attributes($attributes)
+			HTML::attributes($attributes, $escape_attributes)
 		);
 	}
 
