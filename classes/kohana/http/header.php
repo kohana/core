@@ -34,7 +34,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * @param   array    $header_commas_allowed  Header values where commas are not delimiters (usually date)
 	 * @return  array
 	 */
-	public static function parse_header_values(array $header_values, array $header_commas_allowed = array('user-agent', 'date', 'expires'))
+	public static function parse_header_values(array $header_values, array $header_commas_allowed = array('user-agent', 'date', 'expires', 'last-modified'))
 	{
 		/**
 		 * @see http://www.w3.org/Protocols/rfc2616/rfc2616.html
