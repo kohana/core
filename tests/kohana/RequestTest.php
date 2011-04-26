@@ -545,9 +545,10 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function provider_uri_only_trimed_on_internal()
 	{
-		(Request::$initial === NULL) AND Request::$initial = new Request;
+		$old_request = Request::$initial;
+		Request::$initial = new Request;
 
-		return array(
+		$result = array(
 			array(
 				new Request('http://www.google.com'),
 				'http://www.google.com'
@@ -565,6 +566,9 @@ class Kohana_RequestTest extends Unittest_TestCase
 				'foo/bar'
 			)
 		);
+
+		Request::$initial = $old_request;
+		return $result;
 	}
 
 	/**
@@ -733,5 +737,73 @@ class Kohana_RequestTest extends Unittest_TestCase
 	{
 		$request->headers($headers);
 		$this->assertSame($expected, (string) $request->headers());
+	}
+
+	/**
+	 * Provides test data for test_query_parameter_parsing()
+	 *
+	 * @return  array
+	 */
+	public function provider_query_parameter_parsing()
+	{
+		return array(
+			array(
+				new Request('foo/bar'),
+				array(
+					'foo'   => 'bar',
+					'sna'   => 'fu'
+				),
+				array(
+					'foo'   => 'bar',
+					'sna'   => 'fu'
+				),
+			),
+			array(
+				new Request('foo/bar?john=wayne&peggy=sue'),
+				array(
+					'foo'   => 'bar',
+					'sna'   => 'fu'
+				),
+				array(
+					'john'  => 'wayne',
+					'peggy' => 'sue',
+					'foo'   => 'bar',
+					'sna'   => 'fu'
+				),
+			),
+			array(
+				new Request('http://host.tld/foo/bar?john=wayne&peggy=sue'),
+				array(
+					'foo'   => 'bar',
+					'sna'   => 'fu'
+				),
+				array(
+					'john'  => 'wayne',
+					'peggy' => 'sue',
+					'foo'   => 'bar',
+					'sna'   => 'fu'
+				),
+			),
+		);
+	}
+
+	/**
+	 * Tests that query parameters are parsed correctly
+	 * 
+	 * @dataProvider provider_query_parameter_parsing
+	 *
+	 * @param   Request   request 
+	 * @param   array     query 
+	 * @param   array    expected 
+	 * @return  void
+	 */
+	public function test_query_parameter_parsing(Request $request, $query, $expected)
+	{
+		foreach ($query as $key => $value)
+		{
+			$request->query($key, $value);
+		}
+
+		$this->assertSame($expected, $request->query());
 	}
 } // End Kohana_RequestTest
