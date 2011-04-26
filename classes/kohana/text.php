@@ -47,6 +47,13 @@ class Kohana_Text {
 		1  => 'one',
 	);
 	
+	/**
+	 * Anchor attribute holder for Text::auto_link_urls() between callback calls.
+	 * 
+	 * Not intended to be used for anything else.
+	 * 
+	 * @var	array	attributes for the generated HTML anchors.
+	 */
 	protected static $anchor_attributes;
 
 	/**
