@@ -900,45 +900,15 @@ class Kohana_Request implements HTTP_Request {
 	 *
 	 * @return  $this
 	 * @uses    Request::$messages
+	 * @deprecated This should not be here, it belongs in\n
+	 * Response::send_headers() where it is implemented correctly.
 	 */
 	public function send_headers()
 	{
-		if ( ! headers_sent())
-		{
-			if (isset($_SERVER['SERVER_PROTOCOL']))
-			{
-				// Use the default server protocol
-				$protocol = $_SERVER['SERVER_PROTOCOL'];
-			}
-			else
-			{
-				// Default to using newer protocol
-				$protocol = 'HTTP/1.1';
-			}
+		if ( ! ($response = $this->response()) instanceof Response)
+			return $this;
 
-			// HTTP status line
-			header($protocol.' '.$this->status.' '.Request::$messages[$this->status]);
-
-			foreach ($this->headers as $name => $value)
-			{
-				if (is_string($name))
-				{
-					// Combine the name and value to make a raw header
-					$value = "{$name}: {$value}";
-				}
-
-				// Send the raw header
-				header($value, TRUE);
-			}
-
-			foreach (Session::$instances as $session)
-			{
-				// Sessions will most likely write cookies, which will be sent
-				// with the headers
-				$session->write();
-			}
-		}
-
+		$response->send_headers();
 		return $this;
 	}
 
@@ -1316,7 +1286,7 @@ class Kohana_Request implements HTTP_Request {
 			return $this;
 		}
 
-		if ( ! $this->_header AND $this->is_initial())
+		if ($this->_header->count() === 0 AND $this->is_initial())
 		{
 			// Lazy load the request headers
 			$this->_header = HTTP::request_headers();

@@ -545,6 +545,8 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function provider_uri_only_trimed_on_internal()
 	{
+		(Request::$initial === NULL) AND Request::$initial = new Request;
+
 		return array(
 			array(
 				new Request('http://www.google.com'),
@@ -573,7 +575,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 *
 	 * @return void
 	 */
-	public function test_uri_only_trimed_on_internal($request, $expected)
+	public function test_uri_only_trimed_on_internal(Request $request, $expected)
 	{
 		$this->assertSame($request->uri(), $expected);
 	}
@@ -647,4 +649,89 @@ class Kohana_RequestTest extends Unittest_TestCase
 		}
 	}
 
+	/**
+	 * Provides data for test_headers_get()
+	 *
+	 * @return  array
+	 */
+	public function provider_headers_get()
+	{
+		$x_powered_by = 'Kohana Unit Test';
+		$content_type = 'application/x-www-form-urlencoded';
+
+		return array(
+			array(
+				$request = Request::factory('foo/bar')
+					->headers(array(
+						'x-powered-by' => $x_powered_by,
+						'content-type' => $content_type
+					)
+				),
+			array(
+				'x-powered-by' => $x_powered_by,
+				'content-type' => $content_type
+				)
+			)
+		);
+	}
+
+	/**
+	 * Tests getting headers from the Request object
+	 * 
+	 * @dataProvider provider_headers_get
+	 *
+	 * @param   Request  request to test
+	 * @param   array    headers to test against
+	 * @return  void
+	 */
+	public function test_headers_get($request, $headers)
+	{
+		foreach ($headers as $key => $expected_value)
+		{
+			$this->assertSame((string) $request->headers($key), $expected_value);
+		}
+	}
+
+	/**
+	 * Provides data for test_headers_set
+	 *
+	 * @return  array
+	 */
+	public function provider_headers_set()
+	{
+		return array(
+			array(
+				new Request,
+				array(
+					'content-type'  => 'application/x-www-form-urlencoded',
+					'x-test-header' => 'foo'
+				),
+				"content-type: application/x-www-form-urlencoded\r\nx-test-header: foo\r\n\n"
+			),
+			array(
+				new Request,
+				array(
+					'content-type'  => 'application/json',
+					'x-powered-by'  => 'kohana'
+				),
+				"content-type: application/json\r\nx-powered-by: kohana\r\n\n"
+			)
+		);
+	}
+
+	/**
+	 * Tests the setting of headers to the request object
+	 * 
+	 * @dataProvider provider_headers_set
+	 *
+	 * @param   Request    request object
+	 * @param   array      header(s) to set to the request object
+	 * @param   string     expected http header
+	 * @return  void
+	 */
+	public function test_headers_set(Request $request, $headers, $expected)
+	{
+		$request->headers($headers);
+		$this->assertSame($expected, (string) $request->headers());
+	}
 } // End Kohana_RequestTest
