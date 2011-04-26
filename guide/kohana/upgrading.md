@@ -12,10 +12,10 @@ This has changed to:
 
 Some properties that existed in the request class have been converted into methods:
 
-	- Request::$controller -> Request::controller()
-	- Request::$action -> Request::action()
-	- Request::$directory -> Request::directory()
-	- Request::$uri -> Request::uri()
+	- $this->request->controller -> $this->request->controller() //Or Request::current()->controller();
+	- $this->request->action -> $this->request->action()
+	- $this->request->directory -> $this->request->directory()
+	- $this->request->uri -> $this->request->uri()
 
 Request::instance() has been replaced by Request::current() and Request::initial(). Normally you'll want to use Request::current(), but if you are sure you want the *original* request (when running hmvc requests), use Request::initial().
 
