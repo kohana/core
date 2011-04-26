@@ -269,6 +269,11 @@ class Kohana_Route {
 	protected $_defaults = array('action' => 'index', 'host' => FALSE);
 
 	/**
+	 * @var  array
+	 */
+	protected $_retain=array();
+	
+	/**
 	 * @var  string
 	 */
 	protected $_route_regex;
@@ -352,6 +357,39 @@ class Kohana_Route {
 	}
 
 	/**
+	 * Provides default values for optional keys in a route 
+	 * when using Route::uri
+	 *
+	 * @param array $params
+	 * @return $this
+	 */
+	public function uri_defaults(array $params = NULL)
+	{
+		$this->_uri_defaults = $params;
+	
+		return $this;
+	}
+	
+	
+	/**
+	 * When matching a url to a route in Route::matches, 
+	 * the keys in _retain will be added to _uri_defaults
+	 *
+	 * 
+	 * @param array $keys
+	 * @return $this
+	 */
+	public function retain(array $keys = NULL)
+	{
+		$this->_retain = $keys;
+
+		return $this;
+	}
+	
+	
+
+	
+	/**
 	 * Tests if the route matches a given URI. A successful match will return
 	 * all of the routed parameters as an array. A failed match will return
 	 * boolean FALSE.
@@ -396,6 +434,12 @@ class Kohana_Route {
 
 				// Set the value for all matched keys
 				$params[$key] = $value;
+				
+				if(is_array($this->_retain) AND in_array($key,$this->_retain))
+				{
+					// Value should be retained; add it to the _uri_defaults
+					$this->_uri_defaults[$key] = $value;
+				}
 			}
 		}
 
@@ -481,7 +525,12 @@ class Kohana_Route {
 				{
 					// Replace the key with the parameter value
 					$replace = str_replace($key, $params[$param], $replace);
-				}
+				} 
+				elseif(isset($this->_uri_defaults[$param]))
+				{
+					// Replace the key with a default parameter if set in _uri_defaults
+					$replace = str_replace($key, $this->_uri_defaults[$param], $replace);
+				} 
 				else
 				{
 					// This group has missing parameters
@@ -497,7 +546,6 @@ class Kohana_Route {
 		while (preg_match('#'.Route::REGEX_KEY.'#', $uri, $match))
 		{
 			list($key, $param) = $match;
-
 			if ( ! isset($params[$param]))
 			{
 				// Look for a default
