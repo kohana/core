@@ -833,19 +833,19 @@ class Kohana_Request implements HTTP_Request {
 		if ( ! isset($params['directory']))
 		{
 			// Add the current directory
-			$params['directory'] = $this->_directory;
+			$params['directory'] = $this->directory();
 		}
 
 		if ( ! isset($params['controller']))
 		{
 			// Add the current controller
-			$params['controller'] = $this->_controller;
+			$params['controller'] = $this->controller();
 		}
 
 		if ( ! isset($params['action']))
 		{
 			// Add the current action
-			$params['action'] = $this->_action;
+			$params['action'] = $this->action();
 		}
 
 		// Add the current parameters
