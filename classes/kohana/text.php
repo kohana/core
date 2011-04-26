@@ -46,6 +46,8 @@ class Kohana_Text {
 		2  => 'two',
 		1  => 'one',
 	);
+	
+	protected static $anchor_attributes;
 
 	/**
 	 * Limits a phrase to a given number of words.
@@ -343,23 +345,39 @@ class Kohana_Text {
 	 * @return  string
 	 * @uses    HTML::anchor
 	 */
-	public static function auto_link_urls($text)
+	public static function auto_link_urls($text, $anchor_attributes = NULL)
 	{
-		// Find and replace all http/https/ftp/ftps links that are not part of an existing html anchor
-		$text = preg_replace_callback('~\b(?<!href="|">)(?:ht|f)tps?://\S+(?:/|\b)~i', 'Text::_auto_link_urls_callback1', $text);
+		try {
+			self::$anchor_attributes = $anchor_attributes;
+			
+			// Find and replace all http/https/ftp/ftps links that are not part of an existing html anchor
+			$text = preg_replace_callback('~\b(?<!href="|">)(?:ht|f)tps?://\S+(?:/|\b)~i', 'Text::_auto_link_urls_callback1', $text);
 
-		// Find and replace all naked www.links.com (without http://)
-		return preg_replace_callback('~\b(?<!://|">)www(?:\.[a-z0-9][-a-z0-9]*+)+\.[a-z]{2,6}\b~i', 'Text::_auto_link_urls_callback2', $text);
+			// Find and replace all naked www.links.com (without http://)
+			$text = preg_replace_callback('~\b(?<!://|">)www(?:\.[a-z0-9][-a-z0-9]*+)+\.[a-z]{2,6}\b~i', 'Text::_auto_link_urls_callback2', $text);
+			
+			// Cleaning up anchor attribute holder
+			self::$anchor_attributes = NULL;
+		
+			return $text;
+		} catch (Exception $ex) { // catching any exception thrown during processing
+			
+			//  Cleaning up anchor attribute holder
+			self::$anchor_attributes = NULL;
+			
+			// Re-throwing the exception
+			throw $ex;
+		}
 	}
 
 	protected static function _auto_link_urls_callback1($matches)
 	{
-		return HTML::anchor($matches[0]);
+		return HTML::anchor($matches[0], NULL, self::$anchor_attributes);
 	}
 
 	protected static function _auto_link_urls_callback2($matches)
 	{
-		return HTML::anchor('http://'.$matches[0], $matches[0]);
+		return HTML::anchor('http://'.$matches[0], $matches[0], self::$anchor_attributes);
 	}
 
 	/**
