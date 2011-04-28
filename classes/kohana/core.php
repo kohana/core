@@ -17,7 +17,7 @@ class Kohana_Core {
 
 	// Release version and codename
 	const VERSION  = '3.1.3';
-	const CODENAME = 'égalité';
+	const CODENAME = 'araea';
 
 	// Common environment type constants for consistency and convenience
 	const PRODUCTION  = 1;
