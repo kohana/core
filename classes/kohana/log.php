@@ -12,7 +12,7 @@
  */
 class Kohana_Log {
 
-	// Log message levels
+	// Log message levels - Windows users see PHP Bug #18090
 	const EMERGENCY = LOG_EMERG;    // 0
 	const ALERT     = LOG_ALERT;    // 1
 	const CRITICAL  = LOG_CRIT;     // 2
