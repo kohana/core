@@ -39,7 +39,7 @@ class Kohana_Upload {
 	 *     if ($array->check())
 	 *     {
 	 *         // Upload is valid, save it
-	 *         Upload::save($_FILES['file']);
+	 *         Upload::save($array['file']);
 	 *     }
 	 *
 	 * @param   array    uploaded file data
@@ -137,7 +137,7 @@ class Kohana_Upload {
 	/**
 	 * Test if an uploaded file is an allowed file type, by extension.
 	 *
-	 *     $array->rule('file', 'Upload::type', array(array('jpg', 'png', 'gif')));
+	 *     $array->rule('file', 'Upload::type', array(':value', array('jpg', 'png', 'gif')));
 	 *
 	 * @param   array    $_FILES item
 	 * @param   array    allowed file extensions
@@ -159,8 +159,8 @@ class Kohana_Upload {
 	 * and B is the byte unit (K, MiB, GB, etc.). All valid byte units are
 	 * defined in Num::$byte_units
 	 *
-	 *     $array->rule('file', 'Upload::size', array('1M'))
-	 *     $array->rule('file', 'Upload::size', array('2.5KiB'))
+	 *     $array->rule('file', 'Upload::size', array(':value', '1M'))
+	 *     $array->rule('file', 'Upload::size', array(':value', '2.5KiB'))
 	 *
 	 * @param   array    $_FILES item
 	 * @param   string   maximum file size allowed

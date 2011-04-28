@@ -137,7 +137,7 @@ class Kohana_Kohana_Exception extends Exception {
 				// Just display the text of the exception
 				echo "\n{$error}\n";
 
-				return TRUE;
+				exit(1);
 			}
 
 			if ( ! headers_sent())
@@ -153,7 +153,7 @@ class Kohana_Kohana_Exception extends Exception {
 				// Just display the text of the exception
 				echo "\n{$error}\n";
 
-				return TRUE;
+				exit(1);
 			}
 
 			// Start an output buffer
@@ -174,7 +174,7 @@ class Kohana_Kohana_Exception extends Exception {
 			// Display the contents of the output buffer
 			echo ob_get_clean();
 
-			return TRUE;
+			exit(1);
 		}
 		catch (Exception $e)
 		{
