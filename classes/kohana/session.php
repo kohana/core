@@ -316,13 +316,13 @@ abstract class Kohana_Session {
 			}
 			else
 			{
-				Kohana::$log->add(Kohana::ERROR, 'Error reading session data: '.$id);
+				Kohana::$log->add(Log::ERROR, 'Error reading session data: '.$id);
 			}
 		}
 		catch (Exception $e)
 		{
 			// Ignore all reading errors, but log them
-			Kohana::$log->add(Kohana::ERROR, 'Error reading session data: '.$id);
+			Kohana::$log->add(Log::ERROR, 'Error reading session data: '.$id);
 		}
 
 		if (is_array($data))
