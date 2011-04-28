@@ -294,9 +294,11 @@ abstract class Kohana_Session {
 	 */
 	public function read($id = NULL)
 	{
-		if (is_string($data = $this->_read($id)))
+		$data = NULL;
+
+		try
 		{
-			try
+			if (is_string($data = $this->_read($id)))
 			{
 				if ($this->_encrypted)
 				{
@@ -312,10 +314,10 @@ abstract class Kohana_Session {
 				// Unserialize the data
 				$data = unserialize($data);
 			}
-			catch (Exception $e)
-			{
-				// Ignore all reading errors
-			}
+		}
+		catch (Exception $e)
+		{
+			// Ignore all reading errors
 		}
 
 		if (is_array($data))
