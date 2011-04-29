@@ -40,17 +40,14 @@ abstract class Kohana_Request_Client {
 	 */
 	public function __construct(array $params = array())
 	{
-		if ($params)
+		foreach ($params as $key => $value)
 		{
-			foreach ($params as $key => $value)
+			if (method_exists($this, $key))
 			{
-				if (method_exists($this, $key))
+				if (property_exists($this, $key) OR property_exists($this, '_'.$key))
 				{
-					if (property_exists($this, $key) OR property_exists($this, '_'.$key))
-					{
-						$method = trim($key, '_');
-						$this->$method($value);
-					}
+					$method = trim($key, '_');
+					$this->$method($value);
 				}
 			}
 		}

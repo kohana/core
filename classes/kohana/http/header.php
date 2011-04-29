@@ -149,10 +149,17 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * @param   int      Flags
 	 * @param   string   The iterator class to use
 	 */
-	public function __construct($input, $flags = NULL, $iterator_class = 'ArrayIterator')
+	public function __construct($input = NULL, $flags = NULL, $iterator_class = 'ArrayIterator')
 	{
-		// Parse the values into [HTTP_Header_Values]
-		parent::__construct(HTTP_Header::parse_header_values($input), $flags, $iterator_class);
+		if ($input !== NULL)
+		{
+			// Parse the values into [HTTP_Header_Values]
+			parent::__construct(HTTP_Header::parse_header_values($input), $flags, $iterator_class);
+		}
+		else
+		{
+			parent::__construct(array(), $flags, $iterator_class);
+		}
 
 		// If sort by quality is set, sort the fields by q=0.0 value
 		if (HTTP_Header::$sort_by_quality)
@@ -286,6 +293,38 @@ class Kohana_HTTP_Header extends ArrayObject {
 		return $this;
 	}
 
+	/**
+	 * Parses a HTTP Message header line and applies it to this HTTP_Header
+	 * 
+	 *     $header = $response->headers();
+	 *     $header->parse_header_string(NULL, 'content-type: application/json');
+	 *
+	 * @param   resource  the resource (required by Curl API)
+	 * @param   string    the line from the header to parse
+	 * @return  int
+	 */
+	public function parse_header_string($resource, $header_line)
+	{
+		$headers = array();
+
+		if (preg_match_all('/(\w[^\s:]*):[ ]*([^\r\n]*(?:\r\n[ \t][^\r\n]*)*)/', $header, $matches))
+		{
+			foreach ($matches[0] as $key => $value)
+			{
+				$this[$matches[1][$key]] = $matches[2][$key];
+			}
+		}
+
+		return strlen($header);
+	}
+
+	/**
+	 * Provides the implementation for sort_values_by_quality (uasort)
+	 *
+	 * @param   HTTP_Header_Value 
+	 * @param   HTTP_Header_Value 
+	 * @return  int
+	 */
 	protected function _sort_by_comparison($value_a, $value_b)
 	{
 		// Test for correct instance type
@@ -299,12 +338,10 @@ class Kohana_HTTP_Header extends ArrayObject {
 		$a = (float) Arr::get($value_a->properties, 'q', HTTP_Header_Value::$default_quality);
 		$b = (float) Arr::get($value_b->properties, 'q', HTTP_Header_Value::$default_quality);
 
-		if ($a == $b)
-			return 0;
-		elseif ($a < $b)
-			return 1;
-		elseif ($a > $b)
-			return -1;
+		// Return the string comparison of two floats.
+		// This implementation gets past the floating point math problems
+		// that occur when testing for equality.
+		return strcmp( (string) $a, (string) $b);
 	}
 
 } // End Kohana_HTTP_Header

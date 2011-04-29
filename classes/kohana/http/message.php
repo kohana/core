@@ -10,7 +10,7 @@
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaphp.com/license
  */
-interface Kohana_HTTP_Interaction {
+interface Kohana_HTTP_Message {
 
 	/**
 	 * Gets or sets the HTTP protocol. The standard protocol to use

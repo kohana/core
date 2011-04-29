@@ -813,7 +813,7 @@ class Kohana_Request implements HTTP_Request {
 			$this->_external = TRUE;
 
 			// Setup the client
-			$this->_client = new Request_Client_External(array('cache' => $cache));
+			$this->_client = Request_Client_External::factory(array('cache' => $cache));
 		}
 	}
 
@@ -1051,15 +1051,20 @@ class Kohana_Request implements HTTP_Request {
 	}
 
 	/**
-	 * Provides readonly access to the [Request_Client],
-	 * useful for accessing the caching methods within the
-	 * request client.
+	 * Provides access to the [Request_Client].
 	 *
 	 * @return  Request_Client
+	 * @return  self
 	 */
-	public function get_client()
+	public function client(Request_Client $client = NULL)
 	{
-		return $this->_client;
+		if ($client === NULL)
+			return $this->_client;
+		else
+		{
+			$this->_client = $client;
+			return $this;
+		}
 	}
 
 	/**

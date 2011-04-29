@@ -184,7 +184,7 @@ class Kohana_Response implements HTTP_Response, Serializable {
 	 */
 	public function __construct(array $config = array())
 	{
-		$this->_header = new HTTP_Header(array());
+		$this->_header = new HTTP_Header;
 
 		foreach ($config as $key => $value)
 		{
