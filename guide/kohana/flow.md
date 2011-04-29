@@ -6,9 +6,9 @@ Every application follows the same flow:
 	1. The application, module, and system paths are set. (`APPPATH`, `MODPATH`, and `SYSPATH`)
 	2. Error reporting levels are set.
 	3. Install file is loaded, if it exists.
-	4. The [Kohana] class is loaded.
-	5. The bootstrap file, `APPPATH/bootstrap.php`, is included.
+	4. The bootstrap file, `APPPATH/bootstrap.php`, is included.
 2. Once we are in `bootstrap.php`:
+	6. The [Kohana] class is loaded.
 	7. [Kohana::init] is called, which sets up error handling, caching, and logging.
 	8. [Kohana_Config] readers and [Kohana_Log] writers are attached.
 	9. [Kohana::modules] is called to enable additional modules.
