@@ -913,27 +913,6 @@ class Kohana_Request implements HTTP_Request {
 	}
 
 	/**
-	 * Sends the response status and all set headers. The current server
-	 * protocol (HTTP/1.0 or HTTP/1.1) will be used when available. If not
-	 * available, HTTP/1.1 will be used.
-	 *
-	 *     $request->send_headers();
-	 *
-	 * @return  $this
-	 * @uses    Request::$messages
-	 * @deprecated This should not be here, it belongs in\n
-	 * Response::send_headers() where it is implemented correctly.
-	 */
-	public function send_headers()
-	{
-		if ( ! ($response = $this->response()) instanceof Response)
-			return $this;
-
-		$response->send_headers();
-		return $this;
-	}
-
-	/**
 	 * Redirects as the request response. If the URL does not include a
 	 * protocol, it will be converted into a complete URL.
 	 *
