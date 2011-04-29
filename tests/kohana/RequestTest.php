@@ -710,7 +710,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 					'content-type'  => 'application/x-www-form-urlencoded',
 					'x-test-header' => 'foo'
 				),
-				"content-type: application/x-www-form-urlencoded\r\nx-test-header: foo\r\n\n"
+				"content-type: application/x-www-form-urlencoded\nx-test-header: foo\n\n"
 			),
 			array(
 				new Request,
@@ -718,7 +718,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 					'content-type'  => 'application/json',
 					'x-powered-by'  => 'kohana'
 				),
-				"content-type: application/json\r\nx-powered-by: kohana\r\n\n"
+				"content-type: application/json\nx-powered-by: kohana\n\n"
 			)
 		);
 	}

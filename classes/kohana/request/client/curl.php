@@ -27,7 +27,7 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 		parent::__construct($params);
 
 		$this->_options[CURLOPT_RETURNTRANSFER] = TRUE;
-		$this->_options[CURLOPT_HEADER]         = TRUE;
+		$this->_options[CURLOPT_HEADER]         = FALSE;
 	}
 
 	/**
@@ -42,9 +42,6 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 	{
 		// Response headers
 		$response_headers = array();
-
-		// Reset the headers
-		Request_Client_External::$_processed_headers = array();
 
 		// Set the request method
 		$options[CURLOPT_CUSTOMREQUEST] = $request->method();
@@ -115,7 +112,6 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 		}
 
 		$response->status($code)
-			->headers(Request_Client_External::$_processed_headers)
 			->body($body);
 
 		return $response;

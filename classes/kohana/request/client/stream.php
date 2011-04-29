@@ -77,7 +77,6 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 
 		$response->status($status)
 			->protocol($protocol)
-			->headers(Request_Client_External::$_processed_headers)
 			->body(stream_get_contents($stream));
 
 		// Close the stream after use

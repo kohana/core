@@ -185,11 +185,11 @@ class Kohana_HTTP_Header extends ArrayObject {
 		{
 			if (is_array($value))
 			{
-				$header .= $key.': '.(implode(', ', $value))."\r\n";
+				$header .= $key.': '.(implode(', ', $value))."\n";
 			}
 			else
 			{
-				$header .= $key.': '.$value."\r\n";
+				$header .= $key.': '.$value."\n";
 			}
 		}
 
@@ -307,7 +307,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	{
 		$headers = array();
 
-		if (preg_match_all('/(\w[^\s:]*):[ ]*([^\r\n]*(?:\r\n[ \t][^\r\n]*)*)/', $header, $matches))
+		if (preg_match_all('/(\w[^\s:]*):[ ]*([^\r\n]*(?:\r\n[ \t][^\r\n]*)*)/', $header_line, $matches))
 		{
 			foreach ($matches[0] as $key => $value)
 			{
@@ -315,7 +315,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 			}
 		}
 
-		return strlen($header);
+		return strlen($header_line);
 	}
 
 	/**
