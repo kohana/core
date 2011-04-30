@@ -131,7 +131,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	{
 		$request = Request::factory($uri);
 
-		$this->assertInstanceOf($client_class, $request->get_client());
+		$this->assertInstanceOf($client_class, $request->client());
 	}
 
 	/**
@@ -638,7 +638,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	public function test_options_set_to_external_client($settings, $expected)
 	{
 		$request = Request::factory('http://www.kohanaframework.org');
-		$request_client = $request->get_client();
+		$request_client = $request->client();
 
 		// Test for empty array
 		$this->assertSame($request_client->options(), array());
@@ -805,5 +805,45 @@ class Kohana_RequestTest extends Unittest_TestCase
 		}
 
 		$this->assertSame($expected, $request->query());
+	}
+
+	/**
+	 * Provides data for test_client
+	 *
+	 * @return  array
+	 */
+	public function provider_client()
+	{
+		$internal_client = new Request_Client_Internal;
+		$external_client = new Request_Client_Stream;
+
+		return array(
+			array(
+				new Request('http://kohanaframework.org'),
+				$internal_client,
+				$internal_client
+			),
+			array(
+				new Request('foo/bar'),
+				$external_client,
+				$external_client
+			)
+		);
+	}
+
+	/**
+	 * Tests the getter/setter for request client
+	 * 
+	 * @dataProvider provider_client
+	 *
+	 * @param   Request $request 
+	 * @param   Request_Client $client 
+	 * @param   Request_Client $expected 
+	 * @return  void
+	 */
+	public function test_client(Request $request, Request_Client $client, Request_Client $expected)
+	{
+		$request->client($client);
+		$this->assertSame($expected, $request->client());
 	}
 } // End Kohana_RequestTest
