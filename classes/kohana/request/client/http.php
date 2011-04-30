@@ -19,6 +19,25 @@
 class Kohana_Request_Client_HTTP extends Request_Client_External {
 
 	/**
+	 * Creates a new `Request_Client` object,
+	 * allows for dependency injection.
+	 *
+	 * @param   array    $params Params
+	 * @throws  Kohana_Request_Exception
+	 */
+	public function __construct(array $params = array())
+	{
+		// Check that PECL HTTP supports requests
+		if ( ! http_support(HTTP_SUPPORT_REQUESTS))
+		{
+			throw new Kohana_Request_Exception('Need HTTP request support!');
+		}
+
+		// Carry on
+		parent::__construct($params);
+	}
+
+	/**
 	 * @var     array     curl options
 	 * @see     [http://www.php.net/manual/en/function.curl-setopt.php]
 	 */
