@@ -203,8 +203,11 @@ class Kohana_Request_Client_External extends Request_Client {
 		// Create an http request object
 		$http_request = new HTTPRequest($request->uri(), $http_method_mapping[$request->method()]);
 
-		// Set custom options
-		$http_request->setOptions($this->_options);
+		if ($this->_options)
+		{
+			// Set custom options
+			$http_request->setOptions($this->_options);
+		}
 
 		// Set headers
 		$http_request->setHeaders($request->headers()->getArrayCopy());
