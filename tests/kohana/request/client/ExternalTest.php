@@ -1,5 +1,4 @@
 <?php defined('SYSPATH') OR die('Kohana bootstrap needs to be included before tests run');
-
 /**
  * Unit tests for external request client
  *
