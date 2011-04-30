@@ -14,7 +14,7 @@
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Request_Client_InternalTest extends Unittest_TestCase {
+class Kohana_Request_Client_ExternalTest extends Unittest_TestCase {
 
 	/**
 	 * Provider for test_factory()
