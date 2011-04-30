@@ -125,17 +125,55 @@ class Kohana_Request_Client_ExternalTest extends Unittest_TestCase {
 	}
 
 	/**
+	 * Data provider for test_execute
+	 *
+	 * @return  array
+	 */
+	public function provider_execute()
+	{
+		$json = '{"foo": "bar", "snafu": "stfu"}';
+		$post = array('foo' => 'bar', 'snafu' => 'stfu');
+
+		return array(
+			array(
+				'application/json',
+				$json,
+				array(),
+				array(
+					'content-type' => 'application/json',
+					'body'         => $json
+				)
+			),
+			array(
+				'application/json',
+				$json,
+				$post,
+				array(
+					'content-type' => 'application/x-www-form-urlencoded',
+					'body'         => http_build_query($post, NULL, '&')
+				)
+			)
+		);
+	}
+
+	/**
 	 * Tests the [Request_Client_External::_send_message()] method
 	 *
+	 * @dataProvider provider_execute
+	 * 
 	 * @return  void
 	 */
-	public function test_execute()
+	public function test_execute($content_type, $body, $post, $expected)
 	{
 		$old_request = Request::$initial;
 		Request::$initial = TRUE;
 
 		// Create a mock Request
 		$request = new Request('http://kohanaframework.org/');
+		$request->method(HTTP_Request::POST)
+			->headers('content-type', $content_type)
+			->body($body)
+			->post($post);
 
 		$client = $this->getMock('Request_Client_External', array('_send_message'));
 		$client->expects($this->once())
@@ -146,6 +184,8 @@ class Kohana_Request_Client_ExternalTest extends Unittest_TestCase {
 		$request->client($client);
 
 		$this->assertInstanceOf('Response', $request->execute());
+		$this->assertSame($expected['body'], $request->body());
+		$this->assertSame($expected['content-type'], (string) $request->headers('content-type'));
 
 		Request::$initial = $old_request;
 	}
