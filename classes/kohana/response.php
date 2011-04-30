@@ -325,7 +325,7 @@ class Kohana_Response implements HTTP_Response, Serializable {
 	 */
 	public function content_length()
 	{
-		return strlen($this->_body);
+		return strlen($this->body());
 	}
 
 	/**
@@ -698,12 +698,13 @@ class Kohana_Response implements HTTP_Response, Serializable {
 			$this->_header['content-type'] = Kohana::$content_type.'; charset='.Kohana::$charset;
 		}
 
-		$content_length = $this->content_length();
+		// Set the content length
+		$this->headers('content-length', (string) $this->content_length());
 
-		// Set the content length for the body if required
-		if ($content_length > 0)
+		// If Kohana expose, set the user-agent
+		if (Kohana::$expose)
 		{
-			$this->_header['content-length'] = (string) $content_length;
+			$this->headers('user-agent', 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')');
 		}
 
 		// Prepare cookies

@@ -1,20 +1,16 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- *
+ * [Request_Client_External] Curl driver performs external requests using the
+ * php-curl extention. This is the default driver for all external requests.
+ * 
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
+ * @uses       [PHP cURL](http://php.net/manual/en/book.curl.php)
  */
-
 class Kohana_Request_Client_Curl extends Request_Client_External {
-
-	/**
-	 * @var     array     curl options
-	 * @see     [http://www.php.net/manual/en/function.curl-setopt.php]
-	 */
-	protected $_options = array();
 
 	/**
 	 * Creates a new `Request_Client` object,
@@ -36,7 +32,6 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 	 *
 	 * @param   Request   request to send
 	 * @return  Response
-	 * @uses    [PHP cURL](http://php.net/manual/en/book.curl.php)
 	 */
 	public function _send_message(Request $request)
 	{
@@ -115,35 +110,6 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 			->body($body);
 
 		return $response;
-	}
-
-	/**
-	 * Set and get options for this request.
-	 *
-	 * @param   mixed    $key    Option name, or array of options
-	 * @param   mixed    $value  Option value
-	 * @return  mixed
-	 * @return  Request_Client_External
-	 */
-	public function options($key = NULL, $value = NULL)
-	{
-		if ($key === NULL)
-			return $this->_options;
-
-		if (is_array($key))
-		{
-			$this->_options = $key;
-		}
-		elseif ( ! $value)
-		{
-			return Arr::get($this->_options, $key);
-		}
-		else
-		{
-			$this->_options[$key] = $value;
-		}
-
-		return $this;
 	}
 
 } // End Kohana_Request_Client_Curl

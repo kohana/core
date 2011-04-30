@@ -1,14 +1,28 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- *
+ * [Request_Client_External] HTTP driver performs external requests using the
+ * php-http extention. To use this driver, ensure the following is completed
+ * before executing an external request- ideally in the application bootstrap.
+ * 
+ * @example
+ * 
+ *       // In application bootstrap
+ *       Request_Client_External::$client = 'Request_Client_HTTP';
+ * 
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
+ * @uses       [PECL HTTP](http://php.net/manual/en/book.http.php)
  */
-
 class Kohana_Request_Client_HTTP extends Request_Client_External {
+
+	/**
+	 * @var     array     curl options
+	 * @see     [http://www.php.net/manual/en/function.curl-setopt.php]
+	 */
+	protected $_options = array();
 
 	/**
 	 * Sends the HTTP message [Request] to a remote server and processes
@@ -16,7 +30,6 @@ class Kohana_Request_Client_HTTP extends Request_Client_External {
 	 *
 	 * @param   Request   request to send
 	 * @return  Response
-	 * @uses    [PECL HTTP](http://php.net/manual/en/book.http.php)
 	 */
 	public function _send_message(Request $request)
 	{
@@ -34,8 +47,11 @@ class Kohana_Request_Client_HTTP extends Request_Client_External {
 		// Create an http request object
 		$http_request = new HTTPRequest($request->uri(), $http_method_mapping[$request->method()]);
 
-		// Set custom options
-		$http_request->setOptions($this->_options);
+		if ($this->_options)
+		{
+			// Set custom options
+			$http_request->setOptions($this->_options);
+		}
 
 		// Set headers
 		$http_request->setHeaders($request->headers()->getArrayCopy());

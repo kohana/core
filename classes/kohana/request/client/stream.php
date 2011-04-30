@@ -1,13 +1,21 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- *
+ * [Request_Client_External] Stream driver performs external requests using php
+ * sockets. To use this driver, ensure the following is completed
+ * before executing an external request- ideally in the application bootstrap.
+ * 
+ * @example
+ * 
+ *       // In application bootstrap
+ *       Request_Client_External::$client = 'Request_Client_Stream';
+ * 
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
+ * @uses       [PHP Streams](http://php.net/manual/en/book.stream.php)
  */
-
 class Kohana_Request_Client_Stream extends Request_Client_External {
 
 	/**
@@ -33,15 +41,14 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 		$body = $request->body();
 
 		// Set the content length
-		$request->headers('content-length', strlen($body));
+		$request->headers('content-length', (string) strlen($body));
 
 		// Create the context
 		$options = array(
 			$request->protocol() => array(
 				'method'     => $request->method(),
 				'header'     => (string) $request->headers(),
-				'content'    => $body,
-				'user-agent' => 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')'
+				'content'    => $body
 			)
 		);
 
@@ -73,7 +80,7 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 		$response_header = $response->headers();
 
 		// Process headers
-		array_map(array($response_header, 'parse_header_string'), NULL, $meta_data['wrapper_data']);
+		array_map(array($response_header, 'parse_header_string'), array(), $meta_data['wrapper_data']);
 
 		$response->status($status)
 			->protocol($protocol)

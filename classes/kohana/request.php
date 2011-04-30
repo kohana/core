@@ -1369,6 +1369,17 @@ class Kohana_Request implements HTTP_Request {
 	}
 
 	/**
+	 * Returns the length of the body for use with
+	 * content header
+	 *
+	 * @return  integer
+	 */
+	public function content_length()
+	{
+		return strlen($this->body());
+	}
+
+	/**
 	 * Renders the HTTP_Interaction to a string, producing
 	 *
 	 *  - Protocol
@@ -1395,8 +1406,17 @@ class Kohana_Request implements HTTP_Request {
 		}
 		else
 		{
-			$this->header('content-type', 'application/x-www-form-urlencoded');
+			$this->headers('content-type', 'application/x-www-form-urlencoded');
 			$body = http_build_query($post, NULL, '&');
+		}
+
+		// Set the content length
+		$this->headers('content-length', (string) $this->content_length());
+
+		// If Kohana expose, set the user-agent
+		if (Kohana::$expose)
+		{
+			$this->headers('user-agent', 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')');
 		}
 
 		// Prepare cookies

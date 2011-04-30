@@ -1,11 +1,33 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- *
+ * [Request_Client_External] provides a wrapper for all external request
+ * processing. This class should be extended by all drivers handling external
+ * requests.
+ * 
+ * Supported out of the box:
+ *  - Curl (default)
+ *  - PECL HTTP
+ *  - Streams
+ * 
+ * To select a specific external driver to use as the default driver, set the
+ * following property within the Application bootstrap. Alternatively, the
+ * client can be injected into the request object.
+ * 
+ * @example
+ * 
+ *       // In application bootstrap
+ *       Request_Client_External::$client = 'Request_Client_Stream';
+ * 
+ *       // Add client to request
+ *       $request = Request::factory('http://some.host.tld/foo/bar')
+ *           ->client(Request_Client_External::factory('Request_Client_HTTP));
+ * 
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
+ * @uses       [PECL HTTP](http://php.net/manual/en/book.http.php)
  */
 abstract class Kohana_Request_Client_External extends Request_Client {
 
@@ -47,6 +69,13 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 
 		return $client;
 	}
+
+	/**
+	 * @var     array     curl options
+	 * @see     [http://www.php.net/manual/en/function.curl-setopt.php]
+	 * @see     [http://www.php.net/manual/en/http.request.options.php]
+	 */
+	protected $_options = array();
 
 	/**
 	 * Processes the request, executing the controller action that handles this
@@ -101,6 +130,12 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 				->headers('content-type', 'application/x-www-form-urlencoded');
 		}
 
+		// If Kohana expose, set the user-agent
+		if (Kohana::$expose)
+		{
+			$request->headers('user-agent', 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')');
+		}
+
 		try
 		{
 			$response = $this->_send_message($request);
@@ -137,6 +172,35 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 
 		// Return the response
 		return $response;
+	}
+
+	/**
+	 * Set and get options for this request.
+	 *
+	 * @param   mixed    $key    Option name, or array of options
+	 * @param   mixed    $value  Option value
+	 * @return  mixed
+	 * @return  Request_Client_External
+	 */
+	public function options($key = NULL, $value = NULL)
+	{
+		if ($key === NULL)
+			return $this->_options;
+
+		if (is_array($key))
+		{
+			$this->_options = $key;
+		}
+		elseif ( ! $value)
+		{
+			return Arr::get($this->_options, $key);
+		}
+		else
+		{
+			$this->_options[$key] = $value;
+		}
+
+		return $this;
 	}
 
 	/**
