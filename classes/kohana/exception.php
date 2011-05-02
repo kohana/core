@@ -16,18 +16,22 @@ class Kohana_Exception extends Exception {
 	 *     throw new Kohana_Exception('Something went terrible wrong, :user',
 	 *         array(':user' => $user));
 	 *
-	 * @param   string     error message
-	 * @param   array      translation variables
-	 * @param   integer    the exception code
+	 * @param   string          error message
+	 * @param   array           translation variables
+	 * @param   integer|string  the exception code
 	 * @return  void
 	 */
 	public function __construct($message, array $variables = NULL, $code = 0)
 	{
+		// Save the unmodified code
+		// @link http://bugs.php.net/39615
+		$this->code = $code;
+
 		// Set the message
 		$message = __($message, $variables);
 
-		// Pass the message to the parent
-		parent::__construct($message, $code);
+		// Pass the message and integer code to the parent
+		parent::__construct($message, (int) $code);
 	}
 
 	/**

@@ -16,8 +16,8 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.0.10';
-	const CODENAME = 'Hierofalco';
+	const VERSION  = '3.0.11';
+	const CODENAME = 'vespertinus';
 
 	// Log message types
 	const ERROR    = 'ERROR';
@@ -1055,12 +1055,26 @@ class Kohana_Core {
 				Kohana::$log->write();
 			}
 
-			if (Kohana::$is_cli)
+			if (Kohana::$is_cli === TRUE)
 			{
 				// Just display the text of the exception
 				echo "\n{$error}\n";
 
-				return TRUE;
+				exit(1);
+			}
+
+			if ( ! headers_sent())
+			{
+				// Make sure the proper content type is sent with a 500 status
+				header('Content-Type: text/html; charset='.Kohana::$charset, TRUE, 500);
+			}
+
+			if (Request::$is_ajax === TRUE)
+			{
+				// Just display the text of the exception
+				echo "\n{$error}\n";
+
+				exit(1);
 			}
 
 			// Get the exception backtrace
@@ -1092,12 +1106,6 @@ class Kohana_Core {
 				}
 			}
 
-			if ( ! headers_sent())
-			{
-				// Make sure the proper content type is sent with a 500 status
-				header('Content-Type: text/html; charset='.Kohana::$charset, TRUE, 500);
-			}
-
 			// Start an output buffer
 			ob_start();
 
@@ -1107,7 +1115,7 @@ class Kohana_Core {
 			// Display the contents of the output buffer
 			echo ob_get_clean();
 
-			return TRUE;
+			exit(1);
 		}
 		catch (Exception $e)
 		{
