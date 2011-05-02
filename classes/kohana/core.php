@@ -16,8 +16,8 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.0.10';
-	const CODENAME = 'Hierofalco';
+	const VERSION  = '3.0.11';
+	const CODENAME = 'vespertinus';
 
 	// Log message types
 	const ERROR    = 'ERROR';
