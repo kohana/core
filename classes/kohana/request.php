@@ -66,6 +66,10 @@ class Kohana_Request implements HTTP_Request {
 					// Use the specified URI
 					$uri = $options['uri'];
 				}
+				elseif ($uri === TRUE)
+				{
+					$uri = '';
+				}
 
 				if (isset($options['method']))
 				{
@@ -727,11 +731,24 @@ class Kohana_Request implements HTTP_Request {
 		// Assign injected routes
 		$this->_injected_routes = $injected_routes;
 
+		// Cleanse query parameters from URI (faster that parse_url())
+		$split_uri = explode('?', $uri);
+		$uri = array_shift($split_uri);
+
+		// Initial request has global $_GET already applied
+		if (Request::$initial !== NULL)
+		{
+			if ($split_uri)
+			{
+				parse_str($split_uri[0], $this->_get);
+			}
+		}
+
 		// Detect protocol (if present)
-		/**
-		 * @todo   make this smarter, search for localhost etc
-		 */
-		if (strpos($uri, '://') === FALSE)
+		// Always default to an internal request if we don't have an initial.
+		// This prevents the default index.php from being able to proxy
+		// external pages.
+		if (Request::$initial === NULL OR strpos($uri, '://') === FALSE)
 		{
 			// Remove trailing slashes from the URI
 			$uri = trim($uri, '/');
@@ -826,25 +843,31 @@ class Kohana_Request implements HTTP_Request {
 		if ( ! isset($params['directory']))
 		{
 			// Add the current directory
-			$params['directory'] = $this->_directory;
+			$params['directory'] = $this->directory();
 		}
 
 		if ( ! isset($params['controller']))
 		{
 			// Add the current controller
-			$params['controller'] = $this->_controller;
+			$params['controller'] = $this->controller();
 		}
 
 		if ( ! isset($params['action']))
 		{
 			// Add the current action
-			$params['action'] = $this->_action;
+			$params['action'] = $this->action();
 		}
 
 		// Add the current parameters
 		$params += $this->_params;
 
-		return $this->_route->uri($params);
+		$uri = $this->_route->uri($params);
+
+		if ( ! $query = $this->query())
+			return $uri;
+		else
+			return $uri . '?' . http_build_query($query, NULL, '&');
+
 	}
 
 	/**
@@ -861,7 +884,12 @@ class Kohana_Request implements HTTP_Request {
 	public function url(array $params = NULL, $protocol = NULL)
 	{
 		// Create a URI with the current route and convert it to a URL
-		return URL::site($this->uri($params), $protocol);
+		$url = URL::site($this->uri($params), $protocol);
+
+		if ( ! $query = $this->query())
+			return $url;
+		else
+			return $url . '?' . http_build_query($query, NULL, '&');
 	}
 
 	/**
@@ -893,45 +921,15 @@ class Kohana_Request implements HTTP_Request {
 	 *
 	 * @return  $this
 	 * @uses    Request::$messages
+	 * @deprecated This should not be here, it belongs in\n
+	 * Response::send_headers() where it is implemented correctly.
 	 */
 	public function send_headers()
 	{
-		if ( ! headers_sent())
-		{
-			if (isset($_SERVER['SERVER_PROTOCOL']))
-			{
-				// Use the default server protocol
-				$protocol = $_SERVER['SERVER_PROTOCOL'];
-			}
-			else
-			{
-				// Default to using newer protocol
-				$protocol = 'HTTP/1.1';
-			}
+		if ( ! ($response = $this->response()) instanceof Response)
+			return $this;
 
-			// HTTP status line
-			header($protocol.' '.$this->status.' '.Request::$messages[$this->status]);
-
-			foreach ($this->headers as $name => $value)
-			{
-				if (is_string($name))
-				{
-					// Combine the name and value to make a raw header
-					$value = "{$name}: {$value}";
-				}
-
-				// Send the raw header
-				header($value, TRUE);
-			}
-
-			foreach (Session::$instances as $session)
-			{
-				// Sessions will most likely write cookies, which will be sent
-				// with the headers
-				$session->write();
-			}
-		}
-
+		$response->send_headers();
 		return $this;
 	}
 
@@ -1309,7 +1307,7 @@ class Kohana_Request implements HTTP_Request {
 			return $this;
 		}
 
-		if ( ! $this->_header AND $this->is_initial())
+		if ($this->_header->count() === 0 AND $this->is_initial())
 		{
 			// Lazy load the request headers
 			$this->_header = HTTP::request_headers();
@@ -1407,23 +1405,14 @@ class Kohana_Request implements HTTP_Request {
 			return (string) $this->_response;
 		}
 
-		if ( ! $this->_post)
+		if ( ! $post = $this->post())
 		{
-			$body = $this->_body;
+			$body = $this->body();
 		}
 		else
 		{
-			$this->_header['content-type'] = 'application/x-www-form-urlencoded';
-			$body = HTTP::www_form_urlencode($this->_post);
-		}
-
-		if ( ! $this->_get)
-		{
-			$query_string = '';
-		}
-		else
-		{
-			$query_string = '?'.HTTP::www_form_urlencode($this->query());
+			$this->headers('content-type', 'application/x-www-form-urlencoded');
+			$body = http_build_query($post, NULL, '&');
 		}
 
 		// Prepare cookies
@@ -1441,7 +1430,7 @@ class Kohana_Request implements HTTP_Request {
 			$this->_header['cookie'] = implode('; ', $cookie_string);
 		}
 
-		$output = $this->_method.' '.$this->uri($this->param()).$query_string.' '.$this->protocol()."\n";
+		$output = $this->method().' '.$this->uri($this->param()).' '.strtoupper($this->protocol()).'/'.HTTP::$version."\n";
 		$output .= (string) $this->_header;
 		$output .= $body;
 

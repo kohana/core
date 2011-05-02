@@ -15,50 +15,53 @@
 class Kohana_ExceptionTest extends Unittest_TestCase
 {
 	/**
-	 * Provides test data for testExceptionHandler()
+	 * Provides test data for test_constructor()
 	 *
 	 * @return array
 	 */
-	public function provider_handler()
+	public function provider_constructor()
 	{
 		return array(
-			// $exception_type, $message, $is_cli, $expected
-			array('Kohana_Exception', 'hello, world!', TRUE, TRUE, 'hello, world!'),
-			array('ErrorException', 'hello, world!', TRUE, TRUE, 'hello, world!'),
-			// #3016
-			array('Kohana_Exception', '<hello, world!>', FALSE, TRUE, '&lt;hello, world!&gt;'),
+			array(array(''), '', 0),
+			array(array(':a'), ':a', 0),
+
+			array(array(':a', NULL), ':a', 0),
+			array(array(':a', array()), ':a', 0),
+			array(array(':a', array(':a' => 'b')), 'b', 0),
+			array(array(':a :b', array(':a' => 'c', ':b' => 'd')), 'c d', 0),
+
+			array(array(':a', NULL, 5), ':a', 5),
+			// #3927
+			array(array(':a', NULL, 'b'), ':a', 'b'),
 		);
 	}
 
 	/**
-	 * Tests Kohana_Exception::handler()
+	 * Tests Kohana_Kohana_Exception::__construct()
 	 *
 	 * @test
-	 * @dataProvider provider_handler
-	 * @covers Kohana_Exception::handler
-	 * @param boolean $exception_type    Exception type to throw
-	 * @param boolean $message           Message to pass to exception
-	 * @param boolean $is_cli            Use cli mode?
-	 * @param boolean $expected          Output for Kohana_Exception::handler
-	 * @param string  $expected_message  What to look for in the output string
+	 * @dataProvider provider_constructor
+	 * @covers Kohana_Kohana_Exception::__construct
+	 * @param array             $arguments          Arguments
+	 * @param string            $expected_message   Value from getMessage()
+	 * @param integer|string    $expected_code      Value from getCode()
 	 */
-	public function teste_handler($exception_type, $message, $is_cli, $expected, $expected_message)
+	public function test_constructor($arguments, $expected_message, $expected_code)
 	{
-		try
+		switch (count($arguments))
 		{
-			Kohana::$is_cli = $is_cli;
-			throw new $exception_type($message);
-		}
-		catch (Exception $e)
-		{
-			ob_start();
-			$this->assertEquals($expected, Kohana_Exception::handler($e));
-			$view = ob_get_contents();
-			ob_clean();
-			$this->assertContains($expected_message, $view);
+			case 1:
+				$exception = new Kohana_Exception(reset($arguments));
+			break;
+			case 2:
+				$exception = new Kohana_Exception(reset($arguments), next($arguments));
+			break;
+			default:
+				$exception = new Kohana_Exception(reset($arguments), next($arguments), next($arguments));
 		}
 
-		Kohana::$is_cli = TRUE;
+		$this->assertSame($expected_code, $exception->getCode());
+		$this->assertSame($expected_message, $exception->getMessage());
 	}
 
 	/**

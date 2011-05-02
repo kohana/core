@@ -67,6 +67,49 @@ class Kohana_RequestTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Tests that an initial request won't use an external client
+	 * 
+	 * @expectedException HTTP_Exception_404
+	 *
+	 * @return null
+	 */
+	public function test_initial_request_only_loads_internal()
+	{
+		$this->setEnvironment(
+			array(
+				'Kohana::$is_cli' => FALSE,
+				'Request::$initial' => NULL,
+			)
+		);
+
+		$request = new Request('http://www.google.com/');
+	}
+
+	/**
+	 * Tests that with an empty request, cli requests are routed properly
+	 *
+	 * @return null
+	 */
+	public function test_empty_cli_requests_route_properly()
+	{
+		$this->setEnvironment(
+			array(
+				'Kohana::$is_cli' => TRUE,
+				'Request::$initial' => NULL,
+			)
+		);
+
+		$route = new Route('(<controller>(/<action>))');
+		$route->defaults(array(
+			'controller' => 'welcome',
+			'action'     => 'index',
+		));
+
+		$request = Request::factory(TRUE, NULL, array($route));
+		$response = $request->execute();
+	}
+
+	/**
 	 * Provides the data for test_create()
 	 * @return  array
 	 */
@@ -502,7 +545,10 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function provider_uri_only_trimed_on_internal()
 	{
-		return array(
+		$old_request = Request::$initial;
+		Request::$initial = new Request('foo/bar');
+
+		$result = array(
 			array(
 				new Request('http://www.google.com'),
 				'http://www.google.com'
@@ -520,6 +566,9 @@ class Kohana_RequestTest extends Unittest_TestCase
 				'foo/bar'
 			)
 		);
+
+		Request::$initial = $old_request;
+		return $result;
 	}
 
 	/**
@@ -530,7 +579,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 *
 	 * @return void
 	 */
-	public function test_uri_only_trimed_on_internal($request, $expected)
+	public function test_uri_only_trimed_on_internal(Request $request, $expected)
 	{
 		$this->assertSame($request->uri(), $expected);
 	}
@@ -542,7 +591,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function provider_options_set_to_external_client()
 	{
-		return array(
+		$provider = array(
 			array(
 				array(
 					CURLOPT_PROXYPORT   => 8080,
@@ -553,21 +602,27 @@ class Kohana_RequestTest extends Unittest_TestCase
 					CURLOPT_PROXYPORT   => 8080,
 					CURLOPT_PROXYTYPE   => CURLPROXY_HTTP,
 					CURLOPT_VERBOSE     => TRUE
-				)
-			),
-			array(
-				array(
-					'proxyhost'         => 'http://localhost:8080',
-					'proxytype'         => HTTP_PROXY_HTTP,
-					'redirect'          => 2
-				),
-				array(
-					'proxyhost'         => 'http://localhost:8080',
-					'proxytype'         => HTTP_PROXY_HTTP,
-					'redirect'          => 2
 				)
 			)
 		);
+
+		if (extension_loaded('http'))
+		{
+			$provider[] = array(
+				array(
+					'proxyhost'         => 'http://localhost:8080',
+					'proxytype'         => HTTP_PROXY_HTTP,
+					'redirect'          => 2
+				),
+				array(
+					'proxyhost'         => 'http://localhost:8080',
+					'proxytype'         => HTTP_PROXY_HTTP,
+					'redirect'          => 2
+				)
+			);
+		}
+
+		return $provider;
 	}
 
 	/**
@@ -598,4 +653,157 @@ class Kohana_RequestTest extends Unittest_TestCase
 		}
 	}
 
+	/**
+	 * Provides data for test_headers_get()
+	 *
+	 * @return  array
+	 */
+	public function provider_headers_get()
+	{
+		$x_powered_by = 'Kohana Unit Test';
+		$content_type = 'application/x-www-form-urlencoded';
+
+		return array(
+			array(
+				$request = Request::factory('foo/bar')
+					->headers(array(
+						'x-powered-by' => $x_powered_by,
+						'content-type' => $content_type
+					)
+				),
+			array(
+				'x-powered-by' => $x_powered_by,
+				'content-type' => $content_type
+				)
+			)
+		);
+	}
+
+	/**
+	 * Tests getting headers from the Request object
+	 * 
+	 * @dataProvider provider_headers_get
+	 *
+	 * @param   Request  request to test
+	 * @param   array    headers to test against
+	 * @return  void
+	 */
+	public function test_headers_get($request, $headers)
+	{
+		foreach ($headers as $key => $expected_value)
+		{
+			$this->assertSame((string) $request->headers($key), $expected_value);
+		}
+	}
+
+	/**
+	 * Provides data for test_headers_set
+	 *
+	 * @return  array
+	 */
+	public function provider_headers_set()
+	{
+		return array(
+			array(
+				new Request('foo/bar'),
+				array(
+					'content-type'  => 'application/x-www-form-urlencoded',
+					'x-test-header' => 'foo'
+				),
+				"content-type: application/x-www-form-urlencoded\r\nx-test-header: foo\r\n\n"
+			),
+			array(
+				new Request('foo/bar'),
+				array(
+					'content-type'  => 'application/json',
+					'x-powered-by'  => 'kohana'
+				),
+				"content-type: application/json\r\nx-powered-by: kohana\r\n\n"
+			)
+		);
+	}
+
+	/**
+	 * Tests the setting of headers to the request object
+	 * 
+	 * @dataProvider provider_headers_set
+	 *
+	 * @param   Request    request object
+	 * @param   array      header(s) to set to the request object
+	 * @param   string     expected http header
+	 * @return  void
+	 */
+	public function test_headers_set(Request $request, $headers, $expected)
+	{
+		$request->headers($headers);
+		$this->assertSame($expected, (string) $request->headers());
+	}
+
+	/**
+	 * Provides test data for test_query_parameter_parsing()
+	 *
+	 * @return  array
+	 */
+	public function provider_query_parameter_parsing()
+	{
+		return array(
+			array(
+				new Request('foo/bar'),
+				array(
+					'foo'   => 'bar',
+					'sna'   => 'fu'
+				),
+				array(
+					'foo'   => 'bar',
+					'sna'   => 'fu'
+				),
+			),
+			array(
+				new Request('foo/bar?john=wayne&peggy=sue'),
+				array(
+					'foo'   => 'bar',
+					'sna'   => 'fu'
+				),
+				array(
+					'john'  => 'wayne',
+					'peggy' => 'sue',
+					'foo'   => 'bar',
+					'sna'   => 'fu'
+				),
+			),
+			array(
+				new Request('http://host.tld/foo/bar?john=wayne&peggy=sue'),
+				array(
+					'foo'   => 'bar',
+					'sna'   => 'fu'
+				),
+				array(
+					'john'  => 'wayne',
+					'peggy' => 'sue',
+					'foo'   => 'bar',
+					'sna'   => 'fu'
+				),
+			),
+		);
+	}
+
+	/**
+	 * Tests that query parameters are parsed correctly
+	 * 
+	 * @dataProvider provider_query_parameter_parsing
+	 *
+	 * @param   Request   request 
+	 * @param   array     query 
+	 * @param   array    expected 
+	 * @return  void
+	 */
+	public function test_query_parameter_parsing(Request $request, $query, $expected)
+	{
+		foreach ($query as $key => $value)
+		{
+			$request->query($key, $value);
+		}
+
+		$this->assertSame($expected, $request->query());
+	}
 } // End Kohana_RequestTest

@@ -8,7 +8,7 @@ Kohana is an open source, [object oriented](http://wikipedia.org/wiki/Object-Ori
 
 Anything can be extended using the unique [filesystem](about.filesystem) design, little or no [configuration](about.configuration) is necessary, [error handling](debugging.errors) helps locate the source of errors quickly, and [debugging](debugging) and [profiling](debugging.profiling) provide insight into the application.
 
-To help secure your applications, tools for [XSS removal](security.xss), [input validation](security.validation), [signed cookies](security.cookies), [form](security.forms) and [HTML](security.html) generators are all included. The [database](security.database) layer provides protection against [SQL injection](http://wikipedia.org/wiki/SQL_Injection). Of course, all official code is carefully written and reviewed for security.
+To help secure your applications, tools for [input validation](security.validation), [signed cookies](security.cookies), [form](security.forms) and [HTML](security.html) generators are all included. The [database](security.database) layer provides protection against [SQL injection](http://wikipedia.org/wiki/SQL_Injection). Of course, all official code is carefully written and reviewed for security.
 
 ## Contribute to the Documentation
 

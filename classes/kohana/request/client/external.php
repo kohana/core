@@ -93,6 +93,13 @@ class Kohana_Request_Client_External extends Request_Client {
 		$previous = Request::$current;
 		Request::$current = $request;
 
+		// Resolve the POST fields
+		if ($post = $request->post())
+		{
+			$request->body(http_build_query($post, NULL, '&'))
+				->headers('content-type', 'application/x-www-form-urlencoded');
+		}
+
 		try
 		{
 			// If PECL_HTTP is present, use extension to complete request
@@ -196,8 +203,11 @@ class Kohana_Request_Client_External extends Request_Client {
 		// Create an http request object
 		$http_request = new HTTPRequest($request->uri(), $http_method_mapping[$request->method()]);
 
-		// Set custom options
-		$http_request->setOptions($this->_options);
+		if ($this->_options)
+		{
+			// Set custom options
+			$http_request->setOptions($this->_options);
+		}
 
 		// Set headers
 		$http_request->setHeaders($request->headers()->getArrayCopy());
@@ -205,7 +215,7 @@ class Kohana_Request_Client_External extends Request_Client {
 		// Set cookies
 		$http_request->setCookies($request->cookie());
 
-		// Set body
+		// Set the body
 		$http_request->setBody($request->body());
 
 		try
@@ -251,30 +261,11 @@ class Kohana_Request_Client_External extends Request_Client {
 		// Set the request method
 		$options[CURLOPT_CUSTOMREQUEST] = $request->method();
 
-		switch ($request->method())
-		{
-			case Request::POST:
-				// Set the request post fields
-				$options[CURLOPT_POSTFIELDS] = http_build_query($request->post(), NULL, '&');
-			break;
-			case Request::PUT:
-				// Create a temporary file to hold the body
-				$body = tmpfile();
-
-				// Write the request body into the temp file
-				fwrite($body, $request->body());
-
-				// Get the length of the content
-				$length = ftell($body);
-
-				// Rewind to the beginning of the file
-				fseek($body, 0);
-
-				// Set the request body
-				$options[CURLOPT_INFILE]     = $body;
-				$options[CURLOPT_INFILESIZE] = $length;
-			break;
-		}
+		// Set the request body. This is perfectly legal in CURL even
+		// if using a request other than POST. PUT does support this method
+		// and DOES NOT require writing data to disk before putting it, if
+		// reading the PHP docs you may have got that impression. SdF
+		$options[CURLOPT_POSTFIELDS] = $request->body();
 
 		// Process headers
 		if ($headers = $request->headers())
@@ -361,12 +352,18 @@ class Kohana_Request_Client_External extends Request_Client {
 			$request->headers('cookie', http_build_query($cookies, NULL, '; '));
 		}
 
+		// Get the message body
+		$body = $request->body();
+
+		// Set the content length
+		$request->headers('content-length', strlen($body));
+
 		// Create the context
 		$options = array(
 			$request->protocol() => array(
 				'method'     => $request->method(),
 				'header'     => (string) $request->headers(),
-				'content'    => $request->body(),
+				'content'    => $body,
 				'user-agent' => 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')'
 			)
 		);
