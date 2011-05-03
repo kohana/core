@@ -132,15 +132,26 @@ class Kohana_URL {
 	{
 		if ($use_get)
 		{
+			if (is_bool($use_get))
+			{
+				// Use the initial Request's params
+				$query = Request::initial()->query();
+			}
+			elseif ($use_get instanceof Request)
+			{
+				// Use passed Request's params
+				$query = $use_get->query();
+			}
+			
 			if ($params === NULL)
 			{
 				// Use only the current parameters
-				$params = $_GET;
+				$params = $query;
 			}
 			else
 			{
 				// Merge the current and new parameters
-				$params = array_merge($_GET, $params);
+				$params = $params + $query;
 			}
 		}
 
