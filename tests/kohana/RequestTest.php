@@ -806,4 +806,48 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 		$this->assertSame($expected, $request->query());
 	}
+
+	/**
+	 * Provider for test_uri_without_query_parameters
+	 *
+	 * @return  array
+	 */
+	public function provider_uri_without_query_parameters()
+	{
+		return array(
+			array(
+				new Request('foo/bar?foo=bar&bar=foo'),
+				array(),
+				'foo/bar'
+			),
+			array(
+				new Request('foo/bar'),
+				array('bar' => 'foo', 'foo' => 'bar'),
+				'foo/bar'
+			),
+			array(
+				new Request('foo/bar'),
+				array(),
+				'foo/bar'
+			)
+		);
+	}
+
+	/**
+	 * Tests that the [Request::uri()] method does not return
+	 * query parameters
+	 *
+	 * @dataProvider provider_uri_without_query_parameters
+	 * 
+	 * @param   Request   request 
+	 * @param   array     query 
+	 * @param   string    expected 
+	 * @return  void
+	 */
+	public function test_uri_without_query_parameters(Request $request, $query, $expected)
+	{
+		$request->query($query);
+
+		$this->assertSame($expected, $request->uri());
+	}
 } // End Kohana_RequestTest
