@@ -218,6 +218,9 @@ class Kohana_Request_Client_External extends Request_Client {
 		// Set the body
 		$http_request->setBody($request->body());
 
+		// Set the query
+		$http_request->setQueryData($request->query());
+
 		try
 		{
 			$http_request->send();
@@ -292,8 +295,15 @@ class Kohana_Request_Client_External extends Request_Client {
 		// Apply any additional options set to Request_Client_External::$_options
 		$options += $this->_options;
 
+		$uri = $request->uri();
+
+		if ($query = $request->query())
+		{
+			$uri .= '?'.http_build_query($query, NULL, '&');
+		}
+
 		// Open a new remote connection
-		$curl = curl_init($request->uri());
+		$curl = curl_init($uri);
 
 		// Set connection options
 		if ( ! curl_setopt_array($curl, $options))
@@ -373,7 +383,14 @@ class Kohana_Request_Client_External extends Request_Client {
 
 		stream_context_set_option($context, $this->_options);
 
-		$stream = fopen($request->uri(), $mode, FALSE, $context);
+		$uri = $request->uri();
+
+		if ($query = $request->query())
+		{
+			$uri .= '?'.http_build_query($query, NULL, '&');
+		}
+
+		$stream = fopen($uri, $mode, FALSE, $context);
 
 		$meta_data = stream_get_meta_data($stream);
 
