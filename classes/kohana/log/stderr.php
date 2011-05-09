@@ -8,7 +8,7 @@
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaphp.com/license
  */
-class Kohana_Log_StdErr extends Kohana_Log_Writer {
+class Kohana_Log_StdErr extends Log_Writer {
 	/**
 	 * Writes each of the messages to STDERR.
 	 *
