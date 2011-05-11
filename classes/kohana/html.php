@@ -180,7 +180,7 @@ class Kohana_HTML {
 		$safe = '';
 		foreach (str_split($string) as $letter)
 		{
-			switch (rand(1, 4))
+			switch (rand(1, 3))
 			{
 				// HTML entity code
 				case 1:
@@ -192,13 +192,8 @@ class Kohana_HTML {
 					$safe .= '&#x'.dechex(ord($letter)).';';
 				break;
 
-				// Comments
-				case 3:
-					$safe .= '<!-- Obfuscation -->'.$letter.'<!-- Obfuscation -->';
-				break;
-
 				// Raw (no) encoding
-				case 4:
+				case 3:
 					$safe .= $letter;
 			}
 		}
