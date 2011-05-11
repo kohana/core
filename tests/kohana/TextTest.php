@@ -592,7 +592,7 @@ class Kohana_TextTest extends Unittest_TestCase
 
 		foreach ($emails as $email)
 		{
-			$this->assertNotContains($email, $linked_text);
+			$this->assertContains('&#109;&#097;&#105;&#108;&#116;&#111;&#058;'.$email, $linked_text);
 		}
 
 	}

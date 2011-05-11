@@ -172,34 +172,6 @@ class Kohana_HTMLTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Provides test data for test_obfuscate
-	 *
-	 * @return array Array of test data
-	 */
-	public function provider_obfuscate()
-	{
-		return array(
-			array('something crazy'),
-			array('me@google.com'),
-		);
-	}
-
-	/**
-	 * Tests HTML::obfuscate
-	 *
-	 * @test
-	 * @dataProvider   provider_obfuscate
-	 * @param string   $string            The string to obfuscate
-	 */
-	public function test_obfuscate($string)
-	{
-		$this->assertNotSame(
-			$string,
-			HTML::obfuscate($string)
-		);
-	}
-
-	/**
 	 * Provides test data for test_anchor
 	 *
 	 * @return array Test data
