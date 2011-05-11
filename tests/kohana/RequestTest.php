@@ -546,7 +546,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	public function provider_uri_only_trimed_on_internal()
 	{
 		$old_request = Request::$initial;
-		Request::$initial = new Request;
+		Request::$initial = new Request(TRUE);
 
 		$result = array(
 			array(
@@ -705,7 +705,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	{
 		return array(
 			array(
-				new Request,
+				Request::factory(),
 				array(
 					'content-type'  => 'application/x-www-form-urlencoded',
 					'x-test-header' => 'foo'
@@ -713,7 +713,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 				"content-type: application/x-www-form-urlencoded\nx-test-header: foo\n\n"
 			),
 			array(
-				new Request,
+				Request::factory(),
 				array(
 					'content-type'  => 'application/json',
 					'x-powered-by'  => 'kohana'

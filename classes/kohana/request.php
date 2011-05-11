@@ -863,11 +863,7 @@ class Kohana_Request implements HTTP_Request {
 
 		$uri = $this->_route->uri($params);
 
-		if ( ! $query = $this->query())
-			return $uri;
-		else
-			return $uri . '?' . http_build_query($query, NULL, '&');
-
+		return $uri;
 	}
 
 	/**
@@ -886,10 +882,7 @@ class Kohana_Request implements HTTP_Request {
 		// Create a URI with the current route and convert it to a URL
 		$url = URL::site($this->uri($params), $protocol);
 
-		if ( ! $query = $this->query())
-			return $url;
-		else
-			return $url . '?' . http_build_query($query, NULL, '&');
+		return $url;
 	}
 
 	/**
