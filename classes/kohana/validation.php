@@ -290,6 +290,15 @@ class Kohana_Validation extends ArrayObject {
 				if (is_array($rule) OR ! is_string($rule))
 				{
 					// This is either a callback as an array or a lambda
+
+
+					// Check if is array and first argument is bound
+					if (is_array($rule) AND is_string($rule[0]) AND array_key_exists($rule[0], $this->_bound))
+					{
+						// Replace with bound value
+						$rule[0] = $this->_bound[$rule[0]];
+					}
+
 					$passed = call_user_func_array($rule, $params);
 				}
 				elseif (method_exists('Valid', $rule))
