@@ -239,6 +239,32 @@ class Kohana_HTMLTest extends Unittest_TestCase
 				'https',
 				TRUE,
 			),
+			array(
+				'<a href="https://www.kohanaframework.org/kohana/index.php/users/example">Kohana</a>',
+				array(),
+				'users/example',
+				'Kohana',
+				NULL,
+				'https',
+			),
+			array(
+				'<a href="https://www.kohanaframework.org/kohana/index.php/users/example">Kohana</a>',
+				array(),
+				'users/example',
+				'Kohana',
+				NULL,
+				'https',
+				TRUE,
+			),
+			array(
+				'<a href="https://www.kohanaframework.org/kohana/users/example">Kohana</a>',
+				array(),
+				'users/example',
+				'Kohana',
+				NULL,
+				'https',
+				FALSE,
+			),
 		);
 	}
 
@@ -248,7 +274,7 @@ class Kohana_HTMLTest extends Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_anchor
 	 */
-	public function test_anchor($expected, array $options, $uri, $title = NULL, array $attributes = NULL, $protocol = NULL, $index = FALSE)
+	public function test_anchor($expected, array $options, $uri, $title = NULL, array $attributes = NULL, $protocol = NULL, $index = TRUE)
 	{
 		// $this->setEnvironment($options);
 
