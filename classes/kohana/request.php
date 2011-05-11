@@ -144,7 +144,9 @@ class Kohana_Request implements HTTP_Request {
 				{
 					// Use the forwarded IP address, typically set when the
 					// client is using a proxy server.
-					Request::$client_ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+					// Format: "X-Forwarded-For: client1, proxy1, proxy2"
+					$client_ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+					Request::$client_ip = array_shift($client_ips);
 				}
 				elseif (isset($_SERVER['HTTP_CLIENT_IP']))
 				{
