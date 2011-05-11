@@ -53,6 +53,8 @@ abstract class Kohana_Controller_REST extends Controller {
 	 */
 	public function before()
 	{
+		parent::before();
+
 		$this->_action_requested = $this->request->action();
 
 		$method = Arr::get($_SERVER, 'HTTP_X_HTTP_METHOD_OVERRIDE', $this->request->method());
@@ -65,8 +67,6 @@ abstract class Kohana_Controller_REST extends Controller {
 		{
 			$this->request->action($this->_action_map[$method]);
 		}
-
-		return parent::before();
 	}
 
 	/**
@@ -81,6 +81,8 @@ abstract class Kohana_Controller_REST extends Controller {
 		{
 			$this->response->headers('cache-control', 'no-cache, no-store, max-age=0, must-revalidate');
 		}
+
+		parent::after();
 	}
 
 	/**
