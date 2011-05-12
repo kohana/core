@@ -13,7 +13,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaphp.com/license
  */
-Class Kohana_Config_GroupTest extends Kohana_Unittest_TestCase
+class Kohana_Config_GroupTest extends Kohana_Unittest_TestCase
 {
 	/**
 	 * Create a mock Kohana_Config instance

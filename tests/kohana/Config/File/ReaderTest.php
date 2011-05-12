@@ -12,7 +12,7 @@
  * @copyright  (c) 2008-2010 Kohana Team
  * @license    http://kohanaphp.com/license
  */
-Class Kohana_Config_File_ReaderTest extends Kohana_Unittest_TestCase {
+class Kohana_Config_File_ReaderTest extends Kohana_Unittest_TestCase {
 
 	/**
 	 * If we don't pass a directory to the reader then it should assume 

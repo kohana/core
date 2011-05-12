@@ -11,4 +11,4 @@
  * @license    http://kohanaphp.com/license
  */
 
-Interface Kohana_Config_Source {}
+interface Kohana_Config_Source {}
