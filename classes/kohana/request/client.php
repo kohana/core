@@ -40,17 +40,14 @@ abstract class Kohana_Request_Client {
 	 */
 	public function __construct(array $params = array())
 	{
-		if ($params)
+		foreach ($params as $key => $value)
 		{
-			foreach ($params as $key => $value)
+			if (method_exists($this, $key))
 			{
-				if (method_exists($this, $key))
+				if (property_exists($this, $key) OR property_exists($this, '_'.$key))
 				{
-					if (property_exists($this, $key) OR property_exists($this, '_'.$key))
-					{
-						$method = trim($key, '_');
-						$this->$method($value);
-					}
+					$method = trim($key, '_');
+					$this->$method($value);
 				}
 			}
 		}
@@ -213,7 +210,7 @@ abstract class Kohana_Request_Client {
 		// Check for Pragma: no-cache
 		if ($pragma = $request->headers('pragma'))
 		{
-			if ($pragma instanceof Http_Header_Value and $pragma->key == 'no-cache')
+			if ($pragma instanceof HTTP_Header_Value and $pragma->key == 'no-cache')
 				return FALSE;
 			elseif (is_array($pragma) and isset($pragma['no-cache']))
 				return FALSE;

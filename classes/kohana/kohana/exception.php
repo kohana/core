@@ -35,9 +35,9 @@ class Kohana_Kohana_Exception extends Exception {
 	 *     throw new Kohana_Exception('Something went terrible wrong, :user',
 	 *         array(':user' => $user));
 	 *
-	 * @param   string   error message
-	 * @param   array    translation variables
-	 * @param   integer  the exception code
+	 * @param   string          error message
+	 * @param   array           translation variables
+	 * @param   integer|string  the exception code
 	 * @return  void
 	 */
 	public function __construct($message, array $variables = NULL, $code = 0)
@@ -48,11 +48,15 @@ class Kohana_Kohana_Exception extends Exception {
 			Kohana_Exception::$php_errors[E_DEPRECATED] = 'Deprecated';
 		}
 
+		// Save the unmodified code
+		// @link http://bugs.php.net/39615
+		$this->code = $code;
+
 		// Set the message
 		$message = __($message, $variables);
 
-		// Pass the message to the parent
-		parent::__construct($message, $code);
+		// Pass the message and integer code to the parent
+		parent::__construct($message, (int) $code);
 	}
 
 	/**
@@ -116,12 +120,40 @@ class Kohana_Kohana_Exception extends Exception {
 				}
 			}
 
+			// Create a text version of the exception
+			$error = Kohana_Exception::text($e);
+
+			if (is_object(Kohana::$log))
+			{
+				// Add this exception to the log
+				Kohana::$log->add(Log::ERROR, $error);
+
+				// Make sure the logs are written
+				Kohana::$log->write();
+			}
+
+			if (Kohana::$is_cli)
+			{
+				// Just display the text of the exception
+				echo "\n{$error}\n";
+
+				exit(1);
+			}
+
 			if ( ! headers_sent())
 			{
 				// Make sure the proper http header is sent
-				$http_header_status = ($e instanceof Http_Exception) ? $code : 500;
+				$http_header_status = ($e instanceof HTTP_Exception) ? $code : 500;
 
 				header('Content-Type: text/html; charset='.Kohana::$charset, TRUE, $http_header_status);
+			}
+
+			if (Request::$current !== NULL AND Request::current()->is_ajax() === TRUE)
+			{
+				// Just display the text of the exception
+				echo "\n{$error}\n";
+
+				exit(1);
 			}
 
 			// Start an output buffer
@@ -142,27 +174,7 @@ class Kohana_Kohana_Exception extends Exception {
 			// Display the contents of the output buffer
 			echo ob_get_clean();
 
-			// Create a text version of the exception
-			$error = Kohana_Exception::text($e);
-
-			if (is_object(Kohana::$log))
-			{
-				// Add this exception to the log
-				Kohana::$log->add(Log::ERROR, $error);
-
-				// Make sure the logs are written
-				Kohana::$log->write();
-			}
-
-			if (Kohana::$is_cli)
-			{
-				// Just display the text of the exception
-				echo "\n{$error}\n";
-
-				return TRUE;
-			}
-
-			return TRUE;
+			exit(1);
 		}
 		catch (Exception $e)
 		{

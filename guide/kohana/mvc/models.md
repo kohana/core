@@ -32,4 +32,4 @@ If you want database access, have your model extend the Model_Database class:
 		}
 	}
 
-If you want CRUD/ORM capabilities, see the [ORM Module](/guide/orm)
+If you want CRUD/ORM capabilities, see the [ORM Module](../../guide/orm)

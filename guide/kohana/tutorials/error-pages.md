@@ -32,13 +32,13 @@ Our custom exception handler is self explanatory.
 						'message' => rawurlencode($e->getMessage())
 					);
 
-					if ($e instanceof Http_Exception)
+					if ($e instanceof HTTP_Exception)
 					{
 						$attributes['action'] = $e->getCode();
 					}
 
 					// Error sub-request.
-					echo Request::factory(Route::url('error', $attributes))
+					echo Request::factory(Route::get('error')->uri($attributes))
 					->execute()
 					->send_headers()
 					->body();
@@ -62,7 +62,7 @@ If we are in the development environment then pass it off to Kohana otherwise:
 
 * Log the error
 * Set the route action and message attributes.
-* If a `Http_Exception` was thrown, then override the action with the error code.
+* If a `HTTP_Exception` was thrown, then override the action with the error code.
 * Fire off an internal sub-request.
 
 The action will be used as the HTTP response code. By default this is: 500 (internal
@@ -70,7 +70,7 @@ server error) unless a `HTTP_Response_Exception` was thrown.
 
 So this:
 
-	throw new Http_Exception_404(':file does not exist', array(':file' => 'Gaia'));
+	throw new HTTP_Exception_404(':file does not exist', array(':file' => 'Gaia'));
 
 would display a nice 404 error page, where:
 
@@ -86,16 +86,16 @@ would display an error 500 page.
 		'controller' => 'error_handler'
 	));
 
-## 3. The Error Page Controller
+## 2. The Error Page Controller
 
 	public function before()
 	{
 		parent::before();
 
-		$this->template->page = URL::site(rawurldecode(Request::$instance->uri));
+		$this->template->page = URL::site(rawurldecode(Request::$initial->uri()));
 
 		// Internal request only!
-		if (Request::$instance !== Request::$current)
+		if (Request::$initial !== Request::$current)
 		{
 			if ($message = rawurldecode($this->request->param('message')))
 			{
@@ -118,37 +118,37 @@ would display an error 500 page.
    `error/404/email%20your%20login%20information%20to%20hacker%40google.com`
 
 
-	public function action_404()
-	{
-		$this->template->title = '404 Not Found';
-
-		// Here we check to see if a 404 came from our website. This allows the
-		// webmaster to find broken links and update them in a shorter amount of time.
-		if (isset ($_SERVER['HTTP_REFERER']) AND strstr($_SERVER['HTTP_REFERER'], $_SERVER['SERVER_NAME']) !== FALSE)
+		public function action_404()
 		{
-			// Set a local flag so we can display different messages in our template.
-			$this->template->local = TRUE;
+			$this->template->title = '404 Not Found';
+
+			// Here we check to see if a 404 came from our website. This allows the
+			// webmaster to find broken links and update them in a shorter amount of time.
+			if (isset ($_SERVER['HTTP_REFERER']) AND strstr($_SERVER['HTTP_REFERER'], $_SERVER['SERVER_NAME']) !== FALSE)
+			{
+				// Set a local flag so we can display different messages in our template.
+				$this->template->local = TRUE;
+			}
+
+			// HTTP Status code.
+			$this->response->status(404);
 		}
 
-		// HTTP Status code.
-		$this->response->status(404);
-	}
+		public function action_503()
+		{
+			$this->template->title = 'Maintenance Mode';
+		}
 
-	public function action_503()
-	{
-		$this->template->title = 'Maintenance Mode';
-	}
-
-	public function action_500()
-	{
-		$this->template->title = 'Internal Server Error';
-	}
+		public function action_500()
+		{
+			$this->template->title = 'Internal Server Error';
+		}
 
 You will notice that each example method is named after the HTTP response code
 and sets the request response code.
 
-## 4. Conclusion
+## 3. Conclusion
 
 So that's it. Now displaying a nice error page is as easy as:
 
-	throw new Http_Exception_503('The website is down');
+	throw new HTTP_Exception_503('The website is down');

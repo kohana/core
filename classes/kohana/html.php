@@ -98,7 +98,7 @@ class Kohana_HTML {
 	 * @uses    URL::site
 	 * @uses    HTML::attributes
 	 */
-	public static function anchor($uri, $title = NULL, array $attributes = NULL, $protocol = NULL, $index = FALSE)
+	public static function anchor($uri, $title = NULL, array $attributes = NULL, $protocol = NULL, $index = TRUE)
 	{
 		if ($title === NULL)
 		{
@@ -164,60 +164,6 @@ class Kohana_HTML {
 	}
 
 	/**
-	 * Generates an obfuscated version of a string. Text passed through this
-	 * method is less likely to be read by web crawlers and robots, which can
-	 * be helpful for spam prevention, but can prevent legitimate robots from
-	 * reading your content.
-	 *
-	 *     echo HTML::obfuscate($text);
-	 *
-	 * @param   string  string to obfuscate
-	 * @return  string
-	 * @since   3.0.3
-	 */
-	public static function obfuscate($string)
-	{
-		$safe = '';
-		foreach (str_split($string) as $letter)
-		{
-			switch (rand(1, 3))
-			{
-				// HTML entity code
-				case 1:
-					$safe .= '&#'.ord($letter).';';
-				break;
-
-				// Hex character code
-				case 2:
-					$safe .= '&#x'.dechex(ord($letter)).';';
-				break;
-
-				// Raw (no) encoding
-				case 3:
-					$safe .= $letter;
-			}
-		}
-
-		return $safe;
-	}
-
-	/**
-	 * Generates an obfuscated version of an email address. Helps prevent spam
-	 * robots from finding email addresses.
-	 *
-	 *     echo HTML::email($address);
-	 *
-	 * @param   string  email address
-	 * @return  string
-	 * @uses    HTML::obfuscate
-	 */
-	public static function email($email)
-	{
-		// Make sure the at sign is always obfuscated
-		return str_replace('@', '&#64;', HTML::obfuscate($email));
-	}
-
-	/**
 	 * Creates an email (mailto:) anchor. Note that the title is not escaped,
 	 * to allow HTML elements within links (images, etc).
 	 *
@@ -227,14 +173,10 @@ class Kohana_HTML {
 	 * @param   string  link text
 	 * @param   array   HTML anchor attributes
 	 * @return  string
-	 * @uses    HTML::email
 	 * @uses    HTML::attributes
 	 */
 	public static function mailto($email, $title = NULL, array $attributes = NULL)
 	{
-		// Obfuscate email address
-		$email = HTML::email($email);
-
 		if ($title === NULL)
 		{
 			// Use the email address as the title

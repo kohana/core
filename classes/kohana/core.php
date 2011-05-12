@@ -16,14 +16,14 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.1.1';
-	const CODENAME = 'merle';
+	const VERSION  = '3.2.0';
+	const CODENAME = 'Kolibri';
 
 	// Common environment type constants for consistency and convenience
-	const PRODUCTION  = 1;
-	const STAGING     = 2;
-	const TESTING     = 3;
-	const DEVELOPMENT = 4;
+	const PRODUCTION  = 10;
+	const STAGING     = 20;
+	const TESTING     = 30;
+	const DEVELOPMENT = 40;
 
 	// Security check that is added to all generated PHP files
 	const FILE_SECURITY = '<?php defined(\'SYSPATH\') or die(\'No direct script access.\');';
@@ -627,10 +627,10 @@ class Kohana_Core {
 		// Create a partial path of the filename
 		$path = $dir.DIRECTORY_SEPARATOR.$file.$ext;
 
-		if (Kohana::$caching === TRUE AND isset(Kohana::$_files[$path]))
+		if (Kohana::$caching === TRUE AND isset(Kohana::$_files[$path.($array ? '_array' : '_path')]))
 		{
 			// This path has been cached
-			return Kohana::$_files[$path];
+			return Kohana::$_files[$path.($array ? '_array' : '_path')];
 		}
 
 		if (Kohana::$profiling === TRUE AND class_exists('Profiler', FALSE))
@@ -677,7 +677,7 @@ class Kohana_Core {
 		if (Kohana::$caching === TRUE)
 		{
 			// Add the path to the cache
-			Kohana::$_files[$path] = $found;
+			Kohana::$_files[$path.($array ? '_array' : '_path')] = $found;
 
 			// Files have been changed
 			Kohana::$_files_changed = TRUE;

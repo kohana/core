@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Kohana_Http_Exception_409 extends Http_Exception {
+class Kohana_HTTP_Exception_409 extends HTTP_Exception {
 
 	/**
 	 * @var   integer    HTTP 409 Conflict

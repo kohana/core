@@ -18,7 +18,7 @@ abstract class Kohana_Session {
 	/**
 	 * @var  array  session instances
 	 */
-	protected static $instances = array();
+	public static $instances = array();
 
 	/**
 	 * Creates a singleton session of the given type. Some session types
@@ -294,9 +294,11 @@ abstract class Kohana_Session {
 	 */
 	public function read($id = NULL)
 	{
-		if (is_string($data = $this->_read($id)))
+		$data = NULL;
+
+		try
 		{
-			try
+			if (is_string($data = $this->_read($id)))
 			{
 				if ($this->_encrypted)
 				{
@@ -312,10 +314,15 @@ abstract class Kohana_Session {
 				// Unserialize the data
 				$data = unserialize($data);
 			}
-			catch (Exception $e)
+			else
 			{
-				// Ignore all reading errors
+				// Ignore these, session is valid, likely no data though.
 			}
+		}
+		catch (Exception $e)
+		{
+			// Ignore all reading errors, but log them
+			Kohana::$log->add(Log::ERROR, 'Error reading session data: '.$id);
 		}
 
 		if (is_array($data))

@@ -1,3 +1,3 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-interface Http_Interaction extends Kohana_Http_Interaction {}
+interface HTTP_Message extends Kohana_HTTP_Message {}
