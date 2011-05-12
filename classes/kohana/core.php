@@ -803,11 +803,7 @@ class Kohana_Core {
 	 *     $host = Kohana::config('database.default.connection.hostname')
 	 *
 	 * @param   string   group name
-<<<<<<< HEAD
 	 * @return  Kohana_Config_Group
-=======
-	 * @return  Config
->>>>>>> origin/3.2/develop
 	 */
 	public static function config($group)
 	{
