@@ -112,17 +112,17 @@ class Kohana_HTTP_Header_ValueTest extends Unittest_TestCase
 	public function test_constructor_allows_and_parses_header_in_array_format()
 	{
 		$input = array(
-			'key'        => 'name',
-			'value'      => 'kohana',
-			'properties' => array(
+			'_key'        => 'name',
+			'_value'      => 'kohana',
+			'_properties' => array(
 				'ttl' => '60'
 			)
 		);
 		$header = new Kohana_HTTP_Header_Value($input);
 
-		$this->assertSame($input['key'],        $header->key);
-		$this->assertSame($input['value'],      $header->value);
-		$this->assertSame($input['properties'], $header->properties);
+		$this->assertSame($input['_key'],        $header->key());
+		$this->assertSame($input['_value'],      $header->value());
+		$this->assertSame($input['_properties'], $header->properties());
 	}
 
 	/**
@@ -137,9 +137,9 @@ class Kohana_HTTP_Header_ValueTest extends Unittest_TestCase
 			array(
 				'name=value; property; another_property=property_value',
 				array(
-					'key'  => 'name',
-					'value' => 'value',
-					'properties' => array('property', 'another_property' => 'property_value')
+					'_key'  => 'name',
+					'_value' => 'value',
+					'_properties' => array('property', 'another_property' => 'property_value')
 				),
 			),
 		);
@@ -158,7 +158,6 @@ class Kohana_HTTP_Header_ValueTest extends Unittest_TestCase
 	public function test_compiles_down_to_valid_header_when_cast_to_string($expected, $input)
 	{
 		$header = new Kohana_HTTP_Header_Value($input);
-
 		$this->assertSame($expected, (string) $header);
 	}
 }

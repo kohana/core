@@ -22,6 +22,9 @@ class Kohana_ResponseTest extends Unittest_TestCase
 	 */
 	public function test_expose()
 	{
+		if (headers_sent())
+			$this->markTestSkipped('Cannot test this feature as headers have already been sent!');
+
 		Kohana::$expose = TRUE;
 		$response = new Response;
 		$headers = $response->send_headers()->headers();
@@ -201,6 +204,9 @@ class Kohana_ResponseTest extends Unittest_TestCase
 	 */
 	public function test_send_headers_cli()
 	{
+		if (headers_sent())
+			$this->markTestSkipped('Cannot test this feature as headers have already been sent!');
+
 		if (Kohana::$is_cli)
 		{
 			$content_type = 'application/json';
@@ -237,6 +243,9 @@ class Kohana_ResponseTest extends Unittest_TestCase
 	 */
 	public function test_default_content_type_when_not_set()
 	{
+		if (headers_sent())
+			$this->markTestSkipped('Cannot test this feature as headers have already been sent!');
+
 		$response = new Response;
 		$headers = $response->send_headers()->headers();
 		$this->assertSame(Kohana::$content_type.'; charset='.Kohana::$charset, (string) $headers['content-type']);

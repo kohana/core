@@ -78,9 +78,9 @@ class Kohana_HTTP_Header extends ArrayObject {
 						array_shift($array);
 
 						// Create the HTTP_Header_Value component array
-						$http_header['key']        = key($key_value_component);
-						$http_header['value']      = current($key_value_component);
-						$http_header['properties'] = $array;
+						$http_header['_key']        = key($key_value_component);
+						$http_header['_value']      = current($key_value_component);
+						$http_header['_properties'] = $array;
 
 						// Create the HTTP_Header_Value
 						$values[] = new HTTP_Header_Value($http_header);
@@ -121,13 +121,13 @@ class Kohana_HTTP_Header extends ArrayObject {
 				$v = new HTTP_Header_Value($v);
 
 				// Convert the value string into an object
-				if ($v->key === NULL)
+				if ($v->key() === NULL)
 				{
 					$parsed_values[] = $v;
 				}
 				else
 				{
-					$parsed_values[$v->key] = $v;
+					$parsed_values[$v->key()] = $v;
 				}
 			}
 
@@ -185,15 +185,15 @@ class Kohana_HTTP_Header extends ArrayObject {
 		{
 			if (is_array($value))
 			{
-				$header .= $key.': '.(implode(', ', $value))."\n";
+				$header .= $key.': '.(implode(', ', $value))."\r\n";
 			}
 			else
 			{
-				$header .= $key.': '.$value."\n";
+				$header .= $key.': '.$value."\r\n";
 			}
 		}
 
-		return $header."\n";
+		return $header."\r\n";
 	}
 
 	/**
@@ -324,6 +324,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * @param   HTTP_Header_Value 
 	 * @param   HTTP_Header_Value 
 	 * @return  int
+	 * @see     http://www.ietf.org/rfc/rfc2616.txt (Section 14.1)
 	 */
 	protected function _sort_by_comparison($value_a, $value_b)
 	{
@@ -335,13 +336,35 @@ class Kohana_HTTP_Header extends ArrayObject {
 		}
 
 		// Extract the qualities
-		$a = (float) Arr::get($value_a->properties, 'q', HTTP_Header_Value::$default_quality);
-		$b = (float) Arr::get($value_b->properties, 'q', HTTP_Header_Value::$default_quality);
+		$a = (float) Arr::get($value_a->properties, 'q', HTTP_Header_Value::DEFAULT_QUALITY);
+		$b = (float) Arr::get($value_b->properties, 'q', HTTP_Header_Value::DEFAULT_QUALITY);
 
 		// Return the string comparison of two floats.
 		// This implementation gets past the floating point math problems
 		// that occur when testing for equality.
-		return strcmp( (string) $a, (string) $b);
+		if (strcmp( (string) $a, (string) $b) === 0)
+			return 0;
+
+		// If the qualities are equal, more interrogation is required
+		// Get the values for comparisom
+		$values = array(
+			1   => $value_a->render(NULL, TRUE),
+			-1  => $value_b->render(NULL, TRUE)
+		);
+
+		// Look for */* first, this is fastish
+		if (($count = count($catch_all = array_keys($values, '*/*'))) > 0)
+			return ($count == 2) ? 0 : $catch_all[0] * -1;
+
+		// Now lets look for foo/*, getting slower 
+		if (($count = count($catch_some = preg_grep('/(\w+\/\*)/', $values))) > 0)
+			return ($count == 2) ? 0 : $catch_some[0] * -1;
+
+		// If we get here we'll assume eqauality.
+		// Technically there should be final search on specificity, however
+		// this is probably not required for 9/10 use cases and we've wasted
+		// a lot of CPU time already.
+		return 0;
 	}
 
 } // End Kohana_HTTP_Header

@@ -62,18 +62,18 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 					'server'           => new HTTP_Header_Value('Apache'),
 					'set-cookie'       => array(
 						new HTTP_Header_Value(array(
-							'key'        => 'PREF',
-							'value'      => 'ID=dbfa7be8975d02f9:FF=0:TM=1300032139:LM=1300032139:S=ufhpKoOHVm55WY6v',
-							'properties' => array(
+							'_key'        => 'PREF',
+							'_value'      => 'ID=dbfa7be8975d02f9:FF=0:TM=1300032139:LM=1300032139:S=ufhpKoOHVm55WY6v',
+							'_properties' => array(
 								'expires'    => 'Tue, 12-Mar-2013 16:02:19 GMT',
 								'path'       => '/',
 								'domain'     => '.google.co.uk'
 							)
 						)),
 						new HTTP_Header_Value(array(
-							'key'        => 'NID',
-							'value'      => '44=CxNpOQbQ7fFoxIDZWRHQJaKXgZvi76heU9OfsVi75gUH2Ik0p6tAuqW9AmTwvsE1oy0XBHDgIgMq-301hvAiyHC1sgI71pKcMUEf5VCRvCwHxJH9ZR-tlJdDD-df1vnz',
-							'properties' => array(
+							'_key'        => 'NID',
+							'_value'      => '44=CxNpOQbQ7fFoxIDZWRHQJaKXgZvi76heU9OfsVi75gUH2Ik0p6tAuqW9AmTwvsE1oy0XBHDgIgMq-301hvAiyHC1sgI71pKcMUEf5VCRvCwHxJH9ZR-tlJdDD-df1vnz',
+							'_properties' => array(
 								'expires'    => 'Mon, 12-Sep-2011 16:02:19 GMT',
 								'path'       => '/',
 								'domain'     => '.google.co.uk',

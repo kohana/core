@@ -16,9 +16,10 @@
 class Kohana_HTTP_Header_Value {
 
 	/**
-	 * @var     float    The default quality header property value
+	 * The default quality for Accept types
+	 * @see http://www.ietf.org/rfc/rfc2616.pdf (14.1 Accept)
 	 */
-	public static $default_quality = 1.0;
+	const DEFAULT_QUALITY = 1;
 
 	/**
 	 * Detects and returns key/value pairs
@@ -44,17 +45,17 @@ class Kohana_HTTP_Header_Value {
 	/**
 	 * @var     array
 	 */
-	public $properties = array();
+	protected $_properties = array();
 
 	/**
 	 * @var     void|string
 	 */
-	public $key;
+	protected $_key;
 
 	/**
 	 * @var     array
 	 */
-	public $value = array();
+	protected $_value = array();
 
 	/**
 	 * Builds the header field
@@ -68,8 +69,8 @@ class Kohana_HTTP_Header_Value {
 		// If no parse is set, set the value and get out of here (user-agent)
 		if ($no_parse)
 		{
-			$this->key = NULL;
-			$this->value = $value;
+			$this->_key = NULL;
+			$this->_value = $value;
 			return;
 		}
 
@@ -109,7 +110,7 @@ class Kohana_HTTP_Header_Value {
 				}
 
 				// Apply the parsed values
-				$this->properties = $properties;
+				$this->properties($properties);
 			}
 
 			// Parse the value and get key
@@ -120,11 +121,11 @@ class Kohana_HTTP_Header_Value {
 			if (is_string($key))
 			{
 				// Apply the key as a property
-				$this->key = $key;
+				$this->key($key);
 			}
 
 			// Apply the value
-			$this->value = current($value);
+			$this->value(current($value));
 		}
 		// Unrecognised value type
 		else
@@ -143,11 +144,11 @@ class Kohana_HTTP_Header_Value {
 	{
 		if ($key === NULL)
 		{
-			return $this->key;
+			return $this->_key;
 		}
 		else
 		{
-			$this->key = $key;
+			$this->_key = $key;
 			return $this;
 		}
 	}
@@ -162,11 +163,11 @@ class Kohana_HTTP_Header_Value {
 	{
 		if ($value === NULL)
 		{
-			return $this->value;
+			return $this->_value;
 		}
 		else
 		{
-			$this->value = $value;
+			$this->_value = $value;
 			return $this;
 		}
 	}
@@ -174,46 +175,73 @@ class Kohana_HTTP_Header_Value {
 	/**
 	 * Provides direct access to the properties of this header value
 	 *
-	 * @param   array    $properties Properties to set to this value
+	 * @param   array    Properties to set to this value
+	 * @param   bool     filter_quality do not return the quality value
 	 * @return  mixed
 	 */
-	public function properties(array $properties = array())
+	public function properties(array $properties = NULL, $filter_quality = FALSE)
 	{
-		if ( ! $properties)
+		if ($properties === NULL)
 		{
-			return $this->properties;
+			if ( ! $filter_quality)
+				return $this->_properties;
+			else
+			{
+				$properties = $this->_properties;
+				unset($properties['q']);
+				return $properties;
+			}
 		}
 		else
 		{
-			$this->properties = $properties;
+			$this->_properties = $properties;
 			return $this;
 		}
 	}
 
 	/**
-	 * Magic method to handle object being cast to
-	 * string. Produces the following header value syntax
+	 * Renders this Header Value to a string.
+	 * Produces the following header value syntax.
 	 *
 	 *      [key=]value[; property[=property_value][; ... ]]
+	 * 
+	 * It is possible to filter out the quality value and/or select which 
 	 *
+	 * @param   array    include only the listed properties
+	 * @param   string   filter_quality 
 	 * @return  string
 	 */
-	public function __toString()
+	public function render(array $include = NULL, $filter_quality = FALSE)
 	{
+		$key = $this->key();
+		$value = $this->value();
+		$string = ($key !== NULL) ? ($key.'='.$value) : $value;
 
-		$string = ($this->key !== NULL) ? ($this->key.'='.$this->value) : $this->value;
-
-		if ($this->properties)
+		if ($properties = $this->properties(NULL, $filter_quality))
 		{
 			$props = array($string);
-			foreach ($this->properties as $k => $v)
+			foreach ($properties as $k => $v)
 			{
-				$props[] = is_int($k) ? $v : ($k.'='.$v);
+				if ($include === NULL OR (in_array($k, $include)))
+				{
+					$props[] = is_int($k) ? $v : ($k.'='.$v);
+				}
 			}
 			$string = implode('; ', $props);
 		}
 
 		return $string;
+	}
+
+	/**
+	 * Magic method to handle object being cast to
+	 * string. 
+	 *
+	 * @return  string
+	 */
+	public function __toString()
+	{
+		return (string) $this->render();
 	}
 
 } // End Kohana_HTTP_Header_Value

@@ -15,6 +15,20 @@
  */
 class Kohana_RequestTest extends Unittest_TestCase
 {
+	protected $_inital_request;
+
+	public function setUp()
+	{
+		parent::setUp();
+		$this->_initial_request = Request::$initial;
+		Request::$initial = new Request('/');
+	}
+
+	public function tearDown()
+	{
+		Request::$initial = $this->_initial_request;
+	}
+
 	public function test_initial()
 	{
 		$original = array(
@@ -312,6 +326,11 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function test_url($uri, $params, $protocol, $is_cli, $expected)
 	{
+		if ( ! isset($_SERVER['argc']))
+		{
+			$_SERVER['argc'] = 1;
+		}
+
 		$this->setEnvironment(array(
 			'Kohana::$base_url'  => '/kohana/',
 			'_SERVER'            => array('HTTP_HOST' => 'localhost', 'argc' => $_SERVER['argc']),
@@ -606,22 +625,6 @@ class Kohana_RequestTest extends Unittest_TestCase
 			)
 		);
 
-		if (extension_loaded('http'))
-		{
-			$provider[] = array(
-				array(
-					'proxyhost'         => 'http://localhost:8080',
-					'proxytype'         => HTTP_PROXY_HTTP,
-					'redirect'          => 2
-				),
-				array(
-					'proxyhost'         => 'http://localhost:8080',
-					'proxytype'         => HTTP_PROXY_HTTP,
-					'redirect'          => 2
-				)
-			);
-		}
-
 		return $provider;
 	}
 
@@ -641,7 +644,10 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$request_client = $request->client();
 
 		// Test for empty array
-		$this->assertSame($request_client->options(), array());
+		$this->assertSame($request_client->options(), array(
+			CURLOPT_RETURNTRANSFER => TRUE,
+			CURLOPT_HEADER         => FALSE
+			));
 
 		// Test that set works as expected
 		$this->assertSame($request_client->options($settings), $request_client);
@@ -710,7 +716,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 					'content-type'  => 'application/x-www-form-urlencoded',
 					'x-test-header' => 'foo'
 				),
-				"content-type: application/x-www-form-urlencoded\nx-test-header: foo\n\n"
+				"content-type: application/x-www-form-urlencoded\r\nx-test-header: foo\r\n\r\n"
 			),
 			array(
 				Request::factory(),
@@ -718,7 +724,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 					'content-type'  => 'application/json',
 					'x-powered-by'  => 'kohana'
 				),
-				"content-type: application/json\nx-powered-by: kohana\n\n"
+				"content-type: application/json\r\nx-powered-by: kohana\r\n\r\n"
 			)
 		);
 	}
