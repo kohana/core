@@ -27,6 +27,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	public function tearDown()
 	{
 		Request::$initial = $this->_initial_request;
+		parent::tearDown();
 	}
 
 	public function test_initial()
@@ -342,131 +343,6 @@ class Kohana_RequestTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests that request caching works
-	 *
-	 * @return null
-	 */
-	public function test_cache()
-	{
-		/**
-		 * Sets up a mock cache object, asserts that:
-		 *
-		 *  1. The cache set() method gets called
-		 *  2. The cache get() method will return the response above when called
-		 */
-		$cache = $this->getMock('Cache_File', array('get', 'set'), array(), 'Cache');
-		$cache->expects($this->once())
-			->method('set');
-
-		$foo = Request::factory('', $cache);
-		$response = $foo->create_response(TRUE);
-
-		$response->headers('Cache-Control', 'max-age=100');
-		$foo->response($response);
-		$foo->execute();
-
-		/**
-		 * Set up a mock response object to test with
-		 */
-		$response = $this->getMock('Response');
-		$response->expects($this->any())
-			->method('body')
-			->will($this->returnValue('Foo'));
-
-		$cache->expects($this->any())
-			->method('get')
-			->will($this->returnValue($response));
-
-		$foo = Request::factory('', $cache)->execute();
-		$this->assertSame('Foo', $foo->body());
-	}
-
-	/**
-	 * Data provider for test_set_cache
-	 *
-	 * @return array
-	 */
-	public function provider_set_cache()
-	{
-		return array(
-			array(
-				array('cache-control' => 'no-cache'),
-				array('no-cache' => NULL),
-				FALSE,
-			),
-			array(
-				array('cache-control' => 'no-store'),
-				array('no-store' => NULL),
-				FALSE,
-			),
-			array(
-				array('cache-control' => 'max-age=100'),
-				array('max-age' => '100'),
-				TRUE
-			),
-			array(
-				array('cache-control' => 'private'),
-				array('private' => NULL),
-				FALSE
-			),
-			array(
-				array('cache-control' => 'private, max-age=100'),
-				array('private' => NULL, 'max-age' => '100'),
-				FALSE
-			),
-			array(
-				array('cache-control' => 'private, s-maxage=100'),
-				array('private' => NULL, 's-maxage' => '100'),
-				TRUE
-			),
-			array(
-				array(
-					'expires' => date('m/d/Y', strtotime('-1 day')),
-				),
-				array(),
-				FALSE
-			),
-			array(
-				array(
-					'expires' => date('m/d/Y', strtotime('+1 day')),
-				),
-				array(),
-				TRUE
-			),
-			array(
-				array(),
-				array(),
-				TRUE
-			),
-		);
-	}
-
-	/**
-	 * Tests the set_cache() method
-	 *
-	 * @test
-	 * @dataProvider provider_set_cache
-	 *
-	 * @return null
-	 */
-	public function test_set_cache($headers, $cache_control, $expected)
-	{
-		/**
-		 * Set up a mock response object to test with
-		 */
-		$response = $this->getMock('Response');
-		$response->expects($this->any())
-			->method('parse_cache_control')
-			->will($this->returnValue($cache_control));
-		$response->expects($this->any())
-			->method('headers')
-			->will($this->returnValue($headers));
-
-		$request = new Request_Client_Internal;
-		$this->assertEquals($request->set_cache($response), $expected);
-	}
-
-	/**
 	 * Data provider for test_set_protocol() test
 	 *
 	 * @return array
@@ -640,14 +516,13 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function test_options_set_to_external_client($settings, $expected)
 	{
-		$request = Request::factory('http://www.kohanaframework.org');
-		$request_client = $request->client();
+		$request_client = Request_Client_External::factory(array(), 'Request_Client_Curl');
 
 		// Test for empty array
-		$this->assertSame($request_client->options(), array(
+		$this->assertSame(array(
 			CURLOPT_RETURNTRANSFER => TRUE,
 			CURLOPT_HEADER         => FALSE
-			));
+			), $request_client->options());
 
 		// Test that set works as expected
 		$this->assertSame($request_client->options($settings), $request_client);

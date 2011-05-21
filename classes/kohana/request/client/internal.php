@@ -42,7 +42,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 	public function execute(Request $request)
 	{
 		// Check for cache existance
-		if ($this->_cache instanceof Cache AND ($response = $this->cache_response($request)) instanceof Response)
+		if (($cache = $this->cache()) instanceof Cache AND ($response = $this->cache_response($request)) instanceof Response)
 			return $response;
 
 		// Create the class prefix
@@ -168,7 +168,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		}
 
 		// Cache the response if cache is available
-		if ($this->_cache instanceof Cache)
+		if ($cache instanceof Cache)
 		{
 			$this->cache_response($request, $request->response());
 		}
