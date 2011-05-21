@@ -235,9 +235,6 @@ abstract class Kohana_Request_Client {
 			// Update the header to have correct HIT status and count
 			$cache_status = $response->headers(Request_Client::CACHE_STATUS_KEY);
 			$cache_status->value(Request_Client::CACHE_STATUS_HIT);
-			$properties = $cache_status->properties();
-			$properties['count'] = (string) (++$properties['count']);
-			$cache_status->properties($properties);
 
 			return $response;
 		}
@@ -247,7 +244,7 @@ abstract class Kohana_Request_Client {
 				return FALSE;
 
 			$response->headers(Request_Client::CACHE_STATUS_KEY,
-				Request_Client::CACHE_STATUS_SAVED.';count=0');
+				Request_Client::CACHE_STATUS_SAVED);
 			return $cache->set($this->create_cache_key($request), $response, $ttl);
 		}
 	}

@@ -110,7 +110,6 @@ class Kohana_Request_Client_CacheTest extends Unittest_TestCase {
 	public function test_cache_hit()
 	{
 		$lifetime      = 800;
-		$count         = 2;
 		$request       = new Request('welcome/index');
 		$cache_mock    = $this->_get_cache_mock();
 
@@ -120,7 +119,7 @@ class Kohana_Request_Client_CacheTest extends Unittest_TestCase {
 		$response->headers(array(
 			'cache-control'                  => 'max-age='.$lifetime,
 			Request_Client::CACHE_STATUS_KEY => 
-				Request_Client::CACHE_STATUS_HIT.'; count='.$count
+				Request_Client::CACHE_STATUS_HIT
 		));
 
 		$cache_mock->expects($this->once())
@@ -132,12 +131,6 @@ class Kohana_Request_Client_CacheTest extends Unittest_TestCase {
 
 		$this->assertSame(Request_Client::CACHE_STATUS_HIT,
 			$response->headers(Request_Client::CACHE_STATUS_KEY)->value());
-
-		$properties = $response->headers(Request_Client::CACHE_STATUS_KEY)
-			->properties();
-
-		$this->assertSame((string) ++$count,
-			$properties['count']);
 	}
 
 
