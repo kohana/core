@@ -19,7 +19,6 @@ class Kohana_Request_Client_CacheTest extends Unittest_TestCase {
 	 * Sets up a test route for caching
 	 *
 	 * @return void
-	 * @author Sam C de Freyssinet
 	 */
 	public function setUp()
 	{
