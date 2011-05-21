@@ -11,6 +11,11 @@
  */
 abstract class Kohana_Request_Client {
 
+	const CACHE_STATUS_KEY    = 'x-cache-status';
+	const CACHE_STATUS_SAVED  = 'SAVED';
+	const CACHE_STATUS_HIT    = 'HIT';
+	const CACHE_STATUS_MISS   = 'MISS';
+
 	/**
 	 * @var    Cache  Caching library for request caching
 	 */
@@ -86,10 +91,10 @@ abstract class Kohana_Request_Client {
 	 */
 	public function invalidate_cache(Request $request)
 	{
-		if ( ! $this->_cache instanceof Cache)
-			return;
-
-		$this->_cache->delete($this->_create_cache_key($request));
+		if (($cache = $this->cache()) instanceof Cache)
+		{
+			$cache->delete($this->_create_cache_key($request));
+		}
 
 		return;
 	}
@@ -204,29 +209,46 @@ abstract class Kohana_Request_Client {
 	 */
 	public function cache_response(Request $request, Response $response = NULL)
 	{
-		if ( ! $this->_cache instanceof Cache)
+		if ( ! ($cache = $this->cache()) instanceof Cache)
 			return FALSE;
 
 		// Check for Pragma: no-cache
 		if ($pragma = $request->headers('pragma'))
 		{
-			if ($pragma instanceof HTTP_Header_Value and $pragma->key == 'no-cache')
+			if ($pragma instanceof HTTP_Header_Value AND $pragma->key() == 'no-cache')
 				return FALSE;
-			elseif (is_array($pragma) and isset($pragma['no-cache']))
+			elseif (is_array($pragma) AND isset($pragma['no-cache']))
 				return FALSE;
 		}
 
+		// If there is no response, lookup an existing cached response
 		if ( ! $response)
 		{
-			$response = $this->_cache->get($this->create_cache_key($request));
-			return ($response !== NULL) ? $response : FALSE;
+			$response = $cache->get($this->create_cache_key($request));
+
+			if ( ! $response instanceof Response)
+			{
+				$request->headers(Request_Client::CACHE_STATUS_KEY, Request_Client::CACHE_STATUS_MISS);
+				return FALSE;
+			}
+
+			// Update the header to have correct HIT status and count
+			$cache_status = $response->headers(Request_Client::CACHE_STATUS_KEY);
+			$cache_status->value(Request_Client::CACHE_STATUS_HIT);
+			$properties = $cache_status->properties();
+			$properties['count'] = (string) (++$properties['count']);
+			$cache_status->properties($properties);
+
+			return $response;
 		}
 		else
 		{
 			if (($ttl = $this->cache_lifetime($response)) === FALSE)
 				return FALSE;
 
-			return $this->_cache->set($this->create_cache_key($request), $response, $ttl);
+			$response->headers(Request_Client::CACHE_STATUS_KEY,
+				Request_Client::CACHE_STATUS_SAVED.';count=0');
+			return $cache->set($this->create_cache_key($request), $response, $ttl);
 		}
 	}
 
