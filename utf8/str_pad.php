@@ -46,5 +46,7 @@ function _str_pad($str, $final_str_length, $pad_str = ' ', $pad_type = STR_PAD_R
 		return $pad_left.$str.$pad_right;
 	}
 
-	trigger_error('UTF8::str_pad: Unknown padding type ('.$pad_type.')', E_USER_ERROR);
+	throw new UTF8_Exception("UTF8::str_pad: Unknown padding type (:pad_type)", array(
+			':pad_type' => $pad_type,
+		));
 }
