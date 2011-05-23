@@ -149,6 +149,7 @@ class Kohana_ArrTest extends Unittest_TestCase
 			array(array('we' => 'can', 'make' => 'change'), 'he', NULL, NULL),
 			array(array('we' => 'can', 'make' => 'change'), 'he', 'who', 'who'),
 			array(array('we' => 'can', 'make' => 'change'), 'he', array('arrays'), array('arrays')),
+            array(array('value' => NULL), 'value', "foo", NULL),
 		);
 	}
 
