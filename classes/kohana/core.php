@@ -990,6 +990,8 @@ class Kohana_Core {
 			// Clean the output buffer
 			ob_get_level() and ob_clean();
 
+			// PHP stack traces from fatal errors are not very useful
+			// use a better source, if possible
 			$trace = NULL;
 			if (function_exists('xdebug_get_function_stack'))
 			{
@@ -997,8 +999,10 @@ class Kohana_Core {
 				array_shift($trace);
 
 				// xdebug doesn't currently set the call type key
-				foreach ($trace as &$frame) {
-					if (!isset($frame['type']))
+				// Open feature request: http://bugs.xdebug.org/view.php?id=695
+				foreach ($trace as & $frame)
+				{
+					if ( ! isset($frame['type']))
 						$frame['type'] = '??';
 				}
 			}

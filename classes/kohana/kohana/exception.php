@@ -97,9 +97,11 @@ class Kohana_Kohana_Exception extends Exception {
 			$file    = $e->getFile();
 			$line    = $e->getLine();
 
-			// Get the exception backtrace
-			if (! $trace)
+			if ( ! $trace)
+			{
+				// Get the exception backtrace
 				$trace = $e->getTrace();
+			}
 
 			if ($e instanceof ErrorException)
 			{
