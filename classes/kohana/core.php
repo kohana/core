@@ -1029,8 +1029,21 @@ class Kohana_Core {
 			// Clean the output buffer
 			ob_get_level() and ob_clean();
 
+			$trace = NULL;
+			if (function_exists('xdebug_get_function_stack'))
+			{
+				$trace = array_reverse(xdebug_get_function_stack());
+				array_shift($trace);
+
+				// xdebug doesn't currently set the call type key
+				foreach ($trace as &$frame) {
+					if (!isset($frame['type']))
+						$frame['type'] = '??';
+				}
+			}
+
 			// Fake an exception for nice debugging
-			Kohana_Exception::handler(new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']));
+			Kohana_Exception::handler(new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']), $trace);
 
 			// Shutdown now to avoid a "death loop"
 			exit(1);
