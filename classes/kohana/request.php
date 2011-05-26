@@ -172,7 +172,7 @@ class Kohana_Request implements HTTP_Request {
 			}
 
 			// Create the instance singleton
-			Request::$initial = $request = new Request($uri, $cache);
+			Request::$initial = $request = new Request($uri, $cache, $injected_routes);
 
 			// Store global GET and POST data in the initial request only
 			$request->query($_GET);
