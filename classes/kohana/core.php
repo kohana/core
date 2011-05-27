@@ -998,12 +998,20 @@ class Kohana_Core {
 				$trace = array_reverse(xdebug_get_function_stack());
 				array_shift($trace);
 
-				// xdebug doesn't currently set the call type key
-				// Open feature request: http://bugs.xdebug.org/view.php?id=695
 				foreach ($trace as & $frame)
 				{
+					// xdebug doesn't currently set the call type key
+					// Open feature request: http://bugs.xdebug.org/view.php?id=695
 					if ( ! isset($frame['type']))
+					{
 						$frame['type'] = '??';
+					}
+
+					// xdebug also has a different name for the parameters array
+					if ( isset($frame['params']) && ! isset($frame['args']))
+					{
+						$frame['args'] = $frame['params'];
+					}
 				}
 			}
 
