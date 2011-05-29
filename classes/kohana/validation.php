@@ -184,7 +184,7 @@ class Kohana_Validation implements ArrayAccess {
 	 *
 	 *     // The "username" must not be empty and have a minimum length of 4
 	 *     $validation->rule('username', 'not_empty')
-	 *                ->rule('username', 'min_length', array('username', 4));
+	 *                ->rule('username', 'min_length', array(':value', 4));
 	 *
 	 *     // The "password" field must match the "password_repeat" field
 	 *     $validation->rule('password', 'matches', array(':validation', 'password', 'password_repeat'));
