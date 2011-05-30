@@ -447,8 +447,14 @@ class Kohana_Response implements HTTP_Response, Serializable {
 				{
 					if (is_string($name))
 					{
+						// If the value is an array, render correctly
+						if (is_array($value))
+						{
+							$value = implode(', ', $value);
+						}
+
 						// Combine the name and value to make a raw header
-						$value = $name.': '.$value;
+						$value = $name.': '.(string) $value;
 					}
 
 					// Send the raw header
