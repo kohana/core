@@ -296,6 +296,9 @@ class Kohana_Request_Client_External extends Request_Client {
 			$options[CURLOPT_COOKIE] = http_build_query($cookies, NULL, '; ');
 		}
 
+		// Implement the default header parsing
+		$options[CURLOPT_HEADERFUNCTION] = array($this, '_parse_headers');
+
 		// The transfer must always be returned
 		$options[CURLOPT_RETURNTRANSFER] = TRUE;
 
