@@ -134,8 +134,9 @@ function _to_unicode($str)
 			{
 				// ((0xC0 & (*in) != 0x80) AND (m_state != 0))
 				// Incomplete multi-octet sequence
-				trigger_error('UTF8::to_unicode: Incomplete multi-octet sequence in UTF-8 at byte '.$i, E_USER_WARNING);
-				return FALSE;
+				throw new UTF8_Exception("UTF8::to_unicode: Incomplete multi-octet sequence in UTF-8 at byte ':byte'", array(
+					':byte' => $i,
+				));
 			}
 		}
 	}
