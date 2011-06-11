@@ -336,7 +336,7 @@ class Kohana_Core {
 		Kohana::$log = Log::instance();
 
 		// Load the config
-		Kohana::$config = Config::instance();
+		Kohana::$config = new Kohana_Config;
 	}
 
 	/**
@@ -803,31 +803,25 @@ class Kohana_Core {
 	 *     $host = Kohana::config('database.default.connection.hostname')
 	 *
 	 * @param   string   group name
-	 * @return  Config
+	 * @return  Kohana_Config_Group
 	 */
 	public static function config($group)
 	{
-		static $config;
-
 		if (strpos($group, '.') !== FALSE)
 		{
 			// Split the config group and path
 			list ($group, $path) = explode('.', $group, 2);
 		}
 
-		if ( ! isset($config[$group]))
-		{
-			// Load the config group into the cache
-			$config[$group] = Kohana::$config->load($group);
-		}
+		$config = Kohana::$config->load($group);
 
 		if (isset($path))
 		{
-			return Arr::path($config[$group], $path, NULL, '.');
+			return Arr::path($config, $path, NULL, '.');
 		}
 		else
 		{
-			return $config[$group];
+			return $config;
 		}
 	}
 
