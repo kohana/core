@@ -87,10 +87,10 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		try
 		{
 			// Initiate response time
-			// if ($cache instanceof Cache)
-			// {
+			if ($cache instanceof Cache)
+			{
 				$this->_request_time = time();
-			// }
+			}
 
 			if ( ! class_exists($prefix.$controller))
 			{
