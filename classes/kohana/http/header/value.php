@@ -102,7 +102,6 @@ class Kohana_HTTP_Header_Value {
 				// Parse the properties
 				$properties = array();
 
-				// Foreach part
 				foreach ($parts as $part)
 				{
 					// Merge the parsed values

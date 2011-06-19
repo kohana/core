@@ -233,6 +233,22 @@ class Kohana_Text {
 	}
 
 	/**
+	 * Uppercase words that are not separated by spaces, using a custom
+	 * delimiter or the default.
+	 * 
+	 *      $str = Text::ucfirst('content-type'); // returns "Content-Type" 
+	 *
+	 * @param   string    word to transform
+	 * @param   string    delemiter to use
+	 * @return  string
+	 */
+	public static function ucfirst($word, $delimiter = '-')
+	{
+		// Put the keys back the Case-Convention expected
+		return implode($delimiter, array_map('ucfirst', explode($delimiter, $word)));
+	}
+
+	/**
 	 * Reduces multiple slashes in a string to single slashes.
 	 *
 	 *     $str = Text::reduce_slashes('foo//bar/baz'); // "foo/bar/baz"

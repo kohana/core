@@ -15,11 +15,6 @@
 class Kohana_HTTP_Header extends ArrayObject {
 
 	/**
-	 * @var     boolean   Controls whether to automatically sort headers by quality value
-	 */
-	public static $sort_by_quality = FALSE;
-
-	/**
 	 * @var     array     Default positive filter for sorting header values
 	 */
 	public static $default_sort_filter = array('accept','accept-charset','accept-encoding','accept-language');
@@ -149,23 +144,27 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * @param   int      Flags
 	 * @param   string   The iterator class to use
 	 */
-	public function __construct($input = NULL, $flags = NULL, $iterator_class = 'ArrayIterator')
+	public function __construct(array $input = array(), $flags = NULL, $iterator_class = 'ArrayIterator')
 	{
-		if ($input !== NULL)
-		{
-			// Parse the values into [HTTP_Header_Values]
-			parent::__construct(HTTP_Header::parse_header_values($input), $flags, $iterator_class);
-		}
-		else
-		{
-			parent::__construct(array(), $flags, $iterator_class);
-		}
+		/**
+		 * @link http://www.w3.org/Protocols/rfc2616/rfc2616.html
+		 *
+		 * HTTP header declarations should be treated as case-insensitive
+		 */
+		$input = array_change_key_case($input, CASE_LOWER);
 
-		// If sort by quality is set, sort the fields by q=0.0 value
-		if (HTTP_Header::$sort_by_quality)
-		{
-			$this->sort_values_by_quality();
-		}
+		parent::__construct($input, $flags, $iterator_class);
+
+		// if ($input !== NULL)
+		// {
+		// 	// Parse the values into [HTTP_Header_Values]
+		// 	parent::__construct(HTTP_Header::parse_header_values($input), $flags, $iterator_class);
+		// }
+		// else
+		// {
+		// 	parent::__construct(array(), $flags, $iterator_class);
+		// }
+	
 	}
 
 	/**
@@ -183,6 +182,9 @@ class Kohana_HTTP_Header extends ArrayObject {
 
 		foreach ($this as $key => $value)
 		{
+			// Put the keys back the Case-Convention expected
+			$key = Text::ucfirst($key);
+
 			if (is_array($value))
 			{
 				$header .= $key.': '.(implode(', ', $value))."\r\n";
@@ -209,32 +211,49 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * @param   array    $array Array to exchange
 	 * @return  array
 	 */
-	public function exchangeArray($array)
-	{
-		return parent::exchangeArray(HTTP_Header::parse_header_values($array));
-	}
+	// public function exchangeArray($array)
+	// {
+	// 	return parent::exchangeArray(HTTP_Header::parse_header_values($array));
+	// }
+
+	// /**
+	//  * Overloads the `ArrayObject::offsetSet` method to ensure any
+	//  * access is correctly converted to the correct object type.
+	//  *
+	//  *     // Add a new header from encoded string
+	//  *     $headers['cache-control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
+	//  *
+	//  * @param   mixed    $index   Key
+	//  * @param   mixed    $newval  Value
+	//  * @return  void
+	//  */
+	// public function offsetSet($index, $newval)
+	// {
+	// 	if (is_array($newval) AND (current($newval) instanceof HTTP_Header_Value))
+	// 		return parent::offsetSet(strtolower($index), $newval);
+	// 	elseif ( ! $newval instanceof HTTP_Header_Value)
+	// 	{
+	// 		$newval = new HTTP_Header_Value($newval);
+	// 	}
+	// 
+	// 	parent::offsetSet(strtolower($index), $newval);
+	// }
 
 	/**
-	 * Overloads the `ArrayObject::offsetSet` method to ensure any
-	 * access is correctly converted to the correct object type.
+	 * undocumented function
 	 *
-	 *     // Add a new header from encoded string
-	 *     $headers['cache-control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
-	 *
-	 * @param   mixed    $index   Key
-	 * @param   mixed    $newval  Value
-	 * @return  void
+	 * @param   mixed     index to retrieve
+	 * @param   boolean   set to `TRUE` to return the raw string/array
+	 * @return  mixed
 	 */
-	public function offsetSet($index, $newval)
+	public function offsetGet($index, $raw = FALSE)
 	{
-		if (is_array($newval) AND (current($newval) instanceof HTTP_Header_Value))
-			return parent::offsetSet(strtolower($index), $newval);
-		elseif ( ! $newval instanceof HTTP_Header_Value)
-		{
-			$newval = new HTTP_Header_Value($newval);
-		}
+		$value = parent::offsetGet(strtolower($index));
 
-		parent::offsetSet(strtolower($index), $newval);
+		if ($raw === TRUE)
+		 	return (string) $value;
+		else
+			return HTTP_Header_Value::parse($value);
 	}
 
 	/**
@@ -316,6 +335,109 @@ class Kohana_HTTP_Header extends ArrayObject {
 		}
 
 		return strlen($header_line);
+	}
+
+	/**
+	 * Sends headers to the php processor, or supplied `$callback` argument.
+	 * This method formats the headers correctly for output, re-instating their
+	 * capitalization for transmission.
+	 *
+	 * @param   HTTP_Response header to send
+	 * @param   boolean   replace existing value
+	 * @param   callback  optional callback to replace PHP header function
+	 * @return  self
+	 * @since   3.2.0
+	 */
+	public function send_headers(HTTP_Response $response = NULL, $replace = FALSE, $callback = NULL)
+	{
+		if ($response === NULL)
+		{
+			// Default to the initial request message
+			$response = Request::initial()->response();
+		}
+
+		$protocol = $response->protocol();
+
+		// Create the response header
+		$status = $response->status();
+		$headers_out = array($protocol.' '.$status.' '.Response::$messages[$status]);
+
+		// Get the headers object
+		$headers = $response->headers();
+
+		if ( ! isset($headers['content-type']))
+		{
+			$headers['content-type'] = Kohana::$content_type.'; charset='.Kohana::$charset;
+		}
+
+		if (Kohana::$expose AND ! isset($headers['x-powered-by']))
+		{
+			$headers['x-powered-by'] = 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
+		}
+
+		foreach ($headers as $key => $value)
+		{
+			if (is_string($key))
+			{
+				$key = Text::ucfirst($key);
+
+				if (is_array($value))
+				{
+					$value = implode(', ', $value);
+				}
+
+				$value = $key.': '. (string) $value;
+			}
+
+			$headers_out[] = $value;
+		}
+
+		// Add the cookies
+		$headers['Set-Cookie'] = $response->cookie();
+
+		if (is_callable($callback))
+		{
+			// Use the callback method to set header
+			call_user_func($callback, $headers_out, $replace);
+			return $this;
+		}
+		else
+		{
+			return $this->_send_headers_to_php($headers_out, $replace);
+		}
+	}
+
+	/**
+	 * Sends the supplied headers to the PHP output buffer. If cookies
+	 * are included in the message they will be handled appropriately.
+	 *
+	 * @param   array     headers to send to php
+	 * @param   boolean   replace existing headers
+	 * @return  self
+	 */
+	protected function _send_headers_to_php(array $headers, $replace)
+	{
+		// If the headers have been sent, get out
+		if (headers_sent())
+			return $this;
+
+		foreach ($headers as $key => $line)
+		{
+			if ($key == 'Set-Cookie' AND is_array($line))
+			{
+				// Send cookies
+				foreach ($line as $name => $value)
+				{
+					Cookie::set($name, $value['value'], $value['expiration']);
+				}
+
+				continue;
+			}
+
+			header($line, $replace);
+		}
+
+		return $this;
 	}
 
 	/**
