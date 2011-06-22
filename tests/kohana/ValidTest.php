@@ -29,7 +29,9 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array('!"£$(G$W£(HFW£F(HQ)"n', FALSE),
 			// UTF-8 tests
 			array('あいうえお', TRUE, TRUE),
-			array('¥', FALSE, TRUE)
+			array('¥', FALSE, TRUE),
+			// Empty test
+			array('', TRUE, FALSE),
 		);
 	}
 
@@ -65,6 +67,8 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array('あいうえお', TRUE, TRUE),
 			array('零一二三四五', TRUE, TRUE),
 			array('あい四五£^£^', FALSE, TRUE),
+			// Empty test
+			array('', TRUE, FALSE),
 		);
 	}
 
@@ -96,7 +100,9 @@ class Kohana_ValidTest extends Unittest_TestCase
 		    array('12345',      TRUE),
 		    array('abcd1234',   TRUE),
 		    array('abcd1234-',  TRUE),
-		    array('abc123&^/-', FALSE)
+		    array('abc123&^/-', FALSE),
+			// Empty test
+			array('', TRUE),
 		);
 	}
 
@@ -144,6 +150,8 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array('blarg',FALSE),
 			array('in the year 2000',FALSE),
 			array('324824',FALSE),
+			// Empty test
+			array('', TRUE),
 		);
 	}
 
@@ -172,6 +180,8 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array('45.1664',  3,    NULL, FALSE),
 			array('45.1664',  4,    NULL, TRUE),
 			array('45.1664',  4,    2,    TRUE),
+			// Empty test
+			array('', 2, NULL, TRUE),
 		);
 	}
 
@@ -207,6 +217,8 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array('abcd1234', FALSE),
 			array('-5',       FALSE),
 			array(-5,         FALSE),
+			// Empty test
+			array('',         TRUE),
 		);
 	}
 
@@ -251,7 +263,9 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array('GGGGGG', FALSE),
 			array('AbCdEf', TRUE),
 			array('000', TRUE),
-			array('DEF', TRUE)
+			array('DEF', TRUE),
+			// Empty test
+			array('', TRUE),
 		);
 	}
 
@@ -285,7 +299,9 @@ class Kohana_ValidTest extends Unittest_TestCase
 		    array('4012888888881881', 'mastercard', FALSE),
 		    array('5105105105105100', 'mastercard', TRUE),
 		    array('6011111111111117', 'discover',   TRUE),
-		    array('6011111111111117', 'visa',       FALSE)
+		    array('6011111111111117', 'visa',       FALSE),
+			// Empty test
+			array('', NULL, TRUE),
 		);
 	}
 
@@ -321,6 +337,8 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array('6011111111111117X', FALSE),
 			array('6011111111111117 ', FALSE),
 			array('WORD ', FALSE),
+			// Empty test
+			array('', TRUE),
 		);
 	}
 
@@ -359,6 +377,8 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array('foo@bar.sub.com', FALSE, TRUE),
 			array('foo+asd@bar.sub.com', FALSE, TRUE),
 			array('foo.asd@bar.sub.com', FALSE, TRUE),
+			// Empty test
+			array('', TRUE),
 		);
 	}
 
@@ -391,7 +411,9 @@ class Kohana_ValidTest extends Unittest_TestCase
 		return array(
 			array('google.com', TRUE),
 			// Don't anybody dare register this...
-			array('DAWOMAWIDAIWNDAIWNHDAWIHDAIWHDAIWOHDAIOHDAIWHD.com', FALSE)
+			array('DAWOMAWIDAIWNDAIWNHDAWIHDAIWHDAIWOHDAIOHDAIWHD.com', FALSE),
+			// Empty test
+			array('', TRUE),
 		);
 	}
 
@@ -438,6 +460,8 @@ class Kohana_ValidTest extends Unittest_TestCase
 		return array(
 			array('somestring', 10, TRUE),
 			array('anotherstring', 13, TRUE),
+			// Empty test
+			array('', TRUE),
 		);
 	}
 
@@ -475,6 +499,8 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array('1', '1', TRUE),
 			array(1, '1', FALSE),
 			array('011', 011, FALSE),
+			// Empty test
+			array('', 123, TRUE),
 		);
 	}
 
@@ -510,7 +536,9 @@ class Kohana_ValidTest extends Unittest_TestCase
 		    array('256.257.258.259', FALSE, FALSE),
 		    array('255.255.255.255', FALSE, FALSE),
 		    array('192.168.0.1',     FALSE, FALSE),
-		    array('192.168.0.1',     TRUE,  TRUE)
+		    array('192.168.0.1',     TRUE,  TRUE),
+			// Empty test
+			array('', TRUE, TRUE),
 		);
 	}
 
@@ -544,7 +572,9 @@ class Kohana_ValidTest extends Unittest_TestCase
 			// Exceeds
 			array('KOHANARULLLES', 2, FALSE),
 			// Under
-			array('CakeSucks', 10, TRUE)
+			array('CakeSucks', 10, TRUE),
+			// Empty test
+			array('', -10, TRUE),
 		);
 	}
 
@@ -577,7 +607,9 @@ class Kohana_ValidTest extends Unittest_TestCase
 		return array(
 			array('This is obviously long enough', 10, TRUE),
 			array('This is not', 101, FALSE),
-			array('This is on the borderline', 25, TRUE)
+			array('This is on the borderline', 25, TRUE),
+			// Empty test
+			array('', 10, TRUE),
 		);
 	}
 
@@ -668,6 +700,8 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array('-5.',   TRUE),
 			array('.',     FALSE),
 			array('1.2.3', FALSE),
+			// Empty test
+			array('', TRUE),
 		);
 	}
 
@@ -704,6 +738,8 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array('+44 20-7031-3000', array(12), TRUE),
 			// BT Corporate
 			array('020 7356 5000',	  NULL, TRUE),
+			// Empty test
+			array('', NULL, TRUE),
 		);
 	}
 
@@ -733,6 +769,8 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array('123456789', '/[0-9]++/', TRUE),
 			array('£$%£%', '/[abc]/', FALSE),
 			array('Good evening',  '/hello/',  FALSE),
+			// Empty test
+			array('', '/hello/', TRUE),
 		);
 	}
 
@@ -766,7 +804,9 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array(-1, 0,  1, FALSE),
 			array(1,  0,  0, FALSE),
 			array(2147483647, 0, 200000000000000, TRUE),
-			array(-2147483647, -2147483655, 2147483645, TRUE)
+			array(-2147483647, -2147483655, 2147483645, TRUE),
+			// Empty test
+			array('', 5, 10, TRUE),
 		);
 	}
 
@@ -824,6 +864,8 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array('http://127.0.0.1.1', FALSE),
 			array('http://user:@127.0.0.1', FALSE),
 			array("http://finalnewline.com\n", FALSE),
+			// Empty test
+			array('', TRUE),
 		);
 
 		$data[] = array('http://'.str_repeat('123456789.', 25).'com/', TRUE); // 253 chars
@@ -857,6 +899,8 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array(array('a' => 'hello', 'b' => 'hello'), 'a', 'b', TRUE),
 			array(array('a' => 'hello', 'b' => 'hello '), 'a', 'b', FALSE),
 			array(array('a' => '1', 'b' => 1), 'a', 'b', FALSE),
+			// Empty test
+			array(array('a' => '', 'b' => 'hello'), 'a', 'b', FALSE),
 		);
 	}
 
