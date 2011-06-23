@@ -461,7 +461,7 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array('somestring', 10, TRUE),
 			array('anotherstring', 13, TRUE),
 			// Empty test
-			array('', TRUE),
+			array('', 10, TRUE),
 		);
 	}
 
