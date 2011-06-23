@@ -36,6 +36,9 @@ class Kohana_Valid {
 	 */
 	public static function regex($value, $expression)
 	{
+		if ( ! Valid::not_empty($value))
+			return TRUE;
+
 		return (bool) preg_match($expression, (string) $value);
 	}
 
@@ -48,6 +51,9 @@ class Kohana_Valid {
 	 */
 	public static function min_length($value, $length)
 	{
+		if ( ! Valid::not_empty($value))
+			return TRUE;
+
 		return UTF8::strlen($value) >= $length;
 	}
 
@@ -60,6 +66,9 @@ class Kohana_Valid {
 	 */
 	public static function max_length($value, $length)
 	{
+		if ( ! Valid::not_empty($value))
+			return TRUE;
+
 		return UTF8::strlen($value) <= $length;
 	}
 
@@ -72,6 +81,9 @@ class Kohana_Valid {
 	 */
 	public static function exact_length($value, $length)
 	{
+		if ( ! Valid::not_empty($value))
+			return TRUE;
+
 		return UTF8::strlen($value) === $length;
 	}
 
@@ -84,6 +96,9 @@ class Kohana_Valid {
 	 */
 	public static function equals($value, $required)
 	{
+		if ( ! Valid::not_empty($value))
+			return TRUE;
+
 		return ($value === $required);
 	}
 
@@ -99,6 +114,9 @@ class Kohana_Valid {
 	 */
 	public static function email($email, $strict = FALSE)
 	{
+		if ( ! Valid::not_empty($email))
+			return TRUE;
+
 		if ($strict === TRUE)
 		{
 			$qtext = '[^\\x0d\\x22\\x5c\\x80-\\xff]';
@@ -134,6 +152,9 @@ class Kohana_Valid {
 	 */
 	public static function email_domain($email)
 	{
+		if ( ! Valid::not_empty($email))
+			return TRUE;
+
 		// Check if the email domain has a valid MX record
 		return (bool) checkdnsrr(preg_replace('/^[^@]++@/', '', $email), 'MX');
 	}
@@ -146,6 +167,9 @@ class Kohana_Valid {
 	 */
 	public static function url($url)
 	{
+		if ( ! Valid::not_empty($url))
+			return TRUE;
+
 		// Based on http://www.apps.ietf.org/rfc/rfc1738.html#sec-5
 		if ( ! preg_match(
 			'~^
@@ -206,6 +230,9 @@ class Kohana_Valid {
 	 */
 	public static function ip($ip, $allow_private = TRUE)
 	{
+		if ( ! Valid::not_empty($ip))
+			return TRUE;
+
 		// Do not allow reserved addresses
 		$flags = FILTER_FLAG_NO_RES_RANGE;
 
@@ -228,6 +255,9 @@ class Kohana_Valid {
 	 */
 	public static function credit_card($number, $type = NULL)
 	{
+		if ( ! Valid::not_empty($number))
+			return TRUE;
+
 		// Remove all non-digit characters from the number
 		if (($number = preg_replace('/\D+/', '', $number)) === '')
 			return FALSE;
@@ -284,6 +314,9 @@ class Kohana_Valid {
 	 */
 	public static function luhn($number)
 	{
+		if ( ! Valid::not_empty($number))
+			return TRUE;
+
 		// Force the value to be a string as this method uses string functions.
 		// Converting to an integer may pass PHP_INT_MAX and result in an error!
 		$number = (string) $number;
@@ -327,6 +360,9 @@ class Kohana_Valid {
 	 */
 	public static function phone($number, $lengths = NULL)
 	{
+		if ( ! Valid::not_empty($number))
+			return TRUE;
+
 		if ( ! is_array($lengths))
 		{
 			$lengths = array(7,10,11);
@@ -347,6 +383,9 @@ class Kohana_Valid {
 	 */
 	public static function date($str)
 	{
+		if ( ! Valid::not_empty($str))
+			return TRUE;
+
 		return (strtotime($str) !== FALSE);
 	}
 
@@ -359,6 +398,9 @@ class Kohana_Valid {
 	 */
 	public static function alpha($str, $utf8 = FALSE)
 	{
+		if ( ! Valid::not_empty($str))
+			return TRUE;
+
 		$str = (string) $str;
 
 		if ($utf8 === TRUE)
@@ -380,6 +422,9 @@ class Kohana_Valid {
 	 */
 	public static function alpha_numeric($str, $utf8 = FALSE)
 	{
+		if ( ! Valid::not_empty($str))
+			return TRUE;
+
 		if ($utf8 === TRUE)
 		{
 			return (bool) preg_match('/^[\pL\pN]++$/uD', $str);
@@ -399,6 +444,9 @@ class Kohana_Valid {
 	 */
 	public static function alpha_dash($str, $utf8 = FALSE)
 	{
+		if ( ! Valid::not_empty($str))
+			return TRUE;
+
 		if ($utf8 === TRUE)
 		{
 			$regex = '/^[-\pL\pN_]++$/uD';
@@ -420,6 +468,9 @@ class Kohana_Valid {
 	 */
 	public static function digit($str, $utf8 = FALSE)
 	{
+		if ( ! Valid::not_empty($str))
+			return TRUE;
+
 		if ($utf8 === TRUE)
 		{
 			return (bool) preg_match('/^\pN++$/uD', $str);
@@ -441,6 +492,9 @@ class Kohana_Valid {
 	 */
 	public static function numeric($str)
 	{
+		if ( ! Valid::not_empty($str))
+			return TRUE;
+
 		// Get the decimal point for the current locale
 		list($decimal) = array_values(localeconv());
 
@@ -458,6 +512,9 @@ class Kohana_Valid {
 	 */
 	public static function range($number, $min, $max)
 	{
+		if ( ! Valid::not_empty($number))
+			return TRUE;
+
 		return ($number >= $min AND $number <= $max);
 	}
 
@@ -472,6 +529,9 @@ class Kohana_Valid {
 	 */
 	public static function decimal($str, $places = 2, $digits = NULL)
 	{
+		if ( ! Valid::not_empty($str))
+			return TRUE;
+
 		if ($digits > 0)
 		{
 			// Specific number of digits
@@ -499,6 +559,9 @@ class Kohana_Valid {
 	 */
 	public static function color($str)
 	{
+		if ( ! Valid::not_empty($str))
+			return TRUE;
+
 		return (bool) preg_match('/^#?+[0-9a-f]{3}(?:[0-9a-f]{3})?$/iD', $str);
 	}
 
