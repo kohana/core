@@ -378,7 +378,7 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array('foo+asd@bar.sub.com', FALSE, TRUE),
 			array('foo.asd@bar.sub.com', FALSE, TRUE),
 			// Empty test
-			array('', TRUE),
+			array('', TRUE, TRUE),
 		);
 	}
 
