@@ -84,6 +84,16 @@ class Kohana_Valid {
 		if ( ! Valid::not_empty($value))
 			return TRUE;
 
+		if (is_array($length))
+		{
+			foreach($length as $strlen)
+			{
+				if (UTF8::strlen($value) === $strlen)
+					return TRUE;
+			}
+			return FALSE;
+		}
+
 		return UTF8::strlen($value) === $length;
 	}
 
