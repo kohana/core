@@ -37,7 +37,7 @@ class Kohana_ValidationTest extends Unittest_TestCase
 
 		$this->assertSame(
 			$values,
-			$instance->as_array()
+			$instance->data()
 		);
 	}
 
@@ -72,7 +72,7 @@ class Kohana_ValidationTest extends Unittest_TestCase
 			);
 		}
 
-		$this->assertSame($copy_data, $copy->as_array());
+		$this->assertSame($copy_data, $copy->data());
 	}
 
 	/**
@@ -465,9 +465,9 @@ class Kohana_ValidationTest extends Unittest_TestCase
 		$validation = Validation::factory(array('foo' => 'bar'))
 			->rule('something', 'not_empty');
 
-		$before = $validation->as_array();
+		$before = $validation->data();
 		$validation->check();
-		$after = $validation->as_array();
+		$after = $validation->data();
 
 		$expected = array('foo' => 'bar');
 
