@@ -462,6 +462,9 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array('anotherstring', 13, TRUE),
 			// Empty test
 			array('', 10, TRUE),
+			// Test array of allowed lengths
+			array('somestring', array(1, 3, 5, 7, 9, 10), TRUE),
+			array('somestring', array(1, 3, 5, 7, 9), FALSE),
 		);
 	}
 
