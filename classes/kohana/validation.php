@@ -319,6 +319,8 @@ class Kohana_Validation implements ArrayAccess {
 
 		// Bind the validation object to :validation
 		$this->bind(':validation', $this);
+		// Bind the data to :data
+		$this->bind(':data', $this->_data);
 
 		// Execute the rules
 		foreach ($rules as $field => $set)
