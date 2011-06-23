@@ -8,7 +8,7 @@
  * @copyright  (c) 2008-2011 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Validation extends ArrayObject {
+class Kohana_Validation implements ArrayAccess {
 
 	/**
 	 * Creates a new Validation instance.
@@ -33,6 +33,9 @@ class Kohana_Validation extends ArrayObject {
 	// Error list, field => rule
 	protected $_errors = array();
 
+	// Array to validate
+	protected $_data = array();
+
 	/**
 	 * Sets the unique "any field" key and creates an ArrayObject from the
 	 * passed array.
@@ -42,11 +45,67 @@ class Kohana_Validation extends ArrayObject {
 	 */
 	public function __construct(array $array)
 	{
-		parent::__construct($array, ArrayObject::STD_PROP_LIST);
+		$this->_data = $array;
 	}
 
 	/**
-	 * Copies the current rule to a new array.
+	 * Adds a value to the data array.
+	 * Implements ArrayAccess method.
+	 *
+	 * @param   string   key to set
+	 * @param   mixed    value to set
+	 * @return  void
+	 */
+	public function offsetSet($offset, $value)
+	{
+		if (is_null($offset))
+		{
+			$this->_data[] = $value;
+		}
+		else
+		{
+			$this->_data[$offset] = $value;
+		}
+	}
+
+	/**
+	 * Checks if key is set in array data.
+	 * Implements ArrayAccess method.
+	 *
+	 * @param   string   key to check
+	 * @return  bool     whether the key is set
+	 */
+	public function offsetExists($offset)
+	{
+		return isset($this->_data[$offset]);
+	}
+
+	/**
+	 * Unsets a key in array data.
+	 * Implements ArrayAccess method.
+	 *
+	 * @param   string   key to unset
+	 * @return  void
+	 */
+	public function offsetUnset($offset)
+	{
+		unset($this->_data[$offset]);
+	}
+
+	/**
+	 * Gets a value from the array data.
+	 * Implements ArrayAccess method.
+	 *
+	 * @param   string   key to return
+	 * @return  mixed    value from array
+	 */
+	public function offsetGet($offset)
+	{
+		return $this->_data[$offset];
+	}
+
+	/**
+	 * Copies the current rules to a new array.
 	 *
 	 *     $copy = $array->copy($new_data);
 	 *
@@ -60,7 +119,7 @@ class Kohana_Validation extends ArrayObject {
 		$copy = clone $this;
 
 		// Replace the data set
-		$copy->exchangeArray($array);
+		$copy->_data = $array;
 
 		return $copy;
 	}
@@ -72,7 +131,7 @@ class Kohana_Validation extends ArrayObject {
 	 */
 	public function as_array()
 	{
-		return $this->getArrayCopy();
+		return $this->_data;
 	}
 
 	/**
@@ -214,7 +273,7 @@ class Kohana_Validation extends ArrayObject {
 		$data = $this->_errors = array();
 
 		// Store the original data because this class should not modify it post-validation
-		$original = $this->getArrayCopy();
+		$original = $this->_data;
 
 		// Get a list of the expected fields
 		$expected = Arr::merge(array_keys($original), array_keys($this->_labels));
@@ -241,7 +300,7 @@ class Kohana_Validation extends ArrayObject {
 		}
 
 		// Overload the current array with the new one
-		$this->exchangeArray($data);
+		$this->_data = $data;
 
 		// Remove the rules that apply to every field
 		unset($rules[TRUE]);
@@ -331,7 +390,7 @@ class Kohana_Validation extends ArrayObject {
 		}
 
 		// Restore the data to its original form
-		$this->exchangeArray($original);
+		$this->_data = $original;
 
 		if (isset($benchmark))
 		{
