@@ -60,9 +60,9 @@ class Kohana_ValidTest extends Unittest_TestCase
 	{
 		return array(
 			array('abcd1234',  TRUE),
-		    array('abcd',      TRUE),
-		    array('1234',      TRUE),
-		    array('abc123&^/-', FALSE),
+			array('abcd',      TRUE),
+			array('1234',      TRUE),
+			array('abc123&^/-', FALSE),
 			// UTF-8 tests
 			array('あいうえお', TRUE, TRUE),
 			array('零一二三四五', TRUE, TRUE),
@@ -97,10 +97,10 @@ class Kohana_ValidTest extends Unittest_TestCase
 	{
 		return array(
 			array('abcdef',     TRUE),
-		    array('12345',      TRUE),
-		    array('abcd1234',   TRUE),
-		    array('abcd1234-',  TRUE),
-		    array('abc123&^/-', FALSE),
+			array('12345',      TRUE),
+			array('abcd1234',   TRUE),
+			array('abcd1234-',  TRUE),
+			array('abc123&^/-', FALSE),
 			// Empty test
 			array('', TRUE),
 		);
@@ -292,14 +292,14 @@ class Kohana_ValidTest extends Unittest_TestCase
 	{
 		return array(
 			array('4222222222222',    'visa',       TRUE),
-		    array('4012888888881881', 'visa',       TRUE),
-		    array('4012888888881881', NULL,         TRUE),
-		    array('4012888888881881', array('mastercard', 'visa'), TRUE),
-		    array('4012888888881881', array('discover', 'mastercard'), FALSE),
-		    array('4012888888881881', 'mastercard', FALSE),
-		    array('5105105105105100', 'mastercard', TRUE),
-		    array('6011111111111117', 'discover',   TRUE),
-		    array('6011111111111117', 'visa',       FALSE),
+			array('4012888888881881', 'visa',       TRUE),
+			array('4012888888881881', NULL,         TRUE),
+			array('4012888888881881', array('mastercard', 'visa'), TRUE),
+			array('4012888888881881', array('discover', 'mastercard'), FALSE),
+			array('4012888888881881', 'mastercard', FALSE),
+			array('5105105105105100', 'mastercard', TRUE),
+			array('6011111111111117', 'discover',   TRUE),
+			array('6011111111111117', 'visa',       FALSE),
 			// Empty test
 			array('', NULL, TRUE),
 		);
@@ -532,11 +532,11 @@ class Kohana_ValidTest extends Unittest_TestCase
 		return array(
 			array('75.125.175.50',   FALSE, TRUE),
 			// PHP 5.3.6 fixed a bug that allowed 127.0.0.1 as a public ip: http://bugs.php.net/53150
-		    array('127.0.0.1',       FALSE, version_compare(PHP_VERSION, '5.3.6', '<')),
-		    array('256.257.258.259', FALSE, FALSE),
-		    array('255.255.255.255', FALSE, FALSE),
-		    array('192.168.0.1',     FALSE, FALSE),
-		    array('192.168.0.1',     TRUE,  TRUE),
+			array('127.0.0.1',       FALSE, version_compare(PHP_VERSION, '5.3.6', '<')),
+			array('256.257.258.259', FALSE, FALSE),
+			array('255.255.255.255', FALSE, FALSE),
+			array('192.168.0.1',     FALSE, FALSE),
+			array('192.168.0.1',     TRUE,  TRUE),
 			// Empty test
 			array('', TRUE, TRUE),
 		);
@@ -729,8 +729,8 @@ class Kohana_ValidTest extends Unittest_TestCase
 	{
 		return array(
 			array('0163634840',       NULL, TRUE),
-		    array('+27173634840',     NULL, TRUE),
-		    array('123578',           NULL, FALSE),
+			array('+27173634840',     NULL, TRUE),
+			array('123578',           NULL, FALSE),
 			// Some uk numbers
 			array('01234456778',      NULL, TRUE),
 			array('+0441234456778',   NULL, FALSE),
