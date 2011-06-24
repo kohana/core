@@ -52,23 +52,17 @@ class Kohana_Validation implements ArrayAccess {
 	}
 
 	/**
-	 * Adds a value to the data array.
+	 * Throws an exception because Validation is read-only.
 	 * Implements ArrayAccess method.
 	 *
+	 * @throws  object   Kohana_Exception
 	 * @param   string   key to set
 	 * @param   mixed    value to set
 	 * @return  void
 	 */
 	public function offsetSet($offset, $value)
 	{
-		if (is_null($offset))
-		{
-			$this->_data[] = $value;
-		}
-		else
-		{
-			$this->_data[$offset] = $value;
-		}
+		throw new Kohana_Exception('Validation objects are read-only.');
 	}
 
 	/**
@@ -84,15 +78,16 @@ class Kohana_Validation implements ArrayAccess {
 	}
 
 	/**
-	 * Unsets a key in array data.
+	 * Throws an exception because Validation is read-only.
 	 * Implements ArrayAccess method.
 	 *
+	 * @throws  object   Kohana_Exception
 	 * @param   string   key to unset
 	 * @return  void
 	 */
 	public function offsetUnset($offset)
 	{
-		unset($this->_data[$offset]);
+		throw new Kohana_Exception('Validation objects are read-only.');
 	}
 
 	/**
