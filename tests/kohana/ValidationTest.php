@@ -61,7 +61,7 @@ class Kohana_ValidationTest extends Unittest_TestCase
 
 		$this->assertNotSame($validation, $copy);
 
-		foreach (array('_rules', '_bound', '_labels', '_errors') as $attribute)
+		foreach (array('_rules', '_bound', '_labels', '_empty_rules', '_errors') as $attribute)
 		{
 			// This is just an easy way to check that the attributes are identical
 			// Without hardcoding the expected values
