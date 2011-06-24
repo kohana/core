@@ -530,4 +530,56 @@ class Kohana_ValidationTest extends Unittest_TestCase
 
 		$this->assertSame($data, $validation->data());
 	}
+
+	public function test_offsetExists()
+	{
+		$array = array(
+			'one' => 'Hello',
+			'two' => 'World',
+			'ten' => NULL,
+		);
+
+		$validation = Validation::factory($array);
+
+		$this->assertTrue(isset($validation['one']));
+		$this->assertFalse(isset($validation['ten']));
+		$this->assertFalse(isset($validation['five']));
+	}
+
+	public function test_offsetSet_throws_exception()
+	{
+		$this->setExpectedException('Kohana_Exception');
+
+		$validation = Validation::factory(array());
+
+		// Validation is read-only
+		$validation['field'] = 'something';
+	}
+
+	public function test_offsetGet()
+	{
+		$array = array(
+			'one' => 'Hello',
+			'two' => 'World',
+			'ten' => NULL,
+		);
+
+		$validation = Validation::factory($array);
+
+		$this->assertSame($array['one'], $validation['one']);
+		$this->assertSame($array['two'], $validation['two']);
+		$this->assertSame($array['ten'], $validation['ten']);
+	}
+
+	public function test_offsetUnset()
+	{
+		$this->setExpectedException('Kohana_Exception');
+
+		$validation = Validation::factory(array(
+			'one' => 'Hello, World!',
+		));
+
+		// Validation is read-only
+		unset($validation['one']);
+	}
 }
