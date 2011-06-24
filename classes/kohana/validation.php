@@ -135,7 +135,7 @@ class Kohana_Validation implements ArrayAccess {
 	}
 
 	/**
-	 * Returns the array representation of the current object.
+	 * Returns the array of data to be validated.
 	 *
 	 * @return  array
 	 */
