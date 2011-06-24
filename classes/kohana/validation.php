@@ -30,6 +30,9 @@ class Kohana_Validation implements ArrayAccess {
 	// Field labels
 	protected $_labels = array();
 
+	// Rules that are executed even when the value is empty
+	protected $_empty_rules = array('not_empty', 'matches');
+
 	// Error list, field => rule
 	protected $_errors = array();
 
@@ -391,6 +394,10 @@ class Kohana_Validation implements ArrayAccess {
 					// Call $Class::$method($this[$field], $param, ...) with Reflection
 					$passed = $method->invokeArgs(NULL, $params);
 				}
+
+				// Ignore return values from rules when the field is empty
+				if ( ! in_array($rule, $this->_empty_rules) AND ! Valid::not_empty($value))
+					continue;
 
 				if ($passed === FALSE AND $error_name !== FALSE)
 				{
