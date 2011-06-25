@@ -353,6 +353,8 @@ class Kohana_RouteTest extends Unittest_TestCase
 		$route = new Route($uri, $regex);
 		$route->defaults($defaults);
 
+		$this->assertSame($defaults, $route->defaults());
+
 		$matches = $route->matches($default_uri);
 
 		$this->assertInternalType('array', $matches);
