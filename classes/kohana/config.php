@@ -87,6 +87,16 @@ class Kohana_Config {
 			throw new Kohana_Exception('No configuration sources attached');
 		}
 
+		if (empty($group))
+		{
+			throw new Kohana_Exception("Need to specify a config group");
+		}
+
+		if ( ! is_string($group))
+		{
+			throw new Kohana_Exception("Config group must be a string");
+		}
+
 		if (strpos($group, '.') !== FALSE)
 		{
 			// Split the config group and path
@@ -118,7 +128,7 @@ class Kohana_Config {
 			}
 		}
 
-		$this->_groups[$group] = new Kohana_Config_Group($this, $group, $config);
+		$this->_groups[$group] = new Config_Group($this, $group, $config);
 
 		if (isset($path))
 		{

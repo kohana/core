@@ -41,7 +41,7 @@ class Kohana_ConfigTest extends Unittest_TestCase
 	public function test_attach_adds_reader_and_returns_this()
 	{
 		$config = new Config;
-		$reader = $this->getMock('Config_Reader');
+		$reader = $this->getMock('Kohana_Config_Reader');
 
 		$this->assertSame($config, $config->attach($reader));
 
@@ -59,8 +59,8 @@ class Kohana_ConfigTest extends Unittest_TestCase
 	{
 		$config  = new Config;
 
-		$reader1 = $this->getMock('Config_Reader');
-		$reader2 = $this->getMock('Config_Reader');
+		$reader1 = $this->getMock('Kohana_Config_Reader');
+		$reader2 = $this->getMock('Kohana_Config_Reader');
 
 		$config->attach($reader1);
 		$config->attach($reader2);
@@ -88,8 +88,8 @@ class Kohana_ConfigTest extends Unittest_TestCase
 	public function test_attach_can_add_reader_to_end_of_queue()
 	{
 		$config  = new Config;
-		$reader1 = $this->getMock('Config_Reader');
-		$reader2 = $this->getMock('Config_Reader');
+		$reader1 = $this->getMock('Kohana_Config_Reader');
+		$reader2 = $this->getMock('Kohana_Config_Reader');
 
 		$config->attach($reader1);
 		$config->attach($reader2, FALSE);
@@ -111,8 +111,8 @@ class Kohana_ConfigTest extends Unittest_TestCase
 		// that has already been used then it just re-uses the first's name
 
 		// To get around this we have to specify a totally random name for the second mock object
-		$reader1 = $this->getMock('Config_Reader');
-		$reader2 = $this->getMock('Config_Reader', array(), array(), 'MY_AWESOME_READER');
+		$reader1 = $this->getMock('Kohana_Config_Reader');
+		$reader2 = $this->getMock('Kohana_Config_Reader', array(), array(), 'MY_AWESOME_READER');
 
 		$config->attach($reader1);
 		$config->attach($reader2);
@@ -136,9 +136,60 @@ class Kohana_ConfigTest extends Unittest_TestCase
 	public function test_detach_returns_this_even_when_reader_dnx()
 	{
 		$config = new Config;
-		$reader = $this->getMock('Config_Reader');
+		$reader = $this->getMock('Kohana_Config_Reader');
 
 		$this->assertSame($config, $config->detach($reader));
+	}
+
+	/**
+	 * If we request a config variable with a dot path then
+	 * Config::load() should load the group and return the requested variable
+	 *
+	 * @test
+	 * @covers Config::load
+	 */
+	public function test_load_can_get_var_from_dot_path()
+	{
+		$config = new Config;
+
+		$reader = $this->getMock('Kohana_Config_Reader', array('load'));
+
+		$reader
+			->expects($this->once())
+			->method('load')
+			->with('beer')
+			->will($this->returnValue(array('stout' => 'Guinness')));
+
+		$config->attach($reader);
+
+		$this->assertSame('Guinness', $config->load('beer.stout'));
+	}
+
+	/**
+	 * If we've already loaded a config group then the correct variable
+	 * should be returned if we use the dot path notation to to request 
+	 * a var
+	 *
+	 * @test
+	 * @covers Config::load
+	 */
+	public function test_load_can_get_var_from_dot_path_for_loaded_group()
+	{
+		$config = new Config;
+
+		$reader = $this->getMock('Kohana_Config_Reader', array('load'));
+
+		$reader
+			->expects($this->once())
+			->method('load')
+			->with('beer')
+			->will($this->returnValue(array('stout' => 'Guinness')));
+
+		$config->attach($reader);
+
+		$config->load('beer');
+
+		$this->assertSame('Guinness', $config->load('beer.stout'));
 	}
 
 	/**
@@ -156,6 +207,43 @@ class Kohana_ConfigTest extends Unittest_TestCase
 		$config = new Kohana_config;
 
 		$config->load('random');
+	}
+
+	/**
+	 * Provides test data for test_load_throws_exception_if_no_group_is_given()
+	 *
+	 * @return array
+	 */
+	public function provider_load_throws_exception_if_no_group_is_given()
+	{
+		return array(
+			array(NULL),
+			array(''),
+			array(array()),
+			array(array('foo' => 'bar')),
+			array(new StdClass),
+		);
+	}
+
+	/**
+	 * If an invalid group name is specified then an exception should be thrown.
+	 *
+	 * Invalid means it's either a non-string value, or empty
+	 *
+	 * @test
+	 * @dataProvider provider_load_throws_exception_if_no_group_is_given
+	 * @covers Config::load
+	 * @expectedException Kohana_Exception
+	 */
+	public function test_load_throws_exception_if_invalid_group($value)
+	{
+		$config = new Kohana_Config;
+
+		$reader = $this->getMock('Kohana_Config_Reader');
+
+		$config->attach($reader);
+
+		$config->load($value);
 	}
 
 	/**

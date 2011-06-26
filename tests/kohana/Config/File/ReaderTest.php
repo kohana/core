@@ -4,6 +4,7 @@
  * Tests the Config file reader that's shipped with kohana
  *
  * @group kohana
+ * @group kohana.config
  *
  * @package    Unittest
  * @author     Kohana Team
