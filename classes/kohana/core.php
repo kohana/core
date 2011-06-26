@@ -790,42 +790,6 @@ class Kohana_Core {
 	}
 
 	/**
-	 * Returns the configuration array for the requested group.  See
-	 * [configuration files](kohana/files/config) for more information.
-	 *
-	 *     // Get all the configuration in config/database.php
-	 *     $config = Kohana::config('database');
-	 *
-	 *     // Get only the default connection configuration
-	 *     $default = Kohana::config('database.default')
-	 *
-	 *     // Get only the hostname of the default connection
-	 *     $host = Kohana::config('database.default.connection.hostname')
-	 *
-	 * @param   string   group name
-	 * @return  Kohana_Config_Group
-	 */
-	public static function config($group)
-	{
-		if (strpos($group, '.') !== FALSE)
-		{
-			// Split the config group and path
-			list ($group, $path) = explode('.', $group, 2);
-		}
-
-		$config = Kohana::$config->load($group);
-
-		if (isset($path))
-		{
-			return Arr::path($config, $path, NULL, '.');
-		}
-		else
-		{
-			return $config;
-		}
-	}
-
-	/**
 	 * Provides simple file-based caching for strings and arrays:
 	 *
 	 *     // Set the "foo" cache

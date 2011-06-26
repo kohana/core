@@ -87,8 +87,18 @@ class Kohana_Config {
 			throw new Kohana_Exception('No configuration sources attached');
 		}
 
+		if (strpos($group, '.') !== FALSE)
+		{
+			// Split the config group and path
+			list ($group, $path) = explode('.', $group, 2);
+		}
+
 		if(isset($this->_groups[$group]))
 		{
+			if (isset($path))
+			{
+				return Arr::path($this->_groups[$group], $path, NULL, '.');
+			}
 			return $this->_groups[$group];
 		}
 
@@ -108,7 +118,14 @@ class Kohana_Config {
 			}
 		}
 
-		return $this->_groups[$group] = new Kohana_Config_Group($this, $group, $config);
+		$this->_groups[$group] = new Kohana_Config_Group($this, $group, $config);
+
+		if (isset($path))
+		{
+			return Arr::path($config, $path, NULL, '.');
+		}
+
+		return $this->_groups[$group];
 	}
 
 	/**
