@@ -21,6 +21,7 @@ class Kohana_Log {
 	const NOTICE    = LOG_NOTICE;   // 5
 	const INFO      = LOG_INFO;     // 6
 	const DEBUG     = LOG_DEBUG;    // 7
+	const STRACE    = 8;
 
 	/**
 	 * @var  string  timestamp format for log entries
