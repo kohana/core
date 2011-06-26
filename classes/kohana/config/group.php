@@ -4,7 +4,7 @@
  * The group wrapper acts as an interface to all the config directives
  * gathered from across the system.
  *
- * This is the object returned from Kohana::config, Kohana_Config::load etc.
+ * This is the object returned from Kohana_Config::load 
  *
  * Any modifications to configuration items should be done through an instance of this object
  *

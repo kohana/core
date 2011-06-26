@@ -35,7 +35,7 @@ classes/
 :  All classes that you want to [autoload](autoloading) should be stored here. This includes [controllers](mvc/controllers), [models](mvc/models), and all other classes. All classes must follow the [class naming conventions](conventions#class-names-and-file-location).
 
 config/
-:  Configuration files return an associative array of options that can be loaded using [Kohana::config]. Config files are merged rather than overwritten by the cascade. See [config files](files/config) for more information.
+:  Configuration files return an associative array of options that can be loaded using [Kohana::$config]. Config files are merged rather than overwritten by the cascade. See [config files](files/config) for more information.
 
 i18n/
 :  Translation files return an associative array of strings. Translation is done using the `__()` method. To translate "Hello, world!" into Spanish, you would call `__('Hello, world!')` with [I18n::$lang] set to "es-es". I18n files are merged rather than overwritten by the cascade. See [I18n files](files/i18n) for more information.

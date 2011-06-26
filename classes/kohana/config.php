@@ -141,10 +141,6 @@ class Kohana_Config {
 		// Load the configuration group
 		$config = $this->load($group);
 
-		// Assuming there are more config items than config groups then this is slightly
-		// more efficient method as it only requires the inner loop to be setup a few times
-		//
-		// Oh, and it's very DRY ;)
 		foreach($config->as_array() as $key => $value)
 		{
 			$this->_write_config($group, $key, $value);
