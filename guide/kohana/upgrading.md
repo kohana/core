@@ -1,5 +1,40 @@
 # Migrating from 3.0.x
 
+## Config
+
+The configuration system has been rewritten to make it more flexible.  The majority of the public API should
+still operate in the same way, however the one major change is the transition from using `Kohana::config()` to
+`Kohana::$config->load()`, where `Kohana::$config` is an instance of `Config`.
+
+`Config::load()` works almost identically to `Kohana::config()`, e.g.:
+
+	Kohana::$config->load('dot.notation')
+	Kohana::$config->load('dot')->notation
+
+A simple find/replace for `Kohana::config`/`Kohana::$config->load` within your project should fix this.
+
+The terminology for config sources has also changed.  Pre 3.2 config was loaded from "Config Readers" which both
+read and wrote config.  In 3.2 there are **Config Readers** and **Config Writers**, both of which are a type of 
+**Config Source**.
+
+A **Config Reader** is implemented by implementing the `Kohana_Config_Reader` interface; similarly a **Config Writer**
+is implemented by implementing the `Kohana_Config_Writer` interface.
+
+e.g. for Database:
+
+	class Kohana_Config_Database_Reader implements Kohana_Config_Reader
+	class Kohana_Config_Database_Writer extends Kohana_Config_Database_Reader implements Kohana_Config_Writer
+
+Although not enforced, the convention is that writers extend config readers.
+
+To help maintain backwards compatability when loading config sources empty classes are provided for the db/file sources
+which extends the source's reader/writer.
+
+e.g.
+
+	class Kohana_Config_File extends Kohana_Config_File_Reader
+	class Kohana_Config_Database extends Kohana_Config_Database_Writer
+
 ## Request/Response
 
 The request class has been split into a request and response class. To set the response body, you used to do:
