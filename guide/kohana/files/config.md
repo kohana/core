@@ -16,7 +16,9 @@ If the above configuration file was called `myconf.php`, you could access it usi
     $config = Kohana::$config->load('myconf');
     $options = $config['options'];
 
-[!!] Note: Before 3.2 `Kohana::config()` was used instead of `Kohana::$config->load()`.  The two methods behave almost identically
+[!!] Note: Before 3.2 `Kohana::config()` was used instead of `Kohana::$config->load()`.  
+     The two methods behave almost identically, so a simple find/replace for `Kohana::config(`/`Kohana::$config->load(` should
+	 fix any problems when upgrading to K>=3.2
 
 [Kohana::$config] also provides a shortcut for accessing individual keys from configuration arrays using "dot paths" similar to [Arr::path].
 
