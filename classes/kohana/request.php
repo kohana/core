@@ -344,7 +344,7 @@ class Kohana_Request implements HTTP_Request {
 	 *
 	 * @param   mixed   $value String to return: browser, version, robot, mobile, platform; or array of values
 	 * @return  mixed   requested information, FALSE if nothing is found
-	 * @uses    Kohana::config
+	 * @uses    Kohana::$config
 	 * @uses    Request::$user_agent
 	 */
 	public static function user_agent($value)
@@ -372,7 +372,7 @@ class Kohana_Request implements HTTP_Request {
 		if ($value === 'browser' OR $value == 'version')
 		{
 			// Load browsers
-			$browsers = Kohana::config('user_agents')->browser;
+			$browsers = Kohana::$config->load('user_agents')->browser;
 
 			foreach ($browsers as $search => $name)
 			{
@@ -399,7 +399,7 @@ class Kohana_Request implements HTTP_Request {
 		else
 		{
 			// Load the search group for this type
-			$group = Kohana::config('user_agents')->$value;
+			$group = Kohana::$config->load('user_agents')->$value;
 
 			foreach ($group as $search => $name)
 			{

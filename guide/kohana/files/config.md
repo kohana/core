@@ -13,26 +13,30 @@ Configuration files are used to store any kind of configuration needed for a mod
 
 If the above configuration file was called `myconf.php`, you could access it using:
 
-    $config = Kohana::config('myconf');
+    $config = Kohana::$config->load('myconf');
     $options = $config['options'];
 
-[Kohana::config] also provides a shortcut for accessing individual keys from configuration arrays using "dot paths" similar to [Arr::path].
+[!!] Note: Before 3.2 `Kohana::config()` was used instead of `Kohana::$config->load()`.  
+     The two methods behave almost identically, so a simple find/replace for `Kohana::config(`/`Kohana::$config->load(` should
+	 fix any problems when upgrading to K>=3.2
+
+[Kohana::$config] also provides a shortcut for accessing individual keys from configuration arrays using "dot paths" similar to [Arr::path].
 
 Get the "options" array:
 
-    $options = Kohana::config('myconf.options');
+    $options = Kohana::$config->load('myconf.options');
 
 Get the "foo" key from the "options" array:
 
-    $foo = Kohana::config('myconf.options.foo');
+    $foo = Kohana::$config->load('myconf.options.foo');
 
 Configuration arrays can also be accessed as objects, if you prefer that method:
 
-    $options = Kohana::config('myconf')->options;
+    $options = Kohana::$config->load('myconf')->options;
 
 Please note that you can only access the top level of keys as object properties, all child keys must be accessed using standard array syntax:
 
-    $foo = Kohana::config('myconf')->options['foo'];
+    $foo = Kohana::$config->load('myconf')->options['foo'];
 
 ## Merge
 
@@ -64,7 +68,7 @@ Let's say we want a config file to store and easily change things like the title
         'analytics' => FALSE, // analytics code goes here, set to FALSE to disable
     );
 
-We could now call `Kohana::config('site.title')` to get the site name, and `Kohana::config('site.analytics')` to get the analytics code.
+We could now call `Kohana::$config->load('site.title')` to get the site name, and `Kohana::$config->load('site.analytics')` to get the analytics code.
 
 Let's say we want an archive of versions of some software.  We could use config files to store each version, and include links to download, documentation, and issue tracking.
 
@@ -93,7 +97,7 @@ Let's say we want an archive of versions of some software.  We could use config 
 You could then do the following:
 
 	// In your controller
-	$view->versions = Kohana::config('versions');
+	$view->versions = Kohana::$config->load('versions');
 	
 	// In your view:
 	foreach ($versions as $version)
