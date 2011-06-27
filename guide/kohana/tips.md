@@ -10,6 +10,10 @@ You should (almost) never edit the system folder.  Any change you want to make t
 
 Kohana 3 [routes](routing) are very powerful and flexible, don't be afraid to use as many as you need to make your app function the way you want!
 
+## Handling lots of routes
+
+Sometimes your application is sufficiently complex that you have many routes and it becomes unmanageable to put them all in bootstrap.php. If this is the case, simply make a `routes.php` file in APPPATH and require that in your bootstrap: `require_once APPPATH.'routes'.EXT;`
+
 ## Reflection_Exception
 
 If you get a Reflection_Exception when setting up your site, it is almost certainly because your [Kohana::init] 'base_url' setting is wrong.  If your base url is correct something is probably wrong with your [routes](routing).
