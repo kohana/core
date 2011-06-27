@@ -117,7 +117,7 @@ class Kohana_Valid {
 		}
 		else
 		{
-			$expression = '/^[-_a-z0-9\'+*$^&%=~!?{}]++(?:\.[-_a-z0-9\'+*$^&%=~!?{}]+)*+@(?:(?![-.])[-a-z0-9.]+(?<![-.])\.[a-z]{2,6}|\d{1,3}(?:\.\d{1,3}){3})(?::\d++)?$/iD';
+			$expression = '/^[-_a-z0-9\'+*$^&%=~!?{}]++(?:\.[-_a-z0-9\'+*$^&%=~!?{}]+)*+@(?:(?![-.])[-a-z0-9.]+(?<![-.])\.[a-z]{2,6}|\d{1,3}(?:\.\d{1,3}){3})$/iD';
 		}
 
 		return (bool) preg_match($expression, (string) $email);
@@ -249,7 +249,7 @@ class Kohana_Valid {
 			return FALSE;
 		}
 
-		$cards = Kohana::config('credit_cards');
+		$cards = Kohana::$config->load('credit_cards');
 
 		// Check card type
 		$type = strtolower($type);

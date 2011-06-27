@@ -22,6 +22,7 @@ abstract class Kohana_Log_Writer {
 		LOG_NOTICE  => 'NOTICE',
 		LOG_INFO    => 'INFO',
 		LOG_DEBUG   => 'DEBUG',
+		8           => 'STRACE',
 	);
 
 	/**

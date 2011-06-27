@@ -350,7 +350,7 @@ class Kohana_Request implements HTTP_Request {
 	 *
 	 * @param   mixed   $value String to return: browser, version, robot, mobile, platform; or array of values
 	 * @return  mixed   requested information, FALSE if nothing is found
-	 * @uses    Kohana::config
+	 * @uses    Kohana::$config
 	 * @uses    Request::$user_agent
 	 */
 	public static function user_agent($value)
@@ -378,7 +378,7 @@ class Kohana_Request implements HTTP_Request {
 		if ($value === 'browser' OR $value == 'version')
 		{
 			// Load browsers
-			$browsers = Kohana::config('user_agents')->browser;
+			$browsers = Kohana::$config->load('user_agents')->browser;
 
 			foreach ($browsers as $search => $name)
 			{
@@ -405,7 +405,7 @@ class Kohana_Request implements HTTP_Request {
 		else
 		{
 			// Load the search group for this type
-			$group = Kohana::config('user_agents')->$value;
+			$group = Kohana::$config->load('user_agents')->$value;
 
 			foreach ($group as $search => $name)
 			{
@@ -849,46 +849,23 @@ class Kohana_Request implements HTTP_Request {
 	}
 
 	/**
-	 * Generates a relative URI for the current route.
+	 * Returns the URI for the current route.
 	 *
-	 *     $request->uri($params);
+	 *     $request->uri();
 	 *
 	 * @param   array   $params  Additional route parameters
 	 * @return  string
 	 * @uses    Route::uri
 	 */
-	public function uri(array $params = NULL)
+	public function uri()
 	{
-		if ( ! isset($params['directory']))
-		{
-			// Add the current directory
-			$params['directory'] = $this->directory();
-		}
-
-		if ( ! isset($params['controller']))
-		{
-			// Add the current controller
-			$params['controller'] = $this->controller();
-		}
-
-		if ( ! isset($params['action']))
-		{
-			// Add the current action
-			$params['action'] = $this->action();
-		}
-
-		// Add the current parameters
-		$params += $this->_params;
-
-		$uri = $this->_route->uri($params);
-
-		return $uri;
+		return empty($this->_uri) ? '/' : $this->_uri;
 	}
 
 	/**
-	 * Create a URL from the current request. This is a shortcut for:
+	 * Create a URL string from the current request. This is a shortcut for:
 	 *
-	 *     echo URL::site($this->request->uri($params), $protocol);
+	 *     echo URL::site($this->request->uri(), $protocol);
 	 *
 	 * @param   array    $params    URI parameters
 	 * @param   mixed    $protocol  protocol string or Request object
@@ -896,12 +873,10 @@ class Kohana_Request implements HTTP_Request {
 	 * @since   3.0.7
 	 * @uses    URL::site
 	 */
-	public function url(array $params = NULL, $protocol = NULL)
+	public function url($protocol = NULL)
 	{
 		// Create a URI with the current route and convert it to a URL
-		$url = URL::site($this->uri($params), $protocol);
-
-		return $url;
+		return URL::site($this->uri(), $protocol);
 	}
 
 	/**

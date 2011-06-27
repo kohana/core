@@ -128,6 +128,9 @@ class Kohana_Kohana_Exception extends Exception {
 				// Add this exception to the log
 				Kohana::$log->add(Log::ERROR, $error);
 
+				$strace = Kohana_Exception::text($e)."\n--\n" . $e->getTraceAsString();
+				Kohana::$log->add(Log::STRACE, $strace);
+
 				// Make sure the logs are written
 				Kohana::$log->write();
 			}

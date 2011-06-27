@@ -32,7 +32,7 @@ abstract class Kohana_Session {
 	 * @param   string   type of session (native, cookie, etc)
 	 * @param   string   session identifier
 	 * @return  Session
-	 * @uses    Kohana::config
+	 * @uses    Kohana::$config
 	 */
 	public static function instance($type = NULL, $id = NULL)
 	{
@@ -45,7 +45,7 @@ abstract class Kohana_Session {
 		if ( ! isset(Session::$instances[$type]))
 		{
 			// Load the configuration for this type
-			$config = Kohana::config('session')->get($type);
+			$config = Kohana::$config->load('session')->get($type);
 
 			// Set the session class name
 			$class = 'Session_'.ucfirst($type);

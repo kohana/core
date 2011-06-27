@@ -1,3 +1,3 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Config_Reader extends Kohana_Config_Reader {}
+class Config_Group extends Kohana_Config_Group {}

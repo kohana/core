@@ -299,17 +299,15 @@ class Kohana_RequestTest extends Unittest_TestCase
 		return array(
 			array(
 				'foo/bar',
-				array(),
 				'http',
 				TRUE,
 				'http://localhost/kohana/foo/bar'
 			),
 			array(
 				'foo',
-				array('action' => 'bar'),
 				'http',
 				TRUE,
-				'http://localhost/kohana/foo/bar'
+				'http://localhost/kohana/foo'
 			),
 		);
 	}
@@ -325,7 +323,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 * @param string $protocol the protocol to use
 	 * @param array $expected The string we expect
 	 */
-	public function test_url($uri, $params, $protocol, $is_cli, $expected)
+	public function test_url($uri, $protocol, $is_cli, $expected)
 	{
 		if ( ! isset($_SERVER['argc']))
 		{
@@ -339,7 +337,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 			'Kohana::$is_cli'    => $is_cli,
 		));
 
-		$this->assertEquals(Request::factory($uri)->url($params, $protocol), $expected);
+		$this->assertEquals(Request::factory($uri)->url($protocol), $expected);
 	}
 
 	/**
@@ -459,6 +457,14 @@ class Kohana_RequestTest extends Unittest_TestCase
 			array(
 				new Request('foo/bar'),
 				'foo/bar'
+			),
+			array(
+				new Request('/'),
+				'/'
+			),
+			array(
+				new Request(''),
+				'/'
 			)
 		);
 
