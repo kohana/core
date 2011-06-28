@@ -14,6 +14,88 @@
  */
 class Kohana_HTTP_Header extends ArrayObject {
 
+	// Default Accept-* quality value if none supplied
+	const DEFAULT_QUALITY = 1;
+
+	/**
+	 * Parses an Accept(-*) header and detects the quality
+	 *
+	 * @param   array    accept header parts
+	 * @return  array
+	 * @since   3.2.0
+	 */
+	public static function accept_quality(array $parts)
+	{
+		$parsed = array();
+
+		// Resource light iteration
+		$parts_keys = array_keys($parts);
+		foreach ($parts_keys as $key)
+		{
+			$value = trim(str_replace(array("\r", "\n"), '', $parts[$key]));
+
+			$pattern = '~\bq\s*+=\s*+([.0-9]+)~';
+
+			// If there is no quality directive, return default
+			if ( ! preg_match($pattern, $value, $quality))
+			{
+				$parsed[$value] = HTTP_Header::DEFAULT_QUALITY;
+			}
+			else
+			{
+				// Remove the quality value from the string and apply quality
+				$parsed[preg_replace($pattern, '', $value, 1)] = (float) $quality;
+			}
+		}
+
+		return $parsed;
+	}
+
+	/**
+	 * Parses the accept header to provide the correct quality values
+	 * for each supplied accept type.
+	 *
+	 * @see     http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1
+	 * @param   string   accept content header string to parse
+	 * @return  array
+	 * @since   3.2.0
+	 */
+	public static function parse_accept_header($accepts)
+	{
+		$accepts = explode(',', (string) $accepts);
+
+		// If there is no accept, lets accept everything
+		if ( ! $accepts)
+			return array('*' => array('*' => HTTP_Header::DEFAULT_QUALITY));
+
+		// Parse the accept header qualities
+		$accepts = HTTP_Header::accept_quality($accepts);
+
+		$parsed_accept = array();
+
+		// This method of iteration uses less resource
+		$keys = array_keys($accepts);
+		foreach ($keys as $key)
+		{
+			// Extract the parts
+			$parts = explode('/', $key, 2);
+
+			// Invalid content type- bail
+			if ( ! isset($part[1]))
+				continue;
+
+			// Set the parsed output
+			$parsed_accept[$part[0]][$part[1]] = $accepts[$key];
+		}
+
+		return $parsed_accept;
+	}
+
+	/**
+	 * @var     array    Accept: (content) types
+	 */
+	protected $_accept_content;
+
 	/**
 	 * Constructor method for [Kohana_HTTP_Header]. Uses the standard constructor
 	 * of the parent `ArrayObject` class.
@@ -105,6 +187,32 @@ class Kohana_HTTP_Header extends ArrayObject {
 	}
 
 	/**
+	 * Overloads the `ArrayObject::offsetExists()` method to ensure keys
+	 * are lowercase.
+	 *
+	 * @param   string $index 
+	 * @return  boolean
+	 * @since   3.2.0
+	 */
+	public function offsetExists($index)
+	{
+		return parent::offsetExists(strtolower($index));
+	}
+
+	/**
+	 * Overloads the `ArrayObject::offsetUnset()` method to ensure keys
+	 * are lowercase.
+	 *
+	 * @param   string   index 
+	 * @return  void
+	 * @since   3.2.0
+	 */
+	public function offsetUnset($index)
+	{
+		return parent::offsetUnset(strtolower($index));
+	}
+
+	/**
 	 * Overload the `ArrayObject::offsetGet()` method to ensure that all
 	 * keys passed to it are formatted correctly for this object.
 	 *
@@ -144,6 +252,117 @@ class Kohana_HTTP_Header extends ArrayObject {
 	}
 
 	/**
+	 * Returns the accept quality of a submitted mime type based on the
+	 * request `Accept:` header. If the `$explicit` argument is `TRUE`,
+	 * only precise matches will be returned, excluding all wildcard (`*`)
+	 * directives.
+	 * 
+	 *     // Accept: application/xml; application/json; q=.5; text/html; q=.2, text/*
+	 *     // Accept quality for application/json
+	 * 
+	 *     // $quality = 0.5
+	 *     $quality = $request->headers()->accepts_at_quality('application/json');
+	 * 
+	 *     // $quality_explicit = FALSE
+	 *     $quality_explicit = $request->headers()->accepts_at_quality('text/plain', TRUE);
+	 *
+	 * @param   string   type 
+	 * @param   boolean  explicit check, excludes `*`
+	 * @return  mixed
+	 * @since   3.2.0
+	 */
+	public function accepts_at_quality($type, $explicit = FALSE)
+	{
+		// Parse Accept header if required
+		if ($this->_accept_content === NULL)
+		{
+			if ( ! $this->offsetExists('Accept'))
+			{
+				$accept = '*/*';
+			}
+			else
+			{
+				$accept = $this->offsetGet('Accept');
+			}
+
+			$this->_accept_content = HTTP_Header::parse_accept_headers($accept);
+		}
+
+		// If not a real mime, try and find it in config
+		if (strpos($type, '/') === FALSE)
+		{
+			$mime = Kohana::config('mimes.'.$type);
+
+			if ($mime === NULL)
+				return FALSE;
+
+			$quality = FALSE;
+
+			foreach ($mime as $_type)
+			{
+				$quality_check = $this->accepts_at_quality($_type, $explicit);
+				$quality = ($quality_check > $quality) ? $quality_check : $quality;
+			}
+
+			return $quality;
+		}
+
+		$parts = explode('/', $type, 2);
+
+		if (isset($this->_accept_content[$parts[0]][$parts][1]))
+		{
+			return $this->_accept_content[$parts[0]][$parts[1]];
+		}
+		elseif ($explicit === TRUE)
+		{
+			return FALSE;
+		}
+		else
+		{
+			if (isset($this->_accept_content[$parts[0]]['*']))
+			{
+				return $this->_accept_content[$parts[0]]['*'];
+			}
+			elseif (isset($this->_accept_content['*']['*']))
+			{
+				return $this->_accept_content['*']['*'];
+			}
+			else
+			{
+				return FALSE;
+			}
+		}
+	}
+
+	/**
+	 * Returns the preferred response content type based on the accept header
+	 * quality settings. If items have the same quality value, the first item
+	 * found in the array supplied as `$types` will be returned.
+	 *
+	 * @param   array    the content types to examine
+	 * @param   boolean  only allow explicit references, no wildcards
+	 * @return  string   name of the preferred content type
+	 */
+	public function preferred_accept($types, $explicit = FALSE)
+	{
+		$preferred = FALSE;
+		$ceiling = 0;
+
+		foreach ($types as $type)
+		{
+			$quality = accepts_at_quality($type, $explicit);
+
+			if ($quality > $ceiling)
+			{
+				$preferred = $type;
+				$ceiling = $quality;
+			}
+		}
+
+		return $preferred;
+	}
+
+	/**
 	 * Sends headers to the php processor, or supplied `$callback` argument.
 	 * This method formats the headers correctly for output, re-instating their
 	 * capitalization for transmission.
@@ -166,59 +385,49 @@ class Kohana_HTTP_Header extends ArrayObject {
 
 		// Create the response header
 		$status = $response->status();
-		$headers_out = array($protocol.' '.$status.' '.Response::$messages[$status]);
+		$processed_headers = array($protocol.' '.$status.' '.Response::$messages[$status]);
 
 		// Get the headers array
 		$headers = $response->headers()->getArrayCopy();
 
-		if ( ! isset($headers['content-type']))
+		foreach ($headers as $header => $value)
 		{
-			$headers['content-type'] = Kohana::$content_type.'; charset='.Kohana::$charset;
+			if (is_array($value))
+			{
+				$value = implode(', ', $value);
+			}
+
+			$processed_headers[] = Text::ucfirst($header).': '.$value;
+		}
+
+		if ( ! isset($headers['Content-Type']))
+		{
+			$processed_headers[] = 'Content-Type: '.Kohana::$content_type.
+				'; charset='.Kohana::$charset;
 		}
 
 		if (Kohana::$expose AND ! isset($headers['x-powered-by']))
 		{
-			$headers['x-powered-by'] = 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
+			$processed_headers[] = 'X-Powered-By: Kohana Framework '.
+				Kohana::VERSION.' ('.Kohana::CODENAME.')';
 		}
 
-		array_walk($headers, array($this, '_format_headers'));
-		$headers_out = array_values($headers);
-
-		// Add the cookies
-		$headers_out['Set-Cookie'] = $response->cookie();
+		// Get the cookies and apply
+		if ($cookies = $response->cookie())
+		{
+			$processed_headers['Set-Cookie'] = $cookies;
+		}
 
 		if (is_callable($callback))
 		{
 			// Use the callback method to set header
-			call_user_func($callback, $headers_out, $replace);
+			call_user_func($callback, $processed_headers, $replace);
 			return $this;
 		}
 		else
 		{
-			return $this->_send_headers_to_php($headers_out, $replace);
+			return $this->_send_headers_to_php($processed_headers, $replace);
 		}
-	}
-
-	/**
-	 * Formats the header output back to what is expected by most users,
-	 * also handles multiple header directives. This should only be used as
-	 * a callback method within [HTTP_Header::send_headers()].
-	 *
-	 * @param   mixed    value to format for output
-	 * @param   string   header key 
-	 * @return  void
-	 * @since   3.2.0
-	 */
-	protected function _format_headers( & $value, $key)
-	{
-		$buffer = Text::ucfirst($key).': ';
-
-		if (is_array($value))
-		{
-			$value = implode(', ', $value);
-		}
-
-		$value = $buffer.$value;
 	}
 
 	/**
