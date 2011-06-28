@@ -1402,14 +1402,8 @@ class Kohana_Request implements HTTP_Request {
 	 * @param   boolean  $response  Return the rendered response, else returns the rendered request
 	 * @return  string
 	 */
-	public function render($response = TRUE)
+	public function render()
 	{
-		if ($response)
-		{
-			// Act as a getter
-			return (string) $this->_response;
-		}
-
 		if ( ! $post = $this->post())
 		{
 			$body = $this->body();

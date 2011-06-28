@@ -60,12 +60,12 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * @return  array
 	 * @since   3.2.0
 	 */
-	public static function parse_accept_header($accepts)
+	public static function parse_accept_header($accepts = NULL)
 	{
 		$accepts = explode(',', (string) $accepts);
 
 		// If there is no accept, lets accept everything
-		if ( ! $accepts)
+		if ($accepts === NULL)
 			return array('*' => array('*' => (float) HTTP_Header::DEFAULT_QUALITY));
 
 		// Parse the accept header qualities
@@ -100,24 +100,59 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * @return  array 
 	 * @since   3.2.0
 	 */
-	public static function parse_charset_header($charset)
+	public static function parse_charset_header($charset = NULL)
 	{
 		if ($charset === NULL)
 		{
-			return array($charset => (float) HTTP_Header::DEFAULT_QUALITY);
+			return array('*' => (float) HTTP_Header::DEFAULT_QUALITY);
 		}
 
-		return HTTP_Header::accept_quality($charset);
+		return HTTP_Header::accept_quality(explode(',', (string) $charset));
 	}
 
-	public static function parse_language_header($language)
+	/**
+	 * Parses the `Accept-Encoding:` HTTP header and returns an array containing
+	 * the charsets and associated quality.
+	 *
+	 * @link    http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
+	 * @param   string   charset string to parse
+	 * @return  array 
+	 * @since   3.2.0
+	 */
+	public static function parse_encoding_header($encoding = NULL)
 	{
-		
+		// Accept everything
+		if ($encoding === NULL)
+		{
+			return array('*' => (float) HTTP_Header::DEFAULT_QUALITY);
+		}
+		elseif ($encoding === '')
+		{
+			return array('identity' => (float) HTTP_Header::DEFAULT_QUALITY);
+		}
+		else
+		{
+			return HTTP_Header::accept_quality(explode(',', (string) $encoding));
+		}
 	}
 
-	public static function parse_encoding_header($encoding)
+	/**
+	 * Parses the `Accept-Language:` HTTP header and returns an array containing
+	 * the languages and associated quality.
+	 *
+	 * @link    http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
+	 * @param   string   charset string to parse
+	 * @return  array 
+	 * @since   3.2.0
+	 */
+	public static function parse_language_header($language = NULL)
 	{
-		
+		if ($language === NULL)
+		{
+			return array('*' => (float) HTTP_Header::DEFAULT_QUALITY);
+		}
+
+		return HTTP_Header::accept_quality(explode(',', (string) $language));
 	}
 
 	/**
@@ -131,14 +166,14 @@ class Kohana_HTTP_Header extends ArrayObject {
 	protected $_accept_charset;
 
 	/**
-	 * @var     array    Accept-Language: parsed header
-	 */
-	protected $_accept_language;
-
-	/**
 	 * @var     array    Accept-Encoding: parsed header
 	 */
 	protected $_accept_encoding;
+
+	/**
+	 * @var     array    Accept-Language: parsed header
+	 */
+	protected $_accept_language;
 
 	/**
 	 * Constructor method for [Kohana_HTTP_Header]. Uses the standard constructor
@@ -493,6 +528,176 @@ class Kohana_HTTP_Header extends ArrayObject {
 			{
 				$preferred = $charset;
 				$ceiling = $quality;
+			}
+		}
+
+		return $preferred;
+	}
+
+	/**
+	 * Returns the quality of the `$encoding` type passed to it. Encoding
+	 * is usually compression such as `gzip`, but could be some other
+	 * message encoding algorithm. This method allows explicit checks to be
+	 * done ignoring wildcards.
+	 * 
+	 *      // Accept-Encoding: compress, gzip, *; q.5
+	 *      $encoding = $header->accepts_encoding_at_quality('gzip');
+	 *      // $encoding = (float) 1.0s
+	 *
+	 * @param   string    encoding type to interrogate
+	 * @param   boolean   explicit check, ignoring wildcards and `identity`
+	 * @return  float
+	 * @since   3.2.0
+	 */
+	public function accepts_encoding_at_quality($encoding, $explicit = FALSE)
+	{
+		if ($this->_accept_encoding === NULL)
+		{
+			if ($this->offsetExists('Accept-Encoding'))
+			{
+				$encoding_header = $this->offsetGet('Accept-Encoding');
+			}
+			else
+			{
+				$encoding_header = NULL;
+			}
+
+			$this->_accept_encoding = HTTP_Header::parse_encoding_header($encoding_header);
+		}
+
+		// Normalize the encoding
+		$encoding = strtolower($encoding);
+
+		if (isset($this->_accept_encoding[$encoding]))
+		{
+			return $this->_accept_encoding[$encoding];
+		}
+
+		if ($explicit === FALSE)
+		{
+			if (isset($this->_accept_encoding['*']))
+			{
+				return $this->_accept_encoding['*'];
+			}
+			elseif ($encoding === 'identity')
+			{
+				return (float) 1;
+			}
+		}
+
+		return (float) 0;
+	}
+
+	/**
+	 * Returns the preferred message encoding type based on quality, and can
+	 * optionally ignore wildcard references. If two or more encodings have the
+	 * same quality, the first listed in `$encodings` will be returned.
+	 * 
+	 *     // Accept-Encoding: compress, gzip, *; q.5
+	 *     $encoding = $header->preferred_encoding(array(
+	 *          'gzip', 'bzip', 'blowfish'
+	 *     ));
+	 *     // $encoding = 'gzip';
+	 *
+	 * @param   array    encodings to test against
+	 * @param   boolean  explicit check, if `TRUE` wildcards are excluded
+	 * @return  mixed
+	 * @since   3.2.0
+	 */
+	public function preferred_encoding(array $encodings, $explicit = FALSE)
+	{
+		$ceiling = 0;
+		$preferred = FALSE;
+
+		foreach ($encodings as $encoding)
+		{
+			$quality = $this->accepts_encoding_at_quality($encoding, $explicit);
+
+			if ($quality > $ceiling)
+			{
+				$ceiling = $quality;
+				$preferred = $encoding;
+			}
+		}
+
+		return $preferred;
+	}
+
+	/**
+	 * undocumented function
+	 *
+	 * @param   string    language to interrogate
+	 * @param   boolean   explicit interrogation, `TRUE` ignores wildcards
+	 * @return  float
+	 * @since   3.2.0
+	 */
+	public function accepts_language_at_quality($language, $explicit = FALSE)
+	{
+		if ($this->_accept_languages === NULL)
+		{
+			if ($this->offsetExists('Accept-Language'))
+			{
+				$language_header = $this->offsetGet('Accept-Language');
+			}
+			else
+			{
+				$language_header = NULL;
+			}
+
+			$this->_accept_languages = HTTP_Header::parse_language_header($language_header);
+		}
+
+		// Normalize the language
+		$language_parts = explode('-', strtolower($language), 2);
+
+		if (isset($this->_accept_languages[$language_parts[0]]))
+		{
+			if (isset($language_parts[1]))
+			{
+				if (isset($this->_accept_languages[$language_parts[0]][$language_parts[1]]))
+				{
+					return $this->_accept_languages[$language_parts[0]][$language_parts[1]];
+				}
+				elseif ($explicit === FALSE AND isset($this->_accept_languages[$language_parts[0]]['*']))
+				{
+					return $this->_accept_languages[$language_parts[0]]['*'];
+				}
+			}
+			elseif (isset($this->_accept_languages[$language_parts[0]]['*']))
+			{
+				return $this->_accept_languages[$language_parts[0]]['*'];
+			}
+		}
+
+		if ($explicit === FALSE AND isset($this->_accept_languages['*']))
+		{
+			return $this->_accept_languages['*'];
+		}
+
+		return (float) 0;
+	}
+
+	/**
+	 * undocumented function
+	 *
+	 * @param   array     languages 
+	 * @param   boolean   explicit 
+	 * @return  mixed
+	 * @since   3.2.0
+	 */
+	public function preferred_language(array $languages, $explicit = FALSE)
+	{
+		$ceiling = 0;
+		$preferred = FALSE;
+
+		foreach ($languages as $language)
+		{
+			$quality = $this->accepts_language_at_quality($language, $explicit);
+
+			if ($quality > $ceiling)
+			{
+				$ceiling = $quality;
+				$preferred = $language;
 			}
 		}
 
