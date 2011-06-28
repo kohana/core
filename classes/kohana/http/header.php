@@ -66,7 +66,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 
 		// If there is no accept, lets accept everything
 		if ( ! $accepts)
-			return array('*' => array('*' => HTTP_Header::DEFAULT_QUALITY));
+			return array('*' => array('*' => (float) HTTP_Header::DEFAULT_QUALITY));
 
 		// Parse the accept header qualities
 		$accepts = HTTP_Header::accept_quality($accepts);
@@ -92,9 +92,53 @@ class Kohana_HTTP_Header extends ArrayObject {
 	}
 
 	/**
+	 * Parses the `Accept-Charset:` HTTP header and returns an array containing
+	 * the charset and associated quality.
+	 *
+	 * @link    http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
+	 * @param   string   charset string to parse
+	 * @return  array 
+	 * @since   3.2.0
+	 */
+	public static function parse_charset_header($charset)
+	{
+		if ($charset === NULL)
+		{
+			return array($charset => (float) HTTP_Header::DEFAULT_QUALITY);
+		}
+
+		return HTTP_Header::accept_quality($charset);
+	}
+
+	public static function parse_language_header($language)
+	{
+		
+	}
+
+	public static function parse_encoding_header($encoding)
+	{
+		
+	}
+
+	/**
 	 * @var     array    Accept: (content) types
 	 */
 	protected $_accept_content;
+
+	/**
+	 * @var     array    Accept-Charset: parsed header
+	 */
+	protected $_accept_charset;
+
+	/**
+	 * @var     array    Accept-Language: parsed header
+	 */
+	protected $_accept_language;
+
+	/**
+	 * @var     array    Accept-Encoding: parsed header
+	 */
+	protected $_accept_encoding;
 
 	/**
 	 * Constructor method for [Kohana_HTTP_Header]. Uses the standard constructor
@@ -276,13 +320,13 @@ class Kohana_HTTP_Header extends ArrayObject {
 		// Parse Accept header if required
 		if ($this->_accept_content === NULL)
 		{
-			if ( ! $this->offsetExists('Accept'))
+			if ($this->offsetExists('Accept'))
 			{
-				$accept = '*/*';
+				$accept = $this->offsetGet('Accept');
 			}
 			else
 			{
-				$accept = $this->offsetGet('Accept');
+				$accept = '*/*';
 			}
 
 			$this->_accept_content = HTTP_Header::parse_accept_headers($accept);
@@ -338,12 +382,27 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * Returns the preferred response content type based on the accept header
 	 * quality settings. If items have the same quality value, the first item
 	 * found in the array supplied as `$types` will be returned.
+	 * 
+	 *     // Get the preferred acceptable content type
+	 *     // Accept: text/html, application/json; q=.8, text/*
+	 *     $result = $header->preferred_accept(array(
+	 *         'text/html'
+	 *         'text/rtf',
+	 *         'application/json'
+	 *     )); // $result = 'application/json'
+	 * 
+	 *     $result = $header->preferred_accept(array(
+	 *         'text/rtf',
+	 *         'application/xml'
+	 *     ), TRUE); // $result = FALSE (none matched explicitly)
+	 * 
 	 *
 	 * @param   array    the content types to examine
 	 * @param   boolean  only allow explicit references, no wildcards
 	 * @return  string   name of the preferred content type
+	 * @since   3.2.0
 	 */
-	public function preferred_accept($types, $explicit = FALSE)
+	public function preferred_accept(array $types, $explicit = FALSE)
 	{
 		$preferred = FALSE;
 		$ceiling = 0;
@@ -355,6 +414,84 @@ class Kohana_HTTP_Header extends ArrayObject {
 			if ($quality > $ceiling)
 			{
 				$preferred = $type;
+				$ceiling = $quality;
+			}
+		}
+
+		return $preferred;
+	}
+
+	/**
+	 * Returns the quality of the supplied `$charset` argument. This method
+	 * will automatically parse the `Accept-Charset` header if present and
+	 * return the associated resolved quality value.
+	 * 
+	 *      // Accept-Charset: utf-8, utf-16; q=.8, iso-8859-1; q=.5
+	 *      $quality = $header->accepts_charset_at_quality('utf-8');
+	 *            // $quality = (float) 1
+	 *
+	 * @param   string   charset to examine
+	 * @return  float    the quality of the charset 
+	 * @since   3.2.0
+	 */
+	public function accepts_charset_at_quality($charset)
+	{
+		if ($this->_accept_charset === NULL)
+		{
+			if ($this->offsetExists('Accept-Charset'))
+			{
+				$charset_header = strtolower($this->offsetGet('Accept-Charset'));
+				$this->_accept_charset = HTTP_Header::parse_charset_header($charset_header);
+			}
+			else
+			{
+				$this->_accept_charset = HTTP_Header::parse_charset_header(NULL);
+			}
+		}
+
+		$charset = strtolower($charset);
+
+		if (isset($this->_accept_charset[$charset]))
+		{
+			return $this->_accept_charset[$charset];
+		}
+		elseif (isset($this->_accept_charset['*']))
+		{
+			return $this->_accept_charset['*'];
+		}
+		elseif ($charset === 'iso-8859-1')
+		{
+			return (float) 1;
+		}
+
+		return (float) 0;
+	}
+
+	/**
+	 * Returns the preferred charset from the supplied array `$charsets` based
+	 * on the `Accept-Charset` header directive.
+	 * 
+	 *      // Accept-Charset: utf-8, utf-16; q=.8, iso-8859-1; q=.5
+	 *      $charset = $header->preferred_charset(array(
+	 *          'utf-10', 'ascii', 'utf-16', 'utf-8'
+	 *      )); // $charset = 'utf-8'
+	 *
+	 * @param   array    charsets to test
+	 * @return  mixed    preferred charset or `FALSE`
+	 * @since   3.2.0
+	 */
+	public function preferred_charset(array $charsets)
+	{
+		$preferred = FALSE;
+		$ceiling = 0;
+
+		foreach ($charsets as $charset)
+		{
+			$quality = $this->accepts_charset_at_quality($charset);
+
+			if ($quality > $ceiling)
+			{
+				$preferred = $charset;
 				$ceiling = $quality;
 			}
 		}
