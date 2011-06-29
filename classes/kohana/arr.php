@@ -360,9 +360,10 @@ class Kohana_Arr {
 	 *
 	 * @param   mixed   callback applied to every element in the array
 	 * @param   array   array to map
+	 * @param   array   array of keys to apply to
 	 * @return  array
 	 */
-	public static function map($callback, $array)
+	public static function map($callback, $array, $keys = NULL)
 	{
 		foreach ($array as $key => $val)
 		{
@@ -370,7 +371,7 @@ class Kohana_Arr {
 			{
 				$array[$key] = Arr::map($callback, $val);
 			}
-			else
+			elseif ( ! is_array($keys) or in_array($key, $keys))
 			{
 				$array[$key] = call_user_func($callback, $val);
 			}
