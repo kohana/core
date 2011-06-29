@@ -34,17 +34,24 @@ class Kohana_HTTP_Header extends ArrayObject {
 		{
 			$value = trim(str_replace(array("\r", "\n"), '', $parts[$key]));
 
-			$pattern = '~\bq\s*+=\s*+([.0-9]+)~';
+			$pattern = '~\b(\;\s*+)?q\s*+=\s*+([.0-9]+)~';
 
 			// If there is no quality directive, return default
 			if ( ! preg_match($pattern, $value, $quality))
 			{
-				$parsed[$value] = HTTP_Header::DEFAULT_QUALITY;
+				$parsed[$value] = (float) HTTP_Header::DEFAULT_QUALITY;
 			}
 			else
 			{
+				$quality = $quality[2];
+
+				if ($quality[0] === '.')
+				{
+					$quality = '0'.$quality;
+				}
+
 				// Remove the quality value from the string and apply quality
-				$parsed[preg_replace($pattern, '', $value, 1)] = (float) $quality;
+				$parsed[trim(preg_replace($pattern, '', $value, 1), '; ')] = (float) $quality;
 			}
 		}
 
@@ -81,11 +88,11 @@ class Kohana_HTTP_Header extends ArrayObject {
 			$parts = explode('/', $key, 2);
 
 			// Invalid content type- bail
-			if ( ! isset($part[1]))
+			if ( ! isset($parts[1]))
 				continue;
 
 			// Set the parsed output
-			$parsed_accept[$part[0]][$part[1]] = $accepts[$key];
+			$parsed_accept[$parts[0]][$parts[1]] = $accepts[$key];
 		}
 
 		return $parsed_accept;
@@ -149,10 +156,32 @@ class Kohana_HTTP_Header extends ArrayObject {
 	{
 		if ($language === NULL)
 		{
-			return array('*' => (float) HTTP_Header::DEFAULT_QUALITY);
+			return array('*' => array('*' => (float) HTTP_Header::DEFAULT_QUALITY));
 		}
 
-		return HTTP_Header::accept_quality(explode(',', (string) $language));
+		$language = HTTP_Header::accept_quality(explode(',', (string) $language));
+
+		$parsed_language = array();
+
+		$keys = array_keys($language);
+		foreach ($keys as $key)
+		{
+			// Extract the parts
+			$parts = explode('-', $key, 2);
+
+			// Invalid content type- bail
+			if ( ! isset($parts[1]))
+			{
+				$parsed_language[$parts[0]]['*'] = $language[$key];
+			}
+			else
+			{
+				// Set the parsed output
+				$parsed_language[$parts[0]][$parts[1]] = $language[$key];
+			}
+		}
+
+		return $parsed_language;
 	}
 
 	/**
@@ -262,7 +291,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 			$current_value = array($current_value, $newval);
 		}
 
-		return $this->offsetSet($index, $current_value);
+		return parent::offsetSet($index, $current_value);
 	}
 
 	/**
@@ -323,7 +352,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 		{
 			foreach ($matches[0] as $key => $value)
 			{
-				$this->offsetSet($this[$matches[1][$key]], $matches[2][$key], FALSE);
+				$this->offsetSet($matches[1][$key], $matches[2][$key], FALSE);
 			}
 		}
 
@@ -364,7 +393,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 				$accept = '*/*';
 			}
 
-			$this->_accept_content = HTTP_Header::parse_accept_headers($accept);
+			$this->_accept_content = HTTP_Header::parse_accept_header($accept);
 		}
 
 		// If not a real mime, try and find it in config
@@ -388,7 +417,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 
 		$parts = explode('/', $type, 2);
 
-		if (isset($this->_accept_content[$parts[0]][$parts][1]))
+		if (isset($this->_accept_content[$parts[0]][$parts[1]]))
 		{
 			return $this->_accept_content[$parts[0]][$parts[1]];
 		}
@@ -444,7 +473,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 
 		foreach ($types as $type)
 		{
-			$quality = accepts_at_quality($type, $explicit);
+			$quality = $this->accepts_at_quality($type, $explicit);
 
 			if ($quality > $ceiling)
 			{
@@ -624,7 +653,19 @@ class Kohana_HTTP_Header extends ArrayObject {
 	}
 
 	/**
-	 * undocumented function
+	 * Returns the quality of `$language` supplied, optionally ignoring
+	 * wildcards if `$explicit` is set to a non-`FALSE` value. If the quality
+	 * is not found, `0.0` is returned.
+	 * 
+	 *     // Accept-Language: en-us, en-gb; q=.7, en; q=.5
+	 *     $lang = $header->accepts_language_at_quality('en-gb');
+	 *     // $lang = (float) 0.7
+	 * 
+	 *     $lang2 = $header->accepts_language_at_quality('en-au');
+	 *     // $lang2 = (float) 0.5
+	 * 
+	 *     $lang3 = $header->accepts_language_at_quality('en-au', TRUE);
+	 *     // $lang3 = (float) 0.0
 	 *
 	 * @param   string    language to interrogate
 	 * @param   boolean   explicit interrogation, `TRUE` ignores wildcards
@@ -678,7 +719,13 @@ class Kohana_HTTP_Header extends ArrayObject {
 	}
 
 	/**
-	 * undocumented function
+	 * Returns the preferred language from the supplied array `$languages` based
+	 * on the `Accept-Language` header directive.
+	 * 
+	 *      // Accept-Language: en-us, en-gb; q=.7, en; q=.5
+	 *      $lang = $header->preferred_language(array(
+	 *          'en-gb', 'en-au', 'fr', 'es'
+	 *      )); // $lang = 'en-gb'
 	 *
 	 * @param   array     languages 
 	 * @param   boolean   explicit 
