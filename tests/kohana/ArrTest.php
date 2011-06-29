@@ -535,6 +535,21 @@ class Kohana_ArrTest extends Unittest_TestCase
 					'bar' => '<p>foobar</p>',
 				),
 			),
+			array(
+				array(
+					'strip_tags',
+					'trim',
+				),
+				array(
+					'foo' => '<p>foobar </p>',
+					'bar' => '<p>foobar</p>',
+				),
+				NULL,
+				array(
+					'foo' => 'foobar',
+					'bar' => 'foobar',
+				),
+			),
 		);
 	}
 

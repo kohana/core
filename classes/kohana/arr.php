@@ -369,11 +369,21 @@ class Kohana_Arr {
 		{
 			if (is_array($val))
 			{
-				$array[$key] = Arr::map($callback, $val);
+				$array[$key] = Arr::map($callback, $array[$key]);
 			}
 			elseif ( ! is_array($keys) or in_array($key, $keys))
 			{
-				$array[$key] = call_user_func($callback, $val);
+				if (is_array($callback))
+				{
+					foreach ($callback as $cb)
+					{
+						$array[$key] = call_user_func($cb, $array[$key]);
+					}
+				}
+				else
+				{
+					$array[$key] = call_user_func($callback, $array[$key]);
+				}
 			}
 		}
 
