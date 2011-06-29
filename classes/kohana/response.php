@@ -241,6 +241,11 @@ class Kohana_Response implements HTTP_Response {
 			return $this;
 		}
 
+		if ($this->_protocol === NULL)
+		{
+			$this->_protocol = HTTP::$protocol;
+		}
+
 		return $this->_protocol;
 	}
 
@@ -411,13 +416,11 @@ class Kohana_Response implements HTTP_Response {
 	 *
 	 * @param   boolean   replace existing headers
 	 * @param   callback  function to handle header output
-	 * @return  Response
+	 * @return  mixed
 	 */
 	public function send_headers($replace = FALSE, $callback = NULL)
 	{
-		$this->_header->send_headers($this, $replace, $callback);
-
-		return $this;
+		return $this->_header->send_headers($this, $replace, $callback);
 	}
 
 	/**

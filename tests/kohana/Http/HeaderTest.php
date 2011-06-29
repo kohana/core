@@ -849,14 +849,104 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 		$this->assertSame($expected, $header->preferred_accept($accepts, $explicit));
 	}
 
-	public function test_accepts_charset_at_quality()
+	/**
+	 * Data provider for test_accepts_charset_at_quality
+	 *
+	 * @return  array
+	 */
+	public function provider_accepts_charset_at_quality()
 	{
-		
+		return array(
+			array(
+				array(
+					'Accept-Charset' => 'utf-8, utf-10, utf-16, iso-8859-1'
+				),
+				'utf-8',
+				1.0
+			),
+			array(
+				array(
+					'Accept-Charset' => 'utf-8, utf-10, utf-16, iso-8859-1'
+				),
+				'utf-16',
+				1.0
+			),
+			array(
+				array(
+					'Accept-Charset' => 'utf-8; q=.1, utf-10, utf-16; q=.2, iso-8859-1'
+				),
+				'utf-8',
+				0.1
+			),
+			array(
+				array(
+					'Accept-Charset' => 'utf-8; q=.1, utf-10, utf-16; q=.2, iso-8859-1; q=.5'
+				),
+				'iso-8859-1',
+				0.5
+			)
+		);
 	}
 
-	public function test_preferred_charset()
+	/**
+	 * Tests `accepts_charset_at_quality` works as expected, returning the correct
+	 * quality value
+	 * 
+	 * @dataProvider provider_accepts_charset_at_quality
+	 *
+	 * @param   array     state 
+	 * @param   string    charset 
+	 * @param   string    expected 
+	 * @return  void
+	 */
+	public function test_accepts_charset_at_quality(array $state, $charset, $expected)
 	{
-		
+		$header = new HTTP_Header($state);
+
+		$this->assertSame($expected, $header->accepts_charset_at_quality($charset));
+	}
+
+	public function provider_preferred_charset()
+	{
+		return array(
+			array(
+				array(
+					'Accept-Charset' => 'utf-8, utf-10, utf-16, iso-8859-1'
+				),
+				array(
+					'utf-8',
+					'utf-16'
+				),
+				'utf-8'
+			),
+			array(
+				array(
+					'Accept-Charset' => 'utf-8, utf-10, utf-16, iso-8859-1'
+				),
+				array(
+					'UTF-10'
+				),
+				'UTF-10'
+			),
+		);
+	}
+
+	/**
+	 * Tests `preferred_charset` works as expected, returning the correct charset
+	 * from the list supplied
+	 * 
+	 * @dataProvider provider_preferred_charset
+	 *
+	 * @param   array     state 
+	 * @param   array     charsets 
+	 * @param   string    expected 
+	 * @return  void
+	 */
+	public function test_preferred_charset(array $state, array $charsets, $expected)
+	{
+		$header = new HTTP_Header($state);
+
+		$this->assertSame($expected, $header->preferred_charset($charsets));
 	}
 
 	public function test_accepts_encoding_at_quality()
@@ -879,9 +969,93 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 		
 	}
 
-	public function test_send_headers()
+	/**
+	 * Data provider for test_send_headers
+	 *
+	 * @return  array
+	 */
+	public function provider_send_headers()
 	{
-		
+		return array(
+			array(
+				array(
+					'accept'          => 'text/html, text/plain, text/*, */*',
+					'accept-charset'  => 'utf-8, utf-10, iso-8859-1',
+					'accept-encoding' => 'compress, gzip',
+					'accept-language' => 'en, en-gb, en-us'
+				),
+				array(
+					'HTTP/1.1 200 OK',
+					'Accept: text/html, text/plain, text/*, */*',
+					'Accept-Charset: utf-8, utf-10, iso-8859-1',
+					'Accept-Encoding: compress, gzip',
+					'Accept-Language: en, en-gb, en-us'
+				),
+				FALSE
+			),
+			array(
+				array(
+					'accept'          => 'text/html, text/plain, text/*, */*',
+					'accept-charset'  => 'utf-8, utf-10, iso-8859-1',
+					'accept-encoding' => 'compress, gzip',
+					'accept-language' => 'en, en-gb, en-us',
+					'content-type'    => 'application/json',
+					'x-powered-by'    => 'Mohana',
+					'x-ssl-enabled'   => 'TRUE'
+				),
+				array(
+					'HTTP/1.1 200 OK',
+					'Accept: text/html, text/plain, text/*, */*',
+					'Accept-Charset: utf-8, utf-10, iso-8859-1',
+					'Accept-Encoding: compress, gzip',
+					'Accept-Language: en, en-gb, en-us',
+					'Content-Type: application/json',
+					'X-Powered-By: Mohana',
+					'X-Ssl-Enabled: TRUE'
+				),
+				TRUE
+			)
+		);
 	}
 
+	/**
+	 * Tests that send headers processes the headers sent to PHP correctly
+	 * 
+	 * @dataProvider provider_send_headers
+	 *
+	 * @param   array     state in
+	 * @param   array     expected out
+	 * @return  void
+	 */
+	public function test_send_headers(array $state, array $expected, $expose)
+	{
+		if ( ! isset($state['content-type']))
+		{
+			$expected[] = 'Content-Type: '.Kohana::$content_type.'; charset='.Kohana::$charset;
+		}
+
+		Kohana::$expose = $expose;
+
+		if (Kohana::$expose AND ! isset($state['x-powered-by']))
+		{
+			$expected[] = 'X-Powered-By: Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
+		}
+
+		$response = new Response;
+		$response->headers($state);
+
+		$this->assertSame($expected, $response->send_headers(FALSE, array($this, 'send_headers_handler')));
+	}
+
+	/**
+	 * Callback handler for send headers
+	 *
+	 * @param   array     headers 
+	 * @param   boolean   replace 
+	 * @return  array
+	 */
+	public function send_headers_handler($response, $headers, $replace)
+	{
+		return $headers;
+	}
 } // End Kohana_HTTP_HeaderTest

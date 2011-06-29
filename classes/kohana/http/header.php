@@ -755,11 +755,14 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * Sends headers to the php processor, or supplied `$callback` argument.
 	 * This method formats the headers correctly for output, re-instating their
 	 * capitalization for transmission.
+	 * 
+	 * [!!] if you supply a custom header handler via `$callback`, it is
+	 *  recommended that `$response` is returned
 	 *
 	 * @param   HTTP_Response header to send
 	 * @param   boolean   replace existing value
 	 * @param   callback  optional callback to replace PHP header function
-	 * @return  self
+	 * @return  mixed
 	 * @since   3.2.0
 	 */
 	public function send_headers(HTTP_Response $response = NULL, $replace = FALSE, $callback = NULL)
@@ -770,7 +773,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 			$response = Request::initial()->response();
 		}
 
-		$protocol = $response->protocol();
+		$protocol = strtoupper($response->protocol());
 
 		// Create the response header
 		$status = $response->status();
@@ -789,7 +792,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 			$processed_headers[] = Text::ucfirst($header).': '.$value;
 		}
 
-		if ( ! isset($headers['Content-Type']))
+		if ( ! isset($headers['content-type']))
 		{
 			$processed_headers[] = 'Content-Type: '.Kohana::$content_type.
 				'; charset='.Kohana::$charset;
@@ -810,12 +813,12 @@ class Kohana_HTTP_Header extends ArrayObject {
 		if (is_callable($callback))
 		{
 			// Use the callback method to set header
-			call_user_func($callback, $processed_headers, $replace);
-			return $this;
+			return call_user_func($callback, $response, $processed_headers, $replace);
 		}
 		else
 		{
-			return $this->_send_headers_to_php($processed_headers, $replace);
+			$this->_send_headers_to_php($processed_headers, $replace);
+			return $response;
 		}
 	}
 
