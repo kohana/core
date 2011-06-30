@@ -509,8 +509,47 @@ class Kohana_ArrTest extends Unittest_TestCase
 	public function provider_map()
 	{
 		return array(
-			array('strip_tags', array('<p>foobar</p>'), array('foobar')),
-			array('strip_tags', array(array('<p>foobar</p>'), array('<p>foobar</p>')), array(array('foobar'), array('foobar'))),
+			array('strip_tags', array('<p>foobar</p>'), NULL, array('foobar')),
+			array('strip_tags', array(array('<p>foobar</p>'), array('<p>foobar</p>')), NULL, array(array('foobar'), array('foobar'))),
+			array(
+				'strip_tags',
+				array(
+					'foo' => '<p>foobar</p>',
+					'bar' => '<p>foobar</p>',
+				),
+				NULL,
+				array(
+					'foo' => 'foobar',
+					'bar' => 'foobar',
+				),
+			),
+			array(
+				'strip_tags',
+				array(
+					'foo' => '<p>foobar</p>',
+					'bar' => '<p>foobar</p>',
+				),
+				array('foo'),
+				array(
+					'foo' => 'foobar',
+					'bar' => '<p>foobar</p>',
+				),
+			),
+			array(
+				array(
+					'strip_tags',
+					'trim',
+				),
+				array(
+					'foo' => '<p>foobar </p>',
+					'bar' => '<p>foobar</p>',
+				),
+				NULL,
+				array(
+					'foo' => 'foobar',
+					'bar' => 'foobar',
+				),
+			),
 		);
 	}
 
@@ -519,11 +558,11 @@ class Kohana_ArrTest extends Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_map
 	 */
-	public function test_map($method, $source, $expected)
+	public function test_map($method, $source, $keys, $expected)
 	{
 		$this->assertSame(
 			$expected,
-			Arr::map($method, $source)
+			Arr::map($method, $source, $keys)
 		);
 	}
 
