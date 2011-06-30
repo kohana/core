@@ -378,7 +378,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$result = $request->protocol($protocol);
 
 		// Test the set value
-		$this->assertSame($request->protocol(), $expected);
+		$this->assertSame($expected, $request->protocol());
 
 		// Test the return value
 		$this->assertTrue($request instanceof $result);
