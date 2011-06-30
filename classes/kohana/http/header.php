@@ -569,7 +569,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * message encoding algorithm. This method allows explicit checks to be
 	 * done ignoring wildcards.
 	 * 
-	 *      // Accept-Encoding: compress, gzip, *; q.5
+	 *      // Accept-Encoding: compress, gzip, *; q=.5
 	 *      $encoding = $header->accepts_encoding_at_quality('gzip');
 	 *      // $encoding = (float) 1.0s
 	 *
@@ -610,7 +610,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 			}
 			elseif ($encoding === 'identity')
 			{
-				return (float) 1;
+				return (float) HTTP_Header::DEFAULT_QUALITY;
 			}
 		}
 
@@ -674,7 +674,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 */
 	public function accepts_language_at_quality($language, $explicit = FALSE)
 	{
-		if ($this->_accept_languages === NULL)
+		if ($this->_accept_language === NULL)
 		{
 			if ($this->offsetExists('Accept-Language'))
 			{
@@ -685,34 +685,34 @@ class Kohana_HTTP_Header extends ArrayObject {
 				$language_header = NULL;
 			}
 
-			$this->_accept_languages = HTTP_Header::parse_language_header($language_header);
+			$this->_accept_language = HTTP_Header::parse_language_header($language_header);
 		}
 
 		// Normalize the language
 		$language_parts = explode('-', strtolower($language), 2);
 
-		if (isset($this->_accept_languages[$language_parts[0]]))
+		if (isset($this->_accept_language[$language_parts[0]]))
 		{
 			if (isset($language_parts[1]))
 			{
-				if (isset($this->_accept_languages[$language_parts[0]][$language_parts[1]]))
+				if (isset($this->_accept_language[$language_parts[0]][$language_parts[1]]))
 				{
-					return $this->_accept_languages[$language_parts[0]][$language_parts[1]];
+					return $this->_accept_language[$language_parts[0]][$language_parts[1]];
 				}
-				elseif ($explicit === FALSE AND isset($this->_accept_languages[$language_parts[0]]['*']))
+				elseif ($explicit === FALSE AND isset($this->_accept_language[$language_parts[0]]['*']))
 				{
-					return $this->_accept_languages[$language_parts[0]]['*'];
+					return $this->_accept_language[$language_parts[0]]['*'];
 				}
 			}
-			elseif (isset($this->_accept_languages[$language_parts[0]]['*']))
+			elseif (isset($this->_accept_language[$language_parts[0]]['*']))
 			{
-				return $this->_accept_languages[$language_parts[0]]['*'];
+				return $this->_accept_language[$language_parts[0]]['*'];
 			}
 		}
 
-		if ($explicit === FALSE AND isset($this->_accept_languages['*']))
+		if ($explicit === FALSE AND isset($this->_accept_language['*']))
 		{
-			return $this->_accept_languages['*'];
+			return $this->_accept_language['*'];
 		}
 
 		return (float) 0;

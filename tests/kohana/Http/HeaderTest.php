@@ -5,7 +5,6 @@
  * @group kohana
  * @group kohana.http
  * @group kohana.http.header
- * @group kohana.http.header
  * 
  * @package    Kohana
  * @category   Tests
@@ -906,6 +905,11 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 		$this->assertSame($expected, $header->accepts_charset_at_quality($charset));
 	}
 
+	/**
+	 * Data provider for test_preferred_charset
+	 *
+	 * @return  array
+	 */
 	public function provider_preferred_charset()
 	{
 		return array(
@@ -949,24 +953,280 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 		$this->assertSame($expected, $header->preferred_charset($charsets));
 	}
 
-	public function test_accepts_encoding_at_quality()
+	/**
+	 * Data provider for test_accepts_encoding_at_quality
+	 *
+	 * @return  array
+	 */
+	public function provider_accepts_encoding_at_quality()
 	{
-		
+		return array(
+			array(
+				array(
+					'accept-encoding' => 'compress, gzip, blowfish; q=.7, *; q=.5'
+				),
+				'gzip',
+				FALSE,
+				1.0
+			),
+			array(
+				array(
+					'accept-encoding' => 'compress, gzip, blowfish; q=.7, *; q=.5'
+				),
+				'gzip',
+				TRUE,
+				1.0
+			),
+			array(
+				array(
+					'accept-encoding' => 'compress, gzip, blowfish; q=.7, *; q=.5'
+				),
+				'blowfish',
+				FALSE,
+				0.7
+			),
+			array(
+				array(
+					'accept-encoding' => 'compress, gzip, blowfish; q=.7, *; q=.5'
+				),
+				'bzip',
+				FALSE,
+				0.5
+			),
+			array(
+				array(
+					'accept-encoding' => 'compress, gzip, blowfish; q=.7, *; q=.5'
+				),
+				'bzip',
+				TRUE,
+				(float) 0
+			)
+		);
 	}
 
-	public function test_preferred_encoding()
+	/**
+	 * Tests `accepts_encoding_at_quality` parses and returns the correct
+	 * quality value for Accept-Encoding headers
+	 * 
+	 * @dataProvider provider_accepts_encoding_at_quality
+	 *
+	 * @param   array     state 
+	 * @param   string    encoding 
+	 * @param   boolean   explicit 
+	 * @param   float     expected 
+	 * @return  void
+	 */
+	public function test_accepts_encoding_at_quality(array $state, $encoding, $explicit, $expected)
 	{
-		
+		$header = new HTTP_Header($state);
+		$this->assertSame($expected, $header->accepts_encoding_at_quality($encoding, $explicit));
 	}
 
-	public function test_accepts_language_at_quality()
+	/**
+	 * Data provider for test_preferred_encoding
+	 *
+	 * @return  array
+	 */
+	public function provider_preferred_encoding()
 	{
-		
+		return array(
+			array(
+				array(
+					'accept-encoding' => 'compress, gzip, blowfish; q=.7, *; q=.5'
+				),
+				array('gzip', 'blowfish', 'bzip'),
+				FALSE,
+				'gzip'
+			),
+			array(
+				array(
+					'accept-encoding' => 'compress, gzip, blowfish; q=.7, *; q=.5'
+				),
+				array('bzip', 'ROT-13'),
+				FALSE,
+				'bzip'
+			),
+			array(
+				array(
+					'accept-encoding' => 'compress, gzip, blowfish; q=.7, *; q=.5'
+				),
+				array('bzip', 'ROT-13'),
+				TRUE,
+				FALSE
+			),
+			array(
+				array(
+					'accept-encoding' => 'compress, gzip, blowfish; q=.2, *; q=.5'
+				),
+				array('ROT-13', 'blowfish'),
+				FALSE,
+				'ROT-13'
+			),
+		);
 	}
 
-	public function test_preferred_language()
+	/**
+	 * Tests that `preferred_encoding` parses and returns the correct
+	 * encoding type
+	 * 
+	 * @dataProvider provider_preferred_encoding
+	 *
+	 * @param   array     state in
+	 * @param   array     encodings to interrogate 
+	 * @param   boolean   explicit check
+	 * @param   string    expected output
+	 * @return  void
+	 */
+	public function test_preferred_encoding(array $state, array $encodings, $explicit, $expected)
 	{
-		
+		$header = new HTTP_Header($state);
+		$this->assertSame($expected, $header->preferred_encoding($encodings, $explicit));
+	}
+
+	/**
+	 * Data provider for test_accepts_language_at_quality
+	 *
+	 * @return  array
+	 */
+	public function provider_accepts_language_at_quality()
+	{
+		return array(
+			array(
+				array(
+					'accept-language'  => 'en-us; q=.9, en-gb; q=.7, en; q=.5, fr-fr; q=.9, fr; q=.8'
+				),
+				'en',
+				FALSE,
+				0.5
+			),
+			array(
+				array(
+					'accept-language'  => 'en-us; q=.9, en-gb; q=.7, en; q=.5, fr-fr; q=.9, fr; q=.8'
+				),
+				'en-gb',
+				FALSE,
+				0.7
+			),
+			array(
+				array(
+					'accept-language'  => 'en-us; q=.9, en-gb; q=.7, en; q=.5, fr-fr; q=.9, fr; q=.8'
+				),
+				'en',
+				TRUE,
+				0.5
+			),
+			array(
+				array(
+					'accept-language'  => 'en-us; q=.9, en-gb; q=.7, en; q=.5, fr-fr; q=.9, fr; q=.8'
+				),
+				'fr-ni',
+				FALSE,
+				0.8
+			),
+			array(
+				array(
+					'accept-language'  => 'en-us; q=.9, en-gb; q=.7, en; q=.5, fr-fr; q=.9, fr; q=.8'
+				),
+				'fr-ni',
+				TRUE,
+				(float) 0
+			),
+		);
+	}
+
+	/**
+	 * Tests `accepts_language_at_quality` parses the Accept-Language header
+	 * correctly and identifies the correct quality supplied, explicit or not
+	 *
+	 * @dataProvider provider_accepts_language_at_quality
+	 * 
+	 * @param   array    state in
+	 * @param   string   language to interrogate
+	 * @param   boolean  explicit check
+	 * @param   float    expected output
+	 * @return  void
+	 */
+	public function test_accepts_language_at_quality(array $state, $language, $explicit, $expected)
+	{
+		$header = new HTTP_Header($state);
+		$this->assertSame($expected, $header->accepts_language_at_quality($language, $explicit));
+	}
+
+	/**
+	 * Data provider for test_preferred_language
+	 *
+	 * @return  array
+	 */
+	public function provider_preferred_language()
+	{
+		return array(
+			array(
+				array(
+					'accept-language'  => 'en-us; q=.9, en-gb; q=.7, en; q=.5, fr-fr; q=.9, fr; q=.8'
+				),
+				array(
+					'en',
+					'fr',
+					'en-gb'
+				),
+				FALSE,
+				'fr'
+			),
+			array(
+				array(
+					'accept-language'  => 'en-us; q=.9, en-gb; q=.7, en; q=.5, fr-fr; q=.9, fr; q=.8'
+				),
+				array(
+					'en',
+					'fr',
+					'en-gb'
+				),
+				TRUE,
+				'fr'
+			),
+			array(
+				array(
+					'accept-language'  => 'en-us; q=.9, en-gb; q=.7, en; q=.5, fr-fr; q=.9, fr; q=.8'
+				),
+				array(
+					'en-au',
+					'fr-ni',
+					'fr'
+				),
+				FALSE,
+				'fr-ni'
+			),
+			array(
+				array(
+					'accept-language'  => 'en-us; q=.9, en-gb; q=.7, en; q=.5, fr-fr; q=.9, fr; q=.8'
+				),
+				array(
+					'en-au',
+					'fr-ni',
+					'fr'
+				),
+				TRUE,
+				'fr'
+			),
+		);
+	}
+
+	/**
+	 * Tests that `preferred_language` correctly identifies the right
+	 * language based on the Accept-Language header and `$explicit` setting
+	 * 
+	 * @dataProvider provider_preferred_language
+	 *
+	 * @param   array    state in
+	 * @param   array    languages to interrogate
+	 * @param   boolean  explicit check
+	 * @param   string   expected output
+	 * @return  void
+	 */
+	public function test_preferred_language(array $state, array $languages, $explicit, $expected)
+	{
+		$header = new HTTP_Header($state);
+		$this->assertSame($expected, $header->preferred_language($languages, $explicit));
 	}
 
 	/**
