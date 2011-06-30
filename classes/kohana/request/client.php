@@ -162,7 +162,7 @@ abstract class Kohana_Request_Client {
 		if ($cache_control = arr::get($headers, 'cache-control'))
 		{
 			// Parse the cache control
-			$cache_control = Response::parse_cache_control( (string) $cache_control);
+			$cache_control = HTTP_Header::parse_cache_control( (string) $cache_control);
 
 			// If the no-cache or no-store directive is set, return
 			if (array_intersect_key($cache_control, array('no-cache' => NULL, 'no-store' => NULL)))
@@ -298,7 +298,7 @@ abstract class Kohana_Request_Client {
 		if ($cache_control = $response->headers('cache-control'))
 		{
 			// Parse the cache control header
-			$cache_control = Response::parse_cache_control( (string) $cache_control);
+			$cache_control = HTTP_Header::parse_cache_control( (string) $cache_control);
 
 			if (isset($cache_control['max-age']))
 			{
