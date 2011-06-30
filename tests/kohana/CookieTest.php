@@ -63,6 +63,9 @@ class Kohana_CookieTest extends Unittest_TestCase
 	 */
 	public function test_set($key, $value, $exp, $expected)
 	{
+		if (headers_sent())
+			$this->markTestSkipped('Cannot test setting cookies as headers have already been sent');
+
 		$this->assertSame($expected, cookie::set($key, $value, $exp));
 	}
 
@@ -96,6 +99,9 @@ class Kohana_CookieTest extends Unittest_TestCase
 	 */
 	public function test_get($key, $value, $expected)
 	{
+		if (headers_sent())
+			$this->markTestSkipped('Cannot test setting cookies as headers have already been sent');
+
 		// Force $_COOKIE
 		if ($key !== NULL)
 		{
@@ -128,6 +134,9 @@ class Kohana_CookieTest extends Unittest_TestCase
 	 */
 	public function test_delete($key, $expected)
 	{
+		if (headers_sent())
+			$this->markTestSkipped('Cannot test setting cookies as headers have already been sent');
+
 		$this->assertSame($expected, cookie::delete($key));
 	}
 
