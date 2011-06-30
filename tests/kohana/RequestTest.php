@@ -32,16 +32,6 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 	public function test_initial()
 	{
-		$original = array(
-			'Kohana::$is_cli' => Kohana::$is_cli,
-			'Request::$initial' => Request::$initial,
-			'Request::$client_ip' => Request::$client_ip,
-			'Request::$user_agent' => Request::$user_agent,
-			'_SERVER' => $_SERVER,
-			'_GET' => $_GET,
-			'_POST' => $_POST,
-		);
-
 		$this->setEnvironment(array(
 			'Kohana::$is_cli' => FALSE,
 			'Request::$initial' => NULL,
@@ -77,8 +67,6 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$this->assertEquals($request->query(), array());
 
 		$this->assertEquals($request->post(), array());
-
-		$this->setEnvironment($original);
 	}
 
 	/**
