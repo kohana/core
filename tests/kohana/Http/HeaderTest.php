@@ -5,7 +5,6 @@
  * @group kohana
  * @group kohana.http
  * @group kohana.http.header
- * @group kohana.http.header
  * 
  * @package    Kohana
  * @category   Tests
@@ -16,114 +15,1307 @@
 class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 
 	/**
-	 * Provides test data for test_parse_header_values()
+	 * Provides data for test_accept_quality
 	 *
 	 * @return  array
 	 */
-	public function provider_parse_header_values()
+	public function provider_accept_quality()
 	{
 		return array(
 			array(
 				array(
-					'Date'             => 'Sun, 13 Mar 2011 16:02:19 GMT',
-					'Expires'          => '-1',
-					'Cache-Control'    => 'private, max-age=0',
-					'Content-Type'     => 'text/html; charset=ISO-8859-1',
-					'Server'           => 'Apache'
+					'text/html; q=1',
+					'text/plain; q=.5',
+					'application/json; q=.1',
+					'text/*'
 				),
 				array(
-					'date'             => new HTTP_Header_Value('Sun, 13 Mar 2011 16:02:19 GMT'),
-					'expires'          => new HTTP_Header_Value('-1'),
-					'cache-control'    => array(new HTTP_Header_Value('private'), 'max-age' => new HTTP_Header_Value('max-age=0')),
-					'content-type'     => new HTTP_Header_Value('text/html; charset=ISO-8859-1'),
-					'server'           => new HTTP_Header_Value('Apache')
+					'text/html'        => (float) 1,
+					'text/plain'       => 0.5,
+					'application/json' => 0.1,
+					'text/*'           => (float) 1
 				)
 			),
 			array(
 				array(
-					'Date'             => 'Sun, 13 Mar 2011 16:02:19 GMT',
-					'Expires'          => '-1',
-					'Cache-Control'    => 'private, max-age=0',
-					'Content-Type'     => 'text/html; charset=ISO-8859-1',
-					'Server'           => 'Apache',
-					'Set-Cookie'       => array(
-						'PREF=ID=dbfa7be8975d02f9:FF=0:TM=1300032139:LM=1300032139:S=ufhpKoOHVm55WY6v; expires=Tue, 12-Mar-2013 16:02:19 GMT; path=/; domain=.google.co.uk',
-						'NID=44=CxNpOQbQ7fFoxIDZWRHQJaKXgZvi76heU9OfsVi75gUH2Ik0p6tAuqW9AmTwvsE1oy0XBHDgIgMq-301hvAiyHC1sgI71pKcMUEf5VCRvCwHxJH9ZR-tlJdDD-df1vnz; expires=Mon, 12-Sep-2011 16:02:19 GMT; path=/; domain=.google.co.uk; HttpOnly'
+					'text/*',
+					'text/html; level=1; q=0.4',
+					'application/xml+rss; q=0.5; level=4'
+				),
+				array(
+					'text/*'             => (float) 1,
+					'text/html; level=1' => 0.4,
+					'application/xml+rss; level=4' => 0.5
+				)
+			)
+		);
+	}
+
+	/**
+	 * Tests the `accept_quality` method parses the quality values
+	 * correctly out of header parts
+	 * 
+	 * @dataProvider provider_accept_quality
+	 *
+	 * @param   array     input
+	 * @param   array     expected output
+	 * @return  void
+	 */
+	public function test_accept_quality(array $parts, array $expected)
+	{
+		$out = HTTP_Header::accept_quality($parts);
+
+		foreach ($out as $key => $value)
+		{
+			$this->assertInternalType('float', $value);
+		}
+
+		$this->assertSame($expected, $out);
+	}
+
+	/**
+	 * Data provider for test_parse_accept_header
+	 *
+	 * @return  array
+	 */
+	public function provider_parse_accept_header()
+	{
+		return array(
+			array(
+				'text/html, text/plain, text/*, */*',
+				array(
+					'text' => array(
+						'html'   => (float) 1,
+						'plain'  => (float) 1,
+						'*'      => (float) 1
+					),
+					'*'    => array(
+						'*'      => (float) 1
+					)
+				)
+			),
+			array(
+				'text/html; q=.5, application/json, application/xml+rss; level=1; q=.7, text/*, */*',
+				array(
+					'text'        => array(
+						'html'       => 0.5,
+						'*'          => (float) 1
+					),
+					'application' => array(
+						'json'       => (float) 1,
+						'xml+rss; level=1' => 0.7
+					),
+					'*'           => array(
+						'*'          => (float) 1
+					)
+				)
+			)
+		);
+	}
+
+	/**
+	 * Tests the `parse_accept_header` method parses the Accept: header
+	 * correctly and returns expected output
+	 * 
+	 * @dataProvider provider_parse_accept_header
+	 *
+	 * @param   string    accept in
+	 * @param   array     expected out
+	 * @return  void
+	 */
+	public function test_parse_accept_header($accept, array $expected)
+	{
+		$this->assertSame($expected, HTTP_Header::parse_accept_header($accept));
+	}
+
+	/**
+	 * Provides data for test_parse_charset_header
+	 *
+	 * @return  array
+	 */
+	public function provider_parse_charset_header()
+	{
+		return array(
+			array(
+				'utf-8, utf-10, utf-16, iso-8859-1',
+				array(
+					'utf-8'     => (float) 1,
+					'utf-10'    => (float) 1,
+					'utf-16'    => (float) 1,
+					'iso-8859-1'=> (float) 1
+				)
+			),
+			array(
+				'utf-8, utf-10; q=.9, utf-16; q=.5, iso-8859-1; q=.75',
+				array(
+					'utf-8'     => (float) 1,
+					'utf-10'    => 0.9,
+					'utf-16'    => 0.5,
+					'iso-8859-1'=> 0.75
+				)
+			),
+			array(
+				NULL,
+				array(
+					'*'         => (float) 1
+				)
+			)
+		);
+	}
+
+	/**
+	 * Tests the `parse_charset_header` method parsed the Accept-Charset header
+	 * correctly
+	 * 
+	 * @dataProvider provider_parse_charset_header
+	 *
+	 * @param   string    accept 
+	 * @param   array     expected 
+	 * @return  void
+	 */
+	public function test_parse_charset_header($accept, array $expected)
+	{
+		$this->assertSame($expected, HTTP_Header::parse_charset_header($accept));
+	}
+
+	/**
+	 * Provides data for test_parse_charset_header
+	 *
+	 * @return  array
+	 */
+	public function provider_parse_encoding_header()
+	{
+		return array(
+			array(
+				'compress, gzip, blowfish',
+				array(
+					'compress'  => (float) 1,
+					'gzip'      => (float) 1,
+					'blowfish'  => (float) 1
+				)
+			),
+			array(
+				'compress, gzip; q=0.12345, blowfish; q=1.0',
+				array(
+					'compress'  => (float) 1,
+					'gzip'      => 0.12345,
+					'blowfish'  => (float) 1
+				)
+			),
+			array(
+				NULL,
+				array(
+					'*'         => (float) 1
+				)
+			),
+			array(
+				'',
+				array(
+					'identity'  => (float) 1
+				)
+			)
+		);
+	}
+
+	/**
+	 * Tests the `parse_encoding_header` method parses the Accept-Encoding header
+	 * correctly
+	 * 
+	 * @dataProvider provider_parse_encoding_header
+	 *
+	 * @param   string    accept 
+	 * @param   array     expected 
+	 * @return  void
+	 */
+	public function test_parse_encoding_header($accept, array $expected)
+	{
+		$this->assertSame($expected, HTTP_Header::parse_encoding_header($accept));
+	}
+
+	/**
+	 * Provides data for test_parse_charset_header
+	 *
+	 * @return  array
+	 */
+	public function provider_parse_language_header()
+	{
+		return array(
+			array(
+				'en, en-us, en-gb, fr, fr-fr, es-es',
+				array(
+					'en' => array(
+						'*'  => (float) 1,
+						'us' => (float) 1,
+						'gb' => (float) 1
+					),
+					'fr' => array(
+						'*'  => (float) 1,
+						'fr' => (float) 1
+					),
+					'es' => array(
+						'es' => (float) 1
+					)
+				)
+			),
+			array(
+				'en; q=.9, en-us, en-gb, fr; q=.5, fr-fr; q=0.4, es-es; q=0.9, en-gb-gb; q=.45',
+				array(
+					'en' => array(
+						'*'  => 0.9,
+						'us' => (float) 1,
+						'gb' => (float) 1,
+						'gb-gb' => 0.45
+					),
+					'fr' => array(
+						'*'  => 0.5,
+						'fr' => 0.4
+					),
+					'es' => array(
+						'es' => 0.9
+					)
+				)
+			),
+			array(
+				NULL,
+				array(
+					'*'  => array(
+						'*' => (float) 1
+					)
+				)
+			)
+		);
+	}
+
+	/**
+	 * Tests the `parse_language_header` method parses the Accept-Language header
+	 * correctly
+	 * 
+	 * @dataProvider provider_parse_language_header
+	 * 
+	 * @param   string    accept 
+	 * @param   array     expected 
+	 * @return  void
+	 */
+	public function test_parse_language_header($accept, array $expected)
+	{
+		$this->assertSame($expected, HTTP_Header::parse_language_header($accept));
+	}
+
+	/**
+	 * Data provider for test_offsetSet
+	 *
+	 * @return  array
+	 */
+	public function provider_offsetSet()
+	{
+		return array(
+			array(
+				array(
+					'Content-Type'    => 'application/x-www-form-urlencoded',
+					'Accept'          => 'text/html, text/plain; q=.1, */*',
+					'Accept-Language' => 'en-gb, en-us, en; q=.1'
+				),
+				array(
+					array(
+						'Accept-Encoding',
+						'compress, gzip',
+						FALSE
 					)
 				),
 				array(
-					'date'             => new HTTP_Header_Value('Sun, 13 Mar 2011 16:02:19 GMT'),
-					'expires'          => new HTTP_Header_Value('-1'),
-					'cache-control'    => array(
-						new HTTP_Header_Value('private'), 
-						'max-age'            => new HTTP_Header_Value('max-age=0'
-					)),
-					'content-type'     => new HTTP_Header_Value('text/html; charset=ISO-8859-1'),
-					'server'           => new HTTP_Header_Value('Apache'),
-					'set-cookie'       => array(
-						new HTTP_Header_Value(array(
-							'_key'        => 'PREF',
-							'_value'      => 'ID=dbfa7be8975d02f9:FF=0:TM=1300032139:LM=1300032139:S=ufhpKoOHVm55WY6v',
-							'_properties' => array(
-								'expires'    => 'Tue, 12-Mar-2013 16:02:19 GMT',
-								'path'       => '/',
-								'domain'     => '.google.co.uk'
-							)
-						)),
-						new HTTP_Header_Value(array(
-							'_key'        => 'NID',
-							'_value'      => '44=CxNpOQbQ7fFoxIDZWRHQJaKXgZvi76heU9OfsVi75gUH2Ik0p6tAuqW9AmTwvsE1oy0XBHDgIgMq-301hvAiyHC1sgI71pKcMUEf5VCRvCwHxJH9ZR-tlJdDD-df1vnz',
-							'_properties' => array(
-								'expires'    => 'Mon, 12-Sep-2011 16:02:19 GMT',
-								'path'       => '/',
-								'domain'     => '.google.co.uk',
-								'HttpOnly'
-							)
-						))
+					'content-type'    => 'application/x-www-form-urlencoded',
+					'accept'          => 'text/html, text/plain; q=.1, */*',
+					'accept-language' => 'en-gb, en-us, en; q=.1',
+					'accept-encoding' => 'compress, gzip'
+				)
+			),
+			array(
+				array(
+					'Content-Type'    => 'application/x-www-form-urlencoded',
+					'Accept'          => 'text/html, text/plain; q=.1, */*',
+					'Accept-Language' => 'en-gb, en-us, en; q=.1'
+				),
+				array(
+					array(
+						'Accept-Encoding',
+						'compress, gzip',
+						FALSE
+					),
+					array(
+						'Accept-Encoding',
+						'bzip',
+						FALSE
 					)
+				),
+				array(
+					'content-type'    => 'application/x-www-form-urlencoded',
+					'accept'          => 'text/html, text/plain; q=.1, */*',
+					'accept-language' => 'en-gb, en-us, en; q=.1',
+					'accept-encoding' => array(
+						'compress, gzip',
+						'bzip'
+					)
+				)
+			),
+			array(
+				array(
+					'Content-Type'    => 'application/x-www-form-urlencoded',
+					'Accept'          => 'text/html, text/plain; q=.1, */*',
+					'Accept-Language' => 'en-gb, en-us, en; q=.1'
+				),
+				array(
+					array(
+						'Accept-Encoding',
+						'compress, gzip',
+						FALSE
+					),
+					array(
+						'Accept-Encoding',
+						'bzip',
+						TRUE
+					),
+					array(
+						'Accept',
+						'text/*',
+						FALSE
+					)
+				),
+				array(
+					'content-type'    => 'application/x-www-form-urlencoded',
+					'accept'          => array(
+						'text/html, text/plain; q=.1, */*',
+						'text/*'
+					),
+					'accept-language' => 'en-gb, en-us, en; q=.1',
+					'accept-encoding' => 'bzip'
 				)
 			),
 		);
 	}
 
 	/**
-	 * Tests the parse_header_values() method.
-	 * 
-	 * @dataProvider provider_parse_header_values
+	 * Ensures that offsetSet normalizes the array keys
 	 *
-	 * @param   array    header array to parse
-	 * @param   array    expected result
+	 * @dataProvider provider_offsetSet
+	 * 
+	 * @param   array     constructor
+	 * @param   array     to_set 
+	 * @param   array     expected
 	 * @return  void
 	 */
-	public function test_parse_header_values($header_array, $expected)
+	public function test_offsetSet(array $constructor, array $to_set, array $expected)
 	{
-		$header = HTTP_Header::parse_header_values($header_array);
+		$http_header = new HTTP_Header($constructor);
 
-		// Test the correct type is returned
-		$this->assertTrue(is_array($header));
+		$reflection = new ReflectionClass($http_header);
+		$method = $reflection->getMethod('offsetSet');
 
-		foreach ($header as $key => $value)
+		foreach ($to_set as $args)
 		{
-			if ($value instanceof HTTP_Header_Value)
-			{
-				$this->assertSame($value->value(), $expected[$key]->value());
-				$this->assertSame($value->key(), $expected[$key]->key());
-				$this->assertSame($value->properties(), $expected[$key]->properties());
-			}
-			elseif (is_array($value))
-			{
-				foreach ($value as $k => $v)
-				{
-					$this->assertSame($v->value(), $expected[$key][$k]->value());
-					$this->assertSame($v->key(), $expected[$key][$k]->key());
-					$this->assertSame($v->properties(), $expected[$key][$k]->properties());
-				}
-			}
-			else
-			{
-				$this->fail('Unexpected value in HTTP_Header::parse_header_values() return value.');
-			}
+			$method->invokeArgs($http_header, $args);
 		}
+
+		$this->assertSame($expected, $http_header->getArrayCopy());
 	}
 
+	/**
+	 * Data provider for test_offsetGet
+	 *
+	 * @return  array
+	 */
+	public function provider_offsetGet()
+	{
+		return array(
+			array(
+				array(
+					'FoO'   => 'bar',
+					'START' => 'end',
+					'true'  => true
+				),
+				'FOO',
+				'bar'
+			),
+			array(
+				array(
+					'FoO'   => 'bar',
+					'START' => 'end',
+					'true'  => true
+				),
+				'true',
+				true
+			),
+			array(
+				array(
+					'FoO'   => 'bar',
+					'START' => 'end',
+					'true'  => true
+				),
+				'True',
+				true
+			),
+			array(
+				array(
+					'FoO'   => 'bar',
+					'START' => 'end',
+					'true'  => true
+				),
+				'Start',
+				'end'
+			),
+			array(
+				array(
+					'content-type'  => 'bar',
+					'Content-Type'  => 'end',
+					'Accept'        => '*/*'
+				),
+				'content-type',
+				'end'
+			)
+		);
+	}
+
+	/**
+	 * Ensures that offsetGet normalizes the array keys
+	 * 
+	 * @dataProvider provider_offsetGet
+	 *
+	 * @param   array     start state
+	 * @param   string    key to retrieve
+	 * @param   mixed     expected
+	 * @return  void
+	 */
+	public function test_offsetGet(array $state, $key, $expected)
+	{
+		$header = new HTTP_Header($state);
+
+		$this->assertSame($expected, $header->offsetGet($key));
+	}
+
+	/**
+	 * Data provider for test_offsetExists
+	 *
+	 * @return  array
+	 */
+	public function provider_offsetExists()
+	{
+		return array(
+			array(
+				array(
+					'Accept' => 'text/html, application/json',
+					'Accept-Language' => 'en, en-GB',
+					'Content-Type' => 'application/x-www-form-urlencoded'
+				),
+				'Content-Type',
+				TRUE
+			),
+			array(
+				array(
+					'Accept' => 'text/html, application/json',
+					'Accept-Language' => 'en, en-GB',
+					'Content-Type' => 'application/x-www-form-urlencoded'
+				),
+				'CONTENT-TYPE',
+				TRUE
+			),
+			array(
+				array(
+					'Accept' => 'text/html, application/json',
+					'Accept-Language' => 'en, en-GB',
+					'Content-Type' => 'application/x-www-form-urlencoded'
+				),
+				'accept-language',
+				TRUE
+			),
+			array(
+				array(
+					'Accept' => 'text/html, application/json',
+					'Accept-Language' => 'en, en-GB',
+					'Content-Type' => 'application/x-www-form-urlencoded'
+				),
+				'x-powered-by',
+				FALSE
+			)
+		);
+	}
+
+	/**
+	 * Ensures that offsetExists normalizes the array key
+	 * 
+	 * @dataProvider provider_offsetExists
+	 *
+	 * @param   array    state 
+	 * @param   string   key 
+	 * @param   boolean  expected 
+	 * @return  void
+	 */
+	public function test_offsetExists(array $state, $key, $expected)
+	{
+		$header = new HTTP_Header($state);
+
+		$this->assertSame($expected, $header->offsetExists($key));
+	}
+
+	/**
+	 * Data provider for test_offsetUnset
+	 *
+	 * @return  array
+	 */
+	public function provider_offsetUnset()
+	{
+		return array(
+			array(
+				array(
+					'Accept' => 'text/html, application/json',
+					'Accept-Language' => 'en, en-GB',
+					'Content-Type' => 'application/x-www-form-urlencoded'
+				),
+				'Accept-Language',
+				array(
+					'accept' => 'text/html, application/json',
+					'content-type' => 'application/x-www-form-urlencoded'
+				)
+			),
+			array(
+				array(
+					'Accept' => 'text/html, application/json',
+					'Accept-Language' => 'en, en-GB',
+					'Content-Type' => 'application/x-www-form-urlencoded'
+				),
+				'ACCEPT',
+				array(
+					'accept-language' => 'en, en-GB',
+					'content-type' => 'application/x-www-form-urlencoded'
+				)
+			),
+			array(
+				array(
+					'Accept' => 'text/html, application/json',
+					'Accept-Language' => 'en, en-GB',
+					'Content-Type' => 'application/x-www-form-urlencoded'
+				),
+				'content-type',
+				array(
+					'accept' => 'text/html, application/json',
+					'accept-language' => 'en, en-GB',
+				)
+			)
+		);
+	}
+
+	/**
+	 * Tests that `offsetUnset` normalizes the key names properly
+	 *
+	 * @dataProvider provider_offsetUnset
+	 *
+	 * @param   array     state 
+	 * @param   string    remove 
+	 * @param   array     expected 
+	 * @return  void
+	 */
+	public function test_offsetUnset(array $state, $remove, array $expected)
+	{
+		$header = new HTTP_Header($state);
+		$header->offsetUnset($remove);
+
+		$this->assertSame($expected, $header->getArrayCopy());
+	}
+
+	/**
+	 * Provides data for test_parse_header_string
+	 *
+	 * @return  array
+	 */
+	public function provider_parse_header_string()
+	{
+		return array(
+			array(
+				array(
+					"Content-Type: application/x-www-form-urlencoded\r\n",
+					"Accept: text/html, text/plain; q=.5, application/json, */* \r\n",
+					"X-Powered-By: Kohana Baby     \r\n"
+				),
+				array(
+					'content-type' => 'application/x-www-form-urlencoded',
+					'accept'       => 'text/html, text/plain; q=.5, application/json, */* ',
+					'x-powered-by' => 'Kohana Baby     '
+				)
+			),
+			array(
+				array(
+					"Content-Type: application/x-www-form-urlencoded\r\n",
+					"Accept: text/html, text/plain; q=.5, application/json, */* \r\n",
+					"X-Powered-By: Kohana Baby     \r\n",
+					"Content-Type: application/json\r\n"
+				),
+				array(
+					'content-type' => array(
+						'application/x-www-form-urlencoded',
+						'application/json'
+					),
+					'accept'       => 'text/html, text/plain; q=.5, application/json, */* ',
+					'x-powered-by' => 'Kohana Baby     '
+				)
+			)
+		);
+	}
+
+	/**
+	 * Tests that `parse_header_string` performs as expected
+	 * 
+	 * @dataProvider provider_parse_header_string
+	 *
+	 * @param   array    headers 
+	 * @param   array    expected 
+	 * @return  void
+	 */
+	public function test_parse_header_string(array $headers, array $expected)
+	{
+		$http_header = new HTTP_Header(array());
+
+		foreach ($headers as $header)
+		{
+			
+			$this->assertEquals(strlen($header), $http_header->parse_header_string(NULL, $header));
+		}
+
+		$this->assertSame($expected, $http_header->getArrayCopy());
+	}
+
+	/**
+	 * Data Provider for test_accepts_at_quality
+	 *
+	 * @return  array
+	 */
+	public function provider_accepts_at_quality()
+	{
+		return array(
+			array(
+				array(
+					'Accept' => 'application/json, text/html; q=.5, text/*; q=.1, */*'
+				),
+				'application/json',
+				FALSE,
+				1.0
+			),
+			array(
+				array(
+					'Accept' => 'application/json, text/html; q=.5, text/*; q=.1, */*'
+				),
+				'text/html',
+				FALSE,
+				0.5
+			),
+			array(
+				array(
+					'Accept' => 'application/json, text/html; q=.5, text/*; q=.1, */*'
+				),
+				'text/plain',
+				FALSE,
+				0.1
+			),
+			array(
+				array(
+					'Accept' => 'application/json, text/html; q=.5, text/*; q=.1, */*'
+				),
+				'text/plain',
+				TRUE,
+				FALSE
+			),
+			array(
+				array(
+					'Accept' => 'application/json, text/html; q=.5, text/*; q=.1, */*'
+				),
+				'application/xml',
+				FALSE,
+				1.0
+			),
+			array(
+				array(
+					'Accept' => 'application/json, text/html; q=.5, text/*; q=.1, */*'
+				),
+				'application/xml',
+				TRUE,
+				FALSE
+			),
+			array(
+				array(),
+				'application/xml',
+				FALSE,
+				1.0
+			),
+			array(
+				array(),
+				'application/xml',
+				TRUE,
+				FALSE
+			)
+		);
+	}
+
+	/**
+	 * Tests `accepts_at_quality` parsed the Accept: header as expected
+	 * 
+	 * @dataProvider provider_accepts_at_quality
+	 *
+	 * @param   array     starting state
+	 * @param   string    accept header to test
+	 * @param   boolean   explicitly check
+	 * @param   mixed     expected output
+	 * @return  void
+	 */
+	public function test_accepts_at_quality(array $state, $accept, $explicit, $expected)
+	{
+		$header = new HTTP_Header($state);
+
+		$this->assertSame($expected, $header->accepts_at_quality($accept, $explicit));
+	}
+
+	/**
+	 * Data provider for test_preferred_accept
+	 *
+	 * @return  array
+	 */
+	public function provider_preferred_accept()
+	{
+		return array(
+			array(
+				array(
+					'Accept' => 'application/json, text/html; q=.5, text/*; q=.1, */*'
+				),
+				array(
+					'text/html', 
+					'application/json', 
+					'text/plain'
+				),
+				FALSE,
+				'application/json'
+			),
+			array(
+				array(
+					'Accept' => 'application/json, text/html; q=.5, text/*; q=.1, */*'
+				),
+				array(
+					'text/plain',
+					'application/xml',
+					'image/jpeg'
+				),
+				FALSE,
+				'application/xml'
+			),
+			array(
+				array(
+					'Accept' => 'application/json, text/html; q=.5, text/*; q=.1'
+				),
+				array(
+					'text/plain',
+					'application/xml',
+					'image/jpeg'
+				),
+				FALSE,
+				'text/plain'
+			),
+			array(
+				array(
+					'Accept' => 'application/json, text/html; q=.5, text/*; q=.1, */*'
+				),
+				array(
+					'text/plain',
+					'application/xml',
+					'image/jpeg'
+				),
+				TRUE,
+				FALSE
+			),
+			
+		);
+	}
+
+	/**
+	 * Tests `preferred_accept` returns the correct preferred type
+	 * 
+	 * @dataProvider provider_preferred_accept
+	 *
+	 * @param   array     state 
+	 * @param   array     accepts 
+	 * @param   string    explicit 
+	 * @param   string    expected 
+	 * @return  void
+	 */
+	public function test_preferred_accept(array $state, array $accepts, $explicit, $expected)
+	{
+		$header = new HTTP_Header($state);
+
+		$this->assertSame($expected, $header->preferred_accept($accepts, $explicit));
+	}
+
+	/**
+	 * Data provider for test_accepts_charset_at_quality
+	 *
+	 * @return  array
+	 */
+	public function provider_accepts_charset_at_quality()
+	{
+		return array(
+			array(
+				array(
+					'Accept-Charset' => 'utf-8, utf-10, utf-16, iso-8859-1'
+				),
+				'utf-8',
+				1.0
+			),
+			array(
+				array(
+					'Accept-Charset' => 'utf-8, utf-10, utf-16, iso-8859-1'
+				),
+				'utf-16',
+				1.0
+			),
+			array(
+				array(
+					'Accept-Charset' => 'utf-8; q=.1, utf-10, utf-16; q=.2, iso-8859-1'
+				),
+				'utf-8',
+				0.1
+			),
+			array(
+				array(
+					'Accept-Charset' => 'utf-8; q=.1, utf-10, utf-16; q=.2, iso-8859-1; q=.5'
+				),
+				'iso-8859-1',
+				0.5
+			)
+		);
+	}
+
+	/**
+	 * Tests `accepts_charset_at_quality` works as expected, returning the correct
+	 * quality value
+	 * 
+	 * @dataProvider provider_accepts_charset_at_quality
+	 *
+	 * @param   array     state 
+	 * @param   string    charset 
+	 * @param   string    expected 
+	 * @return  void
+	 */
+	public function test_accepts_charset_at_quality(array $state, $charset, $expected)
+	{
+		$header = new HTTP_Header($state);
+
+		$this->assertSame($expected, $header->accepts_charset_at_quality($charset));
+	}
+
+	/**
+	 * Data provider for test_preferred_charset
+	 *
+	 * @return  array
+	 */
+	public function provider_preferred_charset()
+	{
+		return array(
+			array(
+				array(
+					'Accept-Charset' => 'utf-8, utf-10, utf-16, iso-8859-1'
+				),
+				array(
+					'utf-8',
+					'utf-16'
+				),
+				'utf-8'
+			),
+			array(
+				array(
+					'Accept-Charset' => 'utf-8, utf-10, utf-16, iso-8859-1'
+				),
+				array(
+					'UTF-10'
+				),
+				'UTF-10'
+			),
+		);
+	}
+
+	/**
+	 * Tests `preferred_charset` works as expected, returning the correct charset
+	 * from the list supplied
+	 * 
+	 * @dataProvider provider_preferred_charset
+	 *
+	 * @param   array     state 
+	 * @param   array     charsets 
+	 * @param   string    expected 
+	 * @return  void
+	 */
+	public function test_preferred_charset(array $state, array $charsets, $expected)
+	{
+		$header = new HTTP_Header($state);
+
+		$this->assertSame($expected, $header->preferred_charset($charsets));
+	}
+
+	/**
+	 * Data provider for test_accepts_encoding_at_quality
+	 *
+	 * @return  array
+	 */
+	public function provider_accepts_encoding_at_quality()
+	{
+		return array(
+			array(
+				array(
+					'accept-encoding' => 'compress, gzip, blowfish; q=.7, *; q=.5'
+				),
+				'gzip',
+				FALSE,
+				1.0
+			),
+			array(
+				array(
+					'accept-encoding' => 'compress, gzip, blowfish; q=.7, *; q=.5'
+				),
+				'gzip',
+				TRUE,
+				1.0
+			),
+			array(
+				array(
+					'accept-encoding' => 'compress, gzip, blowfish; q=.7, *; q=.5'
+				),
+				'blowfish',
+				FALSE,
+				0.7
+			),
+			array(
+				array(
+					'accept-encoding' => 'compress, gzip, blowfish; q=.7, *; q=.5'
+				),
+				'bzip',
+				FALSE,
+				0.5
+			),
+			array(
+				array(
+					'accept-encoding' => 'compress, gzip, blowfish; q=.7, *; q=.5'
+				),
+				'bzip',
+				TRUE,
+				(float) 0
+			)
+		);
+	}
+
+	/**
+	 * Tests `accepts_encoding_at_quality` parses and returns the correct
+	 * quality value for Accept-Encoding headers
+	 * 
+	 * @dataProvider provider_accepts_encoding_at_quality
+	 *
+	 * @param   array     state 
+	 * @param   string    encoding 
+	 * @param   boolean   explicit 
+	 * @param   float     expected 
+	 * @return  void
+	 */
+	public function test_accepts_encoding_at_quality(array $state, $encoding, $explicit, $expected)
+	{
+		$header = new HTTP_Header($state);
+		$this->assertSame($expected, $header->accepts_encoding_at_quality($encoding, $explicit));
+	}
+
+	/**
+	 * Data provider for test_preferred_encoding
+	 *
+	 * @return  array
+	 */
+	public function provider_preferred_encoding()
+	{
+		return array(
+			array(
+				array(
+					'accept-encoding' => 'compress, gzip, blowfish; q=.7, *; q=.5'
+				),
+				array('gzip', 'blowfish', 'bzip'),
+				FALSE,
+				'gzip'
+			),
+			array(
+				array(
+					'accept-encoding' => 'compress, gzip, blowfish; q=.7, *; q=.5'
+				),
+				array('bzip', 'ROT-13'),
+				FALSE,
+				'bzip'
+			),
+			array(
+				array(
+					'accept-encoding' => 'compress, gzip, blowfish; q=.7, *; q=.5'
+				),
+				array('bzip', 'ROT-13'),
+				TRUE,
+				FALSE
+			),
+			array(
+				array(
+					'accept-encoding' => 'compress, gzip, blowfish; q=.2, *; q=.5'
+				),
+				array('ROT-13', 'blowfish'),
+				FALSE,
+				'ROT-13'
+			),
+		);
+	}
+
+	/**
+	 * Tests that `preferred_encoding` parses and returns the correct
+	 * encoding type
+	 * 
+	 * @dataProvider provider_preferred_encoding
+	 *
+	 * @param   array     state in
+	 * @param   array     encodings to interrogate 
+	 * @param   boolean   explicit check
+	 * @param   string    expected output
+	 * @return  void
+	 */
+	public function test_preferred_encoding(array $state, array $encodings, $explicit, $expected)
+	{
+		$header = new HTTP_Header($state);
+		$this->assertSame($expected, $header->preferred_encoding($encodings, $explicit));
+	}
+
+	/**
+	 * Data provider for test_accepts_language_at_quality
+	 *
+	 * @return  array
+	 */
+	public function provider_accepts_language_at_quality()
+	{
+		return array(
+			array(
+				array(
+					'accept-language'  => 'en-us; q=.9, en-gb; q=.7, en; q=.5, fr-fr; q=.9, fr; q=.8'
+				),
+				'en',
+				FALSE,
+				0.5
+			),
+			array(
+				array(
+					'accept-language'  => 'en-us; q=.9, en-gb; q=.7, en; q=.5, fr-fr; q=.9, fr; q=.8'
+				),
+				'en-gb',
+				FALSE,
+				0.7
+			),
+			array(
+				array(
+					'accept-language'  => 'en-us; q=.9, en-gb; q=.7, en; q=.5, fr-fr; q=.9, fr; q=.8'
+				),
+				'en',
+				TRUE,
+				0.5
+			),
+			array(
+				array(
+					'accept-language'  => 'en-us; q=.9, en-gb; q=.7, en; q=.5, fr-fr; q=.9, fr; q=.8'
+				),
+				'fr-ni',
+				FALSE,
+				0.8
+			),
+			array(
+				array(
+					'accept-language'  => 'en-us; q=.9, en-gb; q=.7, en; q=.5, fr-fr; q=.9, fr; q=.8'
+				),
+				'fr-ni',
+				TRUE,
+				(float) 0
+			),
+		);
+	}
+
+	/**
+	 * Tests `accepts_language_at_quality` parses the Accept-Language header
+	 * correctly and identifies the correct quality supplied, explicit or not
+	 *
+	 * @dataProvider provider_accepts_language_at_quality
+	 * 
+	 * @param   array    state in
+	 * @param   string   language to interrogate
+	 * @param   boolean  explicit check
+	 * @param   float    expected output
+	 * @return  void
+	 */
+	public function test_accepts_language_at_quality(array $state, $language, $explicit, $expected)
+	{
+		$header = new HTTP_Header($state);
+		$this->assertSame($expected, $header->accepts_language_at_quality($language, $explicit));
+	}
+
+	/**
+	 * Data provider for test_preferred_language
+	 *
+	 * @return  array
+	 */
+	public function provider_preferred_language()
+	{
+		return array(
+			array(
+				array(
+					'accept-language'  => 'en-us; q=.9, en-gb; q=.7, en; q=.5, fr-fr; q=.9, fr; q=.8'
+				),
+				array(
+					'en',
+					'fr',
+					'en-gb'
+				),
+				FALSE,
+				'fr'
+			),
+			array(
+				array(
+					'accept-language'  => 'en-us; q=.9, en-gb; q=.7, en; q=.5, fr-fr; q=.9, fr; q=.8'
+				),
+				array(
+					'en',
+					'fr',
+					'en-gb'
+				),
+				TRUE,
+				'fr'
+			),
+			array(
+				array(
+					'accept-language'  => 'en-us; q=.9, en-gb; q=.7, en; q=.5, fr-fr; q=.9, fr; q=.8'
+				),
+				array(
+					'en-au',
+					'fr-ni',
+					'fr'
+				),
+				FALSE,
+				'fr-ni'
+			),
+			array(
+				array(
+					'accept-language'  => 'en-us; q=.9, en-gb; q=.7, en; q=.5, fr-fr; q=.9, fr; q=.8'
+				),
+				array(
+					'en-au',
+					'fr-ni',
+					'fr'
+				),
+				TRUE,
+				'fr'
+			),
+		);
+	}
+
+	/**
+	 * Tests that `preferred_language` correctly identifies the right
+	 * language based on the Accept-Language header and `$explicit` setting
+	 * 
+	 * @dataProvider provider_preferred_language
+	 *
+	 * @param   array    state in
+	 * @param   array    languages to interrogate
+	 * @param   boolean  explicit check
+	 * @param   string   expected output
+	 * @return  void
+	 */
+	public function test_preferred_language(array $state, array $languages, $explicit, $expected)
+	{
+		$header = new HTTP_Header($state);
+		$this->assertSame($expected, $header->preferred_language($languages, $explicit));
+	}
+
+	/**
+	 * Data provider for test_send_headers
+	 *
+	 * @return  array
+	 */
+	public function provider_send_headers()
+	{
+		return array(
+			array(
+				array(
+					'accept'          => 'text/html, text/plain, text/*, */*',
+					'accept-charset'  => 'utf-8, utf-10, iso-8859-1',
+					'accept-encoding' => 'compress, gzip',
+					'accept-language' => 'en, en-gb, en-us'
+				),
+				array(
+					'HTTP/1.1 200 OK',
+					'Accept: text/html, text/plain, text/*, */*',
+					'Accept-Charset: utf-8, utf-10, iso-8859-1',
+					'Accept-Encoding: compress, gzip',
+					'Accept-Language: en, en-gb, en-us'
+				),
+				FALSE
+			),
+			array(
+				array(
+					'accept'          => 'text/html, text/plain, text/*, */*',
+					'accept-charset'  => 'utf-8, utf-10, iso-8859-1',
+					'accept-encoding' => 'compress, gzip',
+					'accept-language' => 'en, en-gb, en-us',
+					'content-type'    => 'application/json',
+					'x-powered-by'    => 'Mohana',
+					'x-ssl-enabled'   => 'TRUE'
+				),
+				array(
+					'HTTP/1.1 200 OK',
+					'Accept: text/html, text/plain, text/*, */*',
+					'Accept-Charset: utf-8, utf-10, iso-8859-1',
+					'Accept-Encoding: compress, gzip',
+					'Accept-Language: en, en-gb, en-us',
+					'Content-Type: application/json',
+					'X-Powered-By: Mohana',
+					'X-Ssl-Enabled: TRUE'
+				),
+				TRUE
+			)
+		);
+	}
+
+	/**
+	 * Tests that send headers processes the headers sent to PHP correctly
+	 * 
+	 * @dataProvider provider_send_headers
+	 *
+	 * @param   array     state in
+	 * @param   array     expected out
+	 * @return  void
+	 */
+	public function test_send_headers(array $state, array $expected, $expose)
+	{
+		if ( ! isset($state['content-type']))
+		{
+			$expected[] = 'Content-Type: '.Kohana::$content_type.'; charset='.Kohana::$charset;
+		}
+
+		Kohana::$expose = $expose;
+
+		if (Kohana::$expose AND ! isset($state['x-powered-by']))
+		{
+			$expected[] = 'X-Powered-By: Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
+		}
+
+		$response = new Response;
+		$response->headers($state);
+
+		$this->assertSame($expected, $response->send_headers(FALSE, array($this, 'send_headers_handler')));
+	}
+
+	/**
+	 * Callback handler for send headers
+	 *
+	 * @param   array     headers 
+	 * @param   boolean   replace 
+	 * @return  array
+	 */
+	public function send_headers_handler($response, $headers, $replace)
+	{
+		return $headers;
+	}
 } // End Kohana_HTTP_HeaderTest

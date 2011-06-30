@@ -14,130 +14,195 @@
  */
 class Kohana_HTTP_Header extends ArrayObject {
 
-	/**
-	 * @var     boolean   Controls whether to automatically sort headers by quality value
-	 */
-	public static $sort_by_quality = FALSE;
+	// Default Accept-* quality value if none supplied
+	const DEFAULT_QUALITY = 1;
 
 	/**
-	 * @var     array     Default positive filter for sorting header values
-	 */
-	public static $default_sort_filter = array('accept','accept-charset','accept-encoding','accept-language');
-
-	/**
-	 * Parses HTTP Header values and creating an appropriate object
-	 * depending on type; i.e. accept-type, accept-char, cache-control etc.
+	 * Parses an Accept(-*) header and detects the quality
 	 *
-	 *     $header_values_array = HTTP_Header::parse_header_values(array('cache-control' => 'max-age=200; public'));
-	 *
-	 * @param   array    $header_values          Values to parse
-	 * @param   array    $header_commas_allowed  Header values where commas are not delimiters (usually date)
+	 * @param   array    accept header parts
 	 * @return  array
+	 * @since   3.2.0
 	 */
-	public static function parse_header_values(array $header_values, array $header_commas_allowed = array('user-agent', 'date', 'expires', 'last-modified'))
+	public static function accept_quality(array $parts)
 	{
-		/**
-		 * @see http://www.w3.org/Protocols/rfc2616/rfc2616.html
-		 *
-		 * HTTP header declarations should be treated as case-insensitive
-		 */
-		$header_values = array_change_key_case($header_values, CASE_LOWER);
+		$parsed = array();
 
-		// Foreach of the header values applied
-		foreach ($header_values as $key => $value)
+		// Resource light iteration
+		$parts_keys = array_keys($parts);
+		foreach ($parts_keys as $key)
 		{
-			if (is_array($value))
+			$value = trim(str_replace(array("\r", "\n"), '', $parts[$key]));
+
+			$pattern = '~\b(\;\s*+)?q\s*+=\s*+([.0-9]+)~';
+
+			// If there is no quality directive, return default
+			if ( ! preg_match($pattern, $value, $quality))
 			{
-				$values = array();
-
-				if (Arr::is_assoc($value))
-				{
-
-					foreach ($value as $k => $v)
-					{
-						$values[] = HTTP_Header::parse_header_values($v);
-					}
-				}
-				else
-				{
-					// RFC 2616 allows multiple headers with same name if they can be
-					// concatinated using commas without altering the original message.
-					// This usually occurs with multiple Set-Cookie: headers
-					$array = array();
-					foreach ($value as $k => $v)
-					{
-						// Break value into component parts
-						$v = explode(';', $v);
-
-						// Do some nasty parsing to flattern the array into components,
-						// parsing key values
-						$array = Arr::flatten(array_map('HTTP_Header_Value::parse_key_value', $v));
-
-						// Get the K/V component and extract the first element
-						$key_value_component = array_slice($array, 0, 1, TRUE);
-						array_shift($array);
-
-						// Create the HTTP_Header_Value component array
-						$http_header['_key']        = key($key_value_component);
-						$http_header['_value']      = current($key_value_component);
-						$http_header['_properties'] = $array;
-
-						// Create the HTTP_Header_Value
-						$values[] = new HTTP_Header_Value($http_header);
-					}
-				}
-
-				// Assign HTTP_Header_Value array to the header
-				$header_values[$key] = $values;
-				continue;
+				$parsed[$value] = (float) HTTP_Header::DEFAULT_QUALITY;
 			}
-
-			// If the key allows commas or no commas are found
-			if (in_array($key, $header_commas_allowed) or (strpos($value, ',') === FALSE))
+			else
 			{
-				// If the key is user-agent, we don't want to parse the string
-				if ($key === 'user-agent')
+				$quality = $quality[2];
+
+				if ($quality[0] === '.')
 				{
-					$header_values[$key] = new HTTP_Header_Value($value, TRUE);
-				}
-				// Else, behave normally
-				else
-				{
-					$header_values[$key] = new HTTP_Header_Value($value);
+					$quality = '0'.$quality;
 				}
 
-				// Move to next header
-				continue;
+				// Remove the quality value from the string and apply quality
+				$parsed[trim(preg_replace($pattern, '', $value, 1), '; ')] = (float) $quality;
 			}
-
-			// Create an array of the values and clear any whitespace
-			$value = array_map('trim', explode(',', $value));
-
-			$parsed_values = array();
-
-			// Foreach value
-			foreach ($value as $v)
-			{
-				$v = new HTTP_Header_Value($v);
-
-				// Convert the value string into an object
-				if ($v->key() === NULL)
-				{
-					$parsed_values[] = $v;
-				}
-				else
-				{
-					$parsed_values[$v->key()] = $v;
-				}
-			}
-
-			// Apply parsed value to the header
-			$header_values[$key] = $parsed_values;
 		}
 
-		// Return the parsed header values
-		return $header_values;
+		return $parsed;
 	}
+
+	/**
+	 * Parses the accept header to provide the correct quality values
+	 * for each supplied accept type.
+	 *
+	 * @see     http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1
+	 * @param   string   accept content header string to parse
+	 * @return  array
+	 * @since   3.2.0
+	 */
+	public static function parse_accept_header($accepts = NULL)
+	{
+		$accepts = explode(',', (string) $accepts);
+
+		// If there is no accept, lets accept everything
+		if ($accepts === NULL)
+			return array('*' => array('*' => (float) HTTP_Header::DEFAULT_QUALITY));
+
+		// Parse the accept header qualities
+		$accepts = HTTP_Header::accept_quality($accepts);
+
+		$parsed_accept = array();
+
+		// This method of iteration uses less resource
+		$keys = array_keys($accepts);
+		foreach ($keys as $key)
+		{
+			// Extract the parts
+			$parts = explode('/', $key, 2);
+
+			// Invalid content type- bail
+			if ( ! isset($parts[1]))
+				continue;
+
+			// Set the parsed output
+			$parsed_accept[$parts[0]][$parts[1]] = $accepts[$key];
+		}
+
+		return $parsed_accept;
+	}
+
+	/**
+	 * Parses the `Accept-Charset:` HTTP header and returns an array containing
+	 * the charset and associated quality.
+	 *
+	 * @link    http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
+	 * @param   string   charset string to parse
+	 * @return  array 
+	 * @since   3.2.0
+	 */
+	public static function parse_charset_header($charset = NULL)
+	{
+		if ($charset === NULL)
+		{
+			return array('*' => (float) HTTP_Header::DEFAULT_QUALITY);
+		}
+
+		return HTTP_Header::accept_quality(explode(',', (string) $charset));
+	}
+
+	/**
+	 * Parses the `Accept-Encoding:` HTTP header and returns an array containing
+	 * the charsets and associated quality.
+	 *
+	 * @link    http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
+	 * @param   string   charset string to parse
+	 * @return  array 
+	 * @since   3.2.0
+	 */
+	public static function parse_encoding_header($encoding = NULL)
+	{
+		// Accept everything
+		if ($encoding === NULL)
+		{
+			return array('*' => (float) HTTP_Header::DEFAULT_QUALITY);
+		}
+		elseif ($encoding === '')
+		{
+			return array('identity' => (float) HTTP_Header::DEFAULT_QUALITY);
+		}
+		else
+		{
+			return HTTP_Header::accept_quality(explode(',', (string) $encoding));
+		}
+	}
+
+	/**
+	 * Parses the `Accept-Language:` HTTP header and returns an array containing
+	 * the languages and associated quality.
+	 *
+	 * @link    http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
+	 * @param   string   charset string to parse
+	 * @return  array 
+	 * @since   3.2.0
+	 */
+	public static function parse_language_header($language = NULL)
+	{
+		if ($language === NULL)
+		{
+			return array('*' => array('*' => (float) HTTP_Header::DEFAULT_QUALITY));
+		}
+
+		$language = HTTP_Header::accept_quality(explode(',', (string) $language));
+
+		$parsed_language = array();
+
+		$keys = array_keys($language);
+		foreach ($keys as $key)
+		{
+			// Extract the parts
+			$parts = explode('-', $key, 2);
+
+			// Invalid content type- bail
+			if ( ! isset($parts[1]))
+			{
+				$parsed_language[$parts[0]]['*'] = $language[$key];
+			}
+			else
+			{
+				// Set the parsed output
+				$parsed_language[$parts[0]][$parts[1]] = $language[$key];
+			}
+		}
+
+		return $parsed_language;
+	}
+
+	/**
+	 * @var     array    Accept: (content) types
+	 */
+	protected $_accept_content;
+
+	/**
+	 * @var     array    Accept-Charset: parsed header
+	 */
+	protected $_accept_charset;
+
+	/**
+	 * @var     array    Accept-Encoding: parsed header
+	 */
+	protected $_accept_encoding;
+
+	/**
+	 * @var     array    Accept-Language: parsed header
+	 */
+	protected $_accept_language;
 
 	/**
 	 * Constructor method for [Kohana_HTTP_Header]. Uses the standard constructor
@@ -149,23 +214,16 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * @param   int      Flags
 	 * @param   string   The iterator class to use
 	 */
-	public function __construct($input = NULL, $flags = NULL, $iterator_class = 'ArrayIterator')
+	public function __construct(array $input = array(), $flags = NULL, $iterator_class = 'ArrayIterator')
 	{
-		if ($input !== NULL)
-		{
-			// Parse the values into [HTTP_Header_Values]
-			parent::__construct(HTTP_Header::parse_header_values($input), $flags, $iterator_class);
-		}
-		else
-		{
-			parent::__construct(array(), $flags, $iterator_class);
-		}
+		/**
+		 * @link http://www.w3.org/Protocols/rfc2616/rfc2616.html
+		 *
+		 * HTTP header declarations should be treated as case-insensitive
+		 */
+		$input = array_change_key_case($input, CASE_LOWER);
 
-		// If sort by quality is set, sort the fields by q=0.0 value
-		if (HTTP_Header::$sort_by_quality)
-		{
-			$this->sort_values_by_quality();
-		}
+		parent::__construct($input, $flags, $iterator_class);
 	}
 
 	/**
@@ -183,6 +241,9 @@ class Kohana_HTTP_Header extends ArrayObject {
 
 		foreach ($this as $key => $value)
 		{
+			// Put the keys back the Case-Convention expected
+			$key = Text::ucfirst($key);
+
 			if (is_array($value))
 			{
 				$header .= $key.': '.(implode(', ', $value))."\r\n";
@@ -197,100 +258,79 @@ class Kohana_HTTP_Header extends ArrayObject {
 	}
 
 	/**
-	 * Overloads the `ArrayObject::exchangeArray()` method to ensure all
-	 * values passed are parsed correctly into a [Kohana_HTTP_Header_Value].
+	 * Overloads `ArrayObject::offsetSet()` to enable handling of header
+	 * with multiple instances of the same directive. If the `$replace` flag
+	 * is `FALSE`, the header will be appended rather than replacing the
+	 * original setting.
 	 *
-	 *     // Input new headers
-	 *     $headers->exchangeArray(array(
-	 *          'date'          => 'Wed, 24 Nov 2010 21:09:23 GMT',
-	 *          'cache-control' => 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
-	 *     ));
-	 *
-	 * @param   array    $array Array to exchange
-	 * @return  array
-	 */
-	public function exchangeArray($array)
-	{
-		return parent::exchangeArray(HTTP_Header::parse_header_values($array));
-	}
-
-	/**
-	 * Overloads the `ArrayObject::offsetSet` method to ensure any
-	 * access is correctly converted to the correct object type.
-	 *
-	 *     // Add a new header from encoded string
-	 *     $headers['cache-control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
-	 *
-	 * @param   mixed    $index   Key
-	 * @param   mixed    $newval  Value
+	 * @param   mixed     index to set `$newval` to
+	 * @param   mixed     new value to set
+	 * @param   boolean   replace existing value
 	 * @return  void
+	 * @since   3.2.0
 	 */
-	public function offsetSet($index, $newval)
+	public function offsetSet($index, $newval, $replace = TRUE)
 	{
-		if (is_array($newval) AND (current($newval) instanceof HTTP_Header_Value))
-			return parent::offsetSet(strtolower($index), $newval);
-		elseif ( ! $newval instanceof HTTP_Header_Value)
+		// Ensure the index is lowercase
+		$index = strtolower($index);
+		$newval = (string) $newval;
+
+		if ($replace OR ! $this->offsetExists($index))
 		{
-			$newval = new HTTP_Header_Value($newval);
+			return parent::offsetSet($index, $newval);
 		}
 
-		parent::offsetSet(strtolower($index), $newval);
+		$current_value = $this->offsetGet($index);
+
+		if (is_array($current_value))
+		{
+			$current_value[] = $newval;
+		}
+		else
+		{
+			$current_value = array($current_value, $newval);
+		}
+
+		return parent::offsetSet($index, $current_value);
 	}
 
 	/**
-	 * Sort the headers by quality property if the header matches the
-	 * [Kohana_HTTP_Header::$default_sort_filter] definition.
+	 * Overloads the `ArrayObject::offsetExists()` method to ensure keys
+	 * are lowercase.
 	 *
-	 * #### Default sort values
-	 *
-	 *  - Accept
-	 *  - Accept-Chars
-	 *  - Accept-Encoding
-	 *  - Accept-Lang
-	 *
-	 * @param   array    $filter  Header fields to parse
-	 * @return  self
+	 * @param   string $index 
+	 * @return  boolean
+	 * @since   3.2.0
 	 */
-	public function sort_values_by_quality(array $filter = array())
+	public function offsetExists($index)
 	{
-		// If a filter argument is supplied
-		if ($filter)
-		{
-			// Apply filter and store previous
-			$previous_filter = HTTP_Header::$default_sort_filter;
-			HTTP_Header::$default_sort_filter = $filter;
-		}
+		return parent::offsetExists(strtolower($index));
+	}
 
-		// Get a copy of this ArrayObject
-		$values = $this->getArrayCopy();
+	/**
+	 * Overloads the `ArrayObject::offsetUnset()` method to ensure keys
+	 * are lowercase.
+	 *
+	 * @param   string   index 
+	 * @return  void
+	 * @since   3.2.0
+	 */
+	public function offsetUnset($index)
+	{
+		return parent::offsetUnset(strtolower($index));
+	}
 
-		foreach ($values as $key => $value)
-		{
-			if ( ! is_array($value) or ! in_array($key, HTTP_Header::$default_sort_filter))
-			{
-				unset($values[$key]);
-				continue;
-			}
-
-			// Sort them by comparison
-			uasort($value, array($this, '_sort_by_comparison'));
-
-			$values[$key] = $value;
-		}
-
-		// Return filter to previous state if required
-		if ($filter)
-		{
-			HTTP_Header::$default_sort_filter = $previous_filter;
-		}
-
-		foreach ($values as $key => $value)
-		{
-			$this[$key] = $value;
-		}
-
-		// Return this
-		return $this;
+	/**
+	 * Overload the `ArrayObject::offsetGet()` method to ensure that all
+	 * keys passed to it are formatted correctly for this object.
+	 *
+	 * @param   string   index to retrieve
+	 * @return  mixed
+	 * @since   3.2.0
+	 */
+	public function offsetGet($index)
+	{
+		return parent::offsetGet(strtolower($index));
 	}
 
 	/**
@@ -302,6 +342,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * @param   resource  the resource (required by Curl API)
 	 * @param   string    the line from the header to parse
 	 * @return  int
+	 * @since   3.2.0
 	 */
 	public function parse_header_string($resource, $header_line)
 	{
@@ -311,7 +352,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 		{
 			foreach ($matches[0] as $key => $value)
 			{
-				$this[$matches[1][$key]] = $matches[2][$key];
+				$this->offsetSet($matches[1][$key], $matches[2][$key], FALSE);
 			}
 		}
 
@@ -319,52 +360,500 @@ class Kohana_HTTP_Header extends ArrayObject {
 	}
 
 	/**
-	 * Provides the implementation for sort_values_by_quality (uasort)
+	 * Returns the accept quality of a submitted mime type based on the
+	 * request `Accept:` header. If the `$explicit` argument is `TRUE`,
+	 * only precise matches will be returned, excluding all wildcard (`*`)
+	 * directives.
+	 * 
+	 *     // Accept: application/xml; application/json; q=.5; text/html; q=.2, text/*
+	 *     // Accept quality for application/json
+	 * 
+	 *     // $quality = 0.5
+	 *     $quality = $request->headers()->accepts_at_quality('application/json');
+	 * 
+	 *     // $quality_explicit = FALSE
+	 *     $quality_explicit = $request->headers()->accepts_at_quality('text/plain', TRUE);
 	 *
-	 * @param   HTTP_Header_Value 
-	 * @param   HTTP_Header_Value 
-	 * @return  int
-	 * @see     http://www.ietf.org/rfc/rfc2616.txt (Section 14.1)
+	 * @param   string   type 
+	 * @param   boolean  explicit check, excludes `*`
+	 * @return  mixed
+	 * @since   3.2.0
 	 */
-	protected function _sort_by_comparison($value_a, $value_b)
+	public function accepts_at_quality($type, $explicit = FALSE)
 	{
-		// Test for correct instance type
-		if ( ! $value_a instanceof HTTP_Header_Value OR ! $value_b instanceof HTTP_Header_Value)
+		// Parse Accept header if required
+		if ($this->_accept_content === NULL)
 		{
-			// Return neutral if cannot test value
-			return 0;
+			if ($this->offsetExists('Accept'))
+			{
+				$accept = $this->offsetGet('Accept');
+			}
+			else
+			{
+				$accept = '*/*';
+			}
+
+			$this->_accept_content = HTTP_Header::parse_accept_header($accept);
 		}
 
-		// Extract the qualities
-		$a = (float) Arr::get($value_a->properties, 'q', HTTP_Header_Value::DEFAULT_QUALITY);
-		$b = (float) Arr::get($value_b->properties, 'q', HTTP_Header_Value::DEFAULT_QUALITY);
+		// If not a real mime, try and find it in config
+		if (strpos($type, '/') === FALSE)
+		{
+			$mime = Kohana::config('mimes.'.$type);
 
-		// Return the string comparison of two floats.
-		// This implementation gets past the floating point math problems
-		// that occur when testing for equality.
-		if (strcmp( (string) $a, (string) $b) === 0)
-			return 0;
+			if ($mime === NULL)
+				return FALSE;
 
-		// If the qualities are equal, more interrogation is required
-		// Get the values for comparisom
-		$values = array(
-			1   => $value_a->render(NULL, TRUE),
-			-1  => $value_b->render(NULL, TRUE)
-		);
+			$quality = FALSE;
 
-		// Look for */* first, this is fastish
-		if (($count = count($catch_all = array_keys($values, '*/*'))) > 0)
-			return ($count == 2) ? 0 : $catch_all[0] * -1;
+			foreach ($mime as $_type)
+			{
+				$quality_check = $this->accepts_at_quality($_type, $explicit);
+				$quality = ($quality_check > $quality) ? $quality_check : $quality;
+			}
 
-		// Now lets look for foo/*, getting slower 
-		if (($count = count($catch_some = preg_grep('/(\w+\/\*)/', $values))) > 0)
-			return ($count == 2) ? 0 : $catch_some[0] * -1;
+			return $quality;
+		}
 
-		// If we get here we'll assume eqauality.
-		// Technically there should be final search on specificity, however
-		// this is probably not required for 9/10 use cases and we've wasted
-		// a lot of CPU time already.
-		return 0;
+		$parts = explode('/', $type, 2);
+
+		if (isset($this->_accept_content[$parts[0]][$parts[1]]))
+		{
+			return $this->_accept_content[$parts[0]][$parts[1]];
+		}
+		elseif ($explicit === TRUE)
+		{
+			return FALSE;
+		}
+		else
+		{
+			if (isset($this->_accept_content[$parts[0]]['*']))
+			{
+				return $this->_accept_content[$parts[0]]['*'];
+			}
+			elseif (isset($this->_accept_content['*']['*']))
+			{
+				return $this->_accept_content['*']['*'];
+			}
+			else
+			{
+				return FALSE;
+			}
+		}
+	}
+
+	/**
+	 * Returns the preferred response content type based on the accept header
+	 * quality settings. If items have the same quality value, the first item
+	 * found in the array supplied as `$types` will be returned.
+	 * 
+	 *     // Get the preferred acceptable content type
+	 *     // Accept: text/html, application/json; q=.8, text/*
+	 *     $result = $header->preferred_accept(array(
+	 *         'text/html'
+	 *         'text/rtf',
+	 *         'application/json'
+	 *     )); // $result = 'application/json'
+	 * 
+	 *     $result = $header->preferred_accept(array(
+	 *         'text/rtf',
+	 *         'application/xml'
+	 *     ), TRUE); // $result = FALSE (none matched explicitly)
+	 * 
+	 *
+	 * @param   array    the content types to examine
+	 * @param   boolean  only allow explicit references, no wildcards
+	 * @return  string   name of the preferred content type
+	 * @since   3.2.0
+	 */
+	public function preferred_accept(array $types, $explicit = FALSE)
+	{
+		$preferred = FALSE;
+		$ceiling = 0;
+
+		foreach ($types as $type)
+		{
+			$quality = $this->accepts_at_quality($type, $explicit);
+
+			if ($quality > $ceiling)
+			{
+				$preferred = $type;
+				$ceiling = $quality;
+			}
+		}
+
+		return $preferred;
+	}
+
+	/**
+	 * Returns the quality of the supplied `$charset` argument. This method
+	 * will automatically parse the `Accept-Charset` header if present and
+	 * return the associated resolved quality value.
+	 * 
+	 *      // Accept-Charset: utf-8, utf-16; q=.8, iso-8859-1; q=.5
+	 *      $quality = $header->accepts_charset_at_quality('utf-8');
+	 *            // $quality = (float) 1
+	 *
+	 * @param   string   charset to examine
+	 * @return  float    the quality of the charset 
+	 * @since   3.2.0
+	 */
+	public function accepts_charset_at_quality($charset)
+	{
+		if ($this->_accept_charset === NULL)
+		{
+			if ($this->offsetExists('Accept-Charset'))
+			{
+				$charset_header = strtolower($this->offsetGet('Accept-Charset'));
+				$this->_accept_charset = HTTP_Header::parse_charset_header($charset_header);
+			}
+			else
+			{
+				$this->_accept_charset = HTTP_Header::parse_charset_header(NULL);
+			}
+		}
+
+		$charset = strtolower($charset);
+
+		if (isset($this->_accept_charset[$charset]))
+		{
+			return $this->_accept_charset[$charset];
+		}
+		elseif (isset($this->_accept_charset['*']))
+		{
+			return $this->_accept_charset['*'];
+		}
+		elseif ($charset === 'iso-8859-1')
+		{
+			return (float) 1;
+		}
+
+		return (float) 0;
+	}
+
+	/**
+	 * Returns the preferred charset from the supplied array `$charsets` based
+	 * on the `Accept-Charset` header directive.
+	 * 
+	 *      // Accept-Charset: utf-8, utf-16; q=.8, iso-8859-1; q=.5
+	 *      $charset = $header->preferred_charset(array(
+	 *          'utf-10', 'ascii', 'utf-16', 'utf-8'
+	 *      )); // $charset = 'utf-8'
+	 *
+	 * @param   array    charsets to test
+	 * @return  mixed    preferred charset or `FALSE`
+	 * @since   3.2.0
+	 */
+	public function preferred_charset(array $charsets)
+	{
+		$preferred = FALSE;
+		$ceiling = 0;
+
+		foreach ($charsets as $charset)
+		{
+			$quality = $this->accepts_charset_at_quality($charset);
+
+			if ($quality > $ceiling)
+			{
+				$preferred = $charset;
+				$ceiling = $quality;
+			}
+		}
+
+		return $preferred;
+	}
+
+	/**
+	 * Returns the quality of the `$encoding` type passed to it. Encoding
+	 * is usually compression such as `gzip`, but could be some other
+	 * message encoding algorithm. This method allows explicit checks to be
+	 * done ignoring wildcards.
+	 * 
+	 *      // Accept-Encoding: compress, gzip, *; q=.5
+	 *      $encoding = $header->accepts_encoding_at_quality('gzip');
+	 *      // $encoding = (float) 1.0s
+	 *
+	 * @param   string    encoding type to interrogate
+	 * @param   boolean   explicit check, ignoring wildcards and `identity`
+	 * @return  float
+	 * @since   3.2.0
+	 */
+	public function accepts_encoding_at_quality($encoding, $explicit = FALSE)
+	{
+		if ($this->_accept_encoding === NULL)
+		{
+			if ($this->offsetExists('Accept-Encoding'))
+			{
+				$encoding_header = $this->offsetGet('Accept-Encoding');
+			}
+			else
+			{
+				$encoding_header = NULL;
+			}
+
+			$this->_accept_encoding = HTTP_Header::parse_encoding_header($encoding_header);
+		}
+
+		// Normalize the encoding
+		$encoding = strtolower($encoding);
+
+		if (isset($this->_accept_encoding[$encoding]))
+		{
+			return $this->_accept_encoding[$encoding];
+		}
+
+		if ($explicit === FALSE)
+		{
+			if (isset($this->_accept_encoding['*']))
+			{
+				return $this->_accept_encoding['*'];
+			}
+			elseif ($encoding === 'identity')
+			{
+				return (float) HTTP_Header::DEFAULT_QUALITY;
+			}
+		}
+
+		return (float) 0;
+	}
+
+	/**
+	 * Returns the preferred message encoding type based on quality, and can
+	 * optionally ignore wildcard references. If two or more encodings have the
+	 * same quality, the first listed in `$encodings` will be returned.
+	 * 
+	 *     // Accept-Encoding: compress, gzip, *; q.5
+	 *     $encoding = $header->preferred_encoding(array(
+	 *          'gzip', 'bzip', 'blowfish'
+	 *     ));
+	 *     // $encoding = 'gzip';
+	 *
+	 * @param   array    encodings to test against
+	 * @param   boolean  explicit check, if `TRUE` wildcards are excluded
+	 * @return  mixed
+	 * @since   3.2.0
+	 */
+	public function preferred_encoding(array $encodings, $explicit = FALSE)
+	{
+		$ceiling = 0;
+		$preferred = FALSE;
+
+		foreach ($encodings as $encoding)
+		{
+			$quality = $this->accepts_encoding_at_quality($encoding, $explicit);
+
+			if ($quality > $ceiling)
+			{
+				$ceiling = $quality;
+				$preferred = $encoding;
+			}
+		}
+
+		return $preferred;
+	}
+
+	/**
+	 * Returns the quality of `$language` supplied, optionally ignoring
+	 * wildcards if `$explicit` is set to a non-`FALSE` value. If the quality
+	 * is not found, `0.0` is returned.
+	 * 
+	 *     // Accept-Language: en-us, en-gb; q=.7, en; q=.5
+	 *     $lang = $header->accepts_language_at_quality('en-gb');
+	 *     // $lang = (float) 0.7
+	 * 
+	 *     $lang2 = $header->accepts_language_at_quality('en-au');
+	 *     // $lang2 = (float) 0.5
+	 * 
+	 *     $lang3 = $header->accepts_language_at_quality('en-au', TRUE);
+	 *     // $lang3 = (float) 0.0
+	 *
+	 * @param   string    language to interrogate
+	 * @param   boolean   explicit interrogation, `TRUE` ignores wildcards
+	 * @return  float
+	 * @since   3.2.0
+	 */
+	public function accepts_language_at_quality($language, $explicit = FALSE)
+	{
+		if ($this->_accept_language === NULL)
+		{
+			if ($this->offsetExists('Accept-Language'))
+			{
+				$language_header = $this->offsetGet('Accept-Language');
+			}
+			else
+			{
+				$language_header = NULL;
+			}
+
+			$this->_accept_language = HTTP_Header::parse_language_header($language_header);
+		}
+
+		// Normalize the language
+		$language_parts = explode('-', strtolower($language), 2);
+
+		if (isset($this->_accept_language[$language_parts[0]]))
+		{
+			if (isset($language_parts[1]))
+			{
+				if (isset($this->_accept_language[$language_parts[0]][$language_parts[1]]))
+				{
+					return $this->_accept_language[$language_parts[0]][$language_parts[1]];
+				}
+				elseif ($explicit === FALSE AND isset($this->_accept_language[$language_parts[0]]['*']))
+				{
+					return $this->_accept_language[$language_parts[0]]['*'];
+				}
+			}
+			elseif (isset($this->_accept_language[$language_parts[0]]['*']))
+			{
+				return $this->_accept_language[$language_parts[0]]['*'];
+			}
+		}
+
+		if ($explicit === FALSE AND isset($this->_accept_language['*']))
+		{
+			return $this->_accept_language['*'];
+		}
+
+		return (float) 0;
+	}
+
+	/**
+	 * Returns the preferred language from the supplied array `$languages` based
+	 * on the `Accept-Language` header directive.
+	 * 
+	 *      // Accept-Language: en-us, en-gb; q=.7, en; q=.5
+	 *      $lang = $header->preferred_language(array(
+	 *          'en-gb', 'en-au', 'fr', 'es'
+	 *      )); // $lang = 'en-gb'
+	 *
+	 * @param   array     languages 
+	 * @param   boolean   explicit 
+	 * @return  mixed
+	 * @since   3.2.0
+	 */
+	public function preferred_language(array $languages, $explicit = FALSE)
+	{
+		$ceiling = 0;
+		$preferred = FALSE;
+
+		foreach ($languages as $language)
+		{
+			$quality = $this->accepts_language_at_quality($language, $explicit);
+
+			if ($quality > $ceiling)
+			{
+				$ceiling = $quality;
+				$preferred = $language;
+			}
+		}
+
+		return $preferred;
+	}
+
+	/**
+	 * Sends headers to the php processor, or supplied `$callback` argument.
+	 * This method formats the headers correctly for output, re-instating their
+	 * capitalization for transmission.
+	 * 
+	 * [!!] if you supply a custom header handler via `$callback`, it is
+	 *  recommended that `$response` is returned
+	 *
+	 * @param   HTTP_Response header to send
+	 * @param   boolean   replace existing value
+	 * @param   callback  optional callback to replace PHP header function
+	 * @return  mixed
+	 * @since   3.2.0
+	 */
+	public function send_headers(HTTP_Response $response = NULL, $replace = FALSE, $callback = NULL)
+	{
+		if ($response === NULL)
+		{
+			// Default to the initial request message
+			$response = Request::initial()->response();
+		}
+
+		$protocol = strtoupper($response->protocol());
+
+		// Create the response header
+		$status = $response->status();
+		$processed_headers = array($protocol.' '.$status.' '.Response::$messages[$status]);
+
+		// Get the headers array
+		$headers = $response->headers()->getArrayCopy();
+
+		foreach ($headers as $header => $value)
+		{
+			if (is_array($value))
+			{
+				$value = implode(', ', $value);
+			}
+
+			$processed_headers[] = Text::ucfirst($header).': '.$value;
+		}
+
+		if ( ! isset($headers['content-type']))
+		{
+			$processed_headers[] = 'Content-Type: '.Kohana::$content_type.
+				'; charset='.Kohana::$charset;
+		}
+
+		if (Kohana::$expose AND ! isset($headers['x-powered-by']))
+		{
+			$processed_headers[] = 'X-Powered-By: Kohana Framework '.
+				Kohana::VERSION.' ('.Kohana::CODENAME.')';
+		}
+
+		// Get the cookies and apply
+		if ($cookies = $response->cookie())
+		{
+			$processed_headers['Set-Cookie'] = $cookies;
+		}
+
+		if (is_callable($callback))
+		{
+			// Use the callback method to set header
+			return call_user_func($callback, $response, $processed_headers, $replace);
+		}
+		else
+		{
+			$this->_send_headers_to_php($processed_headers, $replace);
+			return $response;
+		}
+	}
+
+	/**
+	 * Sends the supplied headers to the PHP output buffer. If cookies
+	 * are included in the message they will be handled appropriately.
+	 *
+	 * @param   array     headers to send to php
+	 * @param   boolean   replace existing headers
+	 * @return  self
+	 * @since   3.2.0
+	 */
+	protected function _send_headers_to_php(array $headers, $replace)
+	{
+		// If the headers have been sent, get out
+		if (headers_sent())
+			return $this;
+
+		foreach ($headers as $key => $line)
+		{
+			if ($key == 'Set-Cookie' AND is_array($line))
+			{
+				// Send cookies
+				foreach ($line as $name => $value)
+				{
+					Cookie::set($name, $value['value'], $value['expiration']);
+				}
+
+				continue;
+			}
+
+			header($line, $replace);
+		}
+
+		return $this;
 	}
 
 } // End Kohana_HTTP_Header

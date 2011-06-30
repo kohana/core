@@ -101,6 +101,15 @@ class Kohana_Request implements HTTP_Request {
 			}
 			else
 			{
+				if (isset($_SERVER['SERVER_PROTOCOL']))
+				{
+					$protocol = $_SERVER['SERVER_PROTOCOL'];
+				}
+				else
+				{
+					$protocol = HTTP::$protocol;
+				}
+
 				if (isset($_SERVER['REQUEST_METHOD']))
 				{
 					// Use the server request method
@@ -115,11 +124,7 @@ class Kohana_Request implements HTTP_Request {
 				if ( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
 				{
 					// This request is secure
-					$protocol = 'https';
-				}
-				else
-				{
-					$protocol = 'http';
+					$secure = TRUE;
 				}
 
 				if (isset($_SERVER['HTTP_REFERER']))
@@ -160,7 +165,7 @@ class Kohana_Request implements HTTP_Request {
 					Request::$client_ip = $_SERVER['REMOTE_ADDR'];
 				}
 
-				if ($method !== 'GET')
+				if ($method !== HTTP_Request::GET)
 				{
 					// Ensure the raw body is saved for future use
 					$body = file_get_contents('php://input');
@@ -177,13 +182,14 @@ class Kohana_Request implements HTTP_Request {
 			Request::$initial = $request = new Request($uri, $cache);
 
 			// Store global GET and POST data in the initial request only
-			$request->query($_GET);
-			$request->post($_POST);
+			$request->protocol($protocol)
+				->query($_GET)
+				->post($_POST);
 
-			if (isset($protocol))
+			if (isset($secure))
 			{
-				// Set the request protocol
-				$request->protocol($protocol);
+				// Set the request security
+				$request->secure($secure);
 			}
 
 			if (isset($method))
@@ -629,6 +635,11 @@ class Kohana_Request implements HTTP_Request {
 	protected $_protocol;
 
 	/**
+	 * @var  boolean
+	 */
+	protected $_secure = FALSE;
+
+	/**
 	 * @var  string  referring URL
 	 */
 	protected $_referrer;
@@ -810,6 +821,12 @@ class Kohana_Request implements HTTP_Request {
 
 			// Store the URI
 			$this->_uri = $uri;
+
+			// Set the security setting if required
+			if (strpos($uri, 'https://') === 0)
+			{
+				$this->secure(TRUE);
+			}
 
 			// Set external state
 			$this->_external = TRUE;
@@ -1105,6 +1122,19 @@ class Kohana_Request implements HTTP_Request {
 	}
 
 	/**
+	 * Readonly access to the [Request::$_external] property.
+	 * 
+	 *     if ( ! $request->is_external())
+	 *          // This is an internal request
+	 *
+	 * @return  boolean
+	 */
+	public function is_external()
+	{
+		return $this->_external;
+	}
+
+	/**
 	 * Returns whether this is an ajax request (as used by JS frameworks)
 	 *
 	 * @return  boolean
@@ -1205,8 +1235,8 @@ class Kohana_Request implements HTTP_Request {
 	}
 
 	/**
-	 * Gets or sets the HTTP protocol. The standard protocol to use
-	 * is `http`.
+	 * Gets or sets the HTTP protocol. If there is no current protocol set,
+	 * it will use the default set in HTTP::$protocol
 	 *
 	 * @param   string   $protocol  Protocol to set to the request/response
 	 * @return  mixed
@@ -1216,20 +1246,30 @@ class Kohana_Request implements HTTP_Request {
 		if ($protocol === NULL)
 		{
 			if ($this->_protocol)
-			{
-				// Act as a getter
 				return $this->_protocol;
-			}
 			else
-			{
-				// Get the default protocol
-				return HTTP::$protocol;
-			}
+				return $this->_protocol = HTTP::$protocol;
 		}
 
 		// Act as a setter
-		$this->_protocol = strtolower($protocol);
+		$this->_protocol = $protocol;
+		return $this;
+	}
 
+	/**
+	 * Getter/Setter to the security settings for this request. This
+	 * method should be treated as immutable.
+	 *
+	 * @param   boolean   is this request secure?
+	 * @return  mixed
+	 */
+	public function secure($secure = NULL)
+	{
+		if ($secure === NULL)
+			return $this->_secure;
+
+		// Act as a setter
+		$this->_secure = (bool) $secure;
 		return $this;
 	}
 
@@ -1362,14 +1402,8 @@ class Kohana_Request implements HTTP_Request {
 	 * @param   boolean  $response  Return the rendered response, else returns the rendered request
 	 * @return  string
 	 */
-	public function render($response = TRUE)
+	public function render()
 	{
-		if ($response)
-		{
-			// Act as a getter
-			return (string) $this->_response;
-		}
-
 		if ( ! $post = $this->post())
 		{
 			$body = $this->body();

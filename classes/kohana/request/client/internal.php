@@ -87,7 +87,10 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		try
 		{
 			// Initiate response time
-			$this->_response_time = time();
+			if ($cache instanceof Cache)
+			{
+				$this->_request_time = time();
+			}
 
 			if ( ! class_exists($prefix.$controller))
 			{
@@ -135,7 +138,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			$class->getMethod('after')->invoke($controller);
 
 			// Stop response time
-			$this->_response_time = (time() - $this->_response_time);
+			$this->_response_time = (time() - $this->_request_time);
 
 			// Add the default Content-Type header to initial request if not present
 			if ($initial_request AND ! $request->headers('content-type'))

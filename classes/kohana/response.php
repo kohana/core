@@ -11,7 +11,7 @@
  * @license    http://kohanaphp.com/license
  * @since      3.1.0
  */
-class Kohana_Response implements HTTP_Response, Serializable {
+class Kohana_Response implements HTTP_Response {
 
 	/**
 	 * Factory method to create a new [Response]. Pass properties
@@ -241,6 +241,11 @@ class Kohana_Response implements HTTP_Response, Serializable {
 			return $this;
 		}
 
+		if ($this->_protocol === NULL)
+		{
+			$this->_protocol = HTTP::$protocol;
+		}
+
 		return $this->_protocol;
 	}
 
@@ -409,67 +414,13 @@ class Kohana_Response implements HTTP_Response, Serializable {
 	/**
 	 * Sends the response status and all set headers.
 	 *
-	 * @return  Response
+	 * @param   boolean   replace existing headers
+	 * @param   callback  function to handle header output
+	 * @return  mixed
 	 */
-	public function send_headers()
+	public function send_headers($replace = FALSE, $callback = NULL)
 	{
-		if ( ! headers_sent())
-		{
-			if (isset($_SERVER['SERVER_PROTOCOL']))
-			{
-				// Use the default server protocol
-				$protocol = $_SERVER['SERVER_PROTOCOL'];
-			}
-			else
-			{
-				// Default to using newer protocol
-				$protocol = strtoupper(HTTP::$protocol).'/'.HTTP::$version;
-			}
-
-			// Default to text/html; charset=utf8 if no content type set
-			if ( ! $this->_header->offsetExists('content-type'))
-			{
-				$this->_header['content-type'] = Kohana::$content_type.'; charset='.Kohana::$charset;
-			}
-
-			// Add the X-Powered-By header
-			if (Kohana::$expose)
-			{
-				$this->_header['x-powered-by'] = 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
-			}
-
-			if ( ! Kohana::$is_cli)
-			{
-				// HTTP status line
-				header($protocol.' '.$this->_status.' '.Response::$messages[$this->_status]);
-
-				foreach ($this->_header as $name => $value)
-				{
-					if (is_string($name))
-					{
-						// If the value is an array, render correctly
-						if (is_array($value))
-						{
-							$value = implode(', ', $value);
-						}
-
-						// Combine the name and value to make a raw header
-						$value = $name.': '.(string) $value;
-					}
-
-					// Send the raw header
-					header($value, TRUE);
-				}
-			}
-
-			// Send cookies
-			foreach ($this->_cookies as $name => $value)
-			{
-				Cookie::set($name, $value['value'], $value['expiration']);
-			}
-		}
-
-		return $this;
+		return $this->_header->send_headers($this, $replace, $callback);
 	}
 
 	/**
@@ -812,66 +763,6 @@ class Kohana_Response implements HTTP_Response, Serializable {
 		}
 
 		return $this;
-	}
-
-	/**
-	 * Serializes the object to json - handy if you
-	 * need to pass the response data to other
-	 * systems
-	 *
-	 * @param   array    array of data to serialize
-	 * @return  string
-	 * @throws  Kohana_Exception
-	 */
-	public function serialize(array $to_serialize = array())
-	{
-		// Serialize the class properties
-		$to_serialize += array
-		(
-			'_status'  => $this->_status,
-			'_header'  => $this->_header,
-			'_cookies' => $this->_cookies,
-			'_body'    => $this->_body
-		);
-
-		$serialized = serialize($to_serialize);
-
-		if (is_string($serialized))
-		{
-			return $serialized;
-		}
-		else
-		{
-			throw new Kohana_Exception('Unable to serialize object');
-		}
-	}
-
-	/**
-	 * JSON encoded object
-	 *
-	 * @param   string   json encoded object
-	 * @return  bool
-	 * @throws  Kohana_Exception
-	 */
-	public function unserialize($string)
-	{
-		// Unserialise object
-		$unserialized = unserialize($string);
-
-		// If failed
-		if ($unserialized === NULL)
-		{
-			// Throw exception
-			throw new Kohana_Exception('Unable to correctly unserialize string: :string', array(':string' => $string));
-		}
-
-		// Foreach key/value pair
-		foreach ($unserialized as $key => $value)
-		{
-			$this->$key = $value;
-		}
-
-		return TRUE;
 	}
 
 	/**
