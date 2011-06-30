@@ -302,6 +302,127 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	}
 
 	/**
+	 * Data provider for test_create_cache_control
+	 *
+	 * @return  array
+	 */
+	public function provider_create_cache_control()
+	{
+		return array(
+			array(
+				array(
+					'public',
+					'max-age'   => 1800,
+					'must-revalidate',
+					's-max-age' => 3600
+				),
+				'public, max-age=1800, must-revalidate, s-max-age=3600'
+			),
+			array(
+				array(
+					'max-age'     => 1800,
+					's-max-age'   => 1800,
+					'public',
+					'must-revalidate',
+				),
+				'max-age=1800, s-max-age=1800, public, must-revalidate'
+			),
+			array(
+				array(
+					'private',
+					'no-cache',
+					'max-age' => 0,
+					'must-revalidate'
+				),
+				'private, no-cache, max-age=0, must-revalidate'
+			)
+		);
+	}
+
+	/**
+	 * Tests that `create_cache_control()` outputs the correct cache control
+	 * string from the supplied input
+	 * 
+	 * @dataProvider provider_create_cache_control
+	 *
+	 * @param   array     input 
+	 * @param   string    expected 
+	 * @return  void
+	 */
+	public function test_create_cache_control(array $input, $expected)
+	{
+		$this->assertSame($expected, HTTP_Header::create_cache_control($input));
+	}
+
+	/**
+	 * Data provider for parse_cache_control
+	 *
+	 * @return  array
+	 */
+	public function provider_parse_cache_control()
+	{
+		return array(
+			array(
+				'public, max-age=1800, must-revalidate, s-max-age=3600',
+				array(
+					'public',
+					'max-age'   => 1800,
+					'must-revalidate',
+					's-max-age' => 3600
+				)
+			),
+			array(
+				'max-age=1800, s-max-age=1800, public, must-revalidate',
+				array(
+					'max-age'     => 1800,
+					's-max-age'   => 1800,
+					'public',
+					'must-revalidate',
+				)
+			),
+			array(
+				'private, no-cache, max-age=0, must-revalidate',
+				array(
+					'private',
+					'no-cache',
+					'max-age' => 0,
+					'must-revalidate'
+				)
+			)
+		);
+	}
+
+	/**
+	 * Tests that `parse_cache_control()` outputs the correct cache control
+	 * parsed data from the input string
+	 *
+	 * @dataProvider provider_parse_cache_control
+	 * 
+	 * @param   string    input 
+	 * @param   array     expected 
+	 * @return  void
+	 */
+	public function test_parse_cache_control($input, array $expected)
+	{
+		$parsed = HTTP_Header::parse_cache_control($input);
+
+		$this->assertInternalType('array', $parsed);
+
+		foreach ($expected as $key => $value)
+		{
+			if (is_int($key))
+			{
+				$this->assertTrue(in_array($value, $parsed));
+			}
+			else
+			{
+				$this->assertTrue(array_key_exists($key, $parsed));
+				$this->assertSame($value, $parsed[$key]);
+			}
+		}
+	}
+
+	/**
 	 * Data provider for test_offsetSet
 	 *
 	 * @return  array

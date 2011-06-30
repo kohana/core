@@ -185,6 +185,79 @@ class Kohana_HTTP_Header extends ArrayObject {
 	}
 
 	/**
+	 * Generates a Cache-Control HTTP header based on the supplied array.
+	 *
+	 *     // Set the cache control headers you want to use
+	 *     $cache_control = array(
+	 *         'max-age'          => 3600,
+	 *         'must-revalidate',
+	 *         'public'
+	 *     );
+	 *
+	 *     // Create the cache control header, creates :
+	 *     // cache-control: max-age=3600, must-revalidate, public
+	 *     $response->headers('Cache-Control', HTTP_Header::create_cache_control($cache_control);
+	 *
+	 * @link    http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13
+	 * @param   array     Cache-Control to render to string
+	 * @return  string
+	 */
+	public static function create_cache_control(array $cache_control)
+	{
+		$parts = array();
+
+		foreach ($cache_control as $key => $value)
+		{
+			$parts[] = (is_int($key)) ? $value : ($key.'='.$value);
+		}
+
+		return implode(', ', $parts);
+	}
+
+	/**
+	 * Parses the Cache-Control header and returning an array representation of the Cache-Control
+	 * header.
+	 *
+	 *     // Create the cache control header
+	 *     $response->headers('cache-control', 'max-age=3600, must-revalidate, public');
+	 *
+	 *     // Parse the cache control header
+	 *     if ($cache_control = HTTP_Header::parse_cache_control($response->headers('cache-control')))
+	 *     {
+	 *          // Cache-Control header was found
+	 *          $maxage = $cache_control['max-age'];
+	 *     }
+	 *
+	 * @param   array   $cache_control Array of headers
+	 * @return  mixed
+	 */
+	public static function parse_cache_control($cache_control)
+	{
+		$directives = explode(',', strtolower($cache_control));
+
+		if ($directives === FALSE)
+			return FALSE;
+
+		$output = array();
+
+		foreach ($directives as $directive)
+		{
+			if (strpos($directive, '=') !== FALSE)
+			{
+				list($key, $value) = explode('=', trim($directive), 2);
+
+				$output[$key] = ctype_digit($value) ? (int) $value : $value;
+			}
+			else
+			{
+				$output[] = trim($directive);
+			}
+		}
+
+		return $output;
+	}
+
+	/**
 	 * @var     array    Accept: (content) types
 	 */
 	protected $_accept_content;
