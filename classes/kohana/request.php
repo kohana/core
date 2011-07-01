@@ -1447,7 +1447,7 @@ class Kohana_Request implements HTTP_Request {
 			$this->_header['cookie'] = implode('; ', $cookie_string);
 		}
 
-		$output = $this->method().' '.$this->uri($this->param()).' '.$this->protocol()."\r\n";
+		$output = $this->method().' '.$this->uri().' '.$this->protocol()."\r\n";
 		$output .= (string) $this->_header;
 		$output .= $body;
 
