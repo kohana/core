@@ -11,7 +11,7 @@
  * @license    http://kohanaframework.org/license
  * @since      3.2.0
  */
-abstract class Kohana_HTTP_Cache {
+class Kohana_HTTP_Cache {
 
 	const CACHE_STATUS_KEY    = 'x-cache-status';
 	const CACHE_STATUS_SAVED  = 'SAVED';
@@ -20,9 +20,35 @@ abstract class Kohana_HTTP_Cache {
 	const CACHE_HIT_KEY       = 'x-cache-hits';
 
 	/**
+	 * Basic cache key generator that hashes the entire request and returns
+	 * it. This is fine for static content, or dynamic content where user
+	 * specific information is encoded into the request.
+	 * 
+	 *      // Generate cache key
+	 *      $cache_key = HTTP_Cache::basic_cache_key_generator($request);
+	 *
+	 * @param   Request   request 
+	 * @return  string
+	 */
+	public static function basic_cache_key_generator(Request $request)
+	{
+		$uri     = $request->uri();
+		$query   = $request->query();
+		$headers = $request->headers()->getArrayCopy();
+		$body    = $request->body();
+
+		return sha1($uri.'?'.implode('&', $query).'~'.implode('~', $headers).'~'.$body);
+	}
+
+	/**
 	 * @var     Cache    cache driver to use for HTTP caching
 	 */
 	protected $_cache;
+
+	/**
+	 * @var    callback  Cache key generator callback
+	 */
+	protected $_cache_key_callback;
 
 	/**
 	 * @var    boolean   Defines whether this client should cache `private` cache directives
@@ -41,9 +67,55 @@ abstract class Kohana_HTTP_Cache {
 	protected $_response_time;
 
 	/**
-	 * @var    callback  Cache key generator callback
+	 * Constructor method for this class. Allows dependency injection of the
+	 * required components such as `Cache` and the cache key generator.
+	 *
+	 * @param   array $options 
 	 */
-	protected $_cache_key_callback;
+	public function __construct(array $options = array())
+	{
+		foreach ($options as $key => $value)
+		{
+			if (method_exists($this, $key))
+			{
+				$this->$key($value);
+			}
+		}
+
+		if ($this->_cache_key_callback === NULL)
+		{
+			$this->cache_key_callback('HTTP_Cache::basic_cache_key_generator');
+		}
+	}
+
+	/**
+	 * undocumented function
+	 *
+	 * @param   Request_Client  client to execute with Cache-Control
+	 * @param   Request   request to execute with client
+	 * @return  [Response]
+	 */
+	public function execute(Request_Client $client, Request $request)
+	{
+		// If this is a destructive request, by-pass cache completely
+		if (in_array($request->method(), array(
+			HTTP_Request::POST, 
+			HTTP_Request::PUT, 
+			HTTP_Request::DELETE)))
+		{
+			$response = $client->execute_client($request);
+
+			$cache_control = HTTP_Header::create_cache_control(array(
+				'no-cache',
+				'must-revalidate'
+			));
+
+			// Ensure client respects destructive action
+			return $response->headers('cache-control', $cache_control);
+		}
+
+		
+	}
 
 	/**
 	 * Invalidate a cached response for the [Request] supplied.
@@ -99,6 +171,32 @@ abstract class Kohana_HTTP_Cache {
 		return $this;
 	}
 
+	/**
+	 * Sets or gets the cache key generator callback for this caching
+	 * class. The cache key generator provides a unique hash based on the
+	 * `Request` object passed to it.
+	 * 
+	 * The default generator is [HTTP_Cache::basic_cache_key_generator()], which
+	 * serializes the entire `HTTP_Request` into a unique sha1 hash. This will
+	 * provide basic caching for static and simple dynamic pages. More complex
+	 * algorithms can be defined and then passed into `HTTP_Cache` using this
+	 * method.
+	 * 
+	 *      // Get the cache key callback
+	 *      $callback = $http_cache->cache_key_callback();
+	 * 
+	 *      // Set the cache key callback
+	 *      $http_cache->cache_key_callback('Foo::cache_key');
+	 * 
+	 *      // Alternatively, in PHP 5.3 use a closure
+	 *      $http_cache->cache_key_callback(function (Request $request) {
+	 *            return sha1($request->render());
+	 *      });
+	 *
+	 * @param   callback  callback 
+	 * @return  mixed
+	 * @throws  HTTP_Exception
+	 */
 	public function cache_key_callback($callback = NULL)
 	{
 		if ($callback === NULL)
@@ -117,34 +215,21 @@ abstract class Kohana_HTTP_Cache {
 	 * 
 	 * This is the default cache key generating logic, but can be overridden
 	 * by setting [HTTP_Cache::$_cache_key_callback].
-	 * 
-	 *     $http_cache = new HTTP_Cache(Cache::instance('apc'));
-	 *     $http_cache->cache_key_callback(function($request) {
-	 *          $x_cache_logic = $request->headers('x-cache-logic');
-	 *          $user_id       = $request->headers('x-user-id');
-	 *          $key = 'uid:'.(string) $user_id.',cache:'.(string) $x_cache_logic;
-	 *          return sha1($key);
-	 *     })
 	 *
 	 * @param   Request  request
 	 * @return  string
-	 * @return  boolean
+	 * @uses    [HTTP_Cache::cache_key_callback()]
 	 */
 	public function create_cache_key(Request $request)
 	{
-		if ($this->cache_key_callback() === NULL OR ! is_callable($this->cache_key_callback()))
-			return sha1($request->url());
-
-		// Use the closure for cache key generation
-		$closure = $this->cache_key_callback();
-		return call_user_func($closure, $request);
+		return call_user_func($this->cache_key_callback(), $request);
 	}
 
 	/**
 	 * Controls whether the response can be cached. Uses HTTP
 	 * protocol to determine whether the response can be cached.
 	 *
-	 * @see     RFC 2616 http://www.w3.org/Protocols/rfc2616/
+	 * @link    RFC 2616 http://www.w3.org/Protocols/rfc2616/
 	 * @param   Response  $response The Response
 	 * @return  boolean
 	 */
@@ -154,7 +239,7 @@ abstract class Kohana_HTTP_Cache {
 		if ($cache_control = arr::get($headers, 'cache-control'))
 		{
 			// Parse the cache control
-			$cache_control = Response::parse_cache_control( (string) $cache_control);
+			$cache_control = HTTP_Header::parse_cache_control( (string) $cache_control);
 
 			// If the no-cache or no-store directive is set, return
 			if (array_intersect_key($cache_control, array('no-cache' => NULL, 'no-store' => NULL)))
@@ -164,7 +249,7 @@ abstract class Kohana_HTTP_Cache {
 			$directives = array_keys($cache_control);
 
 			// Check for private cache and get out of here if invalid
-			if ( ! $this->_allow_private_cache and in_array('private', $directives))
+			if ( ! $this->_allow_private_cache AND in_array('private', $directives))
 			{
 				if ( ! isset($cache_control['s-maxage']))
 					return FALSE;
@@ -174,11 +259,11 @@ abstract class Kohana_HTTP_Cache {
 			}
 
 			// Check that max-age has been set and if it is valid for caching
-			if (isset($cache_control['max-age']) and (int) $cache_control['max-age'] < 1)
+			if (isset($cache_control['max-age']) AND (int) $cache_control['max-age'] < 1)
 				return FALSE;
 		}
 
-		if ($expires = arr::get($headers, 'expires') and ! isset($cache_control['max-age']))
+		if ($expires = arr::get($headers, 'expires') AND ! isset($cache_control['max-age']))
 		{
 			// Can't cache things that have expired already
 			if (strtotime( (string) $expires) <= time())
@@ -291,7 +376,7 @@ abstract class Kohana_HTTP_Cache {
 		if ($cache_control = $response->headers('cache-control'))
 		{
 			// Parse the cache control header
-			$cache_control = Response::parse_cache_control( (string) $cache_control);
+			$cache_control = HTTP_Header::parse_cache_control( (string) $cache_control);
 
 			if (isset($cache_control['max-age']))
 			{

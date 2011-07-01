@@ -39,7 +39,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 	 * @deprecated passing $params to controller methods deprecated since version 3.1
 	 *             will be removed in 3.2
 	 */
-	public function execute(Request $request)
+	public function execute_client(Request $request)
 	{
 		// Check for cache existance
 		if (($cache = $this->cache()) instanceof Cache AND ($response = $this->cache_response($request)) instanceof Response)
