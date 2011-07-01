@@ -82,7 +82,7 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 		// Set connection options
 		if ( ! curl_setopt_array($curl, $options))
 		{
-			throw new Kohana_Request_Exception('Failed to set CURL options, check CURL documentation: :url',
+			throw new Request_Exception('Failed to set CURL options, check CURL documentation: :url',
 				array(':url' => 'http://php.net/curl_setopt_array'));
 		}
 
@@ -102,7 +102,7 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 
 		if (isset($error))
 		{
-			throw new Kohana_Request_Exception('Error fetching remote :url [ status :code ] :error',
+			throw new Request_Exception('Error fetching remote :url [ status :code ] :error',
 				array(':url' => $request->url(), ':code' => $code, ':error' => $error));
 		}
 

@@ -43,9 +43,11 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 		// Set the content length
 		$request->headers('content-length', (string) strlen($body));
 
+		list($protocol) = explode('/', $request->protocol());
+
 		// Create the context
 		$options = array(
-			$request->protocol() => array(
+			$protocol => array(
 				'method'     => $request->method(),
 				'header'     => (string) $request->headers(),
 				'content'    => $body

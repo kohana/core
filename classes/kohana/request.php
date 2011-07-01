@@ -768,11 +768,12 @@ class Kohana_Request implements HTTP_Request {
 
 			$processed_uri = Request::process_uri($uri, $this->_injected_routes);
 
+			// Return here rather than throw exception. This will allow
+			// use of Request object even with unmatched route
 			if ($processed_uri === NULL)
 			{
-				throw new HTTP_Exception_404('Unable to find a route to match the URI: :uri', array(
-					':uri' => $uri,
-				));
+				$this->_uri = $uri;
+				return;
 			}
 
 			// Store the URI
@@ -1091,15 +1092,23 @@ class Kohana_Request implements HTTP_Request {
 	 *     $request->execute();
 	 *
 	 * @return  Response
-	 * @throws  Kohana_Exception
+	 * @throws  Request_Exception
+	 * @throws  HTTP_Exception_404
 	 * @uses    [Kohana::$profiling]
 	 * @uses    [Profiler]
 	 */
 	public function execute()
 	{
-		if ( ! $this->_client instanceof Kohana_Request_Client)
+		if ( ! $this->_route instanceof Route)
 		{
-			throw new Kohana_Request_Exception('Unable to execute :uri without a Kohana_Request_Client', array(
+			throw new HTTP_Exception_404('Unable to find a route to match the URI: :uri', array(
+				':uri' => $this->_uri,
+			));
+		}
+
+		if ( ! $this->_client instanceof Request_Client)
+		{
+			throw new Request_Exception('Unable to execute :uri without a Kohana_Request_Client', array(
 				':uri' => $this->_uri,
 			));
 		}
@@ -1160,7 +1169,7 @@ class Kohana_Request implements HTTP_Request {
 	{
 	    if ($this->_response === NULL)
 		{
-			throw new Kohana_Request_Exception('No response yet associated with request - cannot auto generate resource ETag');
+			throw new Request_Exception('No response yet associated with request - cannot auto generate resource ETag');
 		}
 
 		// Generate a unique hash for the response
@@ -1252,7 +1261,7 @@ class Kohana_Request implements HTTP_Request {
 		}
 
 		// Act as a setter
-		$this->_protocol = $protocol;
+		$this->_protocol = strtoupper($protocol);
 		return $this;
 	}
 
@@ -1438,7 +1447,7 @@ class Kohana_Request implements HTTP_Request {
 			$this->_header['cookie'] = implode('; ', $cookie_string);
 		}
 
-		$output = $this->method().' '.$this->uri($this->param()).' '.strtoupper($this->protocol()).'/'.HTTP::$protocol."\r\n";
+		$output = $this->method().' '.$this->uri($this->param()).' '.$this->protocol()."\r\n";
 		$output .= (string) $this->_header;
 		$output .= $body;
 

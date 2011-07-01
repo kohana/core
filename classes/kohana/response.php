@@ -172,7 +172,7 @@ class Kohana_Response implements HTTP_Response {
 	{
 		if ($protocol)
 		{
-			$this->_protocol = $protocol;
+			$this->_protocol = strtoupper($protocol);
 			return $this;
 		}
 
@@ -487,7 +487,7 @@ class Kohana_Response implements HTTP_Response {
 		if (Request::user_agent('browser') === 'Internet Explorer')
 		{
 			// Naturally, IE does not act like a real browser...
-			if (Request::$initial->protocol() === 'https')
+			if (Request::$initial->secure())
 			{
 				// http://support.microsoft.com/kb/316431
 				$this->_header['pragma'] = $this->_header['cache-control'] = 'public';
@@ -640,7 +640,7 @@ class Kohana_Response implements HTTP_Response {
 	{
 	    if ($this->_body === NULL)
 		{
-			throw new Kohana_Request_Exception('No response yet associated with request - cannot auto generate resource ETag');
+			throw new Request_Exception('No response yet associated with request - cannot auto generate resource ETag');
 		}
 
 		// Generate a unique hash for the response
@@ -664,7 +664,7 @@ class Kohana_Response implements HTTP_Response {
 		}
 
 		if ( ! $request)
-			throw new Kohana_Request_Exception('A Request object must be supplied with an etag for evaluation');
+			throw new Request_Exception('A Request object must be supplied with an etag for evaluation');
 
 		// Set the ETag header
 		$this->_header['etag'] = $etag;

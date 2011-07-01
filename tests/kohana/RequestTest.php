@@ -58,7 +58,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 		$this->assertEquals(Request::$user_agent, 'whatever (Mozilla 5.0/compatible)');
 
-		$this->assertEquals($request->protocol(), 'http');
+		$this->assertEquals($request->protocol(), 'HTTP/1.1');
 
 		$this->assertEquals($request->referrer(), 'http://example.com/');
 
@@ -86,6 +86,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 		);
 
 		$request = new Request('http://www.google.com/');
+		$request->execute();
 	}
 
 	/**
@@ -337,16 +338,16 @@ class Kohana_RequestTest extends Unittest_TestCase
 	{
 		return array(
 			array(
-				'http',
-				'http',
+				'http/1.1',
+				'HTTP/1.1',
 			),
 			array(
-				'FTP',
 				'ftp',
+				'FTP',
 			),
 			array(
-				'hTTps',
-				'https',
+				'hTTp/1.0',
+				'HTTP/1.0',
 			),
 		);
 	}

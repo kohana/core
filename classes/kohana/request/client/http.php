@@ -30,7 +30,7 @@ class Kohana_Request_Client_HTTP extends Request_Client_External {
 		// Check that PECL HTTP supports requests
 		if ( ! http_support(HTTP_SUPPORT_REQUESTS))
 		{
-			throw new Kohana_Request_Exception('Need HTTP request support!');
+			throw new Request_Exception('Need HTTP request support!');
 		}
 
 		// Carry on
@@ -94,15 +94,15 @@ class Kohana_Request_Client_HTTP extends Request_Client_External {
 		}
 		catch (HTTPRequestException $e)
 		{
-			throw new Kohana_Request_Exception($e->getMessage());
+			throw new Request_Exception($e->getMessage());
 		}
 		catch (HTTPMalformedHeaderException $e)
 		{
-			throw new Kohana_Request_Exception($e->getMessage());
+			throw new Request_Exception($e->getMessage());
 		}
 		catch (HTTPEncodingException $e)
 		{
-			throw new Kohana_Request_Exception($e->getMessage());
+			throw new Request_Exception($e->getMessage());
 		}
 
 		// Create the response

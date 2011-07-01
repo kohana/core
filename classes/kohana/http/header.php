@@ -846,10 +846,10 @@ class Kohana_HTTP_Header extends ArrayObject {
 			$response = Request::initial()->response();
 		}
 
-		$protocol = strtoupper($response->protocol());
+		$protocol = $response->protocol();
+		$status = $response->status();
 
 		// Create the response header
-		$status = $response->status();
 		$processed_headers = array($protocol.' '.$status.' '.Response::$messages[$status]);
 
 		// Get the headers array
