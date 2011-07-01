@@ -48,15 +48,15 @@ class Kohana_Kohana_Exception extends Exception {
 			Kohana_Exception::$php_errors[E_DEPRECATED] = 'Deprecated';
 		}
 
-		// Save the unmodified code
-		// @link http://bugs.php.net/39615
-		$this->code = $code;
-
 		// Set the message
 		$message = __($message, $variables);
 
 		// Pass the message and integer code to the parent
 		parent::__construct($message, (int) $code);
+
+		// Save the unmodified code
+		// @link http://bugs.php.net/39615
+		$this->code = $code;
 	}
 
 	/**
