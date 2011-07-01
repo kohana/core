@@ -191,7 +191,7 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 		{
 			$this->_options = $key;
 		}
-		elseif ( ! $value)
+		elseif ($value === NULL)
 		{
 			return Arr::get($this->_options, $key);
 		}
