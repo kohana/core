@@ -101,6 +101,9 @@ class Kohana_HTTP_Cache {
 	 */
 	public function execute(Request_Client $client, Request $request)
 	{
+		if ( ! $this->_cache instanceof Cache)
+			return $client->execute_request($request);
+
 		// If this is a destructive request, by-pass cache completely
 		if (in_array($request->method(), array(
 			HTTP_Request::POST, 

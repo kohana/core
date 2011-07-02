@@ -39,17 +39,18 @@ class Kohana_Request_Client_CacheTest extends Unittest_TestCase {
 	public function test_cache_not_called_with_no_cache()
 	{
 		$request       = new Request('welcome/index');
-		$client_mock   = $this->getMock('Request_Client_Internal');
 		$response      = new Response;
+
+		$client_mock   = $this->getMock('Request_Client_Internal');
 
 		$request->client($client_mock);
 		$client_mock->expects($this->exactly(0))
-			->method('cache_response');
+			->method('execute_request');
 		$client_mock->expects($this->once())
 			->method('execute')
 			->will($this->returnValue($response));
 
-		$this->assertSame($request->execute(), $response);
+		$this->assertSame($response, $request->execute());
 	}
 
 	/**
@@ -62,17 +63,22 @@ class Kohana_Request_Client_CacheTest extends Unittest_TestCase {
 	{
 		$request       = new Request('welcome/index');
 		$cache_mock    = $this->_get_cache_mock();
-		$request->client()->cache($cache_mock);
+		$request->client()->cache(new HTTP_Cache(array(
+			'cache' => $cache_mock
+			)
+		));
 
 		$cache_mock->expects($this->once())
 			->method('get')
-			->with($request->client()->create_cache_key($request))
+			->with($request->client()->cache()->create_cache_key($request))
 			->will($this->returnValue(FALSE));
 
-		$request->client()->execute($request);
+		
 
-		$this->assertSame(Request_Client::CACHE_STATUS_MISS, 
-			$request->headers(Request_Client::CACHE_STATUS_KEY)->value());
+		$response = $request->client()->execute($request);
+
+		$this->assertSame(HTTP_Cache::CACHE_STATUS_MISS, 
+			$response->headers(HTTP_Cache::CACHE_STATUS_KEY));
 	}
 
 	/**
@@ -87,19 +93,24 @@ class Kohana_Request_Client_CacheTest extends Unittest_TestCase {
 		$cache_mock    = $this->_get_cache_mock();
 		$response      = $request->create_response();
 
-		$request->client()->cache($cache_mock);
+		$request->client()->cache(new HTTP_Cache(array(
+			'cache' => $cache_mock
+			)
+		));
+
 		$response->headers('cache-control', 'max-age='.$lifetime);
 
-		$cache_mock->expects($this->once())
+		$key = $request->client()->cache()->create_cache_key($request);
+
+		$cache_mock->expects($this->exactly(2))
 			->method('set')
-			->with($request->client()->create_cache_key($request), $response,
-				$lifetime)
+			->with($this->stringContains($key), $this->anything(), $this->anything())
 			->will($this->returnValue(TRUE));
 
-		$request->client()->cache_response($request, $response);
+		$request->client()->cache()->cache_response($key, $request, $response);
 
-		$this->assertSame(Request_Client::CACHE_STATUS_SAVED, 
-			$request->response()->headers(Request_Client::CACHE_STATUS_KEY)->value());
+		$this->assertSame(HTTP_Cache::CACHE_STATUS_SAVED, 
+			$request->response()->headers(HTTP_Cache::CACHE_STATUS_KEY));
 	}
 
 	/**
@@ -113,24 +124,30 @@ class Kohana_Request_Client_CacheTest extends Unittest_TestCase {
 		$request       = new Request('welcome/index');
 		$cache_mock    = $this->_get_cache_mock();
 
-		$request->client()->cache($cache_mock);
+		$request->client()->cache(new HTTP_Cache(array(
+			'cache' => $cache_mock
+			)
+		));
+
 		$response = $request->create_response();
 
 		$response->headers(array(
 			'cache-control'                  => 'max-age='.$lifetime,
-			Request_Client::CACHE_STATUS_KEY => 
-				Request_Client::CACHE_STATUS_HIT
+			HTTP_Cache::CACHE_STATUS_KEY => 
+				HTTP_Cache::CACHE_STATUS_HIT
 		));
 
-		$cache_mock->expects($this->once())
+		$key = $request->client()->cache()->create_cache_key($request);
+
+		$cache_mock->expects($this->exactly(2))
 			->method('get')
-			->with($request->client()->create_cache_key($request))
+			->with($this->stringContains($key))
 			->will($this->returnValue($response));
 
-		$request->client()->cache_response($request);
+		$request->client()->cache()->cache_response($key, $request);
 
-		$this->assertSame(Request_Client::CACHE_STATUS_HIT,
-			$response->headers(Request_Client::CACHE_STATUS_KEY)->value());
+		$this->assertSame(HTTP_Cache::CACHE_STATUS_HIT,
+			$response->headers(HTTP_Cache::CACHE_STATUS_KEY));
 	}
 
 
@@ -143,51 +160,51 @@ class Kohana_Request_Client_CacheTest extends Unittest_TestCase {
 	{
 		return array(
 			array(
-				array('cache-control' => 'no-cache'),
+				new HTTP_Header(array('cache-control' => 'no-cache')),
 				array('no-cache' => NULL),
 				FALSE,
 			),
 			array(
-				array('cache-control' => 'no-store'),
+				new HTTP_Header(array('cache-control' => 'no-store')),
 				array('no-store' => NULL),
 				FALSE,
 			),
 			array(
-				array('cache-control' => 'max-age=100'),
+				new HTTP_Header(array('cache-control' => 'max-age=100')),
 				array('max-age' => '100'),
 				TRUE
 			),
 			array(
-				array('cache-control' => 'private'),
+				new HTTP_Header(array('cache-control' => 'private')),
 				array('private' => NULL),
 				FALSE
 			),
 			array(
-				array('cache-control' => 'private, max-age=100'),
+				new HTTP_Header(array('cache-control' => 'private, max-age=100')),
 				array('private' => NULL, 'max-age' => '100'),
 				FALSE
 			),
 			array(
-				array('cache-control' => 'private, s-maxage=100'),
+				new HTTP_Header(array('cache-control' => 'private, s-maxage=100')),
 				array('private' => NULL, 's-maxage' => '100'),
 				TRUE
 			),
 			array(
-				array(
+				new HTTP_Header(array(
 					'expires' => date('m/d/Y', strtotime('-1 day')),
-				),
+				)),
 				array(),
 				FALSE
 			),
 			array(
-				array(
+				new HTTP_Header(array(
 					'expires' => date('m/d/Y', strtotime('+1 day')),
-				),
+				)),
 				array(),
 				TRUE
 			),
 			array(
-				array(),
+				new HTTP_Header(array()),
 				array(),
 				TRUE
 			),
@@ -208,15 +225,14 @@ class Kohana_Request_Client_CacheTest extends Unittest_TestCase {
 		 * Set up a mock response object to test with
 		 */
 		$response = $this->getMock('Response');
-		$response->expects($this->any())
-			->method('parse_cache_control')
-			->will($this->returnValue($cache_control));
+
 		$response->expects($this->any())
 			->method('headers')
 			->will($this->returnValue($headers));
 
 		$request = new Request_Client_Internal;
-		$this->assertEquals($request->set_cache($response), $expected);
+		$request->cache(new HTTP_Cache);
+		$this->assertEquals($request->cache()->set_cache($response), $expected);
 	}
 
 	/**
