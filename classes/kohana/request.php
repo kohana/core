@@ -48,7 +48,7 @@ class Kohana_Request implements HTTP_Request {
 	 * @uses    Route::all
 	 * @uses    Route::matches
 	 */
-	public static function factory($uri = TRUE, Cache $cache = NULL, $injected_routes = array())
+	public static function factory($uri = TRUE, HTTP_Cache $cache = NULL, $injected_routes = array())
 	{
 		// If this is the initial request
 		if ( ! Request::$initial)
@@ -729,14 +729,14 @@ class Kohana_Request implements HTTP_Request {
 	 * be retrieved from the cache.
 	 *
 	 * @param   string  $uri URI of the request
-	 * @param   Cache   $cache
+	 * @param   HTTP_Cache   $cache
 	 * @param   array   $injected_routes an array of routes to use, for testing
 	 * @return  void
 	 * @throws  Kohana_Request_Exception
 	 * @uses    Route::all
 	 * @uses    Route::matches
 	 */
-	public function __construct($uri, Cache $cache = NULL, $injected_routes = array())
+	public function __construct($uri, HTTP_Cache $cache = NULL, $injected_routes = array())
 	{
 		// Initialise the header
 		$this->_header = new HTTP_Header(array());
