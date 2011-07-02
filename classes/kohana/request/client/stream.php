@@ -47,7 +47,7 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 
 		// Create the context
 		$options = array(
-			$protocol => array(
+			strtolower($protocol) => array(
 				'method'     => $request->method(),
 				'header'     => (string) $request->headers(),
 				'content'    => $body
@@ -59,7 +59,14 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 
 		stream_context_set_option($context, $this->_options);
 
-		$stream = fopen($request->uri(), $mode, FALSE, $context);
+		$uri = $request->uri();
+
+		if ($query = $request->query())
+		{
+			$uri .= '?'.http_build_query($query, NULL, '&');
+		}
+
+		$stream = fopen($uri, $mode, FALSE, $context);
 
 		$meta_data = stream_get_meta_data($stream);
 

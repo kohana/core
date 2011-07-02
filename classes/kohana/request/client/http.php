@@ -78,6 +78,9 @@ class Kohana_Request_Client_HTTP extends Request_Client_External {
 		// Set cookies
 		$http_request->setCookies($request->cookie());
 
+		// Set query data (?foo=bar&bar=foo)
+		$http_request->setQueryData($request->query());
+
 		// Set the body
 		if ($request->method() == HTTP_Request::PUT)
 		{
