@@ -31,8 +31,14 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 			array(array(':a :b', array(':a' => 'c', ':b' => 'd')), 'c d', 0),
 
 			array(array(':a', NULL, 5), ':a', 5),
+			// #3358
+			array(array(':a', NULL, '3F000'), ':a', '3F000'),
+			// #3404
+			array(array(':a', NULL, '42S22'), ':a', '42S22'),
 			// #3927
 			array(array(':a', NULL, 'b'), ':a', 'b'),
+			// #4039
+			array(array(':a', NULL, '25P01'), ':a', '25P01'),
 		);
 	}
 
