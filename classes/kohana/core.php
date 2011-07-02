@@ -539,7 +539,10 @@ class Kohana_Core {
 			else
 			{
 				// This module is invalid, remove it
-				unset($modules[$name]);
+				throw new Kohana_Exception('Attempted to load an invalid or missing module \':module\' at \':path\'', array(
+					':module' => $name,
+					':path'   => Debug::path($path),
+				));
 			}
 		}
 
