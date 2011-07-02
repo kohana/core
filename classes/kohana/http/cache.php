@@ -89,7 +89,11 @@ class Kohana_HTTP_Cache {
 	}
 
 	/**
-	 * undocumented function
+	 * Executes the supplied [Request] with the supplied [Request_Client].
+	 * Before execution, the HTTP_Cache adapter checks the request type,
+	 * destructive requests such as `POST`, `PUT` and `DELETE` will bypass
+	 * cache completely and ensure the response is not cached. All other
+	 * Request methods will allow caching, if the rules are met.
 	 *
 	 * @param   Request_Client  client to execute with Cache-Control
 	 * @param   Request   request to execute with client
@@ -103,6 +107,9 @@ class Kohana_HTTP_Cache {
 			HTTP_Request::PUT, 
 			HTTP_Request::DELETE)))
 		{
+			// Kill existing caches for this request
+			$this->invalidate_cache($request);
+
 			$response = $client->execute_request($request);
 
 			$cache_control = HTTP_Header::create_cache_control(array(
@@ -114,8 +121,11 @@ class Kohana_HTTP_Cache {
 			return $response->headers('cache-control', $cache_control);
 		}
 
+		// Create the cache key
+		$cache_key = $this->create_cache_key($request, $this->_cache_key_callback);
+
 		// Try and return cached version
-		if (($response = $this->cache_response($request)) instanceof Response)
+		if (($response = $this->cache_response($cache_key, $request)) instanceof Response)
 			return $response;
 
 		// Start request time
@@ -128,7 +138,7 @@ class Kohana_HTTP_Cache {
 		$this->_response_time = (time() - $this->_request_time);
 
 		// Cache the response
-		$this->cache_response($request, $response);
+		$this->cache_response($cache_key, $request, $response);
 
 		$response->headers(HTTP_Cache::CACHE_STATUS_KEY, 
 			HTTP_Cache::CACHE_STATUS_MISS);
@@ -148,7 +158,7 @@ class Kohana_HTTP_Cache {
 	{
 		if (($cache = $this->cache()) instanceof Cache)
 		{
-			$cache->delete($this->_create_cache_key($request));
+			$cache->delete($this->create_cache_key($request, $this->_cache_key_callback));
 		}
 
 		return;
@@ -233,15 +243,18 @@ class Kohana_HTTP_Cache {
 	 * [Kohana_Response] returned by [Request::execute].
 	 * 
 	 * This is the default cache key generating logic, but can be overridden
-	 * by setting [HTTP_Cache::$_cache_key_callback].
+	 * by setting [HTTP_Cache::cache_key_callback()].
 	 *
-	 * @param   Request  request
+	 * @param   Request   request to create key for
+	 * @param   callback  optional callback to use instead of built-in method
 	 * @return  string
-	 * @uses    [HTTP_Cache::cache_key_callback()]
 	 */
-	public function create_cache_key(Request $request)
+	public function create_cache_key(Request $request, $callback = FALSE)
 	{
-		return call_user_func($this->cache_key_callback(), $request);
+		if (is_callable($callback))
+			return call_user_func($callback, $request);
+		else
+			return HTTP_Cache::basic_cache_key_generator($request);
 	}
 
 	/**
@@ -297,19 +310,15 @@ class Kohana_HTTP_Cache {
 	 * If not response is supplied, the cache will be checked for an existing
 	 * one that is available.
 	 *
-	 * @param   Request   request  The request
-	 * @param   Response  response Response
-	 * @param   callback  cachekey generating callback
+	 * @param   string    the cache key to use
+	 * @param   Request   the HTTP Request
+	 * @param   Response  the HTTP Response
 	 * @return  mixed
 	 */
-	public function cache_response(Request $request, Response $response = NULL)
+	public function cache_response($key, Request $request, Response $response = NULL)
 	{
 		if ( ! $this->_cache instanceof Cache)
 			return FALSE;
-
-		$cache_key = $this->create_cache_key($request);
-
-		var_dump($cache_key, $request);
 
 		// Check for Pragma: no-cache
 		if ($pragma = $request->headers('pragma'))
@@ -323,7 +332,7 @@ class Kohana_HTTP_Cache {
 		// If there is no response, lookup an existing cached response
 		if ($response === NULL)
 		{
-			$response = $this->_cache->get($cache_key);
+			$response = $this->_cache->get($key);
 
 			if ( ! $response instanceof Response)
 				return FALSE;
@@ -331,12 +340,12 @@ class Kohana_HTTP_Cache {
 			// Do cache hit arithmetic, using fast arithmetic if available
 			if ($this->_cache instanceof Cache_Arithmetic)
 			{
-				$hit_count = $this->_cache->increment(HTTP_Cache::CACHE_HIT_KEY.$cache_key);
+				$hit_count = $this->_cache->increment(HTTP_Cache::CACHE_HIT_KEY.$key);
 			}
 			else
 			{
-				$hit_count = $this->_cache->get(HTTP_Cache::CACHE_HIT_KEY.$cache_key);
-				$this->_cache->set(HTTP_Cache::CACHE_HIT_KEY.$cache_key, ++$hit_count);
+				$hit_count = $this->_cache->get(HTTP_Cache::CACHE_HIT_KEY.$key);
+				$this->_cache->set(HTTP_Cache::CACHE_HIT_KEY.$key, ++$hit_count);
 			}
 
 			// Update the header to have correct HIT status and count
@@ -355,9 +364,9 @@ class Kohana_HTTP_Cache {
 				HTTP_Cache::CACHE_STATUS_SAVED);
 
 			// Set the hit count to zero
-			$this->_cache->set(HTTP_Cache::CACHE_HIT_KEY.$cache_key, 0);
+			$this->_cache->set(HTTP_Cache::CACHE_HIT_KEY.$key, 0);
 
-			return $this->_cache->set($cache_key, $response, $ttl);
+			return $this->_cache->set($key, $response, $ttl);
 		}
 	}
 
