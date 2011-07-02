@@ -403,6 +403,27 @@ abstract class Kohana_Session {
 	}
 
 	/**
+	 * Restart the session.
+	 *
+	 *     $success = $session->restart();
+	 *
+	 * @return  boolean
+	 */
+	public function restart()
+	{
+		if ($this->_destroyed === FALSE)
+		{
+			// Wipe out the current session.
+			$this->destroy();
+		}
+	
+		// Allow the new session to be saved
+		$this->_destroyed = FALSE;
+
+		return $this->_restart();
+	}
+
+	/**
 	 * Loads the raw session data string and returns it.
 	 *
 	 * @param   string   session id
@@ -430,5 +451,12 @@ abstract class Kohana_Session {
 	 * @return  boolean
 	 */
 	abstract protected function _destroy();
+
+	/**
+	 * Restarts the current session.
+	 *
+	 * @return  boolean
+	 */
+	abstract protected function _restart();
 
 } // End Session

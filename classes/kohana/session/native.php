@@ -73,6 +73,20 @@ class Kohana_Session_Native extends Session {
 	/**
 	 * @return  bool
 	 */
+	protected function _restart()
+	{
+		// Fire up a new session
+		$status = session_start();
+
+		// Use the $_SESSION global for storing data
+		$this->_data =& $_SESSION;
+
+		return $status;
+	}
+
+	/**
+	 * @return  bool
+	 */
 	protected function _destroy()
 	{
 		// Destroy the current session

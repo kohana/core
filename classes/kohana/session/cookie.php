@@ -39,6 +39,14 @@ class Kohana_Session_Cookie extends Session {
 	/**
 	 * @return  bool
 	 */
+	protected function _restart()
+	{
+		return TRUE;
+	}
+
+	/**
+	 * @return  bool
+	 */
 	protected function _destroy()
 	{
 		return Cookie::delete($this->_name);
