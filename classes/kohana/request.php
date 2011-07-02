@@ -22,6 +22,11 @@ class Kohana_Request implements HTTP_Request {
 	public static $client_ip = '0.0.0.0';
 
 	/**
+	 * @var  string  trusted proxy server IPs
+	 */
+	public static $trusted_proxies = array('127.0.0.1', 'localhost');
+
+	/**
 	 * @var  Request  main request instance
 	 */
 	public static $initial;
@@ -145,19 +150,30 @@ class Kohana_Request implements HTTP_Request {
 					$requested_with = $_SERVER['HTTP_X_REQUESTED_WITH'];
 				}
 
-				if (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+				if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])
+				    AND isset($_SERVER['REMOTE_ADDR'])
+				    AND in_array($_SERVER['REMOTE_ADDR'], Request::$trusted_proxies))
 				{
 					// Use the forwarded IP address, typically set when the
 					// client is using a proxy server.
 					// Format: "X-Forwarded-For: client1, proxy1, proxy2"
 					$client_ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+					
 					Request::$client_ip = array_shift($client_ips);
+
+					unset($client_ips);
 				}
-				elseif (isset($_SERVER['HTTP_CLIENT_IP']))
+				elseif (isset($_SERVER['HTTP_CLIENT_IP'])
+				        AND isset($_SERVER['REMOTE_ADDR'])
+				        AND in_array($_SERVER['REMOTE_ADDR'], Request::$trusted_proxies))
 				{
 					// Use the forwarded IP address, typically set when the
 					// client is using a proxy server.
-					Request::$client_ip = $_SERVER['HTTP_CLIENT_IP'];
+					$client_ips = explode(',', $_SERVER['HTTP_CLIENT_IP']);
+					
+					Request::$client_ip = array_shift($client_ips);
+
+					unset($client_ips);
 				}
 				elseif (isset($_SERVER['REMOTE_ADDR']))
 				{
