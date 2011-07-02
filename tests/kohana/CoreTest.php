@@ -244,11 +244,52 @@ class Kohana_CoreTest extends Unittest_TestCase
 	 *
 	 * @return array
 	 */
+	public function provider_modules_detects_invalid_modules()
+	{
+		return array(
+			array(array('unittest' => MODPATH.'fo0bar')),
+			array(array('unittest' => MODPATH.'unittest', 'fo0bar' => MODPATH.'fo0bar')),
+		);
+	}
+
+	/**
+	 * Tests Kohana::modules()
+	 *
+	 * @test
+	 * @dataProvider provider_modules_detects_invalid_modules
+	 * @expectedException Kohana_Exception
+	 * @param boolean $source   Input for Kohana::modules
+	 *
+	 */
+	public function test_modules_detects_invalid_modules($source)
+	{
+		$modules = Kohana::modules();
+
+		try
+		{
+			Kohana::modules($source);
+		}
+		catch(Exception $e)
+		{
+			// Restore modules
+			Kohana::modules($modules);
+
+			throw $e;
+		}
+
+		// Restore modules
+		Kohana::modules($modules);
+	}
+
+	/**
+	 * Provides test data for test_modules_sets_and_returns_valid_modules()
+	 *
+	 * @return array
+	 */
 	public function provider_modules_sets_and_returns_valid_modules()
 	{
 		return array(
 			array(array(), array()),
-			array(array('unittest' => MODPATH.'fo0bar'), array()),
 			array(array('unittest' => MODPATH.'unittest'), array('unittest' => $this->dirSeparator(MODPATH.'unittest/'))),
 		);
 	}
