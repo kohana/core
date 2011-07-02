@@ -54,6 +54,56 @@ Some properties that existed in the request class have been converted into metho
 
 Request::instance() has been replaced by Request::current() and Request::initial(). Normally you'll want to use Request::current(), but if you are sure you want the *original* request (when running hmvc requests), use Request::initial().
 
+### External requests in Kohana 3.2
+
+In Kohana 3.2, `Request_Client_External` now has three separate drivers to handle external requests;
+
+ - `Request_Client_Curl` is the default driver, using the PHP Curl extension
+ - `Request_Client_HTTP` uses the PECL HTTP extension
+ - `Request_Client_Stream` uses streams native to PHP and requires no extensions. However this method is slower than the alternatives.
+
+Unless otherwise specified, `Request_Client_Curl` will be used for all external requests. This can be changed for all external requests, or for individual requests.
+
+To set an external driver across all requests, add the following to the `application/bootstrap.php` file;
+
+    // Set all external requests to use PECL HTTP
+    Request_Client_External::$client = 'Request_Client_HTTP';
+
+Alternatively it is possible to set a specific client to an individual Request.
+
+    // Set the Stream client to an individual request and
+    // Execute
+    $response = Request::factory('http://kohanaframework.org')
+        ->client(new Request_Client_Stream)
+        ->execute();
+
+### HTTP cache control in 3.2
+
+Kohana 3.1 introduced HTTP cache control, providing RFC 2616 fully complient transparent caching of responses. Kohana 3.2 builds on this moving all caching logic out of `Request_Client` into `HTTP_Cache`.
+
+[!!] HTTP Cache requires the Cache module to be enabled in all versions of Kohana!
+
+In Kohana 3.1, HTTP caching is enabled doing the following;
+
+    // Apply cache to a request
+    $request = Request::factory('foo/bar', Cache::instance('memcache'));
+
+    // In controller, ensure response sets cache control,
+    // this will cache the response for one hour
+    $this->response->headers('cache-control', 
+        'public, max-age=3600');
+
+In Kohana 3.2, HTTP caching is enabled slightly differently;
+
+    // Apply cache to request
+    $request = Request::factory('foo/bar',
+        HTTP_Cache::factory(array(), 'memcache'));
+
+    // In controller, ensure response sets cache control,
+    // this will cache the response for one hour
+    $this->response->headers('cache-control', 
+        'public, max-age=3600');
+
 ## Validation
 
 The validation class has been improved to include "context" support. Because of this, the api has changed. Also, The class has been split: core validation logic is now separate from built-in validation rules. The new core class is called `Validation` and the rules are located in the `Valid` class.
