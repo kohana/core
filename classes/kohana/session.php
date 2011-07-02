@@ -321,8 +321,9 @@ abstract class Kohana_Session {
 		}
 		catch (Exception $e)
 		{
-			// Ignore all reading errors, but log them
-			Kohana::$log->add(Log::ERROR, 'Error reading session data: '.$id);
+			// Error reading the session, usually
+			// a corrupt session.
+			throw new Session_Exception('Error reading session data.', NULL, Session_Exception::SESSION_CORRUPT);
 		}
 
 		if (is_array($data))
