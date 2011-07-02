@@ -172,6 +172,9 @@ class Kohana_ValidTest extends Unittest_TestCase
 			array('45.1664',  3,    NULL, FALSE),
 			array('45.1664',  4,    NULL, TRUE),
 			array('45.1664',  4,    2,    TRUE),
+			array('-45.1664', 4,    NULL, TRUE),
+			array('+45.1664', 4,    NULL, TRUE),
+			array('-45.1664', 3,    NULL, FALSE),
 		);
 	}
 
