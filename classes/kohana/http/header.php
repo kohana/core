@@ -224,10 +224,10 @@ class Kohana_HTTP_Header extends ArrayObject {
 			return parent::offsetSet(strtolower($index), $newval);
 		elseif ( ! $newval instanceof HTTP_Header_Value)
 		{
-			$newval = new HTTP_Header_Value($newval);
+			$newval = new HTTP_Header_Value((string) $newval);
 		}
 
-		parent::offsetSet(strtolower($index), $newval);
+		parent::offsetSet(strtolower($index), (string) $newval);
 	}
 
 	/**
