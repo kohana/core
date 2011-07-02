@@ -20,6 +20,44 @@ class Kohana_HTTP_Cache {
 	const CACHE_HIT_KEY       = 'x-cache-hits';
 
 	/**
+	 * Factory method for HTTP_Cache that provides a convenient dependency
+	 * injector for the Cache library.
+	 * 
+	 *      // Create HTTP_Cache with named cache engine
+	 *      $http_cache = HTTP_Cache::factory(array(
+	 *          'allow_private_cache' => FALSE
+	 *          ),
+	 *          'memcache'
+	 *      );
+	 * 
+	 *      // Create HTTP_Cache with supplied cache engine
+	 *      $http_cache = HTTP_Cache::factory(array(
+	 *          'allow_private_cache' => FALSE
+	 *          ),
+	 *          Cache::instance('memcache')
+	 *      );
+	 *
+	 * @uses    [Cache]
+	 * @param   array    options to set to this class
+	 * @param   mixed    cache engine to use
+	 * @return  HTTP_Cache
+	 */
+	public static function factory(array $options = array(), $cache = NULL)
+	{
+		if ( ! isset($options['cache']) AND $cache !== NULL)
+		{
+			if ( ! $cache instanceof Cache)
+			{
+				$cache = Cache::instance($cache);
+			}
+
+			$options['cache'] = $cache;
+		}
+
+		return new HTTP_Cache($options);
+	}
+
+	/**
 	 * Basic cache key generator that hashes the entire request and returns
 	 * it. This is fine for static content, or dynamic content where user
 	 * specific information is encoded into the request.
