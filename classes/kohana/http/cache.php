@@ -103,7 +103,7 @@ class Kohana_HTTP_Cache {
 			HTTP_Request::PUT, 
 			HTTP_Request::DELETE)))
 		{
-			$response = $client->execute_client($request);
+			$response = $client->execute_request($request);
 
 			$cache_control = HTTP_Header::create_cache_control(array(
 				'no-cache',
@@ -114,7 +114,26 @@ class Kohana_HTTP_Cache {
 			return $response->headers('cache-control', $cache_control);
 		}
 
-		
+		// Try and return cached version
+		if (($response = $this->cache_response($request)) instanceof Response)
+			return $response;
+
+		// Start request time
+		$this->_request_time = time();
+
+		// Execute the request with the Request client
+		$response = $client->execute_request($request);
+
+		// Stop response time
+		$this->_response_time = (time() - $this->_request_time);
+
+		// Cache the response
+		$this->cache_response($request, $response);
+
+		$response->headers(HTTP_Cache::CACHE_STATUS_KEY, 
+			HTTP_Cache::CACHE_STATUS_MISS);
+
+		return $response;
 	}
 
 	/**
@@ -235,21 +254,19 @@ class Kohana_HTTP_Cache {
 	 */
 	public function set_cache(Response $response)
 	{
-		$headers = (array) $response->headers();
-		if ($cache_control = arr::get($headers, 'cache-control'))
+		$headers = $response->headers()->getArrayCopy();
+
+		if ($cache_control = Arr::get($headers, 'cache-control'))
 		{
 			// Parse the cache control
-			$cache_control = HTTP_Header::parse_cache_control( (string) $cache_control);
+			$cache_control = HTTP_Header::parse_cache_control($cache_control);
 
 			// If the no-cache or no-store directive is set, return
-			if (array_intersect_key($cache_control, array('no-cache' => NULL, 'no-store' => NULL)))
+			if (array_intersect($cache_control, array('no-cache', 'no-store')))
 				return FALSE;
 
-			// Get the directives
-			$directives = array_keys($cache_control);
-
 			// Check for private cache and get out of here if invalid
-			if ( ! $this->_allow_private_cache AND in_array('private', $directives))
+			if ( ! $this->_allow_private_cache AND in_array('private', $cache_control))
 			{
 				if ( ! isset($cache_control['s-maxage']))
 					return FALSE;
@@ -259,14 +276,14 @@ class Kohana_HTTP_Cache {
 			}
 
 			// Check that max-age has been set and if it is valid for caching
-			if (isset($cache_control['max-age']) AND (int) $cache_control['max-age'] < 1)
+			if (isset($cache_control['max-age']) AND $cache_control['max-age'] < 1)
 				return FALSE;
 		}
 
-		if ($expires = arr::get($headers, 'expires') AND ! isset($cache_control['max-age']))
+		if ($expires = Arr::get($headers, 'expires') AND ! isset($cache_control['max-age']))
 		{
 			// Can't cache things that have expired already
-			if (strtotime( (string) $expires) <= time())
+			if (strtotime($expires) <= time())
 				return FALSE;
 		}
 
@@ -287,32 +304,45 @@ class Kohana_HTTP_Cache {
 	 */
 	public function cache_response(Request $request, Response $response = NULL)
 	{
-		if ( ! ($cache = $this->cache()) instanceof Cache)
+		if ( ! $this->_cache instanceof Cache)
 			return FALSE;
+
+		$cache_key = $this->create_cache_key($request);
+
+		var_dump($cache_key, $request);
 
 		// Check for Pragma: no-cache
 		if ($pragma = $request->headers('pragma'))
 		{
-			if ($pragma instanceof HTTP_Header_Value AND $pragma->key() == 'no-cache')
+			if ($pragma  == 'no-cache')
 				return FALSE;
-			elseif (is_array($pragma) AND isset($pragma['no-cache']))
+			elseif (is_array($pragma) AND in_array('no-cache', $pragma))
 				return FALSE;
 		}
 
 		// If there is no response, lookup an existing cached response
-		if ( ! $response)
+		if ($response === NULL)
 		{
-			$response = $cache->get($this->create_cache_key($request));
+			$response = $this->_cache->get($cache_key);
 
 			if ( ! $response instanceof Response)
-			{
-				$request->headers(Request_Client::CACHE_STATUS_KEY, Request_Client::CACHE_STATUS_MISS);
 				return FALSE;
+
+			// Do cache hit arithmetic, using fast arithmetic if available
+			if ($this->_cache instanceof Cache_Arithmetic)
+			{
+				$hit_count = $this->_cache->increment(HTTP_Cache::CACHE_HIT_KEY.$cache_key);
+			}
+			else
+			{
+				$hit_count = $this->_cache->get(HTTP_Cache::CACHE_HIT_KEY.$cache_key);
+				$this->_cache->set(HTTP_Cache::CACHE_HIT_KEY.$cache_key, ++$hit_count);
 			}
 
 			// Update the header to have correct HIT status and count
-			$cache_status = $response->headers(Request_Client::CACHE_STATUS_KEY);
-			$cache_status->value(Request_Client::CACHE_STATUS_HIT);
+			$response->headers(HTTP_Cache::CACHE_STATUS_KEY,
+				HTTP_Cache::CACHE_STATUS_HIT)
+				->headers(HTTP_Cache::CACHE_HIT_KEY, $hit_count);
 
 			return $response;
 		}
@@ -321,9 +351,13 @@ class Kohana_HTTP_Cache {
 			if (($ttl = $this->cache_lifetime($response)) === FALSE)
 				return FALSE;
 
-			$response->headers(Request_Client::CACHE_STATUS_KEY,
-				Request_Client::CACHE_STATUS_SAVED);
-			return $cache->set($this->create_cache_key($request), $response, $ttl);
+			$response->headers(HTTP_Cache::CACHE_STATUS_KEY,
+				HTTP_Cache::CACHE_STATUS_SAVED);
+
+			// Set the hit count to zero
+			$this->_cache->set(HTTP_Cache::CACHE_HIT_KEY.$cache_key, 0);
+
+			return $this->_cache->set($cache_key, $response, $ttl);
 		}
 	}
 
@@ -343,7 +377,7 @@ class Kohana_HTTP_Cache {
 		// Calculate apparent age
 		if ($date = $response->headers('date'))
 		{
-			$apparent_age = max(0, $this->_response_time - strtotime( (string) $date));
+			$apparent_age = max(0, $this->_response_time - strtotime($date));
 		}
 		else
 		{
@@ -353,7 +387,7 @@ class Kohana_HTTP_Cache {
 		// Calculate corrected received age
 		if ($age = $response->headers('age'))
 		{
-			$corrected_received_age = max($apparent_age, intval( (string) $age));
+			$corrected_received_age = max($apparent_age, intval($age));
 		}
 		else
 		{
@@ -376,21 +410,21 @@ class Kohana_HTTP_Cache {
 		if ($cache_control = $response->headers('cache-control'))
 		{
 			// Parse the cache control header
-			$cache_control = HTTP_Header::parse_cache_control( (string) $cache_control);
+			$cache_control = HTTP_Header::parse_cache_control($cache_control);
 
 			if (isset($cache_control['max-age']))
 			{
-				$ttl = (int) $cache_control['max-age'];
+				$ttl = $cache_control['max-age'];
 			}
 
 			if (isset($cache_control['s-maxage']) AND isset($cache_control['private']) AND $this->_allow_private_cache)
 			{
-				$ttl = (int) $cache_control['s-maxage'];
+				$ttl = $cache_control['s-maxage'];
 			}
 
 			if (isset($cache_control['max-stale']) AND ! isset($cache_control['must-revalidate']))
 			{
-				$ttl = $current_age + (int) $cache_control['max-stale'];
+				$ttl = $current_age + $cache_control['max-stale'];
 			}
 		}
 
@@ -399,7 +433,7 @@ class Kohana_HTTP_Cache {
 			return $ttl;
 
 		if ($expires = $response->headers('expires'))
-			return strtotime( (string) $expires) - $current_age;
+			return strtotime($expires) - $current_age;
 
 		return FALSE;
 	}

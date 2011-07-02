@@ -98,12 +98,8 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 	 * @uses    [Kohana::$profiling]
 	 * @uses    [Profiler]
 	 */
-	public function execute_client(Request $request)
+	public function execute_request(Request $request)
 	{
-		// Check for cache existance
-		if (($cache = $this->cache()) instanceof Cache AND ($response = $this->cache_response($request)) instanceof Response)
-			return $response;
-
 		if (Kohana::$profiling)
 		{
 			// Set the benchmark name
@@ -162,12 +158,6 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 		{
 			// Stop the benchmark
 			Profiler::stop($benchmark);
-		}
-
-		// Cache the response if cache is available
-		if ($cache instanceof Cache)
-		{
-			$this->cache_response($request, $request->response());
 		}
 
 		// Return the response

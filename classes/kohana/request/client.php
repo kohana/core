@@ -1,6 +1,8 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Request Client
+ * Request Client. Processes a [Request] and handles [HTTP_Caching] if 
+ * available. Will usually return a [Response] object as a result of the
+ * request unless an unexpected error occurs.
  *
  * @package    Kohana
  * @category   Base
@@ -11,16 +13,10 @@
  */
 abstract class Kohana_Request_Client {
 
-	const CACHE_STATUS_KEY    = 'x-cache-status';
-	const CACHE_STATUS_SAVED  = 'SAVED';
-	const CACHE_STATUS_HIT    = 'HIT';
-	const CACHE_STATUS_MISS   = 'MISS';
-
 	/**
 	 * @var    Cache  Caching library for request caching
 	 */
 	protected $_cache;
-
 
 	/**
 	 * Creates a new `Request_Client` object,
@@ -63,19 +59,22 @@ abstract class Kohana_Request_Client {
 	public function execute(Request $request)
 	{
 		if ($this->_cache instanceof HTTP_Cache)
-			return $this->_cache->execute($this);
+			return $this->_cache->execute($this, $request);
 
-		return $this->execute_client($request);
+		return $this->execute_request($request);
 	}
 
 	/**
-	 * undocumented function
+	 * Processes the request passed to it and returns the response from
+	 * the URI resource identified.
+	 * 
+	 * This method must be implemented by all clients.
 	 *
 	 * @param   Request   request to execute by client
 	 * @return  Response
 	 * @since   3.2.0
 	 */
-	abstract public function execute_client(Request $request)
+	abstract public function execute_request(Request $request);
 
 	/**
 	 * Getter and setter for the internal caching engine,
