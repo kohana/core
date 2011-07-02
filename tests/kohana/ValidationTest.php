@@ -166,6 +166,27 @@ class Kohana_ValidationTest extends Unittest_TestCase
 	}
 
 	/**
+	 * We should be able to used bound variables in callbacks
+	 *
+	 * @test
+	 * @covers Validation::check
+	 */
+	public function test_bound_callback()
+	{
+		$data = array(
+			'kung fu' => 'fighting',
+			'fast'    => 'cheetah',
+		);
+		$validation = new Validation($data);
+		$validation->bind(':class', 'Valid')
+			// Use the bound value in a callback
+			->rule('fast', array(':class', 'max_length'), array(':value', 2));
+
+		// The rule should have run and check() should fail
+		$this->assertSame($validation->check(), FALSE);
+	}
+
+	/**
 	 * Provides test data for test_check
 	 *
 	 * @return array
