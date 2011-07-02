@@ -46,7 +46,7 @@ class Kohana_URLTest extends Unittest_TestCase
 			array('ftp',   TRUE,  'ftp://example.com/kohana/index.php/'),
 
 			// Test for automatic protocol detection, protocol = TRUE
-			array(TRUE,    TRUE,  'cli://example.com/kohana/index.php/', array('HTTPS' => FALSE)),
+			array(TRUE,    TRUE,  'cli://example.com/kohana/index.php/', array('HTTPS' => FALSE, 'Request::$initial' => Request::factory('/')->protocol('cli'))),
 
 			// Change base url'
 			array('https', FALSE, 'https://example.com/kohana/', array('Kohana::$base_url' => 'omglol://example.com/kohana/')),

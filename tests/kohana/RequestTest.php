@@ -514,10 +514,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$request_client = Request_Client_External::factory(array(), 'Request_Client_Curl');
 
 		// Test for empty array
-		$this->assertSame(array(
-			CURLOPT_RETURNTRANSFER => TRUE,
-			CURLOPT_HEADER         => FALSE
-			), $request_client->options());
+		$this->assertSame(array(), $request_client->options());
 
 		// Test that set works as expected
 		$this->assertSame($request_client->options($settings), $request_client);
