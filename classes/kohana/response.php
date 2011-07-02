@@ -815,9 +815,7 @@ class Kohana_Response implements HTTP_Response, Serializable {
 	}
 
 	/**
-	 * Serializes the object to json - handy if you
-	 * need to pass the response data to other
-	 * systems
+	 * Serializes the object
 	 *
 	 * @param   array    array of data to serialize
 	 * @return  string
@@ -847,9 +845,9 @@ class Kohana_Response implements HTTP_Response, Serializable {
 	}
 
 	/**
-	 * JSON encoded object
+	 * PHP serialized object
 	 *
-	 * @param   string   json encoded object
+	 * @param   string   php serialized string
 	 * @return  bool
 	 * @throws  Kohana_Exception
 	 */
