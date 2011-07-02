@@ -37,7 +37,7 @@ class Kohana_ValidationTest extends Unittest_TestCase
 
 		$this->assertSame(
 			$values,
-			$instance->as_array()
+			$instance->data()
 		);
 	}
 
@@ -72,7 +72,7 @@ class Kohana_ValidationTest extends Unittest_TestCase
 			);
 		}
 
-		$this->assertSame($copy_data, $copy->as_array());
+		$this->assertSame($copy_data, $copy->data());
 	}
 
 	/**
@@ -465,9 +465,9 @@ class Kohana_ValidationTest extends Unittest_TestCase
 		$validation = Validation::factory(array('foo' => 'bar'))
 			->rule('something', 'not_empty');
 
-		$before = $validation->as_array();
+		$before = $validation->data();
 		$validation->check();
-		$after = $validation->as_array();
+		$after = $validation->data();
 
 		$expected = array('foo' => 'bar');
 
@@ -491,5 +491,95 @@ class Kohana_ValidationTest extends Unittest_TestCase
 		$expected = array('bar' => 'bar must be the same as foo');
 
 		$this->assertSame($expected, $errors);
+	}
+
+	/**
+	 * Tests Validation::as_array()
+	 *
+	 * @test
+	 * @covers Validation::as_array
+	 */
+	public function test_as_array_returns_original_array()
+	{
+		$data = array(
+			'one' => 'hello',
+			'two' => 'world',
+			'ten' => '',
+		);
+
+		$validation = Validation::factory($data);
+
+		$this->assertSame($data, $validation->as_array());
+	}
+
+	/**
+	 * Tests Validation::data()
+	 *
+	 * @test
+	 * @covers Validation::data
+	 */
+	public function test_data_returns_original_array()
+	{
+		$data = array(
+			'one' => 'hello',
+			'two' => 'world',
+			'ten' => '',
+		);
+
+		$validation = Validation::factory($data);
+
+		$this->assertSame($data, $validation->data());
+	}
+
+	public function test_offsetExists()
+	{
+		$array = array(
+			'one' => 'Hello',
+			'two' => 'World',
+			'ten' => NULL,
+		);
+
+		$validation = Validation::factory($array);
+
+		$this->assertTrue(isset($validation['one']));
+		$this->assertFalse(isset($validation['ten']));
+		$this->assertFalse(isset($validation['five']));
+	}
+
+	public function test_offsetSet_throws_exception()
+	{
+		$this->setExpectedException('Kohana_Exception');
+
+		$validation = Validation::factory(array());
+
+		// Validation is read-only
+		$validation['field'] = 'something';
+	}
+
+	public function test_offsetGet()
+	{
+		$array = array(
+			'one' => 'Hello',
+			'two' => 'World',
+			'ten' => NULL,
+		);
+
+		$validation = Validation::factory($array);
+
+		$this->assertSame($array['one'], $validation['one']);
+		$this->assertSame($array['two'], $validation['two']);
+		$this->assertSame($array['ten'], $validation['ten']);
+	}
+
+	public function test_offsetUnset()
+	{
+		$this->setExpectedException('Kohana_Exception');
+
+		$validation = Validation::factory(array(
+			'one' => 'Hello, World!',
+		));
+
+		// Validation is read-only
+		unset($validation['one']);
 	}
 }
