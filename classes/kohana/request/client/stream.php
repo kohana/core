@@ -40,6 +40,11 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 		// Get the message body
 		$body = $request->body();
 
+		if (is_resource($body))
+		{
+			$body = stream_get_contents($body);
+		}
+
 		// Set the content length
 		$request->headers('content-length', (string) strlen($body));
 
