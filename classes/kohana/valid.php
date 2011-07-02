@@ -72,6 +72,16 @@ class Kohana_Valid {
 	 */
 	public static function exact_length($value, $length)
 	{
+		if (is_array($length))
+		{
+			foreach($length as $strlen)
+			{
+				if (UTF8::strlen($value) === $strlen)
+					return TRUE;
+			}
+			return FALSE;
+		}
+
 		return UTF8::strlen($value) === $length;
 	}
 
@@ -134,6 +144,9 @@ class Kohana_Valid {
 	 */
 	public static function email_domain($email)
 	{
+		if ( ! Valid::not_empty($email))
+			return FALSE; // Empty fields cause issues with checkdnsrr()
+
 		// Check if the email domain has a valid MX record
 		return (bool) checkdnsrr(preg_replace('/^[^@]++@/', '', $email), 'MX');
 	}
