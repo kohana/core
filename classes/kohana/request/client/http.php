@@ -23,7 +23,7 @@ class Kohana_Request_Client_HTTP extends Request_Client_External {
 	 * allows for dependency injection.
 	 *
 	 * @param   array    $params Params
-	 * @throws  Kohana_Request_Exception
+	 * @throws  Request_Exception
 	 */
 	public function __construct(array $params = array())
 	{

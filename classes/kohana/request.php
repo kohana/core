@@ -44,7 +44,7 @@ class Kohana_Request implements HTTP_Request {
 	 * @param   Cache   $cache
 	 * @param   array   $injected_routes an array of routes to use, for testing
 	 * @return  void
-	 * @throws  Kohana_Request_Exception
+	 * @throws  Request_Exception
 	 * @uses    Route::all
 	 * @uses    Route::matches
 	 */
@@ -732,7 +732,7 @@ class Kohana_Request implements HTTP_Request {
 	 * @param   HTTP_Cache   $cache
 	 * @param   array   $injected_routes an array of routes to use, for testing
 	 * @return  void
-	 * @throws  Kohana_Request_Exception
+	 * @throws  Request_Exception
 	 * @uses    Route::all
 	 * @uses    Route::matches
 	 */
@@ -1163,7 +1163,7 @@ class Kohana_Request implements HTTP_Request {
 	 * exception will be thrown!
 	 *
 	 * @return string
-	 * @throws Kohana_Request_Exception
+	 * @throws Request_Exception
 	 */
 	public function generate_etag()
 	{

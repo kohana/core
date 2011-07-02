@@ -633,7 +633,7 @@ class Kohana_Response implements HTTP_Response {
 	 * Generate ETag
 	 * Generates an ETag from the response ready to be returned
 	 *
-	 * @throws Kohana_Request_Exception
+	 * @throws Request_Exception
 	 * @return String Generated ETag
 	 */
 	public function generate_etag()
@@ -654,7 +654,7 @@ class Kohana_Response implements HTTP_Response {
 	 * @param   string   $etag Resource ETag
 	 * @param   Request  $request The request to test against
 	 * @return  Response
-	 * @throws  Kohana_Request_Exception
+	 * @throws  Request_Exception
 	 */
 	public function check_cache($etag = NULL, Request $request = NULL)
 	{

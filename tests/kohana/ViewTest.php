@@ -70,7 +70,7 @@ class Kohana_ViewTest extends Unittest_TestCase
 			$view = new View($path);
 			$this->assertSame(FALSE, $expects_exception);
 		}
-		catch(Kohana_View_Exception $e)
+		catch(View_Exception $e)
 		{
 			$this->assertSame(TRUE, $expects_exception);
 		}
