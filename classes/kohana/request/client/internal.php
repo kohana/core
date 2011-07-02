@@ -146,7 +146,10 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		catch (Exception $e)
 		{
 			// Restore the previous request
-			Request::$current = $previous;
+			if ($previous instanceof Request)
+			{
+				Request::$current = $previous;
+			}
 
 			if (isset($benchmark))
 			{
