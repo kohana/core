@@ -13,20 +13,6 @@
 class Kohana_Request_Client_Curl extends Request_Client_External {
 
 	/**
-	 * Creates a new `Request_Client` object,
-	 * allows for dependency injection.
-	 *
-	 * @param   array    $params Params
-	 */
-	public function __construct(array $params = array())
-	{
-		parent::__construct($params);
-
-		$this->_options[CURLOPT_RETURNTRANSFER] = TRUE;
-		$this->_options[CURLOPT_HEADER]         = FALSE;
-	}
-
-	/**
 	 * Sends the HTTP message [Request] to a remote server and processes
 	 * the response.
 	 *
@@ -70,8 +56,10 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 		$response = $request->create_response();
 		$response_header = $response->headers();
 
-		// Implement the default header parsing
-		$options[CURLOPT_HEADERFUNCTION] = array($response_header, 'parse_header_string');
+		// Implement the standard parsing parameters
+		$options[CURLOPT_HEADERFUNCTION]        = array($response_header, 'parse_header_string');
+		$this->_options[CURLOPT_RETURNTRANSFER] = TRUE;
+		$this->_options[CURLOPT_HEADER]         = FALSE;
 
 		// Apply any additional options set to 
 		$options += $this->_options;
