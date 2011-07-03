@@ -24,35 +24,31 @@ class Kohana_HTTP_Cache {
 	 * injector for the Cache library.
 	 * 
 	 *      // Create HTTP_Cache with named cache engine
-	 *      $http_cache = HTTP_Cache::factory(array(
+	 *      $http_cache = HTTP_Cache::factory('memcache', array(
 	 *          'allow_private_cache' => FALSE
-	 *          ),
-	 *          'memcache'
+	 *          )
 	 *      );
 	 * 
 	 *      // Create HTTP_Cache with supplied cache engine
-	 *      $http_cache = HTTP_Cache::factory(array(
-	 *          'allow_private_cache' => FALSE
-	 *          ),
-	 *          Cache::instance('memcache')
+	 *      $http_cache = HTTP_Cache::factory(Cache::instance('memcache'),
+	 *          array(
+	 *              'allow_private_cache' => FALSE
+	 *          )
 	 *      );
 	 *
 	 * @uses    [Cache]
-	 * @param   array    options to set to this class
 	 * @param   mixed    cache engine to use
+	 * @param   array    options to set to this class
 	 * @return  HTTP_Cache
 	 */
-	public static function factory(array $options = array(), $cache = NULL)
+	public static function factory($cache, array $options = array())
 	{
-		if ( ! isset($options['cache']) AND $cache !== NULL)
+		if ( ! $cache instanceof Cache)
 		{
-			if ( ! $cache instanceof Cache)
-			{
-				$cache = Cache::instance($cache);
-			}
-
-			$options['cache'] = $cache;
+			$cache = Cache::instance($cache);
 		}
+
+		$options['cache'] = $cache;
 
 		return new HTTP_Cache($options);
 	}

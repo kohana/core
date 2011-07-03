@@ -63,17 +63,13 @@ class Kohana_Request_Client_CacheTest extends Unittest_TestCase {
 	{
 		$request       = new Request('welcome/index');
 		$cache_mock    = $this->_get_cache_mock();
-		$request->client()->cache(new HTTP_Cache(array(
-			'cache' => $cache_mock
-			)
-		));
+
+		$request->client()->cache(HTTP_Cache::factory($cache_mock));
 
 		$cache_mock->expects($this->once())
 			->method('get')
 			->with($request->client()->cache()->create_cache_key($request))
 			->will($this->returnValue(FALSE));
-
-		
 
 		$response = $request->client()->execute($request);
 
@@ -242,6 +238,6 @@ class Kohana_Request_Client_CacheTest extends Unittest_TestCase {
 	 */
 	protected function _get_cache_mock()
 	{
-		return  $this->getMock('Cache_File', array(), array(), '', FALSE);
+		return $this->getMock('Cache_File', array(), array(), '', FALSE);
 	}
 } // End Kohana_Request_Client_CacheTest
