@@ -30,6 +30,11 @@ class Kohana_Kohana_Exception extends Exception {
 	public static $error_view = 'kohana/error';
 
 	/**
+	 * @var  string  error view content type
+	 */
+	public static $error_view_content_type = 'text/html';
+
+	/**
 	 * Creates a new translated exception.
 	 *
 	 *     throw new Kohana_Exception('Something went terrible wrong, :user',
@@ -148,7 +153,7 @@ class Kohana_Kohana_Exception extends Exception {
 				// Make sure the proper http header is sent
 				$http_header_status = ($e instanceof HTTP_Exception) ? $code : 500;
 
-				header('Content-Type: text/html; charset='.Kohana::$charset, TRUE, $http_header_status);
+				header('Content-Type: '.Kohana_Exception::$error_view_content_type.'; charset='.Kohana::$charset, TRUE, $http_header_status);
 			}
 
 			if (Request::$current !== NULL AND Request::current()->is_ajax() === TRUE)
