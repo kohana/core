@@ -1357,7 +1357,27 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 */
 	public function provider_send_headers()
 	{
+		$content_type = Kohana::$content_type.'; charset='.Kohana::$charset;
+		$version = Kohana::VERSION.' ('.Kohana::CODENAME.')';
+
 		return array(
+			array(
+				array(),
+				array(
+					'HTTP/1.1 200 OK',
+					'Content-Type: '.$content_type,
+				),
+				FALSE,
+			),
+			array(
+				array(),
+				array(
+					'HTTP/1.1 200 OK',
+					'Content-Type: '.$content_type,
+					'X-Powered-By: Kohana Framework '.$version,
+				),
+				TRUE,
+			),
 			array(
 				array(
 					'accept'          => 'text/html, text/plain, text/*, */*',
@@ -1370,7 +1390,8 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 					'Accept: text/html, text/plain, text/*, */*',
 					'Accept-Charset: utf-8, utf-10, iso-8859-1',
 					'Accept-Encoding: compress, gzip',
-					'Accept-Language: en, en-gb, en-us'
+					'Accept-Language: en, en-gb, en-us',
+					'Content-Type: '.$content_type,
 				),
 				FALSE
 			),
@@ -1410,22 +1431,15 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 */
 	public function test_send_headers(array $state, array $expected, $expose)
 	{
-		if ( ! isset($state['content-type']))
-		{
-			$expected[] = 'Content-Type: '.Kohana::$content_type.'; charset='.Kohana::$charset;
-		}
-
 		Kohana::$expose = $expose;
-
-		if (Kohana::$expose AND ! isset($state['x-powered-by']))
-		{
-			$expected[] = 'X-Powered-By: Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
-		}
 
 		$response = new Response;
 		$response->headers($state);
 
-		$this->assertSame($expected, $response->send_headers(FALSE, array($this, 'send_headers_handler')));
+		$this->assertSame(
+			$expected,
+			$response->send_headers(FALSE, array($this, 'send_headers_handler'))
+		);
 	}
 
 	/**
