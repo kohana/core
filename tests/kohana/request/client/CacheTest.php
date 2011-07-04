@@ -98,12 +98,19 @@ class Kohana_Request_Client_CacheTest extends Unittest_TestCase {
 
 		$key = $request->client()->cache()->create_cache_key($request);
 
-		$cache_mock->expects($this->exactly(2))
+		$cache_mock->expects($this->at(0))
 			->method('set')
-			->with($this->stringContains($key), $this->anything(), $this->anything())
+			->with($this->stringEndsWith($key), $this->identicalTo(0));
+
+		$cache_mock->expects($this->at(1))
+			->method('set')
+			->with($this->identicalTo($key), $this->anything(), $this->identicalTo($lifetime))
 			->will($this->returnValue(TRUE));
 
-		$request->client()->cache()->cache_response($key, $request, $response);
+		$this->assertTrue(
+			$request->client()->cache()
+				->cache_response($key, $request, $response)
+		);
 
 		$this->assertSame(HTTP_Cache::CACHE_STATUS_SAVED, 
 			$request->response()->headers(HTTP_Cache::CACHE_STATUS_KEY));
