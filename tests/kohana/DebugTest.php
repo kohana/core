@@ -86,13 +86,25 @@ class Kohana_DebugTest extends Unittest_TestCase
 	public function provider_dump()
 	{
 		return array(
-			array('foobar', 128, '<small>string</small><span>(6)</span> "foobar"'),
-			array('foobar', 2, '<small>string</small><span>(6)</span> "fo&nbsp;&hellip;"'),
-			array(NULL, 128, '<small>NULL</small>'),
-			array(TRUE, 128, '<small>bool</small> TRUE'),
-			array(array('foobar'), 128, "<small>array</small><span>(1)</span> <span>(\n    0 => <small>string</small><span>(6)</span> \"foobar\"\n)</span>"),
-			array(new StdClass, 128, "<small>object</small> <span>stdClass(0)</span> <code>{\n}</code>"),
-			array("fo\x6F\xFF\x00bar\x8F\xC2\xB110", 128, '<small>string</small><span>(10)</span> "foobar±10"'),
+			array('foobar', 128, 10, '<small>string</small><span>(6)</span> "foobar"'),
+			array('foobar', 2, 10, '<small>string</small><span>(6)</span> "fo&nbsp;&hellip;"'),
+			array(NULL, 128, 10, '<small>NULL</small>'),
+			array(TRUE, 128, 10, '<small>bool</small> TRUE'),
+			array(array('foobar'), 128, 10, "<small>array</small><span>(1)</span> <span>(\n    0 => <small>string</small><span>(6)</span> \"foobar\"\n)</span>"),
+			array(new StdClass, 128, 10, "<small>object</small> <span>stdClass(0)</span> <code>{\n}</code>"),
+			array("fo\x6F\xFF\x00bar\x8F\xC2\xB110", 128, 10, '<small>string</small><span>(10)</span> "foobar±10"'),
+			array(array('level1' => array('level2' => array('level3' => array('level4' => array('value' => 'something'))))), 128, 4,
+'<small>array</small><span>(1)</span> <span>(
+    "level1" => <small>array</small><span>(1)</span> <span>(
+        "level2" => <small>array</small><span>(1)</span> <span>(
+            "level3" => <small>array</small><span>(1)</span> <span>(
+                "level4" => <small>array</small><span>(1)</span> (
+                    ...
+                )
+            )</span>
+        )</span>
+    )</span>
+)</span>'),
 		);
 	}
 
@@ -106,8 +118,8 @@ class Kohana_DebugTest extends Unittest_TestCase
 	 * @param object $exception exception to test
 	 * @param string $expected  expected output
 	 */
-	public function test_dump($input, $length, $expected)
+	public function test_dump($input, $length, $limit, $expected)
 	{
-		$this->assertEquals($expected, Debug::dump($input, $length));
+		$this->assertEquals($expected, Debug::dump($input, $length, $limit));
 	}
 }
