@@ -208,19 +208,4 @@ class Kohana_ResponseTest extends Unittest_TestCase
 		$headers  = $response->send_headers()->headers();
 		$this->assertSame($content_type, (string) $headers['content-type']);
 	}
-
-	/**
-	 * Tests that the default content type is sent if not set
-	 * 
-	 * @test
-	 */
-	public function test_default_content_type_when_not_set()
-	{
-		if (headers_sent())
-			$this->markTestSkipped('Cannot test this feature as headers have already been sent!');
-
-		$response = new Response;
-		$headers = $response->send_headers()->headers();
-		$this->assertSame(Kohana::$content_type.'; charset='.Kohana::$charset, (string) $headers['content-type']);
-	}
 }
