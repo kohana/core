@@ -15,33 +15,6 @@
 class Kohana_ResponseTest extends Unittest_TestCase
 {
 	/**
-	 * Ensures that Kohana::$expose adds the x-powered-by header and
-	 * makes sure it's set to the correct Kohana Framework string
-	 *
-	 * @test
-	 */
-	public function test_expose()
-	{
-		if (headers_sent())
-			$this->markTestSkipped('Cannot test this feature as headers have already been sent!');
-
-		Kohana::$expose = TRUE;
-		$response = new Response;
-		$headers = $response->send_headers()->headers();
-		$this->assertArrayHasKey('x-powered-by', (array) $headers);
-
-		if (isset($headers['x-powered-by']))
-		{
-			$this->assertSame($headers['x-powered-by']->value, 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')');
-		}
-
-		Kohana::$expose = FALSE;
-		$response = new Response;
-		$headers = $response->send_headers()->headers();
-		$this->assertArrayNotHasKey('x-powered-by', (array) $headers);
-	}
-
-	/**
 	 * Provider for test_body
 	 *
 	 * @return array
