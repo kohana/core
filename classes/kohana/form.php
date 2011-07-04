@@ -40,10 +40,10 @@ class Kohana_Form {
 			$action = $action->uri();
 		}
 
-		if ($action === '')
+		if ( ! $action)
 		{
-			// Use only the base URI
-			$action = Kohana::$base_url;
+			// Allow empty form actions (submits back to the current url).
+			$action = '';
 		}
 		elseif (strpos($action, '://') === FALSE)
 		{

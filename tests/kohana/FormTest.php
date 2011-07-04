@@ -22,6 +22,7 @@ class Kohana_FormTest extends Unittest_TestCase
 	protected $environmentDefault = array(
 		'Kohana::$base_url' => '/',
 		'HTTP_HOST' => 'kohanaframework.org',
+		'Kohana::$index_file' => '',
 	);
 
 	/**
@@ -32,11 +33,22 @@ class Kohana_FormTest extends Unittest_TestCase
 	public function provider_open()
 	{
 		return array(
-			// $value, $result
-			array(NULL, NULL, '<form action="/" method="post" accept-charset="utf-8">'),
-			array('foo', NULL),
-			array('', NULL),
-			array('foo', array('method' => 'get')),
+			array(
+				  array('', NULL),
+				  array('action' => '')
+			),
+			array(
+				  array(NULL, NULL),
+				  array('action' => '')
+			),
+			array(
+				  array('foo', NULL),
+				  array('action' => '/foo')
+			),
+			array(
+				  array('foo', array('method' => 'get')),
+				  array('action' => '/foo', 'method' => 'get')
+			),
 		);
 	}
 
@@ -48,22 +60,22 @@ class Kohana_FormTest extends Unittest_TestCase
 	 * @param boolean $input  Input for Form::open
 	 * @param boolean $expected Output for Form::open
 	 */
-	public function test_open($action, $attributes)
+	public function test_open($input, $expected)
 	{
+		list($action, $attributes) = $input;
+
 		$tag = Form::open($action, $attributes);
 
 		$matcher = array(
 			'tag' => 'form',
+			// Default attributes
 			'attributes' => array(
-				'method' => 'post',
+				'method'         => 'post',
 				'accept-charset' => 'utf-8',
 			),
 		);
 
-		if ($attributes !== NULL)
-		{
-			$matcher['attributes'] = $attributes + $matcher['attributes'];
-		}
+		$matcher['attributes'] = $expected + $matcher['attributes'];
 
 		$this->assertTag($matcher, $tag);
 	}
