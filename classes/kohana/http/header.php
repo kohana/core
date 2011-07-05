@@ -472,7 +472,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 		// If not a real mime, try and find it in config
 		if (strpos($type, '/') === FALSE)
 		{
-			$mime = Kohana::config('mimes.'.$type);
+			$mime = Kohana::$config->load('mimes.'.$type);
 
 			if ($mime === NULL)
 				return FALSE;
