@@ -417,7 +417,7 @@ abstract class Kohana_Session {
 			// Wipe out the current session.
 			$this->destroy();
 		}
-	
+
 		// Allow the new session to be saved
 		$this->_destroyed = FALSE;
 
