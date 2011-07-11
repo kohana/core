@@ -1037,4 +1037,54 @@ class Kohana_Core {
 		}
 	}
 
+	/**
+	 * A wrapper for invokeArgs which takes an associative array as input
+	 * and assigns parameters by name rather than by order.
+	 *
+	 * @param ReflectionMethod  method to call
+	 * @param array             keyed argument list
+	 * @param mixed             class instance (or null if not an instance method)
+	 * @param boolean           True if we want substitude NULL for missing parameters
+	 * @return mixed            The return value of the method call
+	 */
+	public static function invoke_with_args(ReflectionMethod $method, $parameters, $object=NULL, $null_pad=FALSE)
+	{
+		$func_params = $method->getParameters();
+		$args = array();
+		// Iterate through the function paramters and grab the parameters it calls for
+		foreach ($func_params as $func_param)
+		{
+			if (array_key_exists($func_param->name,$parameters))
+			{
+				// set a reference to make our little re-arrangment transparent
+				$args[] = & $parameters[$func_param->name];
+			} 
+			else
+			{
+				if ($func_param->isDefaultValueAvailable())
+				{
+					// use the default value provided in the function signature if it exists
+					$args[] = $func_param->getDefaultValue();
+				}
+				else
+				{
+					if ($null_pad)
+					{
+						// Note that null-padding the array isn't, strictly speaking,
+						// "correct". However, if you *don't* null pad, then parameters
+						// after the missing one can't be assigned. Either way, we're
+						// dealing with undefined behavior, so we have to pick a compromise.
+						$args[] = NULL;
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+		}
+		// even for static methods, you still pass a class object (which can be null)
+		return $method->invokeArgs($object,$args);
+	}
+
 } // End Kohana

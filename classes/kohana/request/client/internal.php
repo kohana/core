@@ -125,11 +125,9 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 			/**
 			 * Execute the main action with the parameters
-			 *
-			 * @deprecated $params passing is deprecated since version 3.1
-			 *             will be removed in 3.2.
 			 */
-			$method->invokeArgs($controller, $params);
+
+			Kohana::invoke_with_args($method,$params,$controller);
 
 			// Execute the "after action" method
 			$class->getMethod('after')->invoke($controller);
