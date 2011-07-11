@@ -2,9 +2,9 @@
 
 ## Config
 
-The configuration system has been rewritten to make it more flexible.  The majority of the public API should
-still operate in the same way, however the one major change is the transition from using `Kohana::config()` to
-`Kohana::$config->load()`, where `Kohana::$config` is an instance of `Config`.
+The configuration system has been rewritten to make it more flexible. The most significant change is that config groups are now merged across all readers, similar to how files cascade within the cascading filesystem. Therefore you can now override a single config value (perhaps a database connection string, or a 'send-from' email address) and store it in a separate config source (environment config file / database / custom) while inheriting the remaining settings from that group from your application's configuration files.
+
+In other respects, the majority of the public API should still operate in the same way, however the one major change is the transition from using `Kohana::config()` to `Kohana::$config->load()`, where `Kohana::$config` is an instance of `Config`.
 
 `Config::load()` works almost identically to `Kohana::config()`, e.g.:
 
