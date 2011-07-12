@@ -212,17 +212,7 @@ For example, with the following route:
 		'action'     => 'index',
 	));
 	
-If a url matches the route, then `Controller_Ads::index()` will be called.  You could access the parameters in two ways:
-
-First, any non-special parameters (parameters other than controller, action, and directory) in a route are passed as parameters to the action method in the order they appear in the route.  Be sure to define a default value for optional parameters if you don't define them in the route's `->defaults()`.
-
-	class Controller_Ads extends Controller {
-		public function action_index($ad, $affiliate = NULL)
-		{
-			
-		}
-
-Secondly, you can access the parameters using the `param()` method of the [Request] class. Again, remember to define a default value (via the second, optional parameter of [Request::param]) if you didn't in `->defaults()`.
+If a url matches the route, then `Controller_Ads::index()` will be called.  You can access the parameters by using the `param()` method of the controller's [Request]. Remember to define a default value (via the second, optional parameter of [Request::param]) if you didn't in `->defaults()`.
 
 	class Controller_Ads extends Controller {
 		public function action_index()

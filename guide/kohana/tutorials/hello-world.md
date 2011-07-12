@@ -23,7 +23,7 @@ Create the file `application/classes/controller/hello.php` in your application f
 Lets see what's going on here:
 
 `<?php defined('SYSPATH') OR die('No Direct Script Access');`
-:	You should recognise the first tag as an opening php tag (if you don't you should probably [learn php](http://php.net)).  What follows is a small check that makes sure that this file is being included by Kohana.  It stops people from accessing files directly from the url.
+:	You should recognize the first tag as an opening php tag (if you don't you should probably [learn php](http://php.net)).  What follows is a small check that makes sure that this file is being included by Kohana.  It stops people from accessing files directly from the url.
 
 `Class Controller_Hello extends Controller`
 :	This line declares our controller,  each controller class has to be prefixed with `Controller_` and an underscore delimited path to the folder the controller is in (see [Conventions and styles](about.conventions) for more info).  Each controller should also extend the base `Controller` class which provides a standard structure for controllers.
