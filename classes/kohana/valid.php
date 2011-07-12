@@ -109,6 +109,11 @@ class Kohana_Valid {
 	 */
 	public static function email($email, $strict = FALSE)
 	{
+		if (utf8::strlen($email) > 254)
+		{
+			return false;
+		}
+
 		if ($strict === TRUE)
 		{
 			$qtext = '[^\\x0d\\x22\\x5c\\x80-\\xff]';
