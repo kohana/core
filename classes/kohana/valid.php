@@ -67,7 +67,7 @@ class Kohana_Valid {
 	 * Checks that a field is exactly the right length.
 	 *
 	 * @param   string   value
-	 * @param   integer  exact length required
+	 * @param   integer|array  exact length required, or array of valid lengths
 	 * @return  boolean
 	 */
 	public static function exact_length($value, $length)
