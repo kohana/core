@@ -14,25 +14,7 @@ Configuration files are used to store any kind of configuration needed for a mod
 If the above configuration file was called `myconf.php`, you could access it using:
 
     $config = Kohana::$config->load('myconf');
-    $options = $config['options'];
-
-[Kohana::$config] also provides a shortcut for accessing individual keys from configuration arrays using "dot paths" similar to [Arr::path].
-
-Get the "options" array:
-
-    $options = Kohana::$config->load('myconf.options');
-
-Get the "foo" key from the "options" array:
-
-    $foo = Kohana::$config->load('myconf.options.foo');
-
-Configuration arrays can also be accessed as objects, if you prefer that method:
-
-    $options = Kohana::$config->load('myconf')->options;
-
-Please note that you can only access the top level of keys as object properties, all child keys must be accessed using standard array syntax:
-
-    $foo = Kohana::$config->load('myconf')->options['foo'];
+    $options = $config->get('options')
 
 ## Merge
 
