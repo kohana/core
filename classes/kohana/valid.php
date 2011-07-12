@@ -109,9 +109,9 @@ class Kohana_Valid {
 	 */
 	public static function email($email, $strict = FALSE)
 	{
-		if (utf8::strlen($email) > 254)
+		if (UTF8::strlen($email) > 254)
 		{
-			return false;
+			return FALSE;
 		}
 
 		if ($strict === TRUE)
