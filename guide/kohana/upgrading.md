@@ -102,3 +102,7 @@ You'll need to change it to:
 
 		// ... code
 	}
+
+## Form Class
+
+If you used Form::open(), the default behavior has changed. It used to default to "/" (your home page), but now an empty parameter will default to the current URI.
