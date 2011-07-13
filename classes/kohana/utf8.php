@@ -19,9 +19,8 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2007-2011 Kohana Team
- * @copyright  (c) 2005 Harry Fuecks
- * @license    http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
+ * @copyright  (c) 2008-2011 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_UTF8 {
 
@@ -63,15 +62,15 @@ class Kohana_UTF8 {
 			foreach ($var as $key => $val)
 			{
 				// Recursion!
-				$var[self::clean($key)] = self::clean($val);
+				$var[UTF8::clean($key)] = UTF8::clean($val);
 			}
 		}
 		elseif (is_string($var) AND $var !== '')
 		{
 			// Remove control characters
-			$var = self::strip_ascii_ctrl($var);
+			$var = UTF8::strip_ascii_ctrl($var);
 
-			if ( ! self::is_ascii($var))
+			if ( ! UTF8::is_ascii($var))
 			{
 				// Disable notices
 				$error_reporting = error_reporting(~E_NOTICE);
@@ -93,7 +92,7 @@ class Kohana_UTF8 {
 	 *
 	 *     $ascii = UTF8::is_ascii($str);
 	 *
-	 * @param   mixed    string or array of strings to check
+	 * @param   mixed  string or array of strings to check
 	 * @return  boolean
 	 */
 	public static function is_ascii($str)
@@ -144,12 +143,12 @@ class Kohana_UTF8 {
 	 */
 	public static function transliterate_to_ascii($str, $case = 0)
 	{
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _transliterate_to_ascii($str, $case);
@@ -161,7 +160,7 @@ class Kohana_UTF8 {
 	 *
 	 *     $length = UTF8::strlen($str);
 	 *
-	 * @param   string   string being measured for length
+	 * @param   string  string being measured for length
 	 * @return  integer
 	 * @uses    UTF8::$server_utf8
 	 */
@@ -175,7 +174,7 @@ class Kohana_UTF8 {
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _strlen($str);
@@ -191,8 +190,7 @@ class Kohana_UTF8 {
 	 * @param   string   haystack
 	 * @param   string   needle
 	 * @param   integer  offset from which character in haystack to start searching
-	 * @return  integer  position of needle
-	 * @return  boolean  FALSE if the needle is not found
+	 * @return  mixed
 	 * @uses    UTF8::$server_utf8
 	 */
 	public static function strpos($str, $search, $offset = 0)
@@ -200,12 +198,12 @@ class Kohana_UTF8 {
 		if (UTF8::$server_utf8)
 			return mb_strpos($str, $search, $offset, Kohana::$charset);
 
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _strpos($str, $search, $offset);
@@ -221,8 +219,7 @@ class Kohana_UTF8 {
 	 * @param   string   haystack
 	 * @param   string   needle
 	 * @param   integer  offset from which character in haystack to start searching
-	 * @return  integer  position of needle
-	 * @return  boolean  FALSE if the needle is not found
+	 * @return  mixed
 	 * @uses    UTF8::$server_utf8
 	 */
 	public static function strrpos($str, $search, $offset = 0)
@@ -230,12 +227,12 @@ class Kohana_UTF8 {
 		if (UTF8::$server_utf8)
 			return mb_strrpos($str, $search, $offset, Kohana::$charset);
 
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _strrpos($str, $search, $offset);
@@ -262,12 +259,12 @@ class Kohana_UTF8 {
 				? mb_substr($str, $offset, mb_strlen($str), Kohana::$charset)
 				: mb_substr($str, $offset, $length, Kohana::$charset);
 
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _substr($str, $offset, $length);
@@ -287,12 +284,12 @@ class Kohana_UTF8 {
 	 */
 	public static function substr_replace($str, $replacement, $offset, $length = NULL)
 	{
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _substr_replace($str, $replacement, $offset, $length);
@@ -305,7 +302,7 @@ class Kohana_UTF8 {
 	 *     $str = UTF8::strtolower($str);
 	 *
 	 * @author  Andreas Gohr <andi@splitbrain.org>
-	 * @param   string   mixed case string
+	 * @param   string  mixed case string
 	 * @return  string
 	 * @uses    UTF8::$server_utf8
 	 */
@@ -314,12 +311,12 @@ class Kohana_UTF8 {
 		if (UTF8::$server_utf8)
 			return mb_strtolower($str, Kohana::$charset);
 
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _strtolower($str);
@@ -330,7 +327,7 @@ class Kohana_UTF8 {
 	 * of [strtoupper](http://php.net/strtoupper).
 	 *
 	 * @author  Andreas Gohr <andi@splitbrain.org>
-	 * @param   string   mixed case string
+	 * @param   string  mixed case string
 	 * @return  string
 	 * @uses    UTF8::$server_utf8
 	 * @uses    Kohana::$charset
@@ -340,12 +337,12 @@ class Kohana_UTF8 {
 		if (UTF8::$server_utf8)
 			return mb_strtoupper($str, Kohana::$charset);
 
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _strtoupper($str);
@@ -358,17 +355,17 @@ class Kohana_UTF8 {
 	 *     $str = UTF8::ucfirst($str);
 	 *
 	 * @author  Harry Fuecks <hfuecks@gmail.com>
-	 * @param   string   mixed case string
+	 * @param   string  mixed case string
 	 * @return  string
 	 */
 	public static function ucfirst($str)
 	{
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _ucfirst($str);
@@ -381,18 +378,18 @@ class Kohana_UTF8 {
 	 *     $str = UTF8::ucwords($str);
 	 *
 	 * @author  Harry Fuecks <hfuecks@gmail.com>
-	 * @param   string   mixed case string
+	 * @param   string  mixed case string
 	 * @return  string
 	 * @uses    UTF8::$server_utf8
 	 */
 	public static function ucwords($str)
 	{
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _ucwords($str);
@@ -405,20 +402,18 @@ class Kohana_UTF8 {
 	 *     $compare = UTF8::strcasecmp($str1, $str2);
 	 *
 	 * @author  Harry Fuecks <hfuecks@gmail.com>
-	 * @param   string   string to compare
-	 * @param   string   string to compare
-	 * @return  integer  less than 0 if str1 is less than str2
-	 * @return  integer  greater than 0 if str1 is greater than str2
-	 * @return  integer  0 if they are equal
+	 * @param   string  string to compare
+	 * @param   string  string to compare
+	 * @return  integer
 	 */
 	public static function strcasecmp($str1, $str2)
 	{
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _strcasecmp($str1, $str2);
@@ -432,22 +427,21 @@ class Kohana_UTF8 {
 	 * [!!] This function is very slow compared to the native version. Avoid
 	 * using it when possible.
 	 *
-	 * @author  Harry Fuecks <hfuecks@gmail.com
-	 * @param   string|array  text to replace
-	 * @param   string|array  replacement text
-	 * @param   string|array  subject text
-	 * @param   integer       number of matched and replaced needles will be returned via this parameter which is passed by reference
-	 * @return  string        if the input was a string
-	 * @return  array         if the input was an array
+	 * @author  Harry Fuecks <hfuecks@gmail.com>
+	 * @param   mixed    text to replace
+	 * @param   mixed    replacement text
+	 * @param   mixed    subject text
+	 * @param   integer  number of matched and replaced needles will be returned via this parameter which is passed by reference
+	 * @return  mixed
 	 */
 	public static function str_ireplace($search, $replace, $str, & $count = NULL)
 	{
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _str_ireplace($search, $replace, $str, $count);
@@ -460,20 +454,19 @@ class Kohana_UTF8 {
 	 *
 	 *     $found = UTF8::stristr($str, $search);
 	 *
-	 * @author Harry Fuecks <hfuecks@gmail.com>
+	 * @author  Harry Fuecks <hfuecks@gmail.com>
 	 * @param   string  input string
 	 * @param   string  needle
-	 * @return  string  matched substring if found
-	 * @return  FALSE   if the substring was not found
+	 * @return  mixed
 	 */
 	public static function stristr($str, $search)
 	{
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _stristr($str, $search);
@@ -485,21 +478,21 @@ class Kohana_UTF8 {
 	 *
 	 *     $found = UTF8::strspn($str, $mask);
 	 *
-	 * @author Harry Fuecks <hfuecks@gmail.com>
+	 * @author  Harry Fuecks <hfuecks@gmail.com>
 	 * @param   string   input string
 	 * @param   string   mask for search
 	 * @param   integer  start position of the string to examine
 	 * @param   integer  length of the string to examine
-	 * @return  integer  length of the initial segment that contains characters in the mask
+	 * @return  integer
 	 */
 	public static function strspn($str, $mask, $offset = NULL, $length = NULL)
 	{
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _strspn($str, $mask, $offset, $length);
@@ -516,16 +509,16 @@ class Kohana_UTF8 {
 	 * @param   string   mask for search
 	 * @param   integer  start position of the string to examine
 	 * @param   integer  length of the string to examine
-	 * @return  integer  length of the initial segment that contains characters not in the mask
+	 * @return  integer
 	 */
 	public static function strcspn($str, $mask, $offset = NULL, $length = NULL)
 	{
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _strcspn($str, $mask, $offset, $length);
@@ -546,12 +539,12 @@ class Kohana_UTF8 {
 	 */
 	public static function str_pad($str, $final_str_length, $pad_str = ' ', $pad_type = STR_PAD_RIGHT)
 	{
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _str_pad($str, $final_str_length, $pad_str, $pad_type);
@@ -570,12 +563,12 @@ class Kohana_UTF8 {
 	 */
 	public static function str_split($str, $split_length = 1)
 	{
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _str_split($str, $split_length);
@@ -587,17 +580,17 @@ class Kohana_UTF8 {
 	 *     $str = UTF8::strrev($str);
 	 *
 	 * @author  Harry Fuecks <hfuecks@gmail.com>
-	 * @param   string   string to be reversed
+	 * @param   string  string to be reversed
 	 * @return  string
 	 */
 	public static function strrev($str)
 	{
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _strrev($str);
@@ -610,18 +603,18 @@ class Kohana_UTF8 {
 	 *     $str = UTF8::trim($str);
 	 *
 	 * @author  Andreas Gohr <andi@splitbrain.org>
-	 * @param   string   input string
-	 * @param   string   string of characters to remove
+	 * @param   string  input string
+	 * @param   string  string of characters to remove
 	 * @return  string
 	 */
 	public static function trim($str, $charlist = NULL)
 	{
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _trim($str, $charlist);
@@ -634,18 +627,18 @@ class Kohana_UTF8 {
 	 *     $str = UTF8::ltrim($str);
 	 *
 	 * @author  Andreas Gohr <andi@splitbrain.org>
-	 * @param   string   input string
-	 * @param   string   string of characters to remove
+	 * @param   string  input string
+	 * @param   string  string of characters to remove
 	 * @return  string
 	 */
 	public static function ltrim($str, $charlist = NULL)
 	{
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _ltrim($str, $charlist);
@@ -658,18 +651,18 @@ class Kohana_UTF8 {
 	 *     $str = UTF8::rtrim($str);
 	 *
 	 * @author  Andreas Gohr <andi@splitbrain.org>
-	 * @param   string   input string
-	 * @param   string   string of characters to remove
+	 * @param   string  input string
+	 * @param   string  string of characters to remove
 	 * @return  string
 	 */
 	public static function rtrim($str, $charlist = NULL)
 	{
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _rtrim($str, $charlist);
@@ -682,17 +675,17 @@ class Kohana_UTF8 {
 	 *     $digit = UTF8::ord($character);
 	 *
 	 * @author  Harry Fuecks <hfuecks@gmail.com>
-	 * @param   string   UTF-8 encoded character
+	 * @param   string  UTF-8 encoded character
 	 * @return  integer
 	 */
 	public static function ord($chr)
 	{
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _ord($chr);
@@ -712,17 +705,16 @@ class Kohana_UTF8 {
 	 * Slight modifications to fit with phputf8 library by Harry Fuecks <hfuecks@gmail.com>
 	 *
 	 * @param   string  UTF-8 encoded string
-	 * @return  array   unicode code points
-	 * @return  FALSE   if the string is invalid
+	 * @return  mixed
 	 */
 	public static function to_unicode($str)
 	{
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _to_unicode($str);
@@ -741,27 +733,27 @@ class Kohana_UTF8 {
 	 * Ported to PHP by Henri Sivonen <hsivonen@iki.fi>, see http://hsivonen.iki.fi/php-utf8/
 	 * Slight modifications to fit with phputf8 library by Harry Fuecks <hfuecks@gmail.com>.
 	 *
-	 * @param   array    unicode code points representing a string
-	 * @return  string   utf8 string of characters
-	 * @return  boolean  FALSE if a code point cannot be found
+	 * @param   array   unicode code points representing a string
+	 * @return  string  utf8 string of characters
+	 * @return  boolean
 	 */
 	public static function from_unicode($arr)
 	{
-		if ( ! isset(self::$called[__FUNCTION__]))
+		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
 			require SYSPATH.'utf8'.DIRECTORY_SEPARATOR.__FUNCTION__.EXT;
 
 			// Function has been called
-			self::$called[__FUNCTION__] = TRUE;
+			UTF8::$called[__FUNCTION__] = TRUE;
 		}
 
 		return _from_unicode($arr);
 	}
 
-} // End UTF8
+} // End Kohana_UTF8
 
-if (Kohana_UTF8::$server_utf8 === NULL)
+if (UTF8::$server_utf8 === NULL)
 {
 	// Determine if this server supports UTF-8 natively
-	Kohana_UTF8::$server_utf8 = extension_loaded('mbstring');
+	UTF8::$server_utf8 = extension_loaded('mbstring');
 }
