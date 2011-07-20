@@ -16,6 +16,11 @@ class Kohana_Security {
 	public static $token_name = 'security_token';
 
 	/**
+	 * @var  integer max capacity of the array used for token storage
+	 */
+	public static $token_capacity = 50;
+
+	/**
 	 * Generate and store a unique token which can be used to help prevent
 	 * [CSRF](http://wikipedia.org/wiki/Cross_Site_Request_Forgery) attacks.
 	 *
@@ -34,31 +39,36 @@ class Kohana_Security {
 	 *
 	 * This provides a basic, but effective, method of preventing CSRF attacks.
 	 *
-	 * @param   boolean  force a new token to be generated?
 	 * @return  string
 	 * @uses    Session::instance
 	 */
-	public static function token($new = FALSE)
+	public static function token()
 	{
 		$session = Session::instance();
 
-		// Get the current token
-		$token = $session->get(Security::$token_name);
+		// Get the token array
+		$tokens = (array) $session->get(Security::$token_name);
 
-		if ($new === TRUE OR ! $token)
+		// Generate a new unique token
+		$token = sha1(uniqid(NULL, TRUE));
+
+		// Add the token to the end of the array
+		array_push($tokens, $token);
+
+		// If capacity reached then remove the oldest token
+		if (count($tokens) > Security::$token_capacity)
 		{
-			// Generate a new unique token
-			$token = sha1(uniqid(NULL, TRUE));
-
-			// Store the new token
-			$session->set(Security::$token_name, $token);
+			array_shift($tokens);
 		}
+
+		// Store the modified token array
+		$session->set(Security::$token_name, $tokens);
 
 		return $token;
 	}
 
 	/**
-	 * Check that the given token matches the currently stored security token.
+	 * Check that the given token exists in the currently stored security token array.
 	 *
 	 *     if (Security::check($token))
 	 *     {
@@ -67,11 +77,26 @@ class Kohana_Security {
 	 *
 	 * @param   string   token to check
 	 * @return  boolean
-	 * @uses    Security::token
+	 * @uses    Session::instance
 	 */
 	public static function check($token)
 	{
-		return Security::token() === $token;
+		$session = Session::instance();
+
+		// Get the token array
+		$tokens = (array) $session->get(Security::$token_name);
+
+		// If the token exists in the tokens array
+		if ($key = array_search($token, $tokens))
+		{
+			// Remove the token
+			unset($tokens[$key]);
+
+			// Store the modified token array
+			$session->set(self::$token_name, $tokens);
+		}
+
+		return (bool) $key;
 	}
 
 	/**
