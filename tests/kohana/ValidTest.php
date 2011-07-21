@@ -77,7 +77,7 @@ class Kohana_ValidTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Valid::alpha_numberic()
+	 * Tests Valid::alpha_numeric()
 	 *
 	 * Checks whether a string consists of alphabetical characters and numbers only.
 	 *
