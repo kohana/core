@@ -86,17 +86,21 @@ class Kohana_Security {
 		// Get the token array
 		$tokens = (array) $session->get(Security::$token_name);
 
-		// If the token exists in the tokens array
-		if ($key = array_search($token, $tokens))
+		// Find the token in the tokens array
+		$key = array_search($token, $tokens);
+
+		if ($key !== false)
 		{
-			// Remove the token
+			// If found, remove the token from the array
 			unset($tokens[$key]);
 
 			// Store the modified token array
 			$session->set(self::$token_name, $tokens);
+
+			return true;
 		}
 
-		return (bool) $key;
+		return false;
 	}
 
 	/**
