@@ -78,7 +78,7 @@ In Kohana 3.2, HTTP caching is enabled slightly differently;
 
     // Apply cache to request
     $request = Request::factory('foo/bar',
-        HTTP_Cache::factory(array(), 'memcache'));
+        HTTP_Cache::factory('memcache'));
 
     // In controller, ensure response sets cache control,
     // this will cache the response for one hour
