@@ -23,15 +23,15 @@ class Kohana_Exception extends Exception {
 	 */
 	public function __construct($message, array $variables = NULL, $code = 0)
 	{
-		// Save the unmodified code
-		// @link http://bugs.php.net/39615
-		$this->code = $code;
-
 		// Set the message
 		$message = __($message, $variables);
 
 		// Pass the message and integer code to the parent
 		parent::__construct($message, (int) $code);
+
+		// Save the unmodified code
+		// @link http://bugs.php.net/39615
+		$this->code = $code;
 	}
 
 	/**

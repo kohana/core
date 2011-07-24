@@ -316,7 +316,7 @@ abstract class Kohana_Session {
 			}
 			else
 			{
-				Kohana::$log->add(Kohana::ERROR, 'Error reading session data: '.$id);
+				// Ignore these, session is valid, likely no data though.
 			}
 		}
 		catch (Exception $e)
