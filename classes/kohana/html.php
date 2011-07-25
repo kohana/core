@@ -174,6 +174,7 @@ class Kohana_HTML {
 	 * @param   string  string to obfuscate
 	 * @return  string
 	 * @since   3.0.3
+	 * @deprecated - removed in 3.2
 	 */
 	public static function obfuscate($string)
 	{
@@ -210,6 +211,7 @@ class Kohana_HTML {
 	 * @param   string  email address
 	 * @return  string
 	 * @uses    HTML::obfuscate
+	 * @deprecated - removed in 3.2 due to removal of HTML::obfuscate
 	 */
 	public static function email($email)
 	{

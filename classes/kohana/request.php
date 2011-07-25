@@ -942,23 +942,29 @@ class Kohana_Request implements HTTP_Request {
 	 */
 	public function redirect($url = '', $code = 302)
 	{
+		$referrer = $this->uri();
+
+		if (strpos($referrer, '://') === FALSE)
+		{
+			$referrer = URL::site($referrer, TRUE, Kohana::$index_file);
+		}
+
 		if (strpos($url, '://') === FALSE)
 		{
 			// Make the URI into a URL
-			$url = URL::site($url, TRUE);
+			$url = URL::site($url, TRUE, Kohana::$index_file);
 		}
 
-		// Redirect
-		$response = $this->create_response();
+		if (($response = $this->response()) === NULL)
+		{
+			$response = $this->create_response();
+		}
 
-		// Set the response status
-		$response->status($code);
-
-		// Set the location header
-		$response->headers('Location', $url);
-
-		// Send headers
-		$response->send_headers();
+		echo $response->status($code)
+			->headers('Location', $url)
+			->headers('Referer', $referrer)
+			->send_headers()
+			->body();
 
 		// Stop execution
 		exit;

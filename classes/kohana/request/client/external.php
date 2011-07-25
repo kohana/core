@@ -169,7 +169,7 @@ class Kohana_Request_Client_External extends Request_Client {
 		{
 			$this->_options = $key;
 		}
-		elseif ( ! $value)
+		elseif ($value === NULL)
 		{
 			return Arr::get($this->_options, $key);
 		}
@@ -216,8 +216,15 @@ class Kohana_Request_Client_External extends Request_Client {
 		$http_request->setCookies($request->cookie());
 
 		// Set the body
-		$http_request->setBody($request->body());
-
+		if ($request->method() == HTTP_Request::PUT)
+		{
+			$http_request->addPutData($request->body());
+		}
+		else
+		{
+			$http_request->setBody($request->body());
+		}
+		
 		// Set the query
 		$http_request->setQueryData($request->query());
 
@@ -288,6 +295,9 @@ class Kohana_Request_Client_External extends Request_Client {
 		{
 			$options[CURLOPT_COOKIE] = http_build_query($cookies, NULL, '; ');
 		}
+
+		// Implement the default header parsing
+		$options[CURLOPT_HEADERFUNCTION] = array($this, '_parse_headers');
 
 		// The transfer must always be returned
 		$options[CURLOPT_RETURNTRANSFER] = TRUE;

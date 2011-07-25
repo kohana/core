@@ -14,7 +14,7 @@ class Kohana_Validation_Exception extends Kohana_Exception {
 	public $array;
 
 	/**
-	 * @param  Validate  Validate object
+	 * @param  Validation  Validation object
 	 * @param  string    error message
 	 * @param  array     translation variables
 	 * @param  int       the exception code

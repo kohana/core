@@ -224,7 +224,7 @@ class Kohana_Valid {
 	 * @param   integer       credit card number
 	 * @param   string|array  card type, or an array of card types
 	 * @return  boolean
-	 * @uses    Validate::luhn
+	 * @uses    Valid::luhn
 	 */
 	public static function credit_card($number, $type = NULL)
 	{

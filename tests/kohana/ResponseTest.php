@@ -26,11 +26,10 @@ class Kohana_ResponseTest extends Unittest_TestCase
 		$response = new Response;
 		$headers = $response->send_headers()->headers();
 		$this->assertArrayHasKey('x-powered-by', (array) $headers);
-
-		if (isset($headers['x-powered-by']))
-		{
-			$this->assertSame($headers['x-powered-by']->value, 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')');
-		}
+		$this->assertSame(
+			'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')',
+			$headers['x-powered-by']
+		);
 
 		Kohana::$expose = FALSE;
 		$response = new Response;

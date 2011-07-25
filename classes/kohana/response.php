@@ -447,8 +447,15 @@ class Kohana_Response implements HTTP_Response, Serializable {
 				{
 					if (is_string($name))
 					{
+						// If the value is an array
+						if (is_array($value))
+						{
+							// Render this correctly
+							$value = implode(', ', $value);
+						}
+
 						// Combine the name and value to make a raw header
-						$value = $name.': '.$value;
+						$value = $name.': '.(string) $value;
 					}
 
 					// Send the raw header
@@ -808,9 +815,7 @@ class Kohana_Response implements HTTP_Response, Serializable {
 	}
 
 	/**
-	 * Serializes the object to json - handy if you
-	 * need to pass the response data to other
-	 * systems
+	 * Serializes the object
 	 *
 	 * @param   array    array of data to serialize
 	 * @return  string
@@ -840,9 +845,9 @@ class Kohana_Response implements HTTP_Response, Serializable {
 	}
 
 	/**
-	 * JSON encoded object
+	 * PHP serialized object
 	 *
-	 * @param   string   json encoded object
+	 * @param   string   php serialized string
 	 * @return  bool
 	 * @throws  Kohana_Exception
 	 */

@@ -388,7 +388,7 @@ Use //, preferably above the line of code you're commenting on. Leave a space af
 When coding regular expressions please use PCRE rather than the POSIX flavor. PCRE is considered more powerful and faster.
 
 	// Correct:
-	if (preg_match('/abc/i'), $str)
+	if (preg_match('/abc/i', $str))
 
 	// Incorrect:
 	if (eregi('abc', $str))

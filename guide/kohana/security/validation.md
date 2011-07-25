@@ -2,7 +2,7 @@
 
 *This page needs to be reviewed for accuracy by the development team. Better examples would be helpful.*
 
-Validation can be performed on any array using the [Validation] class. Labels and rules can be attached to a Validate object by the array key, called a "field name".
+Validation can be performed on any array using the [Validation] class. Labels and rules can be attached to a Validation object by the array key, called a "field name".
 
 labels
 :  A label is a human-readable version of the field name.
@@ -32,7 +32,7 @@ Rule name                 | Function
 [Valid::max_length]    | Maximum number of characters for value
 [Valid::exact_length]  | Value must be an exact number of characters
 [Valid::email]         | An email address is required
-[Validate::email_domain]  | Check that the domain of the email exists
+[Valid::email_domain]  | Check that the domain of the email exists
 [Valid::url]           | Value must be a URL
 [Valid::ip]            | Value must be an IP address
 [Valid::phone]         | Value must be a phone number
@@ -180,7 +180,7 @@ Next, we need a controller and action to process the registration, which will be
         {
             $user = Model::factory('user');
 
-            $post = Validate::factory($_POST)
+            $post = Validation::factory($_POST)
                 ->rule('username', 'not_empty')
                 ->rule('username', 'regex', array(':value', '/^[a-z_.]++$/iD'))
                 ->rule('username', array($user, 'unique_username'))

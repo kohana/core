@@ -495,6 +495,11 @@ class Kohana_TextTest extends Unittest_TestCase
 				'<a href="http://www.google.com/">www.google.com</a> <a href="http://www.google.com/">http://www.google.com/</a>',
 				'<a href="http://www.google.com/">www.google.com</a> http://www.google.com/',
 			),
+			// @issue 3436
+			array(
+				'<strong><a href="http://www.google.com/">http://www.google.com/</a></strong>',
+				'<strong>http://www.google.com/</strong>',
+			),
 		);
 	}
 
