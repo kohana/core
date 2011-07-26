@@ -943,7 +943,7 @@ class Kohana_Request implements HTTP_Request {
 		if (strpos($url, '://') === FALSE)
 		{
 			// Make the URI into a URL
-			$url = URL::site($url, $protocol, Kohana::$index_file);
+			$url = URL::site($url, TRUE, Kohana::$index_file);
 		}
 
 		if (($response = $this->response()) === NULL)
