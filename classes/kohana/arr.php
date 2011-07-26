@@ -363,27 +363,27 @@ class Kohana_Arr {
 	 * @param   array   array of keys to apply to
 	 * @return  array
 	 */
-	public static function map($callback, $array, $keys = NULL)
+	public static function map($callback, $array, array $keys = NULL)
 	{
 		foreach ($array as $key => $val)
 		{
+			if (NULL !== $keys and !in_array($key, $keys))
+				continue;
+
 			if (is_array($val))
 			{
 				$array[$key] = Arr::map($callback, $array[$key]);
 			}
-			elseif ( ! is_array($keys) or in_array($key, $keys))
+			elseif (is_array($callback) && !is_callable($callback))
 			{
-				if (is_array($callback))
+				foreach ($callback as $cb)
 				{
-					foreach ($callback as $cb)
-					{
-						$array[$key] = call_user_func($cb, $array[$key]);
-					}
+					$array[$key] = call_user_func($cb, $array[$key]);
 				}
-				else
-				{
-					$array[$key] = call_user_func($callback, $array[$key]);
-				}
+			}
+			else
+			{
+				$array[$key] = call_user_func($callback, $array[$key]);
 			}
 		}
 
