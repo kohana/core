@@ -367,14 +367,14 @@ class Kohana_Arr {
 	{
 		foreach ($array as $key => $val)
 		{
-			if (NULL !== $keys and !in_array($key, $keys))
+			if ($keys !== NULL AND ! in_array($key, $keys))
 				continue;
 
 			if (is_array($val))
 			{
 				$array[$key] = Arr::map($callback, $array[$key]);
 			}
-			elseif (is_array($callback) && !is_callable($callback))
+			elseif (is_array($callback) AND ! is_callable($callback))
 			{
 				foreach ($callback as $cb)
 				{
