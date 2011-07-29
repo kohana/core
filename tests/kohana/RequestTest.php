@@ -105,7 +105,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 		$route = new Route('(<controller>(/<action>))');
 		$route->defaults(array(
-			'controller' => 'kohana_requsttest_dummy',
+			'controller' => 'kohana_requesttest_dummy',
 			'action'     => 'index',
 		));
 

@@ -61,7 +61,13 @@ class Kohana_Request_Client_CacheTest extends Unittest_TestCase {
 	 */
 	public function test_cache_miss()
 	{
-		$request       = new Request('welcome/index');
+		$route = new Route('welcome/index');
+		$route->defaults(array(
+			'controller' => 'Kohana_Request_CacheTest_Dummy',
+			'action'     => 'index',
+		));
+
+		$request       = new Request('welcome/index', NULL, array($route));
 		$cache_mock    = $this->_get_cache_mock();
 
 		$request->client()->cache(HTTP_Cache::factory($cache_mock));
@@ -248,3 +254,11 @@ class Kohana_Request_Client_CacheTest extends Unittest_TestCase {
 		return $this->getMock('Cache_File', array(), array(), '', FALSE);
 	}
 } // End Kohana_Request_Client_CacheTest
+
+class Controller_Kohana_Request_CacheTest_Dummy extends Controller 
+{
+	public function action_index()
+	{
+	
+	}
+}
