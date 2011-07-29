@@ -105,7 +105,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 		$route = new Route('(<controller>(/<action>))');
 		$route->defaults(array(
-			'controller' => 'welcome',
+			'controller' => 'kohana_requsttest_dummy',
 			'action'     => 'index',
 		));
 
@@ -720,3 +720,11 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$this->assertSame($expected, $request->client());
 	}
 } // End Kohana_RequestTest
+
+class Controller_Kohana_RequestTest_Dummy extends Controller
+{
+	public function action_index()
+	{
+	
+	}
+}

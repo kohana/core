@@ -195,7 +195,7 @@ class Kohana_Request implements HTTP_Request {
 			}
 
 			// Create the instance singleton
-			Request::$initial = $request = new Request($uri, $cache);
+			Request::$initial = $request = new Request($uri, $cache, $injected_routes);
 
 			// Store global GET and POST data in the initial request only
 			$request->protocol($protocol)
@@ -758,7 +758,7 @@ class Kohana_Request implements HTTP_Request {
 		$this->_header = new HTTP_Header(array());
 
 		// Assign injected routes
-		$this->_injected_routes = $injected_routes;
+		$this->_routes = $injected_routes;
 
 		// Cleanse query parameters from URI (faster that parse_url())
 		$split_uri = explode('?', $uri);
@@ -782,7 +782,7 @@ class Kohana_Request implements HTTP_Request {
 			// Remove trailing slashes from the URI
 			$uri = trim($uri, '/');
 
-			$processed_uri = Request::process_uri($uri, $this->_injected_routes);
+			$processed_uri = Request::process_uri($uri, $this->_routes);
 
 			// Return here rather than throw exception. This will allow
 			// use of Request object even with unmatched route
