@@ -145,8 +145,10 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function test_param()
 	{
+		$route = new Route('(<controller>(/<action>(/<id>)))');
+
 		$uri = 'foo/bar/id';
-		$request = Request::factory($uri);
+		$request = Request::factory($uri, NULL, array($route));
 
 		$this->assertArrayHasKey('id', $request->param());
 		$this->assertArrayNotHasKey('foo', $request->param());
