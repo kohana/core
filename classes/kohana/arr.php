@@ -300,6 +300,23 @@ class Kohana_Arr {
 		return $found;
 	}
 
+	/** 
+	 * Extracts values to an array with numeric keys.
+	 * Useful with `list()`:
+	 * 
+	 * 		// List 'id' and 'seo' params into $id and $seo
+	 * 		list($id, $seo) = Arr::values($params, array('id','seo'));
+	 *
+	 * @param	array	array to extract from
+	 * @param	array	list of keys to return
+	 * @param	mixed	default value
+	 * @return	array
+	 */
+	public static function values(array $array, array $keys, $default = NULL)
+	{
+		return array_values(Arr::extract($array, $keys, $default));
+	}
+
 	/**
 	 * Retrieves muliple single-key values from a list of arrays.
 	 *
