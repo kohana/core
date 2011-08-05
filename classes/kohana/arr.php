@@ -276,6 +276,23 @@ class Kohana_Arr {
 	{
 		return isset($array[$key]) ? $array[$key] : $default;
 	}
+	
+	/**
+	 * Returns the value if it exists in the passed array
+	 * Usage example:
+	 *
+	 * 	// Set the passed value if it's valid
+	 * 	$lang = Arr::set($langs, $this->request->param('lang'), 'en');
+	 *
+	 * @param	array	array of allowed values
+	 * @param	mixed	value to set
+	 * @param	mixed	default value to return in case validation fails
+	 * @return	mixed	set value
+	 */
+	public static function set(array $allowed, $value, $default = NULL)
+	{
+		return in_array($value, $allowed) ? $value : $default;
+	}
 
 	/**
 	 * Retrieves multiple keys from an array. If the key does not exist in the
