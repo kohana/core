@@ -237,6 +237,21 @@ class Kohana_Debug {
 	}
 
 	/**
+	 * Saves a variable to the logs. 
+	 *
+	 *     // Logs the initial request object to the default log
+	 *     Debug::log_var('request object', Request::$initial);
+	 *
+	 * @param   string	variable identifier 
+	 * @param   mixed   variable to log 
+	 * @return  void
+	 */
+	public static function log_var($title, $var = FALSE)
+	{
+		Kohana::$log->add(Log::DEBUG, $title.' : '.print_r($var, TRUE));
+	}
+
+	/**
 	 * Removes application, system, modpath, or docroot from a filename,
 	 * replacing them with the plain text equivalents. Useful for debugging
 	 * when you want to display a shorter path.
