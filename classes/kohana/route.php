@@ -67,7 +67,7 @@ class Kohana_Route {
 	public static $cache = FALSE;
 
 	/**
-	 * @var  array 
+	 * @var  array
 	 */
 	protected static $_routes = array();
 
@@ -249,6 +249,31 @@ class Kohana_Route {
 	}
 
 	/**
+	 * Load cached routes from a file
+	 *
+	 *     $routes_loaded = Route::load(APPPATH.'routes/routes1.cache');
+	 *
+	 * @param   string  file to load routes from
+	 * @return  bool
+	 */
+	public static function load($file)
+	{
+		try
+		{
+			// Loading the routes from file
+			Route::$_routes = unserialize(file_get_contents($file));
+
+			// Routes were loaded
+			return TRUE;
+		}
+		catch (Exception $e)
+		{
+			// Routes were not loaded
+			return FALSE;
+		}
+	}
+
+	/**
 	 * @var  callback     The callback method for routes
 	 */
 	protected $_callback;
@@ -340,7 +365,7 @@ class Kohana_Route {
 	 *         'controller' => 'welcome',
 	 *         'action'     => 'index'
 	 *     ));
-	 * 
+	 *
 	 * If no parameter is passed, this method will act as a getter.
 	 *
 	 * @param   array  key values
