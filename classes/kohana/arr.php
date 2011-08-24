@@ -581,5 +581,75 @@ class Kohana_Arr {
 		}
 		return $flat;
 	}
+	
+	/**
+	 * Checks given arrays for similarities and returns
+	 * a array with all the keys and values with match in all the given arrays
+	 * 
+	 *		// Input arrays
+	 *	 	$transport1 = array(
+	 *			'manufacturer'	=> 'BMW',
+	 *			'country'		=> 'Deutschland',
+	 *			'features'		=> array(
+	 *				'airco',
+	 *				'cruise-control',
+	 *			)
+	 *		);
+	 *
+	 *	 	$transport2 = array(
+	 *	 		'manufacturer'	=> 'Mercedes',
+	 *	 		'country'		=> 'Deutschland',
+	 *	 		'features'		=> array(
+	 *	 			'cruise-control',
+	 *	 		)
+	 *	 	);
+	 *		
+	 *		$result = Arr:similar($transport1, $transport2);
+	 * 
+	 *	 	// Results in
+	 *	 	$result = array(
+	 *	 		'country'		=> 'Deutschland',
+	 *	 		'features'		=> array(
+	 *	 			'cruise-control',
+	 *	 		)
+	 *	 	);
+	 * 
+	 * @param   array  initial array
+	 * @param   array  array to check for similarities
+	 * @param   array  ...
+	 */
+	public static function similar()
+	{
+		$arrays = func_get_args();
+		$previous = array_shift($arrays);
+
+		foreach ($arrays as $array)
+		{
+			$result = array();
+
+			foreach ($array as $key => $value)
+			{
+				if ( Arr::is_array($value))
+				{
+					if (Arr::is_assoc($value))
+					{
+						$result[$key] = Arr::similar($previous[$key], $array[$key]);
+					}
+					else
+					{
+						$result[$key] = array_values( array_diff_key($previous[$key], array_diff($previous[$key], $array[$key])) );
+					}
+				}
+				elseif ( isset($previous[$key]) && $previous[$key] === $array[$key])
+				{
+					$result[$key] = $value;
+				}
+			}
+
+			$previous = $result;
+		}
+		
+		return $previous;
+	}
 
 } // End arr
