@@ -17,6 +17,11 @@ class Kohana_Request_Client_Internal extends Request_Client {
 	protected $_previous_environment;
 
 	/**
+	 * @var    string
+	 */
+	protected $_action_prefix = "action";
+
+	/**
 	 * Processes the request, executing the controller action that handles this
 	 * request, determined by the [Route].
 	 *
@@ -108,13 +113,13 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			$params = $request->param();
 
 			// If the action doesn't exist, it's a 404
-			if ( ! $class->hasMethod('action_'.$action))
+			if ( ! $class->hasMethod($this->_action_prefix.'_'.$action))
 			{
 				throw new HTTP_Exception_404('The requested URL :uri was not found on this server.',
 													array(':uri' => $request->uri()));
 			}
 
-			$method = $class->getMethod('action_'.$action);
+			$method = $class->getMethod($this->_action_prefix.'_'.$action);
 			$method->invoke($controller);
 
 			// Execute the "after action" method
