@@ -33,6 +33,11 @@ abstract class Kohana_Controller {
 	public $response;
 
 	/**
+	 * @var  string   The prefix that is added to the action before it is called
+	 */
+	public static $action_prefix = "action_";
+
+	/**
 	 * Creates a new controller instance. Each controller must be constructed
 	 * with the request object that created it.
 	 *
