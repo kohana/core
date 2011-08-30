@@ -294,7 +294,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 		 *
 		 * HTTP header declarations should be treated as case-insensitive
 		 */
-		$input = array_change_key_case($input, CASE_LOWER);
+		$input = array_change_key_case((array) $input, CASE_LOWER);
 
 		parent::__construct($input, $flags, $iterator_class);
 	}
@@ -404,6 +404,26 @@ class Kohana_HTTP_Header extends ArrayObject {
 	public function offsetGet($index)
 	{
 		return parent::offsetGet(strtolower($index));
+	}
+
+	/**
+	 * Overloads the `ArrayObject::exchangeArray()` method to ensure that
+	 * all keys are changed to lowercase.
+	 *
+	 * @param   mixed    input 
+	 * @return  array
+	 * @since   3.2.0
+	 */
+	public function exchangeArray($input)
+	{
+		/**
+		 * @link http://www.w3.org/Protocols/rfc2616/rfc2616.html
+		 *
+		 * HTTP header declarations should be treated as case-insensitive
+		 */
+		$input = array_change_key_case((array) $input, CASE_LOWER);
+
+		return parent::exchangeArray($input);
 	}
 
 	/**
