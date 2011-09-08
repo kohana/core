@@ -484,7 +484,8 @@ class Kohana_Route {
 			{
 				list($key, $param) = $match;
 
-				if (isset($params[$param]))
+				// Make possible routes with additional strings in optional segments
+				if (isset($params[$param]) AND $params[$param] !== '')
 				{
 					// Replace the key with the parameter value
 					$replace = str_replace($key, $params[$param], $replace);
