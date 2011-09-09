@@ -324,8 +324,13 @@ class Kohana_Core {
 			Kohana::$index_file = trim($settings['index_file'], '/');
 		}
 
-		// Determine if the extremely evil magic quotes are enabled
-		Kohana::$magic_quotes = (bool) get_magic_quotes_gpc();
+		Kohana::$magic_quotes = FALSE;
+		// get_magic_quotes_gpc() is deprecated as of PHP 5.4
+		if (version_compare(PHP_VERSION, '5.4') <= 0)
+		{
+			// Determine if the extremely evil magic quotes are enabled
+			Kohana::$magic_quotes = (bool) get_magic_quotes_gpc();
+		}
 
 		// Sanitize all request variables
 		$_GET    = Kohana::sanitize($_GET);
