@@ -802,7 +802,7 @@ class Kohana_Core {
 	 *     // Get only the hostname of the default connection
 	 *     $host = Kohana::config('database.default.connection.hostname')
 	 *
-	 * @param   string   group name
+	 * @param   string  $group  group name
 	 * @return  Config
 	 */
 	public static function config($group)
