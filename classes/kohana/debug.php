@@ -42,14 +42,8 @@ class Kohana_Debug {
 	 *
 	 * Borrows heavily on concepts from the Debug class of [Nette](http://nettephp.com/).
 	 *
-<<<<<<< HEAD
-	 * @param   mixed    variable to dump
-	 * @param   integer  maximum length of strings
-=======
-	 * @param   mixed   $value              variable to dump
-	 * @param   integer $length             maximum length of strings
-	 * @param   integer $level_recursion    recursion limit
->>>>>>> d438d5b... PHPCS: Include parameter name in @param tag
+	 * @param   mixed    $value   variable to dump
+	 * @param   integer  $length  maximum length of strings
 	 * @return  string
 	 */
 	public static function dump($value, $length = 128)
@@ -60,16 +54,9 @@ class Kohana_Debug {
 	/**
 	 * Helper for Debug::dump(), handles recursion in arrays and objects.
 	 *
-<<<<<<< HEAD
-	 * @param   mixed    variable to dump
-	 * @param   integer  maximum length of strings
-	 * @param   integer  recursion level (internal)
-=======
-	 * @param   mixed   $var    variable to dump
-	 * @param   integer $length maximum length of strings
-	 * @param   integer $limit  recursion limit
-	 * @param   integer $level  current recursion level (internal usage only!)
->>>>>>> d438d5b... PHPCS: Include parameter name in @param tag
+	 * @param   mixed    $var     variable to dump
+	 * @param   integer  $length  maximum length of strings
+	 * @param   integer  $level   recursion level (internal)
 	 * @return  string
 	 */
 	protected static function _dump( & $var, $length = 128, $level = 0)
