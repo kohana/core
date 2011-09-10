@@ -30,8 +30,8 @@ class Kohana_Log_Syslog extends Log_Writer {
 	 *
 	 * @link    http://www.php.net/manual/function.openlog
 	 *
-	 * @param   string  syslog identifier
-	 * @param   int     facility to log to
+	 * @param   string  $ident      syslog identifier
+	 * @param   int     $facility   facility to log to
 	 * @return  void
 	 */
 	public function __construct($ident = 'KohanaPHP', $facility = LOG_USER)
@@ -45,7 +45,7 @@ class Kohana_Log_Syslog extends Log_Writer {
 	/**
 	 * Writes each of the messages into the syslog.
 	 *
-	 * @param   array   messages
+	 * @param   array   $messages
 	 * @return  void
 	 */
 	public function write(array $messages)

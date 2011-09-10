@@ -1292,7 +1292,7 @@ class Kohana_Request implements HTTP_Request {
 	 * Getter/Setter to the security settings for this request. This
 	 * method should be treated as immutable.
 	 *
-	 * @param   boolean   is this request secure?
+	 * @param   boolean $secure is this request secure?
 	 * @return  mixed
 	 */
 	public function secure($secure = NULL)

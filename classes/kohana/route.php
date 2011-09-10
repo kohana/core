@@ -80,9 +80,9 @@ class Kohana_Route {
 	 *             'controller' => 'welcome',
 	 *         ));
 	 *
-	 * @param   string   route name
-	 * @param   string   URI pattern
-	 * @param   array    regex patterns for route keys
+	 * @param   string  $name           route name
+	 * @param   string  $uri_callback   URI pattern
+	 * @param   array   $regex          regex patterns for route keys
 	 * @return  Route
 	 */
 	public static function set($name, $uri_callback = NULL, $regex = NULL)
@@ -95,7 +95,7 @@ class Kohana_Route {
 	 *
 	 *     $route = Route::get('default');
 	 *
-	 * @param   string  route name
+	 * @param   string  $name   route name
 	 * @return  Route
 	 * @throws  Kohana_Exception
 	 */
@@ -127,7 +127,7 @@ class Kohana_Route {
 	 *
 	 *     $name = Route::name($route)
 	 *
-	 * @param   object  Route instance
+	 * @param   Route   $route  instance
 	 * @return  string
 	 */
 	public static function name(Route $route)
@@ -146,9 +146,9 @@ class Kohana_Route {
 	 *         Route::cache(TRUE);
 	 *     }
 	 *
-	 * @param   boolean   cache the current routes
-	 * @return  void      when saving routes
-	 * @return  boolean   when loading routes
+	 * @param   boolean $save   cache the current routes
+	 * @return  void    when saving routes
+	 * @return  boolean when loading routes
 	 * @uses    Kohana::cache
 	 */
 	public static function cache($save = FALSE)
@@ -180,9 +180,9 @@ class Kohana_Route {
 	 *
 	 *     echo URL::site(Route::get($name)->uri($params), $protocol);
 	 *
-	 * @param   string   route name
-	 * @param   array    URI parameters
-	 * @param   mixed   protocol string or boolean, adds protocol and domain
+	 * @param   string  $name       route name
+	 * @param   array   $params     URI parameters
+	 * @param   mixed   $protocol   protocol string or boolean, adds protocol and domain
 	 * @return  string
 	 * @since   3.0.7
 	 * @uses    URL::site
@@ -299,8 +299,8 @@ class Kohana_Route {
 	 *     	'foo/bar/<id>'
 	 *     });
 	 *
-	 * @param   mixed    route URI pattern or lambda/callback function
-	 * @param   array    key patterns
+	 * @param   mixed   $uri    route URI pattern or lambda/callback function
+	 * @param   array   $regex  key patterns
 	 * @return  void
 	 * @uses    Route::_compile
 	 */
@@ -343,7 +343,7 @@ class Kohana_Route {
 	 * 
 	 * If no parameter is passed, this method will act as a getter.
 	 *
-	 * @param   array  key values
+	 * @param   array   $defaults   key values
 	 * @return  $this or array
 	 */
 	public function defaults(array $defaults = NULL)
@@ -373,7 +373,7 @@ class Kohana_Route {
 	 *         // Parse the parameters
 	 *     }
 	 *
-	 * @param   string  URI to match
+	 * @param   string  $uri    URI to match
 	 * @return  array   on success
 	 * @return  FALSE   on failure
 	 */
@@ -439,7 +439,7 @@ class Kohana_Route {
 	 *         'id'         => '10'
 	 *     ));
 	 *
-	 * @param   array   URI parameters
+	 * @param   array   $params URI parameters
 	 * @return  string
 	 * @throws  Kohana_Exception
 	 * @uses    Route::REGEX_Key

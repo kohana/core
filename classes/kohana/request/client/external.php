@@ -48,8 +48,8 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 	 * 
 	 * Request_Client_External::$client can be set in the application bootstrap.
 	 *
-	 * @param   array     parameters to pass to the client
-	 * @param   string    external client to use
+	 * @param   array   $params parameters to pass to the client
+	 * @param   string  $client external client to use
 	 * @return  Request_Client_External
 	 * @throws  Request_Exception
 	 */
@@ -197,7 +197,7 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 	 * Sends the HTTP message [Request] to a remote server and processes
 	 * the response.
 	 *
-	 * @param   Request   request to send
+	 * @param   Request $request    request to send
 	 * @return  Response
 	 */
 	abstract protected function _send_message(Request $request);

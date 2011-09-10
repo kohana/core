@@ -42,12 +42,12 @@ class Kohana_Upload {
 	 *         Upload::save($array['file']);
 	 *     }
 	 *
-	 * @param   array    uploaded file data
-	 * @param   string   new filename
-	 * @param   string   new directory
-	 * @param   integer  chmod mask
-	 * @return  string   on success, full path to new file
-	 * @return  FALSE    on failure
+	 * @param   array   $file       uploaded file data
+	 * @param   string  $filename   new filename
+	 * @param   string  $directory  new directory
+	 * @param   integer $chmod      chmod mask
+	 * @return  string  on success, full path to new file
+	 * @return  FALSE   on failure
 	 */
 	public static function save(array $file, $filename = NULL, $directory = NULL, $chmod = 0644)
 	{
@@ -106,7 +106,7 @@ class Kohana_Upload {
 	 *
 	 *     $array->rule('file', 'Upload::valid')
 	 *
-	 * @param   array  $_FILES item
+	 * @param   array   $file   $_FILES item
 	 * @return  bool
 	 */
 	public static function valid($file)
@@ -123,7 +123,7 @@ class Kohana_Upload {
 	 *
 	 *     $array->rule('file', 'Upload::not_empty');
 	 *
-	 * @param   array    $_FILES item
+	 * @param   array   $file   $_FILES item
 	 * @return  bool
 	 */
 	public static function not_empty(array $file)
@@ -139,8 +139,8 @@ class Kohana_Upload {
 	 *
 	 *     $array->rule('file', 'Upload::type', array(':value', array('jpg', 'png', 'gif')));
 	 *
-	 * @param   array    $_FILES item
-	 * @param   array    allowed file extensions
+	 * @param   array   $file       $_FILES item
+	 * @param   array   $allowed    allowed file extensions
 	 * @return  bool
 	 */
 	public static function type(array $file, array $allowed)
@@ -162,8 +162,8 @@ class Kohana_Upload {
 	 *     $array->rule('file', 'Upload::size', array(':value', '1M'))
 	 *     $array->rule('file', 'Upload::size', array(':value', '2.5KiB'))
 	 *
-	 * @param   array    $_FILES item
-	 * @param   string   maximum file size allowed
+	 * @param   array   $file   $_FILES item
+	 * @param   string  $size   maximum file size allowed
 	 * @return  bool
 	 */
 	public static function size(array $file, $size)
@@ -200,10 +200,10 @@ class Kohana_Upload {
 	 *     $array->rule('image', 'Upload::image', array(100, 100, TRUE));
 	 *
 	 *
-	 * @param   array    $_FILES item
-	 * @param   integer  maximum width of image
-	 * @param   integer  maximum height of image
-	 * @param   boolean  match width and height exactly?
+	 * @param   array   $file       $_FILES item
+	 * @param   integer $max_width  maximum width of image
+	 * @param   integer $max_height maximum height of image
+	 * @param   boolean $exact      match width and height exactly?
 	 * @return  boolean
 	 */
 	public static function image(array $file, $max_width = NULL, $max_height = NULL, $exact = FALSE)
