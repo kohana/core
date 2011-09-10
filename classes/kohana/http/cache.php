@@ -86,7 +86,7 @@ class Kohana_HTTP_Cache {
 
 	/**
 	 * @var    boolean   Defines whether this client should cache `private` cache directives
-	 * @see    http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
+	 * @link   http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
 	 */
 	protected $_allow_private_cache = FALSE;
 
@@ -223,7 +223,7 @@ class Kohana_HTTP_Cache {
 	 * If set to `TRUE`, the client will also cache cache-control directives
 	 * that have the `private` setting.
 	 *
-	 * @see     http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
+	 * @link    http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9
 	 * @param   boolean  allow caching of privately marked responses
 	 * @return  boolean
 	 * @return  [Request_Client]

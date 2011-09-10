@@ -72,8 +72,8 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 
 	/**
 	 * @var     array     curl options
-	 * @see     [http://www.php.net/manual/en/function.curl-setopt.php]
-	 * @see     [http://www.php.net/manual/en/http.request.options.php]
+	 * @link    http://www.php.net/manual/function.curl-setopt
+	 * @link    http://www.php.net/manual/http.request.options
 	 */
 	protected $_options = array();
 

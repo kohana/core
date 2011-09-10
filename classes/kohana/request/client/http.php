@@ -39,7 +39,7 @@ class Kohana_Request_Client_HTTP extends Request_Client_External {
 
 	/**
 	 * @var     array     curl options
-	 * @see     [http://www.php.net/manual/en/function.curl-setopt.php]
+	 * @link    http://www.php.net/manual/function.curl-setopt
 	 */
 	protected $_options = array();
 

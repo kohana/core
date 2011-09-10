@@ -62,7 +62,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * Parses the accept header to provide the correct quality values
 	 * for each supplied accept type.
 	 *
-	 * @see     http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1
+	 * @link    http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1
 	 * @param   string   accept content header string to parse
 	 * @return  array
 	 * @since   3.2.0

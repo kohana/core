@@ -109,8 +109,9 @@ class Kohana_Kohana_Exception extends Exception {
 
 				if (version_compare(PHP_VERSION, '5.3', '<'))
 				{
-					// Workaround for a bug in ErrorException::getTrace() that exists in
-					// all PHP 5.2 versions. @see http://bugs.php.net/bug.php?id=45895
+					// Workaround for a bug in ErrorException::getTrace() that
+					// exists in all PHP 5.2 versions.
+					// @link http://bugs.php.net/45895
 					for ($i = count($trace) - 1; $i > 0; --$i)
 					{
 						if (isset($trace[$i - 1]['args']))
