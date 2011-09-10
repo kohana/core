@@ -145,9 +145,9 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 *
 	 *     $header_object = new HTTP_Header(array('x-powered-by' => 'Kohana 3.1.x', 'expires' => '...'));
 	 *
-	 * @param   mixed    Input array
-	 * @param   int      Flags
-	 * @param   string   The iterator class to use
+	 * @param   mixed   $input           Input array
+	 * @param   int     $flags           Flags
+	 * @param   string  $iterator_class  The iterator class to use
 	 */
 	public function __construct($input, $flags = NULL, $iterator_class = 'ArrayIterator')
 	{
@@ -199,7 +199,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 *          'cache-control' => 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
 	 *     ));
 	 *
-	 * @param   array    $array Array to exchange
+	 * @param   array  $array  Array to exchange
 	 * @return  array
 	 */
 	public function exchangeArray($array)
@@ -214,8 +214,8 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 *     // Add a new header from encoded string
 	 *     $headers['cache-control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
 	 *
-	 * @param   mixed    $index   Key
-	 * @param   mixed    $newval  Value
+	 * @param   mixed  $index   Key
+	 * @param   mixed  $newval  Value
 	 * @return  void
 	 */
 	public function offsetSet($index, $newval)
@@ -241,7 +241,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 *  - Accept-Encoding
 	 *  - Accept-Lang
 	 *
-	 * @param   array    $filter  Header fields to parse
+	 * @param   array  $filter  Header fields to parse
 	 * @return  self
 	 */
 	public function sort_values_by_quality(array $filter = array())

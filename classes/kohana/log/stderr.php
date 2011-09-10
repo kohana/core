@@ -14,7 +14,7 @@ class Kohana_Log_StdErr extends Log_Writer {
 	 *
 	 *     $writer->write($messages);
 	 *
-	 * @param   array   messages
+	 * @param   array   $messages
 	 * @return  void
 	 */
 	public function write(array $messages)

@@ -15,7 +15,7 @@ abstract class Kohana_Model {
 	 *
 	 *     $model = Model::factory($name);
 	 *
-	 * @param   string   model name
+	 * @param   string  $name   model name
 	 * @return  Model
 	 */
 	public static function factory($name)

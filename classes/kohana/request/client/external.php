@@ -19,8 +19,8 @@ class Kohana_Request_Client_External extends Request_Client {
 	 * Parses the returned headers from the remote
 	 * request
 	 *
-	 * @param   resource $remote  The curl resource
-	 * @param   string   $header  The full header string
+	 * @param   resource  $remote  The curl resource
+	 * @param   string    $header  The full header string
 	 * @return  int
 	 */
 	protected static function _parse_headers($remote, $header)
@@ -357,7 +357,7 @@ class Kohana_Request_Client_External extends Request_Client {
 	/**
 	 * Execute the request using PHP stream. (not recommended)
 	 *
-	 * @param   Request   $request  Request to execute
+	 * @param   Request  $request  Request to execute
 	 * @return  Response
 	 */
 	protected function _native_execute(Request $request)

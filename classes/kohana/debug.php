@@ -17,8 +17,7 @@ class Kohana_Debug {
 	 *     // Displays the type and value of each variable
 	 *     echo Debug::vars($foo, $bar, $baz);
 	 *
-	 * @param   mixed   variable to debug
-	 * @param   ...
+	 * @param   mixed   $var,...    variable to debug
 	 * @return  string
 	 */
 	public static function vars()
@@ -43,8 +42,14 @@ class Kohana_Debug {
 	 *
 	 * Borrows heavily on concepts from the Debug class of [Nette](http://nettephp.com/).
 	 *
+<<<<<<< HEAD
 	 * @param   mixed    variable to dump
 	 * @param   integer  maximum length of strings
+=======
+	 * @param   mixed   $value              variable to dump
+	 * @param   integer $length             maximum length of strings
+	 * @param   integer $level_recursion    recursion limit
+>>>>>>> d438d5b... PHPCS: Include parameter name in @param tag
 	 * @return  string
 	 */
 	public static function dump($value, $length = 128)
@@ -55,9 +60,16 @@ class Kohana_Debug {
 	/**
 	 * Helper for Debug::dump(), handles recursion in arrays and objects.
 	 *
+<<<<<<< HEAD
 	 * @param   mixed    variable to dump
 	 * @param   integer  maximum length of strings
 	 * @param   integer  recursion level (internal)
+=======
+	 * @param   mixed   $var    variable to dump
+	 * @param   integer $length maximum length of strings
+	 * @param   integer $limit  recursion limit
+	 * @param   integer $level  current recursion level (internal usage only!)
+>>>>>>> d438d5b... PHPCS: Include parameter name in @param tag
 	 * @return  string
 	 */
 	protected static function _dump( & $var, $length = 128, $level = 0)
@@ -242,7 +254,7 @@ class Kohana_Debug {
 	 *     // Displays SYSPATH/classes/kohana.php
 	 *     echo Debug::path(Kohana::find_file('classes', 'kohana'));
 	 *
-	 * @param   string  path to debug
+	 * @param   string  $file   path to debug
 	 * @return  string
 	 */
 	public static function path($file)
@@ -274,9 +286,9 @@ class Kohana_Debug {
 	 *     // Highlights the current line of the current file
 	 *     echo Debug::source(__FILE__, __LINE__);
 	 *
-	 * @param   string   file to open
-	 * @param   integer  line number to highlight
-	 * @param   integer  number of padding lines
+	 * @param   string  $file           file to open
+	 * @param   integer $line_number    line number to highlight
+	 * @param   integer $padding        number of padding lines
 	 * @return  string   source of file
 	 * @return  FALSE    file is unreadable
 	 */
@@ -340,7 +352,7 @@ class Kohana_Debug {
 	 *     // Displays the entire current backtrace
 	 *     echo implode('<br/>', Debug::trace());
 	 *
-	 * @param   string  path to debug
+	 * @param   array   $trace
 	 * @return  string
 	 */
 	public static function trace(array $trace = NULL)
