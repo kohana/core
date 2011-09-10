@@ -28,7 +28,7 @@ class Kohana_Log_Syslog extends Log_Writer {
 	/**
 	 * Creates a new syslog logger.
 	 *
-	 * @see http://us2.php.net/openlog
+	 * @link    http://www.php.net/manual/function.openlog
 	 *
 	 * @param   string  syslog identifier
 	 * @param   int     facility to log to

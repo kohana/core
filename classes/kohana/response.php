@@ -876,7 +876,7 @@ class Kohana_Response implements HTTP_Response, Serializable {
 	 * Parse the byte ranges from the HTTP_RANGE header used for
 	 * resumable downloads.
 	 *
-	 * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
+	 * @link   http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
 	 * @return array|FALSE
 	 */
 	protected function _parse_byte_range()
