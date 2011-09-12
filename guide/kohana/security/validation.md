@@ -16,7 +16,7 @@ Using `TRUE` as the field name when adding a rule will be applied to all named f
 
 Creating a validation object is done using the [Validation::factory] method:
 
-    $post = Validation::factory($_POST);
+    $post = Validation::factory($this->request->post());
 
 [!!] The `$post` object will be used for the rest of this tutorial. This tutorial will show you how to validate the registration of a new user.
 
@@ -101,9 +101,9 @@ Rules added to empty fields will run, but returning `FALSE` will not automatical
 
 ## Example
 
-To start our example, we will perform validation on a `$_POST` array that contains user registration information:
+To start our example, we will perform validation on the HTTP POST data of the current request that contains user registration information:
 
-    $post = Validation::factory($_POST);
+    $post = Validation::factory($this->request->post());
 
 Next we need to process the POST'ed information using [Validation]. To start, we need to add some rules:
 
@@ -180,7 +180,7 @@ Next, we need a controller and action to process the registration, which will be
         {
             $user = Model::factory('user');
 
-            $post = Validation::factory($_POST)
+            $post = Validation::factory($this->request->post())
                 ->rule('username', 'not_empty')
                 ->rule('username', 'regex', array(':value', '/^[a-z_.]++$/iD'))
                 ->rule('username', array($user, 'unique_username'))
