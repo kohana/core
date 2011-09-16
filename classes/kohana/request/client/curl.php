@@ -62,7 +62,7 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 		$this->_options[CURLOPT_HEADER]         = FALSE;
 
 		// Apply any additional options set to 
-		$options += $this->_options;
+		$options = Arr::merge($options, $this->_options);
 
 		$uri = $request->uri();
 
