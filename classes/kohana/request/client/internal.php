@@ -36,8 +36,6 @@ class Kohana_Request_Client_Internal extends Request_Client {
 	 * @throws  Kohana_Exception
 	 * @uses    [Kohana::$profiling]
 	 * @uses    [Profiler]
-	 * @deprecated passing $params to controller methods deprecated since version 3.1
-	 *             will be removed in 3.2
 	 */
 	public function execute_request(Request $request)
 	{
@@ -85,7 +83,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			if ( ! class_exists($prefix.$controller))
 			{
 				throw new HTTP_Exception_404('The requested URL :uri was not found on this server.',
-													array(':uri' => $request->uri()));
+					array(':uri' => $request->uri()));
 			}
 
 			// Load the controller using reflection
@@ -105,17 +103,14 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			// Determine the action to use
 			$action = $request->action();
 
-			$params = $request->param();
-
 			// If the action doesn't exist, it's a 404
 			if ( ! $class->hasMethod('action_'.$action))
 			{
 				throw new HTTP_Exception_404('The requested URL :uri was not found on this server.',
-													array(':uri' => $request->uri()));
+					array(':uri' => $request->uri()));
 			}
 
-			$method = $class->getMethod('action_'.$action);
-			$method->invoke($controller);
+			$class->getMethod('execute')->invoke($controller, 'action_'.$action);
 
 			// Execute the "after action" method
 			$class->getMethod('after')->invoke($controller);
