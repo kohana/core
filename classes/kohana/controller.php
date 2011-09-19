@@ -61,6 +61,17 @@ abstract class Kohana_Controller {
 	}
 
 	/**
+	 * Executes the given action. Can be used to catch exceptions from actions
+	 * in a single place.
+	 *
+	 * @param  string  $action Name of the action to be executed
+	 */
+	public function execute($action)
+	{
+		$this->{$action}();
+	}
+
+	/**
 	 * Automatically executed after the controller action. Can be used to apply
 	 * transformation to the request response, add extra output, and execute
 	 * other custom code.
