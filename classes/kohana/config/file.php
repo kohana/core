@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * File-based configuration reader. Multiple configuration directories can be
  * used by attaching multiple instances of this class to [Config].

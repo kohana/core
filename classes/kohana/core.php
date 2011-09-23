@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Contains the most low-level helpers methods in Kohana:
  *
@@ -26,7 +26,7 @@ class Kohana_Core {
 	const DEVELOPMENT = 4;
 
 	// Security check that is added to all generated PHP files
-	const FILE_SECURITY = '<?php defined(\'SYSPATH\') or die(\'No direct script access.\');';
+	const FILE_SECURITY = '<?php defined(\'SYSPATH\') OR die(\'No direct script access.\');';
 
 	// Format of cache files: header, cache name, and data
 	const FILE_CACHE = ":header \n\n// :name\n\n:data\n";

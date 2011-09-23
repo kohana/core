@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Abstract Controller class for RESTful controller mapping. Supports GET, PUT,
  * POST, and DELETE. By default, these methods will be mapped to these actions:
