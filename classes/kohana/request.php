@@ -1344,8 +1344,7 @@ class Kohana_Request implements HTTP_Request {
 			// Act as a setter, replace all cookies
 			$this->_cookies = $key;
 		}
-
-		if ($key === NULL)
+		else if ($key === NULL)
 		{
 			// Act as a getter, all cookies
 			return $this->_cookies;
