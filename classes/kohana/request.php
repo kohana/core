@@ -169,6 +169,16 @@ class Kohana_Request implements HTTP_Request {
 					// Attempt to guess the proper URI
 					$uri = Request::detect_uri();
 				}
+
+				$cookies = array();
+
+				if (($cookie_keys = array_keys($_COOKIES)))
+				{
+					foreach ($cookie_keys as $key)
+					{
+						$cookies[$key] = Cookie::get($key);
+					}
+				}
 			}
 
 			// Create the instance singleton
@@ -206,6 +216,11 @@ class Kohana_Request implements HTTP_Request {
 			{
 				// Set the request body (probably a PUT type)
 				$request->body($body);
+			}
+
+			if (isset($cookies))
+			{
+				$request->cookie($cookies);
 			}
 		}
 		else
