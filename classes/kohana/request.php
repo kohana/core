@@ -172,7 +172,7 @@ class Kohana_Request implements HTTP_Request {
 
 				$cookies = array();
 
-				if (($cookie_keys = array_keys($_COOKIES)))
+				if (($cookie_keys = array_keys($_COOKIE)))
 				{
 					foreach ($cookie_keys as $key)
 					{
