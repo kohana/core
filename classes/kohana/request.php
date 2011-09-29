@@ -158,7 +158,7 @@ class Kohana_Request implements HTTP_Request {
 					// client is using a proxy server.
 					// Format: "X-Forwarded-For: client1, proxy1, proxy2"
 					$client_ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-					
+
 					Request::$client_ip = array_shift($client_ips);
 
 					unset($client_ips);
@@ -170,7 +170,7 @@ class Kohana_Request implements HTTP_Request {
 					// Use the forwarded IP address, typically set when the
 					// client is using a proxy server.
 					$client_ips = explode(',', $_SERVER['HTTP_CLIENT_IP']);
-					
+
 					Request::$client_ip = array_shift($client_ips);
 
 					unset($client_ips);
@@ -1170,7 +1170,7 @@ class Kohana_Request implements HTTP_Request {
 
 	/**
 	 * Readonly access to the [Request::$_external] property.
-	 * 
+	 *
 	 *     if ( ! $request->is_external())
 	 *          // This is an internal request
 	 *
@@ -1385,6 +1385,7 @@ class Kohana_Request implements HTTP_Request {
 		{
 			// Act as a setter, replace all cookies
 			$this->_cookies = $key;
+			return $this;
 		}
 		elseif ($key === NULL)
 		{
