@@ -135,6 +135,11 @@ class Kohana_Core {
 	 * @var  Config  config object
 	 */
 	public static $config;
+	
+	/**
+	 * @var	I18n	internationalization object
+	 */
+	public static $i18n;
 
 	/**
 	 * @var  boolean  Has [Kohana::init] been called?
@@ -337,6 +342,9 @@ class Kohana_Core {
 
 		// Load the config
 		Kohana::$config = new Kohana_Config;
+		
+		// Load the I18n
+		Kohana::$i18n = new I18n;
 	}
 
 	/**
@@ -364,7 +372,7 @@ class Kohana_Core {
 			}
 
 			// Destroy objects created by init
-			Kohana::$log = Kohana::$config = NULL;
+			Kohana::$log = Kohana::$config = Kohana::$i18n = NULL;
 
 			// Reset internal storage
 			Kohana::$_modules = Kohana::$_files = array();
