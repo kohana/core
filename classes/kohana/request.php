@@ -259,9 +259,9 @@ class Kohana_Request implements HTTP_Request {
 		}
 		else
 		{
-			// REQUEST_URI and PHP_SELF include the docroot and index
+			// DOCUMENT_URI and PHP_SELF include the docroot and index
 
-			if (isset($_SERVER['REQUEST_URI']))
+			if (isset($_SERVER['DOCUMENT_URI']))
 			{
 				/**
 				 * We use REQUEST_URI as the fallback value. The reason
@@ -272,9 +272,9 @@ class Kohana_Request implements HTTP_Request {
 				 * which parse_url can't handle. So rather than leave empty
 				 * handed, we'll use this.
 				 */
-				$uri = $_SERVER['REQUEST_URI'];
+				$uri = $_SERVER['DOCUMENT_URI'];
 
-				if ($request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH))
+				if ($request_uri = parse_url($_SERVER['DOCUMENT_URI'], PHP_URL_PATH))
 				{
 					// Valid URL path found, set it.
 					$uri = $request_uri;
