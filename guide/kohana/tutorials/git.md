@@ -16,7 +16,7 @@ Now use the URL to create the submodule for `system`:
 
     git submodule add git://github.com/kohana/core.git system
 
-[!!] This will create a link to the current development version of the next stable release. The development version should almost always be safe to use, have the same API as the current stable download with bugfixes applied.
+[!!] This will create a link to the current stable release.
 
 Now add whatever submodules you need. For example, if you need the [Database] module:
 
