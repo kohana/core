@@ -45,11 +45,12 @@ class Kohana_Debug {
 	 *
 	 * @param   mixed    variable to dump
 	 * @param   integer  maximum length of strings
+	 * @param   integer  recursion limit
 	 * @return  string
 	 */
-	public static function dump($value, $length = 128)
+	public static function dump($value, $length = 128, $level_recursion = 10)
 	{
-		return Debug::_dump($value, $length);
+		return Debug::_dump($value, $length, $level_recursion);
 	}
 
 	/**
@@ -57,10 +58,11 @@ class Kohana_Debug {
 	 *
 	 * @param   mixed    variable to dump
 	 * @param   integer  maximum length of strings
+	 * @param   integer  recursion limit
 	 * @param   integer  recursion level (internal)
 	 * @return  string
 	 */
-	protected static function _dump( & $var, $length = 128, $level = 0)
+	protected static function _dump( & $var, $length = 128, $level_recursion = 10, $level_current = 0)
 	{
 		if ($var === NULL)
 		{
@@ -126,7 +128,7 @@ class Kohana_Debug {
 			$output = array();
 
 			// Indentation for this variable
-			$space = str_repeat($s = '    ', $level);
+			$space = str_repeat($s = '    ', $level_current);
 
 			static $marker;
 
@@ -144,7 +146,7 @@ class Kohana_Debug {
 			{
 				$output[] = "(\n$space$s*RECURSION*\n$space)";
 			}
-			elseif ($level < 5)
+			elseif ($level_current < $level_recursion)
 			{
 				$output[] = "<span>(";
 
@@ -157,7 +159,7 @@ class Kohana_Debug {
 						$key = '"'.htmlspecialchars($key, ENT_NOQUOTES, Kohana::$charset).'"';
 					}
 
-					$output[] = "$space$s$key => ".Debug::_dump($val, $length, $level + 1);
+					$output[] = "$space$s$key => ".Debug::_dump($val, $length, $level_recursion, $level_current + 1);
 				}
 				unset($var[$marker]);
 
@@ -179,7 +181,7 @@ class Kohana_Debug {
 			$output = array();
 
 			// Indentation for this variable
-			$space = str_repeat($s = '    ', $level);
+			$space = str_repeat($s = '    ', $level_current);
 
 			$hash = spl_object_hash($var);
 
@@ -194,7 +196,7 @@ class Kohana_Debug {
 			{
 				$output[] = "{\n$space$s*RECURSION*\n$space}";
 			}
-			elseif ($level < 10)
+			elseif ($level_current < $level_recursion)
 			{
 				$output[] = "<code>{";
 
@@ -214,7 +216,7 @@ class Kohana_Debug {
 						$access = '<small>public</small>';
 					}
 
-					$output[] = "$space$s$access $key => ".Debug::_dump($val, $length, $level + 1);
+					$output[] = "$space$s$access $key => ".Debug::_dump($val, $length, $level_recursion, $level_current + 1);
 				}
 				unset($objects[$hash]);
 
