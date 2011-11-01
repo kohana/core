@@ -378,7 +378,7 @@ class Kohana_Arr {
 		{
 			if (is_array($val))
 			{
-				$array[$key] = Arr::map($callback, $array[$key]);
+				$array[$key] = Arr::map($callbacks, $array[$key]);
 			}
 			elseif ( ! is_array($keys) or in_array($key, $keys))
 			{
