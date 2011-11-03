@@ -947,6 +947,9 @@ class Kohana_Request implements HTTP_Request {
 	 */
 	public function redirect($url = '', $code = 302)
 	{
+		if(Request::initial() !== Request::current())
+			return NULL;
+		
 		$referrer = $this->uri();
 		$protocol = ($this->secure()) ? 'https' : TRUE;
 
