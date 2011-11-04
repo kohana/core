@@ -314,7 +314,7 @@ class Kohana_Route {
 
 		if ( ! is_string($uri) AND is_callable($uri))
 		{
-			$this->_callback = $uri;
+			$this->_callback = new PHP_Closure($uri);
 			$this->_uri = $regex;
 			$regex = NULL;
 		}
