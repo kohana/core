@@ -137,19 +137,46 @@ class Kohana_Feed {
 
 			foreach ($item as $name => $value)
 			{
-				if ($name === 'pubDate' AND (is_int($value) OR ctype_digit($value)))
+				if ($name === 'enclosure')
 				{
-					// Convert timestamps to RFC 822 formatted dates
-					$value = date('r', $value);
+					// Add an enclosure to the row
+					$enclosure = $row->addChild($name);
+					
+					// Verifies the presence of minimum required values
+					if ( ! isset($value['url'], $value['type']))
+					{
+						throw new Kohana_Exception('Enclosure require an url and a type');
+					}
+					
+					// Fix the URL if necessary
+					if (strpos($value['url'], '://') === FALSE)
+					{
+						// Convert URIs to URLs
+						$value['url'] = URL::site($value['url'], 'http');
+					}
+					
+					// Adds each subelement of value as an attribute of the enclosure
+					foreach ($value as $attribute => $value)
+					{
+						$enclosure->addAttribute($attribute, $value);
+					}
 				}
-				elseif (($name === 'link' OR $name === 'guid') AND strpos($value, '://') === FALSE)
+				else
 				{
-					// Convert URIs to URLs
-					$value = URL::site($value, 'http');
+					if ($name === 'pubDate' AND (is_int($value) OR ctype_digit($value)))
+					{
+						// Convert timestamps to RFC 822 formatted dates
+						$value = date('r', $value);
+					}
+					elseif (($name === 'link' OR $name === 'guid') AND strpos($value, '://') === FALSE)
+					{
+						// Convert URIs to URLs
+						$value = URL::site($value, 'http');
+					}
+					
+					// Add the info to the row
+					$row->addChild($name, $value);
 				}
-
-				// Add the info to the row
-				$row->addChild($name, $value);
 			}
 		}
 
