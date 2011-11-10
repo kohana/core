@@ -83,8 +83,8 @@ class Kohana_Config_Group extends ArrayObject {
 	 *
 	 *     $value = $config->get($key);
 	 *
-	 * @param   string   array key
-	 * @param   mixed    default value
+	 * @param   string  $key        array key
+	 * @param   mixed   $default    default value
 	 * @return  mixed
 	 */
 	public function get($key, $default = NULL)
@@ -97,8 +97,8 @@ class Kohana_Config_Group extends ArrayObject {
 	 *
 	 *     $config->set($key, $new_value);
 	 *
-	 * @param   string   array key
-	 * @param   mixed    array value
+	 * @param   string  $key    array key
+	 * @param   mixed   $value  array value
 	 * @return  $this
 	 */
 	public function set($key, $value)

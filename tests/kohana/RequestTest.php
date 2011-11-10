@@ -105,7 +105,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 		$route = new Route('(<controller>(/<action>))');
 		$route->defaults(array(
-			'controller' => 'welcome',
+			'controller' => 'kohana_requesttest_dummy',
 			'action'     => 'index',
 		));
 
@@ -145,8 +145,10 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function test_param()
 	{
+		$route = new Route('(<controller>(/<action>(/<id>)))');
+
 		$uri = 'foo/bar/id';
-		$request = Request::factory($uri);
+		$request = Request::factory($uri, NULL, array($route));
 
 		$this->assertArrayHasKey('id', $request->param());
 		$this->assertArrayNotHasKey('foo', $request->param());
@@ -720,3 +722,11 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$this->assertSame($expected, $request->client());
 	}
 } // End Kohana_RequestTest
+
+class Controller_Kohana_RequestTest_Dummy extends Controller
+{
+	public function action_index()
+	{
+	
+	}
+}

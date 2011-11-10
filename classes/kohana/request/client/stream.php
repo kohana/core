@@ -22,7 +22,7 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 	 * Sends the HTTP message [Request] to a remote server and processes
 	 * the response.
 	 *
-	 * @param   Request   request to send
+	 * @param   Request $request    request to send
 	 * @return  Response
 	 * @uses    [PHP cURL](http://php.net/manual/en/book.curl.php)
 	 */

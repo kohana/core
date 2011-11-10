@@ -19,8 +19,7 @@ class Kohana_CLI {
 	 *     // Get the values of "username" and "password"
 	 *     $auth = CLI::options('username', 'password');
 	 *
-	 * @param   string  option name
-	 * @param   ...
+	 * @param   string  $options,...    option name
 	 * @return  array
 	 */
 	public static function options($options)
