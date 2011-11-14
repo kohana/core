@@ -146,7 +146,7 @@ class Kohana_Upload {
 	public static function type(array $file, array $allowed)
 	{
 		if ($file['error'] !== UPLOAD_ERR_OK)
-			return TRUE;
+			return FALSE;
 
 		$ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 
@@ -177,7 +177,7 @@ class Kohana_Upload {
 		if ($file['error'] !== UPLOAD_ERR_OK)
 		{
 			// The upload failed, no size to check
-			return TRUE;
+			return FALSE;
 		}
 
 		// Convert the provided size to bytes for comparison
