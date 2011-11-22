@@ -103,6 +103,12 @@ class Kohana_Form {
 			// Default type is text
 			$attributes['type'] = 'text';
 		}
+                
+                if ( ! isset($attributes['id']))
+		{
+			// Default id is $name
+			$attributes['id'] = $name;
+		}
 
 		return '<input'.HTML::attributes($attributes).' />';
 	}
@@ -231,6 +237,12 @@ class Kohana_Form {
 
 		// Add default rows and cols attributes (required)
 		$attributes += array('rows' => 10, 'cols' => 50);
+                
+                if ( ! isset($attributes['id']))
+		{
+			// Default id is $name
+			$attributes['id'] = $name;
+		}
 
 		return '<textarea'.HTML::attributes($attributes).'>'.HTML::chars($body, $double_encode).'</textarea>';
 	}
@@ -253,6 +265,12 @@ class Kohana_Form {
 	{
 		// Set the input name
 		$attributes['name'] = $name;
+                
+                if ( ! isset($attributes['id']))
+		{
+			// Default id is $name
+			$attributes['id'] = $name;
+		}
 
 		if (is_array($selected))
 		{
@@ -427,6 +445,12 @@ class Kohana_Form {
 
 		// Set the label target
 		$attributes['for'] = $input;
+                
+                if ( ! isset($attributes['id']))
+		{
+			// Default id is $name
+			$attributes['id'] = $name;
+		}
 
 		return '<label'.HTML::attributes($attributes).'>'.$text.'</label>';
 	}
