@@ -242,12 +242,12 @@ class Kohana_ArrTest extends Unittest_TestCase
 			),
 			// See how it merges sub-arrays with numerical indexes
 			array(
-				array(array('test1','test2'), array('test2','test3')),
+				array(array('test1'), array('test2'), array('test3')),
 				array(array('test1'), array('test2')),
 				array(array('test2'), array('test3')),
 			),
 			array(
-				array(array(array('test1')), array(array('test2'))),
+				array(array(array('test1')), array(array('test2')), array(array('test3'))),
 				array(array(array('test1')), array(array('test2'))),
 				array(array(array('test2')), array(array('test3'))),
 			),
@@ -294,7 +294,7 @@ class Kohana_ArrTest extends Unittest_TestCase
 			),
 			// Associative, Indexed
 			array(
-				array('a' => 'J', 'b' => 'K', 'K', 'L'),
+				array('a' => 'J', 'b' => 'K', 'L'),
 				array('a' => 'J', 'b' => 'K'),
 				array('K', 'L'),
 			),
@@ -343,6 +343,13 @@ class Kohana_ArrTest extends Unittest_TestCase
 				array('a' => 'K', 'L'),
 				array('a' => 'J', 'K'),
 				array('a' => 'K', 'L'),
+			),
+
+			// Bug #3141
+			array(
+				array('servers' => array(array('1.1.1.1', 4730), array('2.2.2.2', 4730))),
+				array('servers' => array(array('1.1.1.1', 4730))),
+				array('servers' => array(array('2.2.2.2', 4730))),
 			),
 		);
 	}
