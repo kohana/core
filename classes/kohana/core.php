@@ -488,8 +488,7 @@ class Kohana_Core {
 		try
 		{
 			// Transform the class name into a path
-			$file = str_replace('_', '/', strtolower($class));
-			$file = str_replace('\\', '/', $file);
+			$file = preg_replace('/[_\\\\]/', '/', strtolower($class));
 
 			if ($path = Kohana::find_file('classes', $file))
 			{
