@@ -62,6 +62,11 @@ class Kohana_Route {
 	public static $default_action = 'index';
 
 	/**
+	 * @var  string  default namespace for all routes
+	 */
+	public static $default_namespace = '';
+
+	/**
 	 * @var  bool Indicates whether routes are cached
 	 */
 	public static $cache = FALSE;

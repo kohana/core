@@ -836,6 +836,17 @@ class Kohana_Request implements HTTP_Request {
 				// Use the default action
 				$this->_action = Route::$default_action;
 			}
+			
+			if (isset($params['namespace']))
+			{
+				// Store the namespace
+				$this->_namespace = $params['namespace'];
+			}
+			else
+			{
+				// User the default namespace
+				$this->_namespace = Route::$default_namespace;
+			}
 
 			// These are accessible as public vars and can be overloaded
 			unset($params['controller'], $params['action'], $params['directory']);
@@ -1052,6 +1063,26 @@ class Kohana_Request implements HTTP_Request {
 
 		// Act as a setter
 		$this->_controller = (string) $controller;
+
+		return $this;
+	}
+
+	/**
+	 * Sets and gets the namespace for the matched route.
+	 *
+	 * @param   string   $namespace  Namespace to execute the action
+	 * @return  mixed
+	 */
+	public function name_space($namespace = NULL)
+	{
+		if ($namespace === NULL)
+		{
+			// Act as a getter
+			return $this->_namespace;
+		}
+
+		// Act as a setter
+		$this->_namespace = (string) $namespace;
 
 		return $this;
 	}
