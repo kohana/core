@@ -20,15 +20,6 @@ class Kohana_Request_Client_Internal extends Request_Client {
 	 * Processes the request, executing the controller action that handles this
 	 * request, determined by the [Route].
 	 *
-	 * 1. Before the controller action is called, the [Controller::before] method
-	 * will be called.
-	 * 2. Next the controller action will be called.
-	 * 3. After the controller action is called, the [Controller::after] method
-	 * will be called.
-	 *
-	 * By default, the output from the controller is captured and returned, and
-	 * no headers are sent.
-	 *
 	 *     $request->execute();
 	 *
 	 * @param   Request $request
@@ -36,8 +27,6 @@ class Kohana_Request_Client_Internal extends Request_Client {
 	 * @throws  Kohana_Exception
 	 * @uses    [Kohana::$profiling]
 	 * @uses    [Profiler]
-	 * @deprecated passing $params to controller methods deprecated since version 3.1
-	 *             will be removed in 3.2
 	 */
 	public function execute_request(Request $request)
 	{
@@ -84,8 +73,10 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		{
 			if ( ! class_exists($prefix.$controller))
 			{
-				throw new HTTP_Exception_404('The requested URL :uri was not found on this server.',
-													array(':uri' => $request->uri()));
+				throw new HTTP_Exception_404(
+					'The requested URL :uri was not found on this server.',
+					array(':uri' => $request->uri())
+				);
 			}
 
 			// Load the controller using reflection
@@ -93,30 +84,17 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 			if ($class->isAbstract())
 			{
-				throw new Kohana_Exception('Cannot create instances of abstract :controller',
-					array(':controller' => $prefix.$controller));
+				throw new Kohana_Exception(
+					'Cannot create instances of abstract :controller',
+					array(':controller' => $prefix.$controller)
+				);
 			}
 
 			// Create a new instance of the controller
 			$controller = $class->newInstance($request, $request->response() ? $request->response() : $request->create_response());
 
-			$class->getMethod('before')->invoke($controller);
-
-			// Determine the action to use
-			$action = $request->action();
-
-			// If the action doesn't exist, it's a 404
-			if ( ! $class->hasMethod('action_'.$action))
-			{
-				throw new HTTP_Exception_404('The requested URL :uri was not found on this server.',
-													array(':uri' => $request->uri()));
-			}
-
-			$method = $class->getMethod('action_'.$action);
-			$method->invoke($controller);
-
-			// Execute the "after action" method
-			$class->getMethod('after')->invoke($controller);
+			// Run the controller's execute() method
+			$class->getMethod('execute')->invoke($controller);
 		}
 		catch (Exception $e)
 		{
