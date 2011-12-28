@@ -274,7 +274,11 @@ class Kohana_Arr {
 	 */
 	public static function get($array, $key, $default = NULL)
 	{
-		return isset($array[$key]) ? $array[$key] : $default;
+		if (array_key_exists($key, $array)
+		    OR ($array instanceof ArrayAccess AND $array->offsetExists($key)))
+			return $array[$key];
+		else
+			return $default;
 	}
 
 	/**
