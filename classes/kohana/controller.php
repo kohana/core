@@ -61,6 +61,44 @@ abstract class Kohana_Controller {
 	}
 
 	/**
+	 * Executes the given action and calls the [Controller::before] and [Controller::after] methods.
+	 * 
+	 * Can also be used to catch exceptions from actions in a single place.
+	 * 
+	 * 1. Before the controller action is called, the [Controller::before] method
+	 * will be called.
+	 * 2. Next the controller action will be called.
+	 * 3. After the controller action is called, the [Controller::after] method
+	 * will be called.
+	 * 
+	 * @throws  HTTP_Exception_404
+	 * @return  void
+	 */
+	public function execute()
+	{
+		// Execute the "before action" method
+		$this->before();
+
+		// Determine the action to use
+		$action = 'action_'.$this->request->action();
+
+		// If the action doesn't exist, it's a 404
+		if ( ! method_exists($this, $action))
+		{
+			throw new HTTP_Exception_404(
+				'The requested URL :uri was not found on this server.',
+				array(':uri' => $this->request->uri())
+			);
+		}
+
+		// Execute the action itself
+		$this->{$action}();
+
+		// Execute the "after action" method
+		$this->after();
+	}
+
+	/**
 	 * Automatically executed after the controller action. Can be used to apply
 	 * transformation to the request response, add extra output, and execute
 	 * other custom code.
