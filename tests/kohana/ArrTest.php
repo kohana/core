@@ -76,6 +76,36 @@ class Kohana_ArrTest extends Unittest_TestCase
 				'not in stock',
 				array('carrot cake' => 'in stock', 'humble pie' => 'not in stock'),
 			),
+			array(
+				// Source Array
+				array('level1' => array('level2a' => 'value 1', 'level2b' => 'value 2')),
+				// Paths to extract
+				array('level1.level2a', 'level1.level2b'),
+				// Default
+				NULL,
+				// Expected Result
+				array('level1' => array('level2a' => 'value 1', 'level2b' => 'value 2')),
+			),
+			array(
+				// Source Array
+				array('level1a' => array('level2a' => 'value 1'), 'level1b' => array('level2b' => 'value 2')),
+				// Paths to extract
+				array('level1a', 'level1b.level2b'),
+				// Default
+				NULL,
+				// Expected Result
+				array('level1a' => array('level2a' => 'value 1'), 'level1b' => array('level2b' => 'value 2')),
+			),
+			array(
+				// Source Array
+				array('level1a' => array('level2a' => 'value 1'), 'level1b' => array('level2b' => 'value 2')),
+				// Paths to extract
+				array('level1a', 'level1b.level2b', 'level1c', 'level1d.notfound'),
+				// Default
+				'default',
+				// Expected Result
+				array('level1a' => array('level2a' => 'value 1'), 'level1b' => array('level2b' => 'value 2'), 'level1c' => 'default', 'level1d' => array('notfound' => 'default')),
+			),
 		);
 	}
 
@@ -85,13 +115,13 @@ class Kohana_ArrTest extends Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_extract
 	 * @param array $array
-	 * @param array $keys
+	 * @param array $paths
 	 * @param mixed $default
 	 * @param array $expected
 	 */
-	public function test_extract(array $array, array $keys, $default, $expected)
+	public function test_extract(array $array, array $paths, $default, $expected)
 	{
-		$array = Arr::extract($array, $keys, $default);
+		$array = Arr::extract($array, $paths, $default);
 
 		$this->assertSame(count($expected), count($array));
 		$this->assertSame($expected, $array);
