@@ -990,8 +990,33 @@ class Kohana_Core {
 			// Clean the output buffer
 			ob_get_level() and ob_clean();
 
+			// PHP stack traces from fatal errors are not very useful
+			// use a better source, if possible
+			$trace = NULL;
+			if (function_exists('xdebug_get_function_stack'))
+			{
+				$trace = array_reverse(xdebug_get_function_stack());
+				array_shift($trace);
+
+				foreach ($trace as & $frame)
+				{
+					// xdebug doesn't currently set the call type key
+					// Open feature request: http://bugs.xdebug.org/view.php?id=695
+					if ( ! isset($frame['type']))
+					{
+						$frame['type'] = '??';
+					}
+
+					// xdebug also has a different name for the parameters array
+					if ( isset($frame['params']) && ! isset($frame['args']))
+					{
+						$frame['args'] = $frame['params'];
+					}
+				}
+			}
+
 			// Fake an exception for nice debugging
-			Kohana_Exception::handler(new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']));
+			Kohana_Exception::handler(new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']), $trace);
 
 			// Shutdown now to avoid a "death loop"
 			exit(1);
