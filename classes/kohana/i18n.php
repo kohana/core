@@ -144,7 +144,8 @@ if ( ! function_exists('__'))
 	 *
 	 *    __('Welcome back, :user', array(':user' => $username));
 	 *
-	 * [!!] The target language is defined by [I18n::$lang].
+	 * [!!] The target language is defined by [I18n::$lang]. The default source
+	 * language is defined by [I18n::$source].
 	 * 
 	 * @uses    I18n::get
 	 * @param   string  $string text to translate
@@ -152,9 +153,15 @@ if ( ! function_exists('__'))
 	 * @param   string  $lang   source language
 	 * @return  string
 	 */
-	function __($string, array $values = NULL, $lang = 'en-us')
+	function __($string, array $values = NULL, $source = NULL)
 	{
-		if ($lang !== I18n::$lang)
+		if ( ! $source)
+		{
+			// Use default source language
+			$source = I18n::$source;
+		}
+
+		if ($source !== I18n::$lang)
 		{
 			// The message and target languages are different
 			// Get the translation for this message
