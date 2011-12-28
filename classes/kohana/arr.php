@@ -278,23 +278,27 @@ class Kohana_Arr {
 	}
 
 	/**
-	 * Retrieves multiple keys from an array. If the key does not exist in the
+	 * Retrieves multiple paths from an array. If the path does not exist in the
 	 * array, the default value will be added instead.
 	 *
 	 *     // Get the values "username", "password" from $_POST
 	 *     $auth = Arr::extract($_POST, array('username', 'password'));
+	 *     
+	 *     // Get the value "level1.level2a" from $data
+	 *     $data = array('level1' => array('level2a' => 'value 1', 'level2b' => 'value 2'));
+	 *     Arr::extract($data, array('level1.level2a', 'password'));
 	 *
-	 * @param   array   $array      array to extract keys from
-	 * @param   array   $keys       list of key names
-	 * @param   mixed   $default    default value
+	 * @param   array   array to extract paths from
+	 * @param   array   list of path
+	 * @param   mixed   default value
 	 * @return  array
 	 */
-	public static function extract($array, array $keys, $default = NULL)
+	public static function extract($array, array $paths, $default = NULL)
 	{
 		$found = array();
-		foreach ($keys as $key)
+		foreach ($paths as $path)
 		{
-			$found[$key] = isset($array[$key]) ? $array[$key] : $default;
+			Arr::set_path($found, $path, Arr::path($array, $path, $default));
 		}
 
 		return $found;
