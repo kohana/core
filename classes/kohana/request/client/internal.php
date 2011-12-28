@@ -28,7 +28,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 	 * @uses    [Kohana::$profiling]
 	 * @uses    [Profiler]
 	 */
-	public function execute_request(Request $request)
+	public function execute_request(Request $request, Response $response)
 	{
 		// Create the class prefix
 		$prefix = 'controller_';
@@ -91,27 +91,32 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			}
 
 			// Create a new instance of the controller
-			$controller = $class->newInstance($request, $request->response() ? $request->response() : $request->create_response());
+			$controller = $class->newInstance($request, $response);
 
 			// Run the controller's execute() method
-			$class->getMethod('execute')->invoke($controller);
+			$response = $class->getMethod('execute')->invoke($controller);
+
+			if ( ! $response instanceof Response)
+			{
+				// Controller failed to return a Response.
+				throw new Kohana_Exception('Controller failed to return a Response');
+			}
+		}
+		catch (HTTP_Exception $e)
+		{
+			// Generate a approperiate Reponse
+			// TODO: Make this better..
+			$response = Response::factory();
+			$response->status($e->getCode());
+			$response->body($e->getMessage());
 		}
 		catch (Exception $e)
 		{
-			// Restore the previous request
-			if ($previous instanceof Request)
-			{
-				Request::$current = $previous;
-			}
-
-			if (isset($benchmark))
-			{
-				// Delete the benchmark, it is invalid
-				Profiler::delete($benchmark);
-			}
-
-			// Re-throw the exception
-			throw $e;
+			// Generate a 500 Reponse
+			// TODO: Make this better..
+			$response = Response::factory();
+			$response->status(500);
+			$response->body($e->getMessage());
 		}
 
 		// Restore the previous request
@@ -124,6 +129,6 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		}
 
 		// Return the response
-		return $request->response();
+		return $response;
 	}
 } // End Kohana_Request_Client_Internal

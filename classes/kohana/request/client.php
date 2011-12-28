@@ -50,7 +50,8 @@ abstract class Kohana_Request_Client {
 	 *
 	 *     $request->execute();
 	 *
-	 * @param   Request $request
+	 * @param   Request   $request
+	 * @param   Response  $response
 	 * @return  Response
 	 * @throws  Kohana_Exception
 	 * @uses    [Kohana::$profiling]
@@ -61,7 +62,9 @@ abstract class Kohana_Request_Client {
 		if ($this->_cache instanceof HTTP_Cache)
 			return $this->_cache->execute($this, $request);
 
-		return $this->execute_request($request);
+		$response = Response::factory();
+
+		return $this->execute_request($request, $response);
 	}
 
 	/**
@@ -70,11 +73,12 @@ abstract class Kohana_Request_Client {
 	 * 
 	 * This method must be implemented by all clients.
 	 *
-	 * @param   Request $request    request to execute by client
+	 * @param   Request   $request   request to execute by client
+	 * @param   Response  $response
 	 * @return  Response
 	 * @since   3.2.0
 	 */
-	abstract public function execute_request(Request $request);
+	abstract public function execute_request(Request $request, Response $response);
 
 	/**
 	 * Getter and setter for the internal caching engine,

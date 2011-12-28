@@ -92,13 +92,14 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 	 *
 	 *     $request->execute();
 	 *
-	 * @param   Request $request A request object
+	 * @param   Request   $request   A request object
+	 * @param   Response  $response  A response object
 	 * @return  Response
 	 * @throws  Kohana_Exception
 	 * @uses    [Kohana::$profiling]
 	 * @uses    [Profiler]
 	 */
-	public function execute_request(Request $request)
+	public function execute_request(Request $request, Response $response)
 	{
 		if (Kohana::$profiling)
 		{
@@ -197,9 +198,10 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 	 * Sends the HTTP message [Request] to a remote server and processes
 	 * the response.
 	 *
-	 * @param   Request $request    request to send
+	 * @param   Request   $request    Request to send
+	 * @param   Response  $response   Response to send
 	 * @return  Response
 	 */
-	abstract protected function _send_message(Request $request);
+	abstract protected function _send_message(Request $request, Response $response);
 
 } // End Kohana_Request_Client_External

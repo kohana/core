@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Request and response wrapper. Uses the [Route] class to determine what
+ * Request. Uses the [Route] class to determine what
  * [Controller] to send the request to.
  *
  * @package    Kohana
@@ -686,11 +686,6 @@ class Kohana_Request implements HTTP_Request {
 	protected $_routes;
 
 	/**
-	 * @var  Kohana_Response  response
-	 */
-	protected $_response;
-
-	/**
 	 * @var  Kohana_HTTP_Header  headers to sent as part of the request
 	 */
 	protected $_header;
@@ -932,51 +927,6 @@ class Kohana_Request implements HTTP_Request {
 	}
 
 	/**
-	 * Redirects as the request response. If the URL does not include a
-	 * protocol, it will be converted into a complete URL.
-	 *
-	 *     $request->redirect($url);
-	 *
-	 * [!!] No further processing can be done after this method is called!
-	 *
-	 * @param   string   $url   Redirect location
-	 * @param   integer  $code  Status code: 301, 302, etc
-	 * @return  void
-	 * @uses    URL::site
-	 * @uses    Request::send_headers
-	 */
-	public function redirect($url = '', $code = 302)
-	{
-		$referrer = $this->uri();
-		$protocol = ($this->secure()) ? 'https' : TRUE;
-
-		if (strpos($referrer, '://') === FALSE)
-		{
-			$referrer = URL::site($referrer, $protocol, ! empty(Kohana::$index_file));
-		}
-
-		if (strpos($url, '://') === FALSE)
-		{
-			// Make the URI into a URL
-			$url = URL::site($url, TRUE, ! empty(Kohana::$index_file));
-		}
-
-		if (($response = $this->response()) === NULL)
-		{
-			$response = $this->create_response();
-		}
-
-		echo $response->status($code)
-			->headers('Location', $url)
-			->headers('Referer', $referrer)
-			->send_headers()
-			->body();
-
-		// Stop execution
-		exit;
-	}
-
-	/**
 	 * Sets and gets the referrer from the request.
 	 *
 	 * @param   string $referrer
@@ -1192,75 +1142,6 @@ class Kohana_Request implements HTTP_Request {
 	}
 
 	/**
-	 * Generates an [ETag](http://en.wikipedia.org/wiki/HTTP_ETag) from the
-	 * request response.
-	 *
-	 *     $etag = $request->generate_etag();
-	 *
-	 * [!!] If the request response is empty when this method is called, an
-	 * exception will be thrown!
-	 *
-	 * @return string
-	 * @throws Request_Exception
-	 */
-	public function generate_etag()
-	{
-	    if ($this->_response === NULL)
-		{
-			throw new Request_Exception('No response yet associated with request - cannot auto generate resource ETag');
-		}
-
-		// Generate a unique hash for the response
-		return '"'.sha1($this->_response).'"';
-	}
-
-	/**
-	 * Set or get the response for this request
-	 *
-	 * @param   Response  $response  Response to apply to this request
-	 * @return  Response
-	 * @return  void
-	 */
-	public function response(Response $response = NULL)
-	{
-		if ($response === NULL)
-		{
-			// Act as a getter
-			return $this->_response;
-		}
-
-		// Act as a setter
-		$this->_response = $response;
-
-		return $this;
-	}
-
-	/**
-	 * Creates a response based on the type of request, i.e. an
-	 * Request_HTTP will produce a Response_HTTP, and the same applies
-	 * to CLI.
-	 *
-	 *      // Create a response to the request
-	 *      $response = $request->create_response();
-	 *
-	 * @param   boolean  $bind  Bind to this request
-	 * @return  Response
-	 * @since   3.1.0
-	 */
-	public function create_response($bind = TRUE)
-	{
-		$response = new Response(array('_protocol' => $this->protocol()));
-
-		if ($bind)
-		{
-			// Bind a new response to the request
-			$this->_response = $response;
-		}
-
-		return $response;
-	}
-
-	/**
 	 * Gets or sets the HTTP method. Usually GET, POST, PUT or DELETE in
 	 * traditional CRUD applications.
 	 *
@@ -1285,7 +1166,7 @@ class Kohana_Request implements HTTP_Request {
 	 * Gets or sets the HTTP protocol. If there is no current protocol set,
 	 * it will use the default set in HTTP::$protocol
 	 *
-	 * @param   string   $protocol  Protocol to set to the request/response
+	 * @param   string   $protocol  Protocol to set to the request
 	 * @return  mixed
 	 */
 	public function protocol($protocol = NULL)
@@ -1321,7 +1202,7 @@ class Kohana_Request implements HTTP_Request {
 	}
 
 	/**
-	 * Gets or sets HTTP headers to the request or response. All headers
+	 * Gets or sets HTTP headers oo the request. All headers
 	 * are included immediately after the HTTP protocol definition during
 	 * transmission. This method provides a simple array or key/value
 	 * interface to the headers.
@@ -1405,7 +1286,7 @@ class Kohana_Request implements HTTP_Request {
 	}
 
 	/**
-	 * Gets or sets the HTTP body to the request or response. The body is
+	 * Gets or sets the HTTP body of the request. The body is
 	 * included after the header, separated by a single empty new line.
 	 *
 	 * @param   string  $content Content to set to the object
@@ -1446,7 +1327,6 @@ class Kohana_Request implements HTTP_Request {
 	 *  If there are variables set to the `Kohana_Request::$_post`
 	 *  they will override any values set to body.
 	 *
-	 * @param   boolean  $response  Return the rendered response, else returns the rendered request
 	 * @return  string
 	 */
 	public function render()

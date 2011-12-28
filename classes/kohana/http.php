@@ -22,6 +22,39 @@ abstract class Kohana_HTTP {
 	public static $protocol = 'HTTP/1.1';
 
 	/**
+	 * Marks up a Response with the approperiate HTTP headers and status code
+	 * to redirect the user-agent.
+	 * 
+	 *     HTTP::redirect($request, $response, 'account/login', 302);
+	 * 
+	 * @param  Request   $request   Request being redirected
+	 * @param  Response  $response  Response to set redirect on
+	 * @param  string    $uri       URI to redirect to
+	 * @param  int       $code      Status code (eg 301, 302, 303, 307)
+	 * @return Response
+	 */
+	public static function redirect(Request $request, Response $response, $uri, $code = 302)
+	{
+		$referrer = $request->uri();
+		$protocol = ($request->secure()) ? 'https' : TRUE;
+
+		if (strpos($referrer, '://') === FALSE)
+		{
+			$referrer = URL::site($referrer, $protocol, ! empty(Kohana::$index_file));
+		}
+
+		if (strpos($uri, '://') === FALSE)
+		{
+			// Make the URI into a URL
+			$uri = URL::site($uri, TRUE, ! empty(Kohana::$index_file));
+		}
+
+		return $response->status($code)
+			->headers('Referer', $referrer)
+			->headers('Location', $uri);
+	}
+
+	/**
 	 * Parses a HTTP header string into an associative array
 	 *
 	 * @param   string   $header_string  Header string to parse

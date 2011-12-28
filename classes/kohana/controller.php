@@ -50,17 +50,6 @@ abstract class Kohana_Controller {
 	}
 
 	/**
-	 * Automatically executed before the controller action. Can be used to set
-	 * class properties, do authorization checks, and execute other custom code.
-	 *
-	 * @return  void
-	 */
-	public function before()
-	{
-		// Nothing by default
-	}
-
-	/**
 	 * Executes the given action and calls the [Controller::before] and [Controller::after] methods.
 	 * 
 	 * Can also be used to catch exceptions from actions in a single place.
@@ -72,7 +61,7 @@ abstract class Kohana_Controller {
 	 * will be called.
 	 * 
 	 * @throws  HTTP_Exception_404
-	 * @return  void
+	 * @return  Response
 	 */
 	public function execute()
 	{
@@ -94,15 +83,29 @@ abstract class Kohana_Controller {
 		// Execute the action itself
 		$this->{$action}();
 
-		// Execute the "after action" method
+		// Execute the "after action" method and return the Response
 		$this->after();
+
+		// Return the response
+		return $this->response;
+	}
+
+	/**
+	 * Automatically executed before the controller action. Can be used to set
+	 * class properties, do authorization checks, and execute other custom code.
+	 *
+	 * @return  void
+	 */
+	public function before()
+	{
+		// Nothing by default
 	}
 
 	/**
 	 * Automatically executed after the controller action. Can be used to apply
-	 * transformation to the request response, add extra output, and execute
+	 * transformation to the response, add extra output, and execute
 	 * other custom code.
-	 *
+	 * 
 	 * @return  void
 	 */
 	public function after()
@@ -110,4 +113,21 @@ abstract class Kohana_Controller {
 		// Nothing by default
 	}
 
+	/**
+	 * Marks up a Response with the approperiate HTTP headers and status code
+	 * to redirect the user-agent.
+	 * 
+	 * [!!] This does not `exit()`, any code after this call (and in the `after()` method) will continue to run unless you `return;`
+	 * 
+	 *     $this->redirect('account/login', 303);
+	 *     return;
+	 * 
+	 * @param  string    $uri       URI to redirect to
+	 * @param  int       $code      Status code (eg 301, 302, 303, 307)
+	 * @return Response
+	 */
+	protected function redirect($uri, $code = 302)
+	{
+		return HTTP::redirect($this->request, $this->response, $uri, $code);
+	}
 } // End Controller
