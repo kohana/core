@@ -22,6 +22,7 @@ class Kohana_Kohana_Exception extends Exception {
 		E_STRICT             => 'Strict',
 		E_NOTICE             => 'Notice',
 		E_RECOVERABLE_ERROR  => 'Recoverable Error',
+		E_DEPRECATED         => 'Deprecated',
 	);
 
 	/**
@@ -43,9 +44,10 @@ class Kohana_Kohana_Exception extends Exception {
 	 * @param   string          $message    error message
 	 * @param   array           $variables  translation variables
 	 * @param   integer|string  $code       the exception code
+	 * @param   Exception       $previous   Previous exception
 	 * @return  void
 	 */
-	public function __construct($message, array $variables = NULL, $code = 0)
+	public function __construct($message, array $variables = NULL, $code = 0, Exception $previous = NULL)
 	{
 		if (defined('E_DEPRECATED'))
 		{
@@ -57,7 +59,7 @@ class Kohana_Kohana_Exception extends Exception {
 		$message = __($message, $variables);
 
 		// Pass the message and integer code to the parent
-		parent::__construct($message, (int) $code);
+		parent::__construct($message, (int) $code, $previous);
 
 		// Save the unmodified code
 		// @link http://bugs.php.net/39615
