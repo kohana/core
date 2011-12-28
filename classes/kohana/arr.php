@@ -349,40 +349,49 @@ class Kohana_Arr {
 	}
 
 	/**
-	 * Recursive version of [array_map](http://php.net/array_map), applies the
-	 * same callback to all elements in an array, including sub-arrays.
+	 * Recursive version of [array_map](http://php.net/array_map), applies one or more
+	 * callbacks to all elements in an array, including sub-arrays.
 	 *
 	 *     // Apply "strip_tags" to every element in the array
 	 *     $array = Arr::map('strip_tags', $array);
 	 *
+	 *     // Apply $this->filter to every element in the array
+	 *     $array = Arr::map(array(array($this,'filter')), $array);
+	 *
+	 *     // Apply strip_tags and $this->filter to every element
+	 *     $array = Arr::map(array('strip_tags',array($this,'filter')), $array);
+	 *
+	 * [!!] Because you can pass an array of callbacks, if you wish to use an array-form callback
+	 * you must nest it in an additional array as above. Calling Arr::map(array($this,'filter'), $array)
+	 * will cause an error.
 	 * [!!] Unlike `array_map`, this method requires a callback and will only map
 	 * a single array.
 	 *
-	 * @param   mixed   $callback   callback applied to every element in the array
+	 * @param   mixed   $callbacks  array of callbacks to apply to every element in the array
 	 * @param   array   $array      array to map
 	 * @param   array   $keys       array of keys to apply to
 	 * @return  array
 	 */
-	public static function map($callback, $array, $keys = NULL)
+	public static function map($callbacks, $array, $keys = NULL)
 	{
 		foreach ($array as $key => $val)
 		{
 			if (is_array($val))
 			{
-				$array[$key] = Arr::map($callback, $array[$key]);
+				$array[$key] = Arr::map($callbacks, $array[$key]);
 			}
 			elseif ( ! is_array($keys) or in_array($key, $keys))
 			{
-				if (is_array($callback))
+				if (is_array($callbacks))
 				{
-					foreach ($callback as $cb)
+					foreach ($callbacks as $cb)
 					{
 						$array[$key] = call_user_func($cb, $array[$key]);
 					}
 				}
 				else
 				{
-					$array[$key] = call_user_func($callback, $array[$key]);
+					$array[$key] = call_user_func($callbacks, $array[$key]);
 				}
 			}
 		}
