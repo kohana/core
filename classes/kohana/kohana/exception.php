@@ -89,6 +89,31 @@ class Kohana_Kohana_Exception extends Exception {
 	 */
 	public static function handler(Exception $e)
 	{
+		return Kohana_Exception::response($e);
+	}
+
+	/**
+	 * Get a single line of text representing the exception:
+	 *
+	 * Error [ Code ]: Message ~ File [ Line ]
+	 *
+	 * @param   Exception  $e
+	 * @return  string
+	 */
+	public static function text(Exception $e)
+	{
+		return sprintf('%s [ %s ]: %s ~ %s [ %d ]',
+			get_class($e), $e->getCode(), strip_tags($e->getMessage()), Debug::path($e->getFile()), $e->getLine());
+	}
+
+	/**
+	 * Get a Response object representing the exception:
+	 *
+	 * @param   Exception  $e
+	 * @return  Response
+	 */
+	public static function response(Exception $e)
+	{
 		try
 		{
 			// Get the exception information
@@ -97,9 +122,7 @@ class Kohana_Kohana_Exception extends Exception {
 			$message = $e->getMessage();
 			$file    = $e->getFile();
 			$line    = $e->getLine();
-
-			// Get the exception backtrace
-			$trace = $e->getTrace();
+			$trace   = $e->getTrace();
 
 			if ($e instanceof ErrorException)
 			{
@@ -107,24 +130,6 @@ class Kohana_Kohana_Exception extends Exception {
 				{
 					// Use the human-readable error name
 					$code = Kohana_Exception::$php_errors[$code];
-				}
-
-				if (version_compare(PHP_VERSION, '5.3', '<'))
-				{
-					// Workaround for a bug in ErrorException::getTrace() that
-					// exists in all PHP 5.2 versions.
-					// @link http://bugs.php.net/45895
-					for ($i = count($trace) - 1; $i > 0; --$i)
-					{
-						if (isset($trace[$i - 1]['args']))
-						{
-							// Re-position the args
-							$trace[$i]['args'] = $trace[$i - 1]['args'];
-
-							// Remove the args
-							unset($trace[$i - 1]['args']);
-						}
-					}
 				}
 			}
 
@@ -135,83 +140,54 @@ class Kohana_Kohana_Exception extends Exception {
 			{
 				// Add this exception to the log
 				Kohana::$log->add(Log::ERROR, $error);
-
-				$strace = Kohana_Exception::text($e)."\n--\n" . $e->getTraceAsString();
-				Kohana::$log->add(Log::STRACE, $strace);
+				Kohana::$log->add(Log::STRACE, $error."\n--\n" . $e->getTraceAsString());
 
 				// Make sure the logs are written
 				Kohana::$log->write();
 			}
 
-			if (Kohana::$is_cli)
-			{
-				// Just display the text of the exception
-				echo "\n{$error}\n";
+			// Instancite the error view.
+			$view = View::factory(Kohana_Exception::$error_view);
+			$view->set_global(get_defined_vars());
 
-				exit(1);
-			}
+			// Prepare the response object.
+			$response = Response::factory();
 
-			if ( ! headers_sent())
-			{
-				// Make sure the proper http header is sent
-				$http_header_status = ($e instanceof HTTP_Exception) ? $code : 500;
+			// Set the response status
+			$response->status(($e instanceof HTTP_Exception) ? $e->getCode() : 500);
+			
+			// Set the response headers
+			$response->headers('Content-Type', Kohana_Exception::$error_view_content_type.'; charset='.Kohana::$charset);
 
-				header('Content-Type: '.Kohana_Exception::$error_view_content_type.'; charset='.Kohana::$charset, TRUE, $http_header_status);
-			}
-
-			if (Request::$current !== NULL AND Request::current()->is_ajax() === TRUE)
-			{
-				// Just display the text of the exception
-				echo "\n{$error}\n";
-
-				exit(1);
-			}
-
-			// Start an output buffer
-			ob_start();
-
-			// Include the exception HTML
-			if ($view_file = Kohana::find_file('views', Kohana_Exception::$error_view))
-			{
-				include $view_file;
-			}
-			else
-			{
-				throw new Kohana_Exception('Error view file does not exist: views/:file', array(
-					':file' => Kohana_Exception::$error_view,
-				));
-			}
-
-			// Display the contents of the output buffer
-			echo ob_get_clean();
-
-			exit(1);
+			// Set the response body
+			$response->body($view->render());
 		}
 		catch (Exception $e)
 		{
-			// Clean the output buffer if one exists
-			ob_get_level() and ob_clean();
+			// Things are going badly for us, Lets try to keep things under control.
+			try
+			{
+				$response = Response::factory();
+				$response->status(500);
+				$response->headers('Content-Type', 'text/plain');
+				$response->body(Kohana_Exception::text($e));
+			}
+			catch (Exception $e)
+			{
+				// Things are going really badly for us, We now have no choice but to bail. Hard.
 
-			// Display the exception text
-			echo Kohana_Exception::text($e), "\n";
+				// Clean the output buffer if one exists
+				ob_get_level() and ob_clean();
 
-			// Exit with an error status
-			exit(1);
+				// Set the Status code to 500, and Content-Type to text/plain.
+				header('Content-Type: text/plain; charset='.Kohana::$charset, TRUE, 500);
+
+				echo ".".Kohana_Exception::text($e);
+				exit(1);
+			}
 		}
-	}
 
-	/**
-	 * Get a single line of text representing the exception:
-	 *
-	 * Error [ Code ]: Message ~ File [ Line ]
-	 *
-	 * @param   Exception   $e
-	 * @return  string
-	 */
-	public static function text(Exception $e)
-	{
-		return sprintf('%s [ %s ]: %s ~ %s [ %d ]',
-			get_class($e), $e->getCode(), strip_tags($e->getMessage()), Debug::path($e->getFile()), $e->getLine());
+		return $response;
 	}
 
 } // End Kohana_Exception
