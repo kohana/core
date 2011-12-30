@@ -182,7 +182,7 @@ class Kohana_Kohana_Exception extends Exception {
 				// Set the Status code to 500, and Content-Type to text/plain.
 				header('Content-Type: text/plain; charset='.Kohana::$charset, TRUE, 500);
 
-				echo ".".Kohana_Exception::text($e);
+				echo Kohana_Exception::text($e);
 				exit(1);
 			}
 		}
