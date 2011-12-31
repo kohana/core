@@ -1,5 +1,16 @@
 <?php defined('SYSPATH') or die('No direct script access.');
-
+/**
+ * "Expected" HTTP exception class. Used for all [HTTP_Exception]'s where a standard
+ * Kohana error page should never be shown. 
+ * 
+ * Eg [HTTP_Exception_301], [HTTP_Exception_302] etc
+ *
+ * @package    Kohana
+ * @category   Exceptions
+ * @author     Kohana Team
+ * @copyright  (c) 2008-2011 Kohana Team
+ * @license    http://kohanaframework.org/license
+ */
 abstract class Kohana_HTTP_Exception_Expected extends HTTP_Exception {
 
 	/**
