@@ -83,11 +83,73 @@ class Kohana_Kohana_Exception extends Exception {
 	 */
 	public static function handler(Exception $e)
 	{
-		echo Kohana_Exception::response($e)
-			->send_headers()
-			->body();
+		$response = Kohana_Exception::_handler($e);
+
+		// Send the response to the browser
+		echo $response->send_headers()->body();
 
 		exit(1);
+	}
+
+	/**
+	 * Inline exception handler, displays the error message, source of the
+	 * exception, and the stack trace of the error.
+	 *
+	 * @uses    Kohana_Exception::response
+	 * @param   Exception  $e
+	 * @return  boolean
+	 */
+	public static function _handler(Exception $e)
+	{
+		try
+		{
+			// Log the exception
+			Kohana_Exception::log($e);
+
+			// Generate the response
+			$response = Kohana_Exception::response($e);
+
+			return $response;
+		}
+		catch (Exception $e)
+		{
+			/**
+			 * Things are going *really* badly for us, We now have no choice
+			 * but to bail. Hard.
+			 */
+			// Clean the output buffer if one exists
+			ob_get_level() and ob_clean();
+
+			// Set the Status code to 500, and Content-Type to text/plain.
+			header('Content-Type: text/plain; charset='.Kohana::$charset, TRUE, 500);
+
+			echo Kohana_Exception::text($e);
+
+			exit(1);
+		}
+	}
+
+	/**
+	 * Logs an exception.
+	 *
+	 * @uses    Kohana_Exception::text
+	 * @param   Exception  $e
+	 * @return  void
+	 */
+	public static function log(Exception $e)
+	{
+		if (is_object(Kohana::$log))
+		{
+			// Create a text version of the exception
+			$error = Kohana_Exception::text($e);
+
+			// Add this exception to the log
+			Kohana::$log->add(Log::ERROR, $error);
+			Kohana::$log->add(Log::STRACE, $error."\n--\n" . $e->getTraceAsString());
+
+			// Make sure the logs are written
+			Kohana::$log->write();
+		}
 	}
 
 	/**
@@ -105,7 +167,7 @@ class Kohana_Kohana_Exception extends Exception {
 	}
 
 	/**
-	 * Get a Response object representing the exception:
+	 * Get a Response object representing the exception
 	 *
 	 * @uses    Kohana_Exception::text
 	 * @param   Exception  $e
@@ -132,23 +194,9 @@ class Kohana_Kohana_Exception extends Exception {
 				}
 			}
 
-			// Create a text version of the exception
-			$error = Kohana_Exception::text($e);
-
-			if (is_object(Kohana::$log))
-			{
-				// Add this exception to the log
-				Kohana::$log->add(Log::ERROR, $error);
-				Kohana::$log->add(Log::STRACE, $error."\n--\n" . $e->getTraceAsString());
-
-				// Make sure the logs are written
-				Kohana::$log->write();
-			}
-
 			// Instancite the error view.
-			$view = View::factory(Kohana_Exception::$error_view);
-			$view->set_global(get_defined_vars());
-
+			$view = View::factory(Kohana_Exception::$error_view, get_defined_vars());
+			
 			// Prepare the response object.
 			$response = Response::factory();
 
@@ -163,27 +211,14 @@ class Kohana_Kohana_Exception extends Exception {
 		}
 		catch (Exception $e)
 		{
-			// Things are going badly for us, Lets try to keep things under control.
-			try
-			{
-				$response = Response::factory();
-				$response->status(500);
-				$response->headers('Content-Type', 'text/plain');
-				$response->body(Kohana_Exception::text($e));
-			}
-			catch (Exception $e)
-			{
-				// Things are going really badly for us, We now have no choice but to bail. Hard.
-
-				// Clean the output buffer if one exists
-				ob_get_level() and ob_clean();
-
-				// Set the Status code to 500, and Content-Type to text/plain.
-				header('Content-Type: text/plain; charset='.Kohana::$charset, TRUE, 500);
-
-				echo Kohana_Exception::text($e);
-				exit(1);
-			}
+			/**
+			 * Things are going badly for us, Lets try to keep things under control by
+			 * generating a simplier response object.
+			 */
+			$response = Response::factory();
+			$response->status(500);
+			$response->headers('Content-Type', 'text/plain');
+			$response->body(Kohana_Exception::text($e));
 		}
 
 		return $response;
