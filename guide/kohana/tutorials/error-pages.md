@@ -1,6 +1,15 @@
 # Custom Error Pages
 
-Handling HTTP Exceptions in Kohana has become easier with the changes introduced in 3.3.
+Custom error pages allow you to display a friendly error message to users, rather than the standard Kohana stack trace.
+
+## Prerequisites
+
+1. You will need `'errors' => TRUE` passed to [Kohana::init]. This will convert PHP-errors into exceptions which are easier to handle (The default value is `TRUE`).
+2. Custom error pages will only be used to handle throw [HTTP_Exception]'s. If you simply set a status of, for example, 404 via [Respose::status] the custom page will not be used.
+
+## Extending the HTTP_Exception classes
+
+Handling [HTTP_Exception]'s in Kohana has become easier with the changes introduced in 3.3.
 
 For each [HTTP_Exception] class we can individually override the generation of the [Response] instance.
 
