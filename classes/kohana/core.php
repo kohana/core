@@ -52,11 +52,6 @@ class Kohana_Core {
 	public static $magic_quotes = FALSE;
 
 	/**
-	 * @var  boolean  Should errors and exceptions be logged
-	 */
-	public static $log_errors = FALSE;
-
-	/**
 	 * @var  boolean  TRUE if PHP safe mode is on
 	 */
 	public static $safe_mode = FALSE;

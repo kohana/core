@@ -51,8 +51,8 @@ We don't want git to track log or cache files, so add a `.gitignore` file to eac
 
 Now we need the `index.php` and `bootstrap.php` files:
 
-    wget https://github.com/kohana/kohana/raw/3.2/master/index.php --no-check-certificate
-    wget https://github.com/kohana/kohana/raw/3.2/master/application/bootstrap.php --no-check-certificate -O application/bootstrap.php
+    wget https://github.com/kohana/kohana/raw/3.3/master/index.php --no-check-certificate
+    wget https://github.com/kohana/kohana/raw/3.3/master/application/bootstrap.php --no-check-certificate -O application/bootstrap.php
 
 Commit these changes too:
 
@@ -77,13 +77,13 @@ To add a new submodule complete the following steps:
 
 At some point you will probably also want to upgrade your submodules. To update all of your submodules to the latest `HEAD` version:
 
-    git submodule foreach 'git checkout 3.2/master && git pull origin 3.2/master'
+    git submodule foreach 'git checkout 3.3/master && git pull origin 3.3/master'
 
 To update a single submodule, for example, `system`:
 
     cd system
-    git checkout 3.2/master
-    git pull origin 3.2/master
+    git checkout 3.3/master
+    git pull origin 3.3/master
     cd ..
     git add system
     git commit -m 'Updated system to latest version'
@@ -91,7 +91,7 @@ To update a single submodule, for example, `system`:
 If you want to update a single submodule to a specific commit:
 
     cd modules/database
-    git pull origin 3.2/master
+    git pull origin 3.3/master
     git checkout fbfdea919028b951c23c3d99d2bc1f5bbeda0c0b
     cd ../..
     git add database
@@ -99,7 +99,7 @@ If you want to update a single submodule to a specific commit:
 
 Note that you can also check out the commit at a tagged official release point, for example:
 
-    git checkout v3.2.0
+    git checkout v3.3.0
 
 Simply run `git tag` without arguments to get a list of all tags.
 
