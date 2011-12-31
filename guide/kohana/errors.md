@@ -51,10 +51,10 @@ There is no default method to handle these errors in Kohana. It's recommended th
 		{
 			switch (get_class($e))
 			{
-				case 'Http_Exception_404':
+				case 'HTTP_Exception_404':
 					$response = new Response;
 					$response->status(404);
-					$view = new View('error_404');
+					$view = new View('error/404');
 					$view->message = $e->getMessage();
 					$view->title = 'File Not Found';
 					echo $response->body($view)->send_headers()->body();
@@ -72,5 +72,5 @@ And put something like this in your bootstrap to register the handler.
 	set_exception_handler(array('Foobar_Exception_Handler', 'handle'));
 
  > *Note:* Be sure to place `set_exception_handler()` **after** `Kohana::init()` in your bootstrap, or it won't work.
- 
+
  > If you receive *Fatal error: Exception thrown without a stack frame in Unknown on line 0*, it means there was an error within your exception handler. If using the example above, be sure *404.php* exists under */application/views/error/*.
