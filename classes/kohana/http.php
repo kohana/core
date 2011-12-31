@@ -22,18 +22,17 @@ abstract class Kohana_HTTP {
 	public static $protocol = 'HTTP/1.1';
 
 	/**
-	 * Marks up a Response with the approperiate HTTP headers and status code
-	 * to redirect the user-agent.
+	 * Triggers a redirect to the supplied URI using the given HTTP status code.
+	 * Execution of this Request will halt when called.
 	 * 
-	 *     HTTP::redirect($request, $response, 'account/login', 302);
+	 *     HTTP::redirect($request, 'account/login', 302);
 	 * 
 	 * @param  Request   $request   Request being redirected
-	 * @param  Response  $response  Response to set redirect on
 	 * @param  string    $uri       URI to redirect to
 	 * @param  int       $code      Status code (eg 301, 302, 303, 307)
 	 * @return Response
 	 */
-	public static function redirect(Request $request, Response $response, $uri, $code = 302)
+	public static function redirect(Request $request, $uri, $code = 302)
 	{
 		$referrer = $request->uri();
 		$protocol = ($request->secure()) ? 'https' : TRUE;
@@ -49,18 +48,20 @@ abstract class Kohana_HTTP {
 			$uri = URL::site($uri, TRUE, ! empty(Kohana::$index_file));
 		}
 
-		return $response->status($code)
+		throw HTTP_Exception::factory($code)
 			->headers('Referer', $referrer)
 			->headers('Location', $uri);
 	}
 
 	/**
-	 * Checks the browser cache to see the response needs to be returned and marks
-	 * up a Response with the correct headers.
+	 * Checks the browser cache to see the response needs to be returned,
+	 * execution will halt and a 304 Not Modified will be sent if the
+	 * browser cache is up to date.
 	 * 
 	 * @param  Request   $request   Request
 	 * @param  Response  $response  Response
 	 * @param  string    $etag      Resource ETag
+	 * @throws HTTP_Exception_304
 	 * @return Response
 	 */
 	public static function check_cache(Request $request, Response $response, $etag = NULL)
@@ -89,14 +90,7 @@ abstract class Kohana_HTTP {
 		if ($request->headers('if-none-match') AND (string) $request->headers('if-none-match') === $etag)
 		{
 			// No need to send data again
-			$response->status(304);
-			$response->body('');
-
-			// Override the Content-Length header, if set.
-			if ($response->headers('content-length'))
-			{
-				$response->headers('content-length', '0');
-			}
+			throw HTTP_Exception::factory(304)->headers('etag', $etag);
 		}
 
 		return $response;

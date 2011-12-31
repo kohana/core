@@ -114,33 +114,26 @@ abstract class Kohana_Controller {
 	}
 
 	/**
-	 * Marks up a Response with the approperiate HTTP headers and status code
-	 * to redirect the user-agent.
-	 * 
-	 * [!!] This does not `exit()`, any code after this call will continue to run unless you `return;`. Additionally, the after() method will continue to run!
+	 * Triggers a redirect to the supplied URI using the given HTTP status code.
+	 * Execution of this Request will halt when called.
 	 * 
 	 *     $this->redirect('account/login', 303);
-	 *     return;
 	 * 
 	 * @param  string    $uri       URI to redirect to
 	 * @param  int       $code      Status code (eg 301, 302, 303, 307)
-	 * @return Response
+	 * @return void
 	 */
 	protected function redirect($uri, $code = 302)
 	{
-		return HTTP::redirect($this->request, $this->response, $uri, $code);
+		HTTP::redirect($this->request, $uri, $code);
 	}
 
 	/**
-	 * Checks the browser cache to see the response needs to be returned and marks
-	 * up a Response with the correct headers.
-	 * 
-	 * [!!] This does not `exit()`, any code after this call will continue to run unless you `return;`. Additionally, the after() method will continue to run!
+	 * Checks the browser cache to see the response needs to be returned,
+	 * execution will halt and a 304 Not Modified will be sent if the
+	 * browser cache is up to date.
 	 * 
 	 *     $this->check_cache(sha1($content));
-	 *     
-	 *     if ($this->response->status() == 304)
-	 *         return;
 	 * 
 	 * @param  string  $etag  Resource Etag
 	 * @return Response

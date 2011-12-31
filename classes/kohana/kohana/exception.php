@@ -47,14 +47,8 @@ class Kohana_Kohana_Exception extends Exception {
 	 * @param   Exception       $previous   Previous exception
 	 * @return  void
 	 */
-	public function __construct($message, array $variables = NULL, $code = 0, Exception $previous = NULL)
+	public function __construct($message = "", array $variables = NULL, $code = 0, Exception $previous = NULL)
 	{
-		if (defined('E_DEPRECATED'))
-		{
-			// E_DEPRECATED only exists in PHP >= 5.3.0
-			Kohana_Exception::$php_errors[E_DEPRECATED] = 'Deprecated';
-		}
-
 		// Set the message
 		$message = __($message, $variables);
 
