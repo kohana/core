@@ -55,6 +55,54 @@ abstract class Kohana_HTTP {
 	}
 
 	/**
+	 * Checks the browser cache to see the response needs to be returned and marks
+	 * up a Response with the correct headers.
+	 * 
+	 * @param  Request   $request   Request
+	 * @param  Response  $response  Response
+	 * @param  string    $etag      Resource ETag
+	 * @return Response
+	 */
+	public static function check_cache(Request $request, Response $response, $etag = NULL)
+	{
+		// Generate an etag if necessary
+		if ($etag == NULL)
+		{
+			$etag = $response->generate_etag();
+		}
+
+		// Set the ETag header
+		$response->headers('etag', $etag);
+
+		// Add the Cache-Control header if it is not already set
+		// This allows etags to be used with max-age, etc
+		if ($response->headers('cache-control'))
+		{
+			$response->headers('cache-control', $response->headers('cache-control').', must-revalidate');
+		}
+		else
+		{
+			$response->headers('cache-control', 'must-revalidate');
+		}
+
+		// Check if we have a matching etag
+		if ($request->headers('if-none-match') AND (string) $request->headers('if-none-match') === $etag)
+		{
+			// No need to send data again
+			$response->status(304);
+			$response->body('');
+
+			// Override the Content-Length header, if set.
+			if ($response->headers('content-length'))
+			{
+				$response->headers('content-length', '0');
+			}
+		}
+
+		return $response;
+	}
+
+	/**
 	 * Parses a HTTP header string into an associative array
 	 *
 	 * @param   string   $header_string  Header string to parse
