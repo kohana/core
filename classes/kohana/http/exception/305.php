@@ -17,7 +17,7 @@ class Kohana_HTTP_Exception_305 extends HTTP_Exception_Expected {
 		if ($uri === NULL)
 			return $this->headers('Location');
 
-		$this->headers('Location', $uri)
+		$this->headers('Location', $uri);
 
 		return $this;
 	}
@@ -34,7 +34,7 @@ class Kohana_HTTP_Exception_305 extends HTTP_Exception_Expected {
 			throw new Kohana_Exception('A \'location\' must be specified for a redirect');
 
 		if (strpos($location, '://') === FALSE)
-			throw new Kohana_Exception('An absolute URI to the proxy server must be specified')
+			throw new Kohana_Exception('An absolute URI to the proxy server must be specified');
 
 		return TRUE;
 	}

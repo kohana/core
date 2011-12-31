@@ -269,7 +269,7 @@ class Kohana_HTTP_Cache {
 			return $this->_cache_key_callback;
 
 		if ( ! is_callable($callback))
-			throw new HTTP_Exception('cache_key_callback must be callable!');
+			throw new Kohana_Exception('cache_key_callback must be callable!');
 
 		$this->_cache_key_callback = $callback;
 		return $this;

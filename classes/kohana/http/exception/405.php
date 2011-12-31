@@ -19,7 +19,7 @@ class Kohana_HTTP_Exception_405 extends HTTP_Exception_Expected {
 			$methods = implode(',', $methods);
 		}
 
-		$this->headers('allow', $methods)
+		$this->headers('allow', $methods);
 
 		return $this;
 	}

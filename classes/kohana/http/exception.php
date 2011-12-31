@@ -23,6 +23,11 @@ abstract class Kohana_HTTP_Exception extends Kohana_Exception {
 	protected $_code = 0;
 
 	/**
+	 * @var  Request    Request instance that triggered this exception.
+	 */
+	protected $_request;
+
+	/**
 	 * Creates a new translated exception.
 	 *
 	 *     throw new Kohana_Exception('Something went terrible wrong, :user',
@@ -35,6 +40,22 @@ abstract class Kohana_HTTP_Exception extends Kohana_Exception {
 	public function __construct($message = NULL, array $variables = NULL, Exception $previous = NULL)
 	{
 		parent::__construct($message, $variables, $this->_code, $previous);
+	}
+
+	/**
+	 * Store the Request that triggered this exception.
+	 * 
+	 * @param   Request   $request  Request object that triggered this exception.
+	 * @return  Response
+	 */
+	public function request(Request $request = NULL)
+	{
+		if ($request === NULL)
+			return $this->_request;
+		
+		$this->_request = $request;
+
+		return $this;
 	}
 
 	/**
