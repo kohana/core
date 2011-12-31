@@ -106,13 +106,13 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			$action = $request->action();
 
 			// If the action doesn't exist, it's a 404
-			if ( ! $class->hasMethod('action_'.$action))
+			if ( ! $class->hasMethod(Controller::$action_prefix.$action))
 			{
 				throw new HTTP_Exception_404('The requested URL :uri was not found on this server.',
 													array(':uri' => $request->uri()));
 			}
 
-			$method = $class->getMethod('action_'.$action);
+			$method = $class->getMethod(Controller::$action_prefix.$action);
 			$method->invoke($controller);
 
 			// Execute the "after action" method
