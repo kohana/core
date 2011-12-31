@@ -59,10 +59,10 @@ abstract class Kohana_Request_Client {
 	 */
 	public function execute(Request $request)
 	{
-		if ($this->_cache instanceof HTTP_Cache)
-			return $this->_cache->execute($this, $request);
-
 		$response = Response::factory();
+
+		if ($this->_cache instanceof HTTP_Cache)
+			return $this->_cache->execute($this, $request, $response);
 
 		return $this->execute_request($request, $response);
 	}

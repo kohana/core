@@ -133,10 +133,10 @@ class Kohana_HTTP_Cache {
 	 * @param   Request         $request    request to execute with client
 	 * @return  [Response]
 	 */
-	public function execute(Request_Client $client, Request $request)
+	public function execute(Request_Client $client, Request $request, Response $response)
 	{
 		if ( ! $this->_cache instanceof Cache)
-			return $client->execute_request($request);
+			return $client->execute_request($request, $response);
 
 		// If this is a destructive request, by-pass cache completely
 		if (in_array($request->method(), array(
@@ -147,7 +147,7 @@ class Kohana_HTTP_Cache {
 			// Kill existing caches for this request
 			$this->invalidate_cache($request);
 
-			$response = $client->execute_request($request);
+			$response = $client->execute_request($request, $response);
 
 			$cache_control = HTTP_Header::create_cache_control(array(
 				'no-cache',
@@ -162,14 +162,14 @@ class Kohana_HTTP_Cache {
 		$cache_key = $this->create_cache_key($request, $this->_cache_key_callback);
 
 		// Try and return cached version
-		if (($response = $this->cache_response($cache_key, $request)) instanceof Response)
-			return $response;
+		if (($cached_response = $this->cache_response($cache_key, $request)) instanceof Response)
+			return $cached_response;
 
 		// Start request time
 		$this->_request_time = time();
 
 		// Execute the request with the Request client
-		$response = $client->execute_request($request);
+		$response = $client->execute_request($request, $response);
 
 		// Stop response time
 		$this->_response_time = (time() - $this->_request_time);
