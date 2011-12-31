@@ -83,7 +83,7 @@ abstract class Kohana_Controller {
 		// Execute the action itself
 		$this->{$action}();
 
-		// Execute the "after action" method and return the Response
+		// Execute the "after action" method
 		$this->after();
 
 		// Return the response
