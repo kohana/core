@@ -187,6 +187,33 @@ class Kohana_Kohana_Exception extends Exception {
 
 			if ($e instanceof ErrorException)
 			{
+				/**
+				 * If XDebug is installed, and this is a fatal error,
+				 * use XDebug to generate the stack trace
+				 */
+				if (function_exists('xdebug_get_function_stack') AND $code == E_ERROR)
+				{
+					$trace = array_slice(array_reverse(xdebug_get_function_stack()), 4);
+
+					foreach ($trace as & $frame)
+					{
+						/**
+						 * XDebug pre 2.1.1 doesn't currently set the call type key
+						 * http://bugs.xdebug.org/view.php?id=695
+						 */
+						if ( ! isset($frame['type']))
+						{
+							$frame['type'] = '??';
+						}
+
+						// XDebug also has a different name for the parameters array
+						if ( isset($frame['params']) && ! isset($frame['args']))
+						{
+							$frame['args'] = $frame['params'];
+						}
+					}
+				}
+				
 				if (isset(Kohana_Exception::$php_errors[$code]))
 				{
 					// Use the human-readable error name
