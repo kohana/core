@@ -79,7 +79,7 @@ Finally, to override the default [Response] for all [HTTP_Exception]'s without a
 			// Lets log the Exception, Just in case it's important!
 			Kohana_Exception::log($this);
 
-			if (Kohana::$environment <= Kohana::DEVELOPMENT)
+			if (Kohana::$environment >= Kohana::DEVELOPMENT)
 			{
 				// Show the normal Kohana error page.
 				return parent::get_response();
