@@ -1,14 +1,9 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Kohana_HTTP_Exception_305 extends HTTP_Exception_Expected {
+abstract class Kohana_HTTP_Exception_Redirect extends HTTP_Exception_Expected {
 
 	/**
-	 * @var   integer    HTTP 305 Use Proxy
-	 */
-	protected $_code = 305;
-
-	/**
-	 * Specifies the proxy to replay this request via
+	 * Specifies the URI to redirect to.
 	 * 
 	 * @param  string  $location  URI of the proxy
 	 */
@@ -16,8 +11,14 @@ class Kohana_HTTP_Exception_305 extends HTTP_Exception_Expected {
 	{
 		if ($uri === NULL)
 			return $this->headers('Location');
+		
+		if (strpos($uri, '://') === FALSE)
+		{
+			// Make the URI into a URL
+			$uri = URL::site($uri, TRUE, ! empty(Kohana::$index_file));
+		}
 
-		$this->headers('Location', $uri)
+		$this->headers('Location', $uri);
 
 		return $this;
 	}
@@ -30,12 +31,10 @@ class Kohana_HTTP_Exception_305 extends HTTP_Exception_Expected {
 	 */
 	public function check()
 	{
-		if ($location = $this->headers('location') === NULL)
+		if ($this->headers('location') === NULL)
 			throw new Kohana_Exception('A \'location\' must be specified for a redirect');
-
-		if (strpos($location, '://') === FALSE)
-			throw new Kohana_Exception('An absolute URI to the proxy server must be specified')
 
 		return TRUE;
 	}
-}
+
+} // End Kohana_HTTP_Exception_Redirect

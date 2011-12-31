@@ -92,8 +92,8 @@ class Kohana_Kohana_Exception extends Exception {
 	}
 
 	/**
-	 * Inline exception handler, displays the error message, source of the
-	 * exception, and the stack trace of the error.
+	 * Exception handler, logs the exception and generates a Response object
+	 * for display.
 	 *
 	 * @uses    Kohana_Exception::response
 	 * @param   Exception  $e
@@ -213,7 +213,7 @@ class Kohana_Kohana_Exception extends Exception {
 		{
 			/**
 			 * Things are going badly for us, Lets try to keep things under control by
-			 * generating a simplier response object.
+			 * generating a simpler response object.
 			 */
 			$response = Response::factory();
 			$response->status(500);

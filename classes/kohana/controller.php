@@ -114,21 +114,6 @@ abstract class Kohana_Controller {
 	}
 
 	/**
-	 * Triggers a redirect to the supplied URI using the given HTTP status code.
-	 * Execution of this Request will halt when called.
-	 * 
-	 *     $this->redirect('account/login', 303);
-	 * 
-	 * @param  string    $uri       URI to redirect to
-	 * @param  int       $code      Status code (eg 301, 302, 303, 307)
-	 * @return void
-	 */
-	protected function redirect($uri, $code = 302)
-	{
-		HTTP::redirect($this->request, $uri, $code);
-	}
-
-	/**
 	 * Checks the browser cache to see the response needs to be returned,
 	 * execution will halt and a 304 Not Modified will be sent if the
 	 * browser cache is up to date.

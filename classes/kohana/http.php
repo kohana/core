@@ -22,38 +22,6 @@ abstract class Kohana_HTTP {
 	public static $protocol = 'HTTP/1.1';
 
 	/**
-	 * Triggers a redirect to the supplied URI using the given HTTP status code.
-	 * Execution of this Request will halt when called.
-	 * 
-	 *     HTTP::redirect($request, 'account/login', 302);
-	 * 
-	 * @param  Request   $request   Request being redirected
-	 * @param  string    $uri       URI to redirect to
-	 * @param  int       $code      Status code (eg 301, 302, 303, 307)
-	 * @return Response
-	 */
-	public static function redirect(Request $request, $uri, $code = 302)
-	{
-		$referrer = $request->uri();
-		$protocol = ($request->secure()) ? 'https' : TRUE;
-
-		if (strpos($referrer, '://') === FALSE)
-		{
-			$referrer = URL::site($referrer, $protocol, ! empty(Kohana::$index_file));
-		}
-
-		if (strpos($uri, '://') === FALSE)
-		{
-			// Make the URI into a URL
-			$uri = URL::site($uri, TRUE, ! empty(Kohana::$index_file));
-		}
-
-		throw HTTP_Exception::factory($code)
-			->headers('Referer', $referrer)
-			->headers('Location', $uri);
-	}
-
-	/**
 	 * Checks the browser cache to see the response needs to be returned,
 	 * execution will halt and a 304 Not Modified will be sent if the
 	 * browser cache is up to date.

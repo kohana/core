@@ -45,6 +45,17 @@ abstract class Kohana_HTTP_Exception_Expected extends HTTP_Exception {
 	}
 
 	/**
+	 * Validate this exception contains everything needed to continue.
+	 * 
+	 * @throws Kohana_Exception
+	 * @return bool
+	 */
+	public function check()
+	{
+		return TRUE;
+	}
+
+	/**
 	 * Generate a Response for the current Exception
 	 * 
 	 * @uses   Kohana_Exception::response()
@@ -52,6 +63,8 @@ abstract class Kohana_HTTP_Exception_Expected extends HTTP_Exception {
 	 */
 	public function get_response()
 	{
+		$this->check();
+
 		return $this->_response;
 	}
 
