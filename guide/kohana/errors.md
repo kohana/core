@@ -41,7 +41,9 @@ Errors should **always** be displayed, even in production, because it allows you
 
 Kohana comes with a robust system for handing http errors. It includes exception classes for each http status code. To trigger a 404 in your application (the most common scenario):
 
-	throw new HTTP_Exception_404('File not found!');
+	throw HTTP_Exception::factory(404, 'File not found!');
+
+[!!] TODO: Update the remainder of this section to take issue [#4377](http://dev.kohanaframework.org/issues/4377) into account.
 
 There is no default method to handle these errors in Kohana. It's recommended that you setup an exception handler (and register it) to handle these kinds of errors. Here's a simple example that would go in */application/classes/foobar/exception/handler.php*:
 
