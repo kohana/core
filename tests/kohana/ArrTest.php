@@ -179,9 +179,9 @@ class Kohana_ArrTest extends Unittest_TestCase
 			array(array('we' => 'can', 'make' => 'change'), 'he', NULL, NULL),
 			array(array('we' => 'can', 'make' => 'change'), 'he', 'who', 'who'),
 			array(array('we' => 'can', 'make' => 'change'), 'he', array('arrays'), array('arrays')),
-            array(array('value' => NULL), 'value', "foo", NULL),
-            array(new ArrayObject(array('value' => "foo"), ArrayObject::STD_PROP_LIST), "value", NULL, 'foo'),
-            array(new ArrayObject(array('value' => NULL), ArrayObject::STD_PROP_LIST), "value", "foo", NULL),
+			array(array('value' => NULL), 'value', "foo", NULL),
+			array(new ArrayObject(array('value' => "foo"), ArrayObject::STD_PROP_LIST), "value", NULL, 'foo'),
+			array(new ArrayObject(array('value' => NULL), ArrayObject::STD_PROP_LIST), "value", "foo", NULL),
 			array(new ArrayObject(array('value' => NULL)), "value", "foo", NULL),
 			array(new ArrayObject(array('value' => "foo")), "value", NULL, "foo")
 		);
