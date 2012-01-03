@@ -81,27 +81,25 @@ class Kohana_Request_Client_HTTP extends Request_Client_External {
 
 		// Set query data (?foo=bar&bar=foo)
 		$http_request->setQueryData($request->query());
-		
-		// Set the files to upload.
-		if ($request->files())
-        {
-            if ($request->method() == HTTP_Request::PUT)
-            {
-                // Only one file can be set for PUT requests.
-                $file = array_pop($request->files());
-                $http_request->setPutFile($file);
-            }
-            elseif ($request->method() == HTTP_Request::POST)
-            {
-                foreach ($request->files() as $key => $file)
-                {
-                    $http_request->addPostFile($key, $file);
-                }
-            }
-        }
 
-		// Set the body
-		if ($request->method() == HTTP_Request::PUT)
+		if ($request->method() === HTTP_Request::POST)
+		{
+			if ($files = $request->files())
+			{
+				foreach ($files as $name => $file)
+				{
+					// Set the files to upload
+					$http_request->addPostFile($name, $file);
+				}
+			}
+
+			if ($post = $request->post())
+			{
+				// Set POST data
+				$http_request->addPostFields($request->post());
+			}
+		}
+		elseif ($request->method() == HTTP_Request::PUT)
 		{
 			$http_request->addPutData($request->body());
 		}
