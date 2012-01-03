@@ -60,6 +60,10 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 				}
 			}
 
+			// We really don't need to set the request body here, but it is
+			// good for debugging and the unit tests require it.
+			$request->body(http_build_query($post, NULL, '&'));
+
 			// An array _must_ be used here or file uploads will not work!
 			$options[CURLOPT_POSTFIELDS] = $post;
 		}
