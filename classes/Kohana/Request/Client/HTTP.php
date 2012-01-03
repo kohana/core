@@ -3,12 +3,12 @@
  * [Request_Client_External] HTTP driver performs external requests using the
  * php-http extention. To use this driver, ensure the following is completed
  * before executing an external request- ideally in the application bootstrap.
- * 
+ *
  * @example
- * 
+ *
  *       // In application bootstrap
  *       Request_Client_External::$client = 'Request_Client_HTTP';
- * 
+ *
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
@@ -73,6 +73,39 @@ class Kohana_Request_Client_HTTP extends Request_Client_External {
 			$http_request->setOptions($this->_options);
 		}
 
+		// Should the request body be used?
+		$use_body = TRUE;
+
+		if ($request->method() === HTTP_Request::POST)
+		{
+			if ($post = $request->post())
+			{
+				// POST is body!
+				$use_body = FALSE;
+
+				// Set POST data
+				$http_request->addPostFields($post);
+
+				// Force proper MIME type
+				$request->headers('content-type', 'application/x-www-form-urlencoded');
+			}
+
+			if ($files = $request->files())
+			{
+				// POST is body!
+				$use_body = FALSE;
+
+				foreach ($files as $name => $file)
+				{
+					// Set the files to upload
+					$http_request->addPostFile($name, $file, File::mime($file));
+				}
+
+				// Force proper MIME type
+				$request->headers('content-type', 'multipart/form-data');
+			}
+		}
+
 		// Set headers
 		$http_request->setHeaders($request->headers()->getArrayCopy());
 
@@ -82,28 +115,11 @@ class Kohana_Request_Client_HTTP extends Request_Client_External {
 		// Set query data (?foo=bar&bar=foo)
 		$http_request->setQueryData($request->query());
 
-		if ($request->method() === HTTP_Request::POST)
-		{
-			if ($files = $request->files())
-			{
-				foreach ($files as $name => $file)
-				{
-					// Set the files to upload
-					$http_request->addPostFile($name, $file, File::mime($file));
-				}
-			}
-
-			if ($post = $request->post())
-			{
-				// Set POST data
-				$http_request->addPostFields($request->post());
-			}
-		}
-		elseif ($request->method() == HTTP_Request::PUT)
+		if ($request->method() === HTTP_Request::PUT)
 		{
 			$http_request->addPutData($request->body());
 		}
-		else
+		elseif ($use_body)
 		{
 			$http_request->setBody($request->body());
 		}

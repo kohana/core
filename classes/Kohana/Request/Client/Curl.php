@@ -28,6 +28,30 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 		// Set the request method
 		$options[CURLOPT_CUSTOMREQUEST] = $request->method();
 
+		if ($request->method() === HTTP_Request::POST)
+		{
+			if ($files = $request->files())
+			{
+				$upload = $request->post();
+
+				foreach ($files as $name => $file)
+				{
+					// Set the files to upload
+					$upload[$name] = '@'.$file;
+				}
+
+				$request->headers('content-type', 'multipart/form-data');
+			}
+			else
+			{
+				if ($post = $request->post())
+				{
+					$request->body(http_build_query($post, NULL, '&'));
+					$request->headers('content-type', 'application/x-www-form-urlencoded');
+				}
+			}
+		}
+
 		// Process headers
 		if ($headers = $request->headers())
 		{
@@ -47,25 +71,10 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 			$options[CURLOPT_COOKIE] = http_build_query($cookies, NULL, '; ');
 		}
 
-		if ($request->method() === HTTP_Request::POST)
+		if ( ! empty($upload))
 		{
-			$post = $request->post();
-
-			if ($files = $request->files())
-			{
-				foreach ($files as $name => $file)
-				{
-					// Set the files to upload
-					$post[$name] = '@'.$file;
-				}
-			}
-
-			// We really don't need to set the request body here, but it is
-			// good for debugging and the unit tests require it.
-			$request->body(http_build_query($post, NULL, '&'));
-
 			// An array _must_ be used here or file uploads will not work!
-			$options[CURLOPT_POSTFIELDS] = $post;
+			$options[CURLOPT_POSTFIELDS] = $upload;
 		}
 		else
 		{

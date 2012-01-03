@@ -77,8 +77,11 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 			}
 			else
 			{
-				$request->body(http_build_query($request->post(), NULL, '&'));
-				$request->headers('content-type', 'application/x-www-form-urlencoded');
+				if ($post = $request->post())
+				{
+					$request->body(http_build_query($post, NULL, '&'));
+					$request->headers('content-type', 'application/x-www-form-urlencoded');
+				}
 			}
 		}
 
