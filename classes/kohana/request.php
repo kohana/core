@@ -744,6 +744,11 @@ class Kohana_Request implements HTTP_Request {
 	 * @var array    cookies to send with the request
 	 */
 	protected $_cookies = array();
+	
+	/**
+	 * @var array   files to upload with the request
+	 */
+	protected $_files = array();
 
 	/**
 	 * @var Kohana_Request_Client
@@ -1559,5 +1564,39 @@ class Kohana_Request implements HTTP_Request {
 
 		return $this;
 	}
+	
+	/**
+	 * Gets or sets HTTP FILE parameters to the request.
+	 *
+	 * @param   mixed  $key   Key or key value pairs to set
+	 * @param   string $file  Value to set to a key
+	 * @return  mixed
+	 */
+    public function files($key = NULL, $file = NULL)
+    {
+        if (is_array($key))
+        {
+            // Act as a setter, replace all files
+            $this->_files = $key;
+            
+            return $this;
+        }
+        
+        if ($key === NULL)
+        {
+            // Act as a getter, all files
+            return $this->_files;
+        }
+        elseif ($file === NULL)
+        {
+            // Act as a getter, single file
+            return Arr::get($this->_files, $key);
+        }
+        
+        // Act as a setter, single file
+        $this->_files[$key] = $file;
+        
+        return $this;
+    }
 
 } // End Request
