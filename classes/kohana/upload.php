@@ -194,10 +194,10 @@ class Kohana_Upload {
 	 *     $array->rule('image', 'Upload::image')
 	 *
 	 *     // The "photo" file has a maximum size of 640x480 pixels
-	 *     $array->rule('photo', 'Upload::image', array(640, 480));
+	 *     $array->rule('photo', 'Upload::image', array(':value', 640, 480));
 	 *
 	 *     // The "image" file must be exactly 100x100 pixels
-	 *     $array->rule('image', 'Upload::image', array(100, 100, TRUE));
+	 *     $array->rule('image', 'Upload::image', array(':value', 100, 100, TRUE));
 	 *
 	 *
 	 * @param   array   $file       $_FILES item

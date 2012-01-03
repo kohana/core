@@ -128,7 +128,7 @@ abstract class Kohana_Session {
 	/**
 	 * Session object is rendered to a serialized string. If encryption is
 	 * enabled, the session will be encrypted. If not, the output string will
-	 * be encoded using [base64_encode].
+	 * be encoded.
 	 *
 	 *     echo $session;
 	 *
@@ -138,7 +138,7 @@ abstract class Kohana_Session {
 	public function __toString()
 	{
 		// Serialize the data array
-		$data = serialize($this->_data);
+		$data = $this->_serialize($this->_data);
 
 		if ($this->_encrypted)
 		{
@@ -147,8 +147,8 @@ abstract class Kohana_Session {
 		}
 		else
 		{
-			// Obfuscate the data with base64 encoding
-			$data = base64_encode($data);
+			// Encode the data
+			$data = $this->_encode($data);
 		}
 
 		return $data;
@@ -306,12 +306,12 @@ abstract class Kohana_Session {
 				}
 				else
 				{
-					// Decode the base64 encoded data
-					$data = base64_decode($data);
+					// Decode the data
+					$data = $this->_decode($data);
 				}
 
 				// Unserialize the data
-				$data = unserialize($data);
+				$data = $this->_unserialize($data);
 			}
 			else
 			{
@@ -320,8 +320,7 @@ abstract class Kohana_Session {
 		}
 		catch (Exception $e)
 		{
-			// Error reading the session, usually
-			// a corrupt session.
+			// Error reading the session, usually a corrupt session.
 			throw new Session_Exception('Error reading session data.', NULL, Session_Exception::SESSION_CORRUPT);
 		}
 
@@ -421,6 +420,50 @@ abstract class Kohana_Session {
 		$this->_destroyed = FALSE;
 
 		return $this->_restart();
+	}
+
+	/**
+	 * Serializes the session data.
+	 *
+	 * @param   array    data
+	 * @return  string
+	 */
+	protected function _serialize($data)
+	{
+		return serialize($data);
+	}
+
+	/**
+	 * Unserializes the session data.
+	 *
+	 * @param   string   data
+	 * @return  array
+	 */
+	protected function _unserialize($data)
+	{
+		return unserialize($data);
+	}
+
+	/**
+	 * Encodes the session data using [base64_encode].
+	 *
+	 * @param   string   data
+	 * @return  string
+	 */
+	protected function _encode($data)
+	{
+		return base64_encode($data);
+	}
+
+	/**
+	 * Decodes the session data using [base64_decode].
+	 *
+	 * @param   string   data
+	 * @return  string
+	 */
+	protected function _decode($data)
+	{
+		return base64_decode($data);
 	}
 
 	/**
