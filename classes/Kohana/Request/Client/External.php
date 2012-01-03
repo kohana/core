@@ -120,13 +120,6 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 		$previous = Request::$current;
 		Request::$current = $request;
 
-		// Resolve the POST fields
-		if ($post = $request->post())
-		{
-			$request->body(http_build_query($post, NULL, '&'))
-				->headers('content-type', 'application/x-www-form-urlencoded');
-		}
-
 		// If Kohana expose, set the user-agent
 		if (Kohana::$expose)
 		{
