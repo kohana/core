@@ -3,12 +3,12 @@
  * [Request_Client_External] Stream driver performs external requests using php
  * sockets. To use this driver, ensure the following is completed
  * before executing an external request- ideally in the application bootstrap.
- * 
+ *
  * @example
- * 
+ *
  *       // In application bootstrap
  *       Request_Client_External::$client = 'Request_Client_Stream';
- * 
+ *
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
@@ -30,12 +30,59 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 	public function _send_message(Request $request, Response $response)
 	{
 		// Calculate stream mode
-		$mode = ($request->method() === HTTP_Request::GET) ? 'r' : 'r+';
+		$mode = ($request->method() === HTTP_Request::GET) ? 'r' : 'rb';
 
 		// Process cookies
 		if ($cookies = $request->cookie())
 		{
 			$request->headers('cookie', http_build_query($cookies, NULL, '; '));
+		}
+
+		if ($request->method() === HTTP_Request::POST)
+		{
+			if ($files = $request->files())
+			{
+				// Set multipart form boundary
+				$boundary = '----------------------------'.Text::random('hexdec', 12);
+
+				if ($post = $request->post())
+				{
+					foreach($post as $key => $val)
+					{
+						$body[] = implode("\n", array(
+							'--'.$boundary,
+							'Content-Disposition: form-data; name="'.HTML::chars($key).'"',
+							NULL,
+							$val,
+						));
+					}
+				}
+
+				$body[] = '--'.$boundary;
+
+				foreach ($files as $name => $file)
+				{
+					$body[] = implode("\n", array(
+						'Content-Disposition: form-data; name="'.HTML::chars($name).'"; filename="'.basename($file).'"',
+						'Content-Type: '.File::mime($file),
+						'Content-Transfer-Encoding: binary',
+						NULL,
+						file_get_contents($file),
+						'--'.$boundary.'--',
+					));
+				}
+
+				$request->body(implode("\n", $body));
+				$request->headers('content-type', 'multipart/form-data; boundary='.$boundary);
+			}
+			else
+			{
+				if ($post = $request->post())
+				{
+					$request->body(http_build_query($post, NULL, '&'));
+					$request->headers('content-type', 'application/x-www-form-urlencoded');
+				}
+			}
 		}
 
 		// Get the message body
