@@ -93,7 +93,7 @@ class Kohana_Request_Client_CacheTest extends Unittest_TestCase {
 		$lifetime      = 800;
 		$request       = new Request('welcome/index');
 		$cache_mock    = $this->_get_cache_mock();
-		$response      = $request->create_response();
+		$response      = Response::factory();
 
 		$request->client()->cache(new HTTP_Cache(array(
 			'cache' => $cache_mock
@@ -138,7 +138,7 @@ class Kohana_Request_Client_CacheTest extends Unittest_TestCase {
 			)
 		));
 
-		$response = $request->create_response();
+		$response = Response::factory();
 
 		$response->headers(array(
 			'cache-control'                  => 'max-age='.$lifetime,
