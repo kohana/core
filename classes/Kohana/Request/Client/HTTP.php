@@ -89,7 +89,7 @@ class Kohana_Request_Client_HTTP extends Request_Client_External {
 				foreach ($files as $name => $file)
 				{
 					// Set the files to upload
-					$http_request->addPostFile($name, $file);
+					$http_request->addPostFile($name, $file, File::mime($file));
 				}
 			}
 
