@@ -33,7 +33,6 @@ class Kohana_RequestTest extends Unittest_TestCase
 	public function test_initial()
 	{
 		$this->setEnvironment(array(
-			'Kohana::$is_cli' => FALSE,
 			'Request::$initial' => NULL,
 			'Request::$client_ip' => NULL,
 			'Request::$user_agent' => NULL,
@@ -80,7 +79,6 @@ class Kohana_RequestTest extends Unittest_TestCase
 	{
 		$this->setEnvironment(
 			array(
-				'Kohana::$is_cli' => FALSE,
 				'Request::$initial' => NULL,
 			)
 		);
@@ -98,7 +96,6 @@ class Kohana_RequestTest extends Unittest_TestCase
 	{
 		$this->setEnvironment(
 			array(
-				'Kohana::$is_cli' => TRUE,
 				'Request::$initial' => NULL,
 			)
 		);
@@ -309,12 +306,11 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_url
 	 * @covers Request::url
-	 * @param string $route the route to use
-	 * @param array $params params to pass to route::uri
+	 * @param string $uri the uri to use
 	 * @param string $protocol the protocol to use
 	 * @param array $expected The string we expect
 	 */
-	public function test_url($uri, $protocol, $is_cli, $expected)
+	public function test_url($uri, $protocol, $expected)
 	{
 		if ( ! isset($_SERVER['argc']))
 		{
@@ -325,7 +321,6 @@ class Kohana_RequestTest extends Unittest_TestCase
 			'Kohana::$base_url'  => '/kohana/',
 			'_SERVER'            => array('HTTP_HOST' => 'localhost', 'argc' => $_SERVER['argc']),
 			'Kohana::$index_file' => FALSE,
-			'Kohana::$is_cli'    => $is_cli,
 		));
 
 		$this->assertEquals(Request::factory($uri)->url($protocol), $expected);

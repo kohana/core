@@ -143,14 +143,6 @@ class Kohana_Kohana_Exception extends Exception {
 				Kohana::$log->write();
 			}
 
-			if (Kohana::$is_cli)
-			{
-				// Just display the text of the exception
-				echo "\n{$error}\n";
-
-				exit(1);
-			}
-
 			if ( ! headers_sent())
 			{
 				// Make sure the proper http header is sent
