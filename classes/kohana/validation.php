@@ -189,8 +189,11 @@ class Kohana_Validation implements ArrayAccess {
 	 *     // The "password" field must match the "password_repeat" field
 	 *     $validation->rule('password', 'matches', array(':validation', 'password', 'password_repeat'));
 	 *
+	 *     // Using closure (anonymous function)
+	 *     $validation->rule('index', function( $value ) { return $value > 6 && $value < 10 } , array(':value'));
+	 *
 	 * @param   string    field name
-	 * @param   callback  valid PHP callback
+	 * @param   callback  valid PHP callback or closure (since PHP 5.3)
 	 * @param   array     extra parameters for the rule
 	 * @return  $this
 	 */
