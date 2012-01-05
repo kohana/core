@@ -714,4 +714,54 @@ class Kohana_RouteTest extends Unittest_TestCase
 
 		$this->assertSame($expected_uri, Route::get('test')->uri());
 	}
+
+	/**
+	 * Provider for test_route_filter_modify_params
+	 *
+	 * @return array
+	 */
+	public function provider_route_filter_modify_params()
+	{
+		return array(
+			array(
+				'<controller>/<action>',
+				array(
+					'controller'  => 'test',
+					'action'      => 'same',
+				),
+				array('Route_Holder', 'route_filter_modify_params_array'),
+				'test/different',
+				array(
+					'controller'  => 'test',
+					'action'      => 'modified',
+				),
+			),
+			array(
+				'<controller>/<action>',
+				array(
+					'controller'  => 'test',
+					'action'      => 'same',
+				),
+				array('Route_Holder', 'route_filter_modify_params_false'),
+				'test/fail',
+				FALSE,
+			),
+		);
+	}
+
+	/**
+	 * Tests that route filters can modify parameters
+	 *
+	 * @covers Route::filter
+	 * @dataProvider provider_route_filter_modify_params
+	 */
+	public function test_route_filter_modify_params($route, $defaults, $filter, $uri, $expected_params)
+	{
+		$route = new Route($route);
+
+		$params = $route->defaults($defaults)->filter($filter)->matches($uri);
+
+		$this->assertSame($expected_params, $params);
+	}
+
 }
