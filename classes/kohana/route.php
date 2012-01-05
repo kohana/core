@@ -378,9 +378,10 @@ class Kohana_Route {
 	 *         }
 	 *     );
 	 *
-	 * Callbacks can be functions, methods, or closures.
+	 * To prevent a route from matching, return `FALSE`. To replace the route
+	 * parameters, return an array.
 	 *
-	 * [!!] To prevent a route from matching, return `FALSE`.
+	 * [!!] Default parameters are added before filters are called!
 	 *
 	 * @throws  Kohana_Exception
 	 * @param   array   $callback   callback string, array, or closure
@@ -459,13 +460,18 @@ class Kohana_Route {
 		{
 			foreach ($this->_filters as $callback)
 			{
-				// Filter the parameters with the callback
-				$params = call_user_func($callback, $this, $params);
+				// Execute the filter
+				$return = call_user_func($callback, $this, $params);
 
-				if ( ! is_array($params))
+				if ($return === FALSE)
 				{
 					// Filter has aborted the match
 					return FALSE;
+				}
+				elseif (is_array($return))
+				{
+					// Filter has modified the parameters
+					$params = $return;
 				}
 			}
 		}
