@@ -60,11 +60,11 @@ function koggle(elem)
 						<?php if ($step['file']): $source_id = $error_id.'source'.$i; ?>
 							<a href="#<?php echo $source_id ?>" onclick="return koggle('<?php echo $source_id ?>')"><?php echo Debug::path($step['file']) ?> [ <?php echo $step['line'] ?> ]</a>
 						<?php else: ?>
-							{<?php echo __('PHP internal call') ?>}
+							{<?php echo __('PHP internal call', NULL, 'en-us') ?>}
 						<?php endif ?>
 					</span>
 					&raquo;
-					<?php echo $step['function'] ?>(<?php if ($step['args']): $args_id = $error_id.'args'.$i; ?><a href="#<?php echo $args_id ?>" onclick="return koggle('<?php echo $args_id ?>')"><?php echo __('arguments') ?></a><?php endif ?>)
+					<?php echo $step['function'] ?>(<?php if ($step['args']): $args_id = $error_id.'args'.$i; ?><a href="#<?php echo $args_id ?>" onclick="return koggle('<?php echo $args_id ?>')"><?php echo __('arguments', NULL, 'en-us') ?></a><?php endif ?>)
 				</p>
 				<?php if (isset($args_id)): ?>
 				<div id="<?php echo $args_id ?>" class="collapsed">
@@ -86,10 +86,10 @@ function koggle(elem)
 		<?php endforeach ?>
 		</ol>
 	</div>
-	<h2><a href="#<?php echo $env_id = $error_id.'environment' ?>" onclick="return koggle('<?php echo $env_id ?>')"><?php echo __('Environment') ?></a></h2>
+	<h2><a href="#<?php echo $env_id = $error_id.'environment' ?>" onclick="return koggle('<?php echo $env_id ?>')"><?php echo __('Environment', NULL, 'en-us') ?></a></h2>
 	<div id="<?php echo $env_id ?>" class="content collapsed">
 		<?php $included = get_included_files() ?>
-		<h3><a href="#<?php echo $env_id = $error_id.'environment_included' ?>" onclick="return koggle('<?php echo $env_id ?>')"><?php echo __('Included files') ?></a> (<?php echo count($included) ?>)</h3>
+		<h3><a href="#<?php echo $env_id = $error_id.'environment_included' ?>" onclick="return koggle('<?php echo $env_id ?>')"><?php echo __('Included files', NULL, 'en-us') ?></a> (<?php echo count($included) ?>)</h3>
 		<div id="<?php echo $env_id ?>" class="collapsed">
 			<table cellspacing="0">
 				<?php foreach ($included as $file): ?>
@@ -100,7 +100,7 @@ function koggle(elem)
 			</table>
 		</div>
 		<?php $included = get_loaded_extensions() ?>
-		<h3><a href="#<?php echo $env_id = $error_id.'environment_loaded' ?>" onclick="return koggle('<?php echo $env_id ?>')"><?php echo __('Loaded extensions') ?></a> (<?php echo count($included) ?>)</h3>
+		<h3><a href="#<?php echo $env_id = $error_id.'environment_loaded' ?>" onclick="return koggle('<?php echo $env_id ?>')"><?php echo __('Loaded extensions', NULL, 'en-us') ?></a> (<?php echo count($included) ?>)</h3>
 		<div id="<?php echo $env_id ?>" class="collapsed">
 			<table cellspacing="0">
 				<?php foreach ($included as $file): ?>
