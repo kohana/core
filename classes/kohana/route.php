@@ -67,7 +67,7 @@ class Kohana_Route {
 	public static $cache = FALSE;
 
 	/**
-	 * @var  array 
+	 * @var  array
 	 */
 	protected static $_routes = array();
 
@@ -254,6 +254,11 @@ class Kohana_Route {
 	protected $_callback;
 
 	/**
+	 * @var  array  route filters
+	 */
+	protected $_filters = array();
+
+	/**
 	 * @var  string  route URI
 	 */
 	protected $_uri = '';
@@ -340,7 +345,7 @@ class Kohana_Route {
 	 *         'controller' => 'welcome',
 	 *         'action'     => 'index'
 	 *     ));
-	 * 
+	 *
 	 * If no parameter is passed, this method will act as a getter.
 	 *
 	 * @param   array   $defaults   key values
@@ -354,6 +359,42 @@ class Kohana_Route {
 		}
 
 		$this->_defaults = $defaults;
+
+		return $this;
+	}
+
+	/**
+	 * Filters to be run before route parameters are returned:
+	 *
+	 *     $route->filter(
+	 *         function(Route $route, $params)
+	 *         {
+	 *             if ($params AND $params['controller'] === 'welcome')
+	 *             {
+	 *                 $params['controller'] = 'home';
+	 *             }
+	 *
+	 *             return $params;
+	 *         }
+	 *     );
+	 *
+	 * To prevent a route from matching, return `FALSE`. To replace the route
+	 * parameters, return an array.
+	 *
+	 * [!!] Default parameters are added before filters are called!
+	 *
+	 * @throws  Kohana_Exception
+	 * @param   array   $callback   callback string, array, or closure
+	 * @return  $this
+	 */
+	public function filter($callback)
+	{
+		if ( ! is_callable($callback))
+		{
+			throw new Kohana_Exception('Invalid Route::callback specified');
+		}
+
+		$this->_filters[] = $callback;
 
 		return $this;
 	}
@@ -412,6 +453,26 @@ class Kohana_Route {
 			{
 				// Set default values for any key that was not matched
 				$params[$key] = $value;
+			}
+		}
+
+		if ($this->_filters)
+		{
+			foreach ($this->_filters as $callback)
+			{
+				// Execute the filter
+				$return = call_user_func($callback, $this, $params);
+
+				if ($return === FALSE)
+				{
+					// Filter has aborted the match
+					return FALSE;
+				}
+				elseif (is_array($return))
+				{
+					// Filter has modified the parameters
+					$params = $return;
+				}
 			}
 		}
 
