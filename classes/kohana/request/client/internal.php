@@ -49,6 +49,13 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 		// Controller
 		$controller = $request->controller();
+		
+		// Namespace
+		$namespace = $request->name_space();
+		if ($namespace)
+		{
+			$namespace .= '\\';
+		}
 
 		if ($directory)
 		{
@@ -82,19 +89,19 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 		try
 		{
-			if ( ! class_exists($prefix.$controller))
+			if ( ! class_exists($namespace.$prefix.$controller))
 			{
 				throw new HTTP_Exception_404('The requested URL :uri was not found on this server.',
 													array(':uri' => $request->uri()));
 			}
 
 			// Load the controller using reflection
-			$class = new ReflectionClass($prefix.$controller);
+			$class = new ReflectionClass($namespace.$prefix.$controller);
 
 			if ($class->isAbstract())
 			{
 				throw new Kohana_Exception('Cannot create instances of abstract :controller',
-					array(':controller' => $prefix.$controller));
+					array(':controller' => $namespace.$prefix.$controller));
 			}
 
 			// Create a new instance of the controller
