@@ -179,6 +179,11 @@ class Kohana_ArrTest extends Unittest_TestCase
 			array(array('we' => 'can', 'make' => 'change'), 'he', NULL, NULL),
 			array(array('we' => 'can', 'make' => 'change'), 'he', 'who', 'who'),
 			array(array('we' => 'can', 'make' => 'change'), 'he', array('arrays'), array('arrays')),
+			array(array('value' => NULL), 'value', "foo", NULL),
+			array(new ArrayObject(array('value' => "foo"), ArrayObject::STD_PROP_LIST), "value", NULL, 'foo'),
+			array(new ArrayObject(array('value' => NULL), ArrayObject::STD_PROP_LIST), "value", "foo", NULL),
+			array(new ArrayObject(array('value' => NULL)), "value", "foo", NULL),
+			array(new ArrayObject(array('value' => "foo")), "value", NULL, "foo")
 		);
 	}
 
@@ -187,12 +192,12 @@ class Kohana_ArrTest extends Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_get()
-	 * @param array          $array      Array to look in
-	 * @param string|integer $key        Key to look for
-	 * @param mixed          $default    What to return if $key isn't set
-	 * @param mixed          $expected   The expected value returned
+	 * @param array|ArrayObject     $array      Array to look in
+	 * @param string|integer        $key        Key to look for
+	 * @param mixed                 $default    What to return if $key isn't set
+	 * @param mixed                 $expected   The expected value returned
 	 */
-	public function test_get(array $array, $key, $default, $expected)
+	public function test_get($array, $key, $default, $expected)
 	{
 		$this->assertSame(
 			$expected,
