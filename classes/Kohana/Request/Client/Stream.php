@@ -49,7 +49,7 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 				{
 					foreach($post as $key => $val)
 					{
-						$body[] = implode("\n", array(
+						$body[] = implode(Request_Client::CRLF, array(
 							'--'.$boundary,
 							'Content-Disposition: form-data; name="'.HTML::chars($key).'"',
 							NULL,
@@ -62,7 +62,7 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 
 				foreach ($files as $name => $file)
 				{
-					$body[] = implode("\n", array(
+					$body[] = implode(Request_Client::CRLF, array(
 						'Content-Disposition: form-data; name="'.HTML::chars($name).'"; filename="'.basename($file).'"',
 						'Content-Type: '.File::mime($file),
 						'Content-Transfer-Encoding: binary',
@@ -72,7 +72,7 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 					));
 				}
 
-				$request->body(implode("\n", $body));
+				$request->body(implode(Request_Client::CRLF, $body));
 				$request->headers('content-type', 'multipart/form-data; boundary='.$boundary);
 			}
 			else

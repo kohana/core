@@ -14,6 +14,11 @@
 abstract class Kohana_Request_Client {
 
 	/**
+	 * @var  string  HTTP end-of-line
+	 */
+	const CRLF = "\r\n";
+
+	/**
 	 * @var    Cache  Caching library for request caching
 	 */
 	protected $_cache;
