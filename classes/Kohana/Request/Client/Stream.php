@@ -52,25 +52,26 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 						$body[] = implode(Request_Client::CRLF, array(
 							'--'.$boundary,
 							'Content-Disposition: form-data; name="'.HTML::chars($key).'"',
-							NULL,
+							NULL, // Extra newline
 							$val,
 						));
 					}
 				}
 
-				$body[] = '--'.$boundary;
-
 				foreach ($files as $name => $file)
 				{
 					$body[] = implode(Request_Client::CRLF, array(
+						'--'.$boundary,
 						'Content-Disposition: form-data; name="'.HTML::chars($name).'"; filename="'.basename($file).'"',
 						'Content-Type: '.File::mime($file),
 						'Content-Transfer-Encoding: binary',
-						NULL,
+						NULL, // Extra newline
 						file_get_contents($file),
-						'--'.$boundary.'--',
 					));
 				}
+
+				// Final boundary has a double-dash at the end
+				$body[] = '--'.$boundary.'--';
 
 				$request->body(implode(Request_Client::CRLF, $body));
 				$request->headers('content-type', 'multipart/form-data; boundary='.$boundary);
