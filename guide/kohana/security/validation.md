@@ -8,7 +8,7 @@ labels
 :  A label is a human-readable version of the field name.
 
 rules
-:  A rule is a callback used to decide whether or not to add an error to a field
+:  A rule is a callback or closure used to decide whether or not to add an error to a field
 
 [!!] Note that any valid [PHP callback](http://php.net/manual/language.pseudo-types.php#language.types.callback) can be used as a rule.
 
@@ -50,7 +50,7 @@ Rule name                 | Function
 
 ## Adding Rules
 
-All validation rules are defined as a field name, a method or function (using the [PHP callback](http://php.net/callback) syntax), and an array of parameters:
+All validation rules are defined as a field name, a method, a function (using the [PHP callback](http://php.net/callback) syntax) or [closure](http://php.net/manual/functions.anonymous.php), and an array of parameters:
 
     $object->rule($field, $callback, array($parameter1, $parameter2));
 
@@ -88,7 +88,7 @@ The [Validation] class will add an error for a field if any of the rules associa
 Rules added to empty fields will run, but returning `FALSE` will not automatically add an error for the field. In order for a rule to affect empty fields, you must add the error manually by calling the [Validation::error] method. In order to do this, you must pass the validation object to the rule.
 
     $object->rule($field, 'the_rule', array(':validation', ':field'));
-    
+
     public function the_rule($validation, $field)
     {
         if (something went wrong)
