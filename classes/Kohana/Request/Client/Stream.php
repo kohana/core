@@ -49,9 +49,11 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 				{
 					foreach($post as $key => $val)
 					{
+						$q_key = $this->encode_header_param($key);
+
 						$body[] = implode(Request_Client::CRLF, array(
 							'--'.$boundary,
-							'Content-Disposition: form-data; name="'.HTML::chars($key).'"',
+							'Content-Disposition: form-data; name="'.$q_key.'"',
 							NULL, // Extra newline
 							$val,
 						));
@@ -60,9 +62,12 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 
 				foreach ($files as $name => $file)
 				{
+					$q_name = $this->encode_header_param($name);
+					$q_file = $this->encode_header_param(basename($file));
+
 					$body[] = implode(Request_Client::CRLF, array(
 						'--'.$boundary,
-						'Content-Disposition: form-data; name="'.HTML::chars($name).'"; filename="'.basename($file).'"',
+						'Content-Disposition: form-data; name="'.$q_name.'"; filename="'.$q_file.'"',
 						'Content-Type: '.File::mime($file),
 						'Content-Transfer-Encoding: binary',
 						NULL, // Extra newline
@@ -152,6 +157,23 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 		fclose($stream);
 
 		return $response;
+	}
+
+	/**
+	 * Encodes and escapes header parameters.
+	 *
+	 * @param   string  $str  text to encode
+	 * @return  string
+	 */
+	protected function encode_header_param($str)
+	{
+		// Apply ASCII encoding to the string, as per RFC 2045
+		$str = quoted_printable_encode($str);
+
+		// Escape backslashes and double quotes
+		$str = str_replace(array('\\', '"'), array('\\\\', '\\"'), $str);
+
+		return $str;
 	}
 
 } // End Kohana_Request_Client_Stream
