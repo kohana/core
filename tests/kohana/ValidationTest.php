@@ -603,4 +603,29 @@ class Kohana_ValidationTest extends Unittest_TestCase
 		// Validation is read-only
 		unset($validation['one']);
 	}
+
+	/**
+	 * http://dev.kohanaframework.org/issues/4365
+	 *
+	 * @test
+	 * @covers Validation::errors
+	 */
+	public function test_error_type_check()
+	{
+		$array = array(
+			'email' => 'not an email address',
+		);
+
+		$validation = Validation::factory($array)
+			->rule('email', 'not_empty')
+			->rule('email', 'email')
+			;
+
+		$validation->check();
+
+		$errors = $validation->errors('tests/validation/error_type_check');
+
+		$this->assertSame($errors, $validation->errors('validation'));
+	}
+
 }
