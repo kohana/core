@@ -369,7 +369,9 @@ class Kohana_Date {
 
 		if (isset($output['months']))
 		{
-			$timespan -= Date::MONTH * ($output['months'] = (int) floor($timespan / Date::MONTH));
+			$diff = date_diff(new DateTime('@'.$remote), new DateTime('@'.$local));
+
+			$timespan -= Date::MONTH * ($output['months'] = (int) $diff->m);
 		}
 
 		if (isset($output['weeks']))
