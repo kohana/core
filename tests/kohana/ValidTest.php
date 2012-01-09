@@ -848,16 +848,19 @@ class Kohana_ValidTest extends Unittest_TestCase
 	public function provider_range()
 	{
 		return array(
-			array(1,  0,  2, TRUE),
-			array(-1, -5, 0, TRUE),
-			array(-1, 0,  1, FALSE),
-			array(1,  0,  0, FALSE),
-			array(2147483647, 0, 200000000000000, TRUE),
-			array(-2147483647, -2147483655, 2147483645, TRUE),
+			array(1,  0,  2, NULL, TRUE),
+			array(-1, -5, 0, NULL, TRUE),
+			array(-1, 0,  1, NULL, FALSE),
+			array(1,  0,  0, NULL, FALSE),
+			array(2147483647, 0, 200000000000000, NULL, TRUE),
+			array(-2147483647, -2147483655, 2147483645, NULL, TRUE),
+			// #4043
+			array(2, 0, 10, 2, TRUE),
+			array(3, 0, 10, 2, FALSE),
 			// Empty test
-			array('', 5, 10, FALSE),
-			array(NULL, 5, 10, FALSE),
-			array(FALSE, 5, 10, FALSE),
+			array('', 5, 10, NULL, FALSE),
+			array(NULL, 5, 10, NULL, FALSE),
+			array(FALSE, 5, 10, NULL, FALSE),
 		);
 	}
 
@@ -873,11 +876,11 @@ class Kohana_ValidTest extends Unittest_TestCase
 	 * @param integer $max       Upper bound
 	 * @param boolean $expected  Is Number within the bounds of $min && $max
 	 */
-	public function test_range($number, $min, $max, $expected)
+	public function test_range($number, $min, $max, $step, $expected)
 	{
 		$this->AssertSame(
 			$expected,
-			Valid::range($number, $min, $max)
+			Valid::range($number, $min, $max, $step)
 		);
 	}
 
