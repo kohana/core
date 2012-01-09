@@ -603,4 +603,84 @@ class Kohana_Text {
 		return $str;
 	}
 
+	/**
+	 * Returns information about the client user agent.
+	 *
+	 *     // Returns "Chrome" when using Google Chrome
+	 *     $browser = Text::user_agent('browser');
+	 *
+	 * Multiple values can be returned at once by using an array:
+	 *
+	 *     // Get the browser and platform with a single call
+	 *     $info = Text::user_agent(array('browser', 'platform'));
+	 *
+	 * When using an array for the value, an associative array will be returned.
+	 *
+	 * @param   mixed   $value  array or string to return: browser, version, robot, mobile, platform
+	 * @return  mixed   requested information, FALSE if nothing is found
+	 * @uses    Kohana::$config
+	 */
+	public static function user_agent($agent, $value)
+	{
+		if (is_array($value))
+		{
+			$data = array();
+			foreach ($value as $part)
+			{
+				// Add each part to the set
+				$data[$part] = Text::user_agent($agent, $part);
+			}
+
+			return $data;
+		}
+
+		if ($value === 'browser' OR $value == 'version')
+		{
+			// Extra data will be captured
+			$info = array();
+
+			// Load browsers
+			$browsers = Kohana::$config->load('user_agents')->browser;
+
+			foreach ($browsers as $search => $name)
+			{
+				if (stripos($agent, $search) !== FALSE)
+				{
+					// Set the browser name
+					$info['browser'] = $name;
+
+					if (preg_match('#'.preg_quote($search).'[^0-9.]*+([0-9.][0-9.a-z]*)#i', Request::$user_agent, $matches))
+					{
+						// Set the version number
+						$info['version'] = $matches[1];
+					}
+					else
+					{
+						// No version number found
+						$info['version'] = FALSE;
+					}
+
+					return $info[$value];
+				}
+			}
+		}
+		else
+		{
+			// Load the search group for this type
+			$group = Kohana::$config->load('user_agents')->$value;
+
+			foreach ($group as $search => $name)
+			{
+				if (stripos($agent, $search) !== FALSE)
+				{
+					// Set the value name
+					return $name;
+				}
+			}
+		}
+
+		// The value requested could not be found
+		return FALSE;
+	}
+
 } // End text
