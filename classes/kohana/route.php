@@ -162,7 +162,7 @@ class Kohana_Route {
 		{
 			if ($routes = Kohana::cache('Route::cache()'))
 			{
-				Route::$_routes = $routes;
+				Route::$_routes += $routes;
 
 				// Routes were cached
 				return Route::$cache = TRUE;
