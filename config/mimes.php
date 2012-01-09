@@ -193,6 +193,7 @@ return array
 	'wav'   => array('audio/x-wav'),
 	'wax'   => array('audio/x-ms-wax'),
 	'wbxml' => array('application/wbxml'),
+	'webm'  => array('video/webm'),
 	'wm'    => array('video/x-ms-wm'),
 	'wma'   => array('audio/x-ms-wma'),
 	'wmd'   => array('application/x-ms-wmd'),
