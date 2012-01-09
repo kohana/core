@@ -385,6 +385,9 @@ class Kohana_Request implements HTTP_Request {
 	 *
 	 *     $types = Request::accept_type();
 	 *
+	 * [!!] Deprecated in favor of using `$request->headers('accept-type')`.
+	 *
+	 * @deprecated  since version 3.3.0
 	 * @param   string  $type Content MIME type
 	 * @return  mixed   An array of all types or a specific type as a string
 	 * @uses    Request::_parse_accept
