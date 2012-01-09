@@ -147,11 +147,12 @@ class Kohana_Route {
 	 *     }
 	 *
 	 * @param   boolean $save   cache the current routes
+	 * @param   boolean $append append, rather than replace, cached routes when loading
 	 * @return  void    when saving routes
 	 * @return  boolean when loading routes
 	 * @uses    Kohana::cache
 	 */
-	public static function cache($save = FALSE)
+	public static function cache($save = FALSE, $append = FALSE)
 	{
 		if ($save === TRUE)
 		{
@@ -162,7 +163,16 @@ class Kohana_Route {
 		{
 			if ($routes = Kohana::cache('Route::cache()'))
 			{
-				Route::$_routes += $routes;
+				if ($append)
+				{
+					// Append cached routes
+					Route::$_routes += $routes;
+				}
+				else
+				{
+					// Replace existing routes
+					Route::$_routes = $routes;
+				}
 
 				// Routes were cached
 				return Route::$cache = TRUE;

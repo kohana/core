@@ -114,6 +114,34 @@ class Kohana_RouteTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Check appending cached routes. See http://dev.kohanaframework.org/issues/4347
+	 *
+	 * @test
+	 * @covers Route::cache
+	 */
+	public function test_cache_append_routes()
+	{
+		$cached = Route::all();
+
+		// First we create the cache
+		Route::cache(TRUE);
+
+		// Now lets modify the "current" routes
+		Route::set('nonsensical_route', 'flabbadaga/ding_dong');
+
+		$modified = Route::all();
+
+		// Then try and load said cache
+		$this->assertTrue(Route::cache(NULL, TRUE));
+
+		// Check the route cache flag
+		$this->assertTrue(Route::$cache);
+
+		// And if all went ok the nonsensical route should exist with the other routes...
+		$this->assertEquals(Route::all(), $cached + $modified);
+	}
+
+	/**
 	 * Route::cache() should return FALSE if cached routes could not be found
 	 *
 	 * The cache is cleared before and after each test in setUp tearDown
