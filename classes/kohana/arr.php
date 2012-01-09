@@ -555,16 +555,25 @@ class Kohana_Arr {
 	 */
 	public static function flatten($array)
 	{
+		$is_assoc = Arr::is_assoc($array);
+
 		$flat = array();
 		foreach ($array as $key => $value)
 		{
 			if (is_array($value))
 			{
-				$flat += Arr::flatten($value);
+				$flat = array_merge($flat, Arr::flatten($value));
 			}
 			else
 			{
-				$flat[$key] = $value;
+				if ($is_assoc)
+				{
+					$flat[$key] = $value;
+				}
+				else
+				{
+					$flat[] = $value;
+				}
 			}
 		}
 		return $flat;
