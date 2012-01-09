@@ -1425,6 +1425,7 @@ class Kohana_Request implements HTTP_Request {
 	 * @param   mixed   $key    Key or key value pairs to set
 	 * @param   string  $value  Value to set to a key
 	 * @return  mixed
+	 * @uses    Arr::path
 	 */
 	public function query($key = NULL, $value = NULL)
 	{
@@ -1444,7 +1445,7 @@ class Kohana_Request implements HTTP_Request {
 		elseif ($value === NULL)
 		{
 			// Act as a getter, single query string
-			return Arr::get($this->_get, $key);
+			return Arr::path($this->_get, $key);
 		}
 
 		// Act as a setter, single query string
@@ -1459,6 +1460,7 @@ class Kohana_Request implements HTTP_Request {
 	 * @param   mixed  $key    Key or key value pairs to set
 	 * @param   string $value  Value to set to a key
 	 * @return  mixed
+	 * @uses    Arr::path
 	 */
 	public function post($key = NULL, $value = NULL)
 	{
@@ -1478,7 +1480,7 @@ class Kohana_Request implements HTTP_Request {
 		elseif ($value === NULL)
 		{
 			// Act as a getter, single field
-			return Arr::get($this->_post, $key);
+			return Arr::path($this->_post, $key);
 		}
 
 		// Act as a setter, single field
