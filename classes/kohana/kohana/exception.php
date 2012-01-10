@@ -229,7 +229,7 @@ class Kohana_Kohana_Exception extends Exception {
 			 */
 			if (defined('PHPUnit_MAIN_METHOD'))
 			{
-				$trace = array();
+				$trace = array_slice($trace, 0, 2);
 			}
 
 			// Instantiate the error view.
