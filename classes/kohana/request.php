@@ -385,7 +385,7 @@ class Kohana_Request implements HTTP_Request {
 	 *
 	 *     $types = Request::accept_type();
 	 *
-	 * [!!] Deprecated in favor of using `$request->headers('accept')`.
+	 * [!!] Deprecated in favor of using [HTTP_Header::accepts_at_quality].
 	 *
 	 * @deprecated  since version 3.3.0
 	 * @param   string  $type Content MIME type
@@ -418,7 +418,7 @@ class Kohana_Request implements HTTP_Request {
 	 *
 	 *     $langs = Request::accept_lang();
 	 *
-	 * [!!] Deprecated in favor of using `$request->headers('accept')`.
+	 * [!!] Deprecated in favor of using [HTTP_Header::accepts_language_at_quality].
 	 *
 	 * @deprecated  since version 3.3.0
 	 * @param   string  $lang  Language code
@@ -451,7 +451,7 @@ class Kohana_Request implements HTTP_Request {
 	 *
 	 *     $encodings = Request::accept_encoding();
 	 *
-	 * [!!] Deprecated in favor of using `$request->headers('accept')`.
+	 * [!!] Deprecated in favor of using [HTTP_Header::accepts_encoding_at_quality].
 	 *
 	 * @deprecated  since version 3.3.0
 	 * @param   string  $type Encoding type
