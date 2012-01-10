@@ -277,14 +277,19 @@ class Kohana_ArrTest extends Unittest_TestCase
 			),
 			// See how it merges sub-arrays with numerical indexes
 			array(
-				array(array('test1','test3'), array('test2','test4')),
+				array(array('test1'), array('test2'), array('test3')),
 				array(array('test1'), array('test2')),
-				array(array('test3'), array('test4')),
+				array(array('test2'), array('test3')),
 			),
 			array(
-				array(array('test1','test3'), array('test2','test4')),
-				array(array('test1'), array('test2')),
-				array(array('test3'), array('test4')),
+				array(array(array('test1')), array(array('test2')), array(array('test3'))),
+				array(array(array('test1')), array(array('test2'))),
+				array(array(array('test2')), array(array('test3'))),
+			),
+			array(
+				array('a' => array('test1','test2'), 'b' => array('test2','test3')),
+				array('a' => array('test1'), 'b' => array('test2')),
+				array('a' => array('test2'), 'b' => array('test3')),
 			),
 			array(
 				array('digits' => array(0, 1, 2, 3)),
@@ -313,6 +318,73 @@ class Kohana_ArrTest extends Unittest_TestCase
 				array('foo'	=> 'bar'),
 				array('foo'	=> array('bar')),
 				array('foo'	=> 'bar'),
+			),
+
+			// data set #9
+			// Associative, Associative
+			array(
+				array('a' => 'K', 'b' => 'K', 'c' => 'L'),
+				array('a' => 'J', 'b' => 'K'),
+				array('a' => 'K', 'c' => 'L'),
+			),
+			// Associative, Indexed
+			array(
+				array('a' => 'J', 'b' => 'K', 'L'),
+				array('a' => 'J', 'b' => 'K'),
+				array('K', 'L'),
+			),
+			// Associative, Mixed
+			array(
+				array('a' => 'J', 'b' => 'K', 'K', 'c' => 'L'),
+				array('a' => 'J', 'b' => 'K'),
+				array('K', 'c' => 'L'),
+			),
+
+			// data set #12
+			// Indexed, Associative
+			array(
+				array('J', 'K', 'a' => 'K', 'c' => 'L'),
+				array('J', 'K'),
+				array('a' => 'K', 'c' => 'L'),
+			),
+			// Indexed, Indexed
+			array(
+				array('J', 'K', 'L'),
+				array('J', 'K'),
+				array('K', 'L'),
+			),
+			// Indexed, Mixed
+			array(
+				array('K', 'K', 'c' => 'L'),
+				array('J', 'K'),
+				array('K', 'c' => 'L'),
+			),
+
+			// data set #15
+			// Mixed, Associative
+			array(
+				array('a' => 'K', 'K', 'c' => 'L'),
+				array('a' => 'J', 'K'),
+				array('a' => 'K', 'c' => 'L'),
+			),
+			// Mixed, Indexed
+			array(
+				array('a' => 'J', 'K', 'L'),
+				array('a' => 'J', 'K'),
+				array('J', 'L'),
+			),
+			// Mixed, Mixed
+			array(
+				array('a' => 'K', 'L'),
+				array('a' => 'J', 'K'),
+				array('a' => 'K', 'L'),
+			),
+
+			// Bug #3141
+			array(
+				array('servers' => array(array('1.1.1.1', 4730), array('2.2.2.2', 4730))),
+				array('servers' => array(array('1.1.1.1', 4730))),
+				array('servers' => array(array('2.2.2.2', 4730))),
 			),
 		);
 	}
