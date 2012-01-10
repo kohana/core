@@ -47,10 +47,11 @@ class Kohana_Request_Client_HTTP extends Request_Client_External {
 	 * Sends the HTTP message [Request] to a remote server and processes
 	 * the response.
 	 *
-	 * @param   Request $request    request to send
+	 * @param   Request   $request  request to send
+	 * @param   Response  $request  response to send
 	 * @return  Response
 	 */
-	public function _send_message(Request $request)
+	public function _send_message(Request $request, Response $response)
 	{
 		$http_method_mapping = array(
 			HTTP_Request::GET     => HTTPRequest::METH_GET,
@@ -107,9 +108,6 @@ class Kohana_Request_Client_HTTP extends Request_Client_External {
 		{
 			throw new Request_Exception($e->getMessage());
 		}
-
-		// Create the response
-		$response = $request->create_response();
 
 		// Build the response
 		$response->status($http_request->getResponseCode())

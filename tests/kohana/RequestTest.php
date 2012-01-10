@@ -172,46 +172,6 @@ class Kohana_RequestTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Provides data for Request::create_response()
-	 */
-	public function provider_create_response()
-	{
-		return array(
-			array('foo/bar', TRUE, TRUE),
-			array('foo/bar', FALSE, FALSE)
-		);
-	}
-
-	/**
-	 * Ensures a request creates an empty response, and binds correctly
-	 *
-	 * @test
-	 * @dataProvider  provider_create_response
-	 */
-	public function test_create_response($uri, $bind, $equality)
-	{
-		$request = Request::factory($uri);
-		$response = $request->create_response($bind);
-
-		$this->assertEquals(($request->response() === $response), $equality);
-	}
-
-	/**
-	 * Tests Request::response()
-	 *
-	 * @test
-	 */
-	public function test_response()
-	{
-		$request = Request::factory('foo/bar');
-		$response = $request->create_response(FALSE);
-
-		$this->assertEquals($request->response(), NULL);
-		$this->assertEquals(($request->response($response) === $request), TRUE);
-		$this->assertEquals(($request->response() === $response), TRUE);
-	}
-
-	/**
 	 * Tests Request::method()
 	 *
 	 * @test

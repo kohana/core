@@ -648,59 +648,6 @@ class Kohana_Response implements HTTP_Response {
 	}
 
 	/**
-	 * Check Cache
-	 * Checks the browser cache to see the response needs to be returned
-	 *
-	 * @param   string   $etag Resource ETag
-	 * @param   Request  $request The request to test against
-	 * @return  Response
-	 * @throws  Request_Exception
-	 */
-	public function check_cache($etag = NULL, Request $request = NULL)
-	{
-		if ( ! $etag)
-		{
-			$etag = $this->generate_etag();
-		}
-
-		if ( ! $request)
-			throw new Request_Exception('A Request object must be supplied with an etag for evaluation');
-
-		// Set the ETag header
-		$this->_header['etag'] = $etag;
-
-		// Add the Cache-Control header if it is not already set
-		// This allows etags to be used with max-age, etc
-		if ($this->_header->offsetExists('cache-control'))
-		{
-			if (is_array($this->_header['cache-control']))
-			{
-				$this->_header['cache-control'][] = new HTTP_Header_Value('must-revalidate');
-			}
-			else
-			{
-				$this->_header['cache-control'] = $this->_header['cache-control'].', must-revalidate';
-			}
-		}
-		else
-		{
-			$this->_header['cache-control'] = 'must-revalidate';
-		}
-
-		if ($request->headers('if-none-match') AND (string) $request->headers('if-none-match') === $etag)
-		{
-			// No need to send data again
-			$this->_status = 304;
-			$this->send_headers();
-
-			// Stop execution
-			exit;
-		}
-
-		return $this;
-	}
-
-	/**
 	 * Parse the byte ranges from the HTTP_RANGE header used for
 	 * resumable downloads.
 	 *
