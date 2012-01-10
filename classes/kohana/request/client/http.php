@@ -12,7 +12,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  * @uses       [PECL HTTP](http://php.net/manual/en/book.http.php)
  */
