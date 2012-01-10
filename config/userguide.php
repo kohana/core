@@ -17,7 +17,7 @@ return array(
 			'description' => 'Documentation for Kohana core/system.',
 			
 			// Copyright message, shown in the footer for this module
-			'copyright' => '&copy; 2008–2010 Kohana Team',
+			'copyright' => '&copy; 2008–2012 Kohana Team',
 		)	
 	)
 );
