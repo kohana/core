@@ -143,14 +143,6 @@ class Kohana_Kohana_Exception extends Exception {
 				Kohana::$log->write();
 			}
 
-			if (Kohana::$is_cli)
-			{
-				// Just display the text of the exception
-				echo "\n{$error}\n";
-
-				exit(1);
-			}
-
 			if ( ! headers_sent())
 			{
 				// Make sure the proper http header is sent
@@ -164,7 +156,7 @@ class Kohana_Kohana_Exception extends Exception {
 				// Just display the text of the exception
 				echo "\n{$error}\n";
 
-				exit(1);
+				return;
 			}
 
 			// Start an output buffer
@@ -184,8 +176,6 @@ class Kohana_Kohana_Exception extends Exception {
 
 			// Display the contents of the output buffer
 			echo ob_get_clean();
-
-			exit(1);
 		}
 		catch (Exception $e)
 		{
@@ -194,9 +184,6 @@ class Kohana_Kohana_Exception extends Exception {
 
 			// Display the exception text
 			echo Kohana_Exception::text($e), "\n";
-
-			// Exit with an error status
-			exit(1);
 		}
 	}
 

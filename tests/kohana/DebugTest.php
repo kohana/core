@@ -26,7 +26,7 @@ class Kohana_DebugTest extends Unittest_TestCase
 	public function provider_vars()
 	{
 		return array(
-			// $exception_type, $message, $is_cli, $expected
+			// $thing, $expected
 			array(array('foobar'), "<pre class=\"debug\"><small>array</small><span>(1)</span> <span>(\n    0 => <small>string</small><span>(6)</span> \"foobar\"\n)</span></pre>"),
 		);
 	}
