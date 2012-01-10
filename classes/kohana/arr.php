@@ -272,10 +272,18 @@ class Kohana_Arr {
 	 * @param   mixed   $default    default value
 	 * @return  mixed
 	 */
-	public static function get($array, $key, $default = NULL)
-	{
-		return isset($array[$key]) ? $array[$key] : $default;
-	}
+    public static function get($array, $key, $default = NULL)
+    {
+        if (array_key_exists($key, $array)
+            OR ($array instanceof ArrayAccess AND $array->offsetExists($key)))
+        {
+            return $array[$key];
+        }
+        else
+        {
+            return $default;
+        }
+    }
 
 	/**
 	 * Retrieves multiple paths from an array. If the path does not exist in the
@@ -579,16 +587,25 @@ class Kohana_Arr {
 	 */
 	public static function flatten($array)
 	{
+		$is_assoc = Arr::is_assoc($array);
+
 		$flat = array();
 		foreach ($array as $key => $value)
 		{
 			if (is_array($value))
 			{
-				$flat += Arr::flatten($value);
+				$flat = array_merge($flat, Arr::flatten($value));
 			}
 			else
 			{
-				$flat[$key] = $value;
+				if ($is_assoc)
+				{
+					$flat[$key] = $value;
+				}
+				else
+				{
+					$flat[] = $value;
+				}
 			}
 		}
 		return $flat;

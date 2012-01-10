@@ -211,7 +211,7 @@ class Kohana_HTML {
 		$attributes['href'] = $file;
 
 		// Set the stylesheet rel
-		$attributes['rel'] = 'stylesheet';
+		$attributes['rel'] = empty($attributes['rel']) ? 'stylesheet' : $attributes['rel'];
 
 		// Set the stylesheet type
 		$attributes['type'] = 'text/css';

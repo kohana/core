@@ -369,7 +369,9 @@ class Kohana_Date {
 
 		if (isset($output['months']))
 		{
-			$timespan -= Date::MONTH * ($output['months'] = (int) floor($timespan / Date::MONTH));
+			$diff = date_diff(new DateTime('@'.$remote), new DateTime('@'.$local));
+
+			$timespan -= Date::MONTH * ($output['months'] = (int) $diff->m);
 		}
 
 		if (isset($output['weeks']))
@@ -581,6 +583,7 @@ class Kohana_Date {
 	 * @link    http://www.php.net/manual/datetime.construct
 	 * @param   string  $datetime_str       datetime string
 	 * @param   string  $timestamp_format   timestamp format
+	 * @param   string  $timezone           timezone identifier
 	 * @return  string
 	 */
 	public static function formatted_time($datetime_str = 'now', $timestamp_format = NULL, $timezone = NULL)
@@ -588,9 +591,13 @@ class Kohana_Date {
 		$timestamp_format = ($timestamp_format == NULL) ? Date::$timestamp_format : $timestamp_format;
 		$timezone         = ($timezone === NULL) ? Date::$timezone : $timezone;
 
-		$time = new DateTime($datetime_str, new DateTimeZone(
-			$timezone ? $timezone : date_default_timezone_get()
-		));
+		$tz   = new DateTimeZone($timezone ? $timezone : date_default_timezone_get());
+		$time = new DateTime($datetime_str, $tz);
+
+		if ($time->getTimeZone()->getName() !== $tz->getName())
+		{
+			$time->setTimeZone($tz);
+		}
 
 		return $time->format($timestamp_format);
 	}

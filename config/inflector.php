@@ -93,5 +93,6 @@ return array(
 		'wharf' => 'wharves',
 		'wife' => 'wives',
 		'woman' => 'women',
+		'release' => 'releases',
 	),
 );

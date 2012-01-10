@@ -149,6 +149,16 @@ class Kohana_HTMLTest extends Unittest_TestCase
 				'https',
 				TRUE
 			),
+			array(
+				// #4283: http://dev.kohanaframework.org/issues/4283
+				'<link type="text/css" href="https://www.kohanaframework.org/kohana/index.php/my/style.css" rel="stylesheet/less" />',
+				'my/style.css',
+				array(
+					'rel' => 'stylesheet/less'
+				),
+				'https',
+				TRUE
+			),
 		);
 	}
 

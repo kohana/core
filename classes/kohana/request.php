@@ -367,89 +367,16 @@ class Kohana_Request implements HTTP_Request {
 	}
 
 	/**
-	 * Returns information about the client user agent.
+	 * Returns information about the initial user agent.
 	 *
-	 *     // Returns "Chrome" when using Google Chrome
-	 *     $browser = Request::user_agent('browser');
-	 *
-	 * Multiple values can be returned at once by using an array:
-	 *
-	 *     // Get the browser and platform with a single call
-	 *     $info = Request::user_agent(array('browser', 'platform'));
-	 *
-	 * When using an array for the value, an associative array will be returned.
-	 *
-	 * @param   mixed   $value String to return: browser, version, robot, mobile, platform; or array of values
+	 * @param   mixed   $value  array or string to return: browser, version, robot, mobile, platform
 	 * @return  mixed   requested information, FALSE if nothing is found
-	 * @uses    Kohana::$config
 	 * @uses    Request::$user_agent
+	 * @uses    Text::user_agent
 	 */
 	public static function user_agent($value)
 	{
-		if (is_array($value))
-		{
-			$agent = array();
-			foreach ($value as $v)
-			{
-				// Add each key to the set
-				$agent[$v] = Request::user_agent($v);
-			}
-
-			return $agent;
-		}
-
-		static $info;
-
-		if (isset($info[$value]))
-		{
-			// This value has already been found
-			return $info[$value];
-		}
-
-		if ($value === 'browser' OR $value == 'version')
-		{
-			// Load browsers
-			$browsers = Kohana::$config->load('user_agents')->browser;
-
-			foreach ($browsers as $search => $name)
-			{
-				if (stripos(Request::$user_agent, $search) !== FALSE)
-				{
-					// Set the browser name
-					$info['browser'] = $name;
-
-					if (preg_match('#'.preg_quote($search).'[^0-9.]*+([0-9.][0-9.a-z]*)#i', Request::$user_agent, $matches))
-					{
-						// Set the version number
-						$info['version'] = $matches[1];
-					}
-					else
-					{
-						// No version number found
-						$info['version'] = FALSE;
-					}
-
-					return $info[$value];
-				}
-			}
-		}
-		else
-		{
-			// Load the search group for this type
-			$group = Kohana::$config->load('user_agents')->$value;
-
-			foreach ($group as $search => $name)
-			{
-				if (stripos(Request::$user_agent, $search) !== FALSE)
-				{
-					// Set the value name
-					return $info[$value] = $name;
-				}
-			}
-		}
-
-		// The value requested could not be found
-		return $info[$value] = FALSE;
+		return Text::user_agent(Request::$user_agent, $value);
 	}
 
 	/**
@@ -458,6 +385,9 @@ class Kohana_Request implements HTTP_Request {
 	 *
 	 *     $types = Request::accept_type();
 	 *
+	 * [!!] Deprecated in favor of using `$request->headers('accept-type')`.
+	 *
+	 * @deprecated  since version 3.3.0
 	 * @param   string  $type Content MIME type
 	 * @return  mixed   An array of all types or a specific type as a string
 	 * @uses    Request::_parse_accept
@@ -1378,6 +1308,7 @@ class Kohana_Request implements HTTP_Request {
 	 * @param   mixed   $key    Key or key value pairs to set
 	 * @param   string  $value  Value to set to a key
 	 * @return  mixed
+	 * @uses    Arr::path
 	 */
 	public function query($key = NULL, $value = NULL)
 	{
@@ -1397,7 +1328,7 @@ class Kohana_Request implements HTTP_Request {
 		elseif ($value === NULL)
 		{
 			// Act as a getter, single query string
-			return Arr::get($this->_get, $key);
+			return Arr::path($this->_get, $key);
 		}
 
 		// Act as a setter, single query string
@@ -1412,6 +1343,7 @@ class Kohana_Request implements HTTP_Request {
 	 * @param   mixed  $key    Key or key value pairs to set
 	 * @param   string $value  Value to set to a key
 	 * @return  mixed
+	 * @uses    Arr::path
 	 */
 	public function post($key = NULL, $value = NULL)
 	{
@@ -1431,7 +1363,7 @@ class Kohana_Request implements HTTP_Request {
 		elseif ($value === NULL)
 		{
 			// Act as a getter, single field
-			return Arr::get($this->_post, $key);
+			return Arr::path($this->_post, $key);
 		}
 
 		// Act as a setter, single field
