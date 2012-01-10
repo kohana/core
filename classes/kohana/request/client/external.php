@@ -135,7 +135,7 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 
 		try
 		{
-			$response = $this->_send_message($request);
+			$response = $this->_send_message($request, $response);
 		}
 		catch (Exception $e)
 		{
