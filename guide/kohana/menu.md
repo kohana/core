@@ -19,7 +19,7 @@
    - [Routing](routing)
    - [Error Handling](errors)
    - [Tips & Common Mistakes](tips)
-   - [Upgrading](upgrading)
+   - [Upgrading from v3.2](upgrading)
 - Basic Usage
    - [Debugging](debugging)
    - [Loading Classes](autoloading)
