@@ -25,7 +25,7 @@
  * @package    Kohana
  * @category   Controller
  * @author     Kohana Team
- * @copyright  (c) 2009-2011 Kohana Team
+ * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 abstract class Kohana_Controller_REST extends Controller {
