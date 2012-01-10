@@ -156,7 +156,7 @@ class Kohana_Kohana_Exception extends Exception {
 				// Just display the text of the exception
 				echo "\n{$error}\n";
 
-				exit(1);
+				return;
 			}
 
 			// Start an output buffer
@@ -176,8 +176,6 @@ class Kohana_Kohana_Exception extends Exception {
 
 			// Display the contents of the output buffer
 			echo ob_get_clean();
-
-			exit(1);
 		}
 		catch (Exception $e)
 		{
@@ -186,9 +184,6 @@ class Kohana_Kohana_Exception extends Exception {
 
 			// Display the exception text
 			echo Kohana_Exception::text($e), "\n";
-
-			// Exit with an error status
-			exit(1);
 		}
 	}
 
