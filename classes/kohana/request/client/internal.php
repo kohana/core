@@ -28,7 +28,7 @@ class Kohana_Request_Client_Internal extends Request_Client {
 	 * @uses    [Kohana::$profiling]
 	 * @uses    [Profiler]
 	 */
-	public function execute_request(Request $request)
+	public function execute_request(Request $request, Response $response)
 	{
 		// Create the class prefix
 		$prefix = 'controller_';
@@ -73,10 +73,10 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		{
 			if ( ! class_exists($prefix.$controller))
 			{
-				throw new HTTP_Exception_404(
+				throw HTTP_Exception::factory(404,
 					'The requested URL :uri was not found on this server.',
 					array(':uri' => $request->uri())
-				);
+				)->request($request);
 			}
 
 			// Load the controller using reflection
@@ -91,27 +91,26 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			}
 
 			// Create a new instance of the controller
-			$controller = $class->newInstance($request, $request->response() ? $request->response() : $request->create_response());
+			$controller = $class->newInstance($request, $response);
 
 			// Run the controller's execute() method
-			$class->getMethod('execute')->invoke($controller);
+			$response = $class->getMethod('execute')->invoke($controller);
+
+			if ( ! $response instanceof Response)
+			{
+				// Controller failed to return a Response.
+				throw new Kohana_Exception('Controller failed to return a Response');
+			}
+		}
+		catch (HTTP_Exception $e)
+		{
+			// Get the response via the Exception
+			$response = $e->get_response();
 		}
 		catch (Exception $e)
 		{
-			// Restore the previous request
-			if ($previous instanceof Request)
-			{
-				Request::$current = $previous;
-			}
-
-			if (isset($benchmark))
-			{
-				// Delete the benchmark, it is invalid
-				Profiler::delete($benchmark);
-			}
-
-			// Re-throw the exception
-			throw $e;
+			// Generate an appropriate Response object
+			$response = Kohana_Exception::_handler($e);
 		}
 
 		// Restore the previous request
@@ -124,6 +123,6 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		}
 
 		// Return the response
-		return $request->response();
+		return $response;
 	}
 } // End Kohana_Request_Client_Internal

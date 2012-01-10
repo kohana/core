@@ -50,17 +50,6 @@ abstract class Kohana_Controller {
 	}
 
 	/**
-	 * Automatically executed before the controller action. Can be used to set
-	 * class properties, do authorization checks, and execute other custom code.
-	 *
-	 * @return  void
-	 */
-	public function before()
-	{
-		// Nothing by default
-	}
-
-	/**
 	 * Executes the given action and calls the [Controller::before] and [Controller::after] methods.
 	 * 
 	 * Can also be used to catch exceptions from actions in a single place.
@@ -72,7 +61,7 @@ abstract class Kohana_Controller {
 	 * will be called.
 	 * 
 	 * @throws  HTTP_Exception_404
-	 * @return  void
+	 * @return  Response
 	 */
 	public function execute()
 	{
@@ -85,10 +74,10 @@ abstract class Kohana_Controller {
 		// If the action doesn't exist, it's a 404
 		if ( ! method_exists($this, $action))
 		{
-			throw new HTTP_Exception_404(
+			throw HTTP_Exception::factory(404,
 				'The requested URL :uri was not found on this server.',
 				array(':uri' => $this->request->uri())
-			);
+			)->request($this->request);
 		}
 
 		// Execute the action itself
@@ -96,13 +85,27 @@ abstract class Kohana_Controller {
 
 		// Execute the "after action" method
 		$this->after();
+
+		// Return the response
+		return $this->response;
+	}
+
+	/**
+	 * Automatically executed before the controller action. Can be used to set
+	 * class properties, do authorization checks, and execute other custom code.
+	 *
+	 * @return  void
+	 */
+	public function before()
+	{
+		// Nothing by default
 	}
 
 	/**
 	 * Automatically executed after the controller action. Can be used to apply
-	 * transformation to the request response, add extra output, and execute
+	 * transformation to the response, add extra output, and execute
 	 * other custom code.
-	 *
+	 * 
 	 * @return  void
 	 */
 	public function after()
@@ -110,4 +113,18 @@ abstract class Kohana_Controller {
 		// Nothing by default
 	}
 
+	/**
+	 * Checks the browser cache to see the response needs to be returned,
+	 * execution will halt and a 304 Not Modified will be sent if the
+	 * browser cache is up to date.
+	 * 
+	 *     $this->check_cache(sha1($content));
+	 * 
+	 * @param  string  $etag  Resource Etag
+	 * @return Response
+	 */
+	protected function check_cache($etag = NULL)
+	{
+		return HTTP::check_cache($this->request, $this->response, $etag);
+	}
 } // End Controller

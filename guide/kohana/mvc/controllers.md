@@ -111,7 +111,7 @@ A view action for a product page.
 
 		if ( ! $product->loaded())
 		{
-			throw new HTTP_Exception_404('Product not found!');
+			throw HTTP_Exception::factory(404, 'Product not found!');
 		}
 
 		$this->response->body(View::factory('product/view')
