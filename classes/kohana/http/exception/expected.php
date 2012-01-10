@@ -8,7 +8,7 @@
  * @package    Kohana
  * @category   Exceptions
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 abstract class Kohana_HTTP_Exception_Expected extends HTTP_Exception {

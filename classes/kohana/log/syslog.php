@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Logging
  * @author     Jeremy Bush
- * @copyright  (c) 2010 Kohana Team
+ * @copyright  (c) 2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Log_Syslog extends Log_Writer {

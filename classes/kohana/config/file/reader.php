@@ -6,7 +6,7 @@
  * @package    Kohana
  * @category   Configuration
  * @author     Kohana Team
- * @copyright  (c) 2009-2010 Kohana Team
+ * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Config_File_Reader implements Kohana_Config_Reader {
