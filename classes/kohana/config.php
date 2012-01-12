@@ -36,7 +36,7 @@ class Kohana_Config {
 	{
 		if ($first === TRUE)
 		{
-			// Place the log reader at the top of the stack
+			// Place the config reader at the top of the stack
 			array_unshift($this->_sources, $source);
 		}
 		else
