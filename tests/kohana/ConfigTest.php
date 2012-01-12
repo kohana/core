@@ -80,7 +80,7 @@ class Kohana_ConfigTest extends Unittest_TestCase
 
 	/**
 	 * Test that attaching a new reader (and passing FALSE as second param) causes
-	 * phpunit to append the reader rather than prepend
+	 * the config object to append the reader rather than prepend
 	 *
 	 * @test
 	 * @covers Config::attach
