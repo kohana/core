@@ -29,7 +29,9 @@ Examples:
 
 ## Redirects (HTTP 300, 301, 302, 303, 307)
 
-Redirects are no longer issued against the [Request] object and have been changed to Exceptions to better interact with HVMC.
+Redirects are no longer issued against the [Request] object and have been changed to Exceptions to better interact with HVMC. 
+
+[!!] We are aware of the abuse of Exception's here, and hope to have a better solution that addresses concerns over ease of use, security, HMVC and correct flow control in place before we release 3.3.
 
     throw HTTP_Exception::factory(301)->location('account/login');
     throw HTTP_Exception::factory(302)->location('http://www.google.com');

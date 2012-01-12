@@ -198,7 +198,7 @@ Next, we need a controller and action to process the registration, which will be
                 $user->register($post);
 
                 // Always redirect after a successful POST to prevent refresh warnings
-                $this->request->redirect('user/profile');
+                throw HTTP_Exception::factory(302)->location('user/profile');
             }
 
             // Validation failed, collect the errors
