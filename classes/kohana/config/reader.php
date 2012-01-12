@@ -13,7 +13,7 @@ interface Kohana_Config_Reader extends Kohana_Config_Source
 {
 	
 	/**
-	 * Tries to load the specificed configuration group
+	 * Tries to load the specified configuration group
 	 *
 	 * Returns FALSE if group does not exist or an array if it does
 	 *
