@@ -393,7 +393,7 @@ abstract class Kohana_Session {
 	{
 		if ($this->_destroyed === FALSE)
 		{
-			if ($this->_destroyed = $this->_destroy())
+			if ($this->_destroyed == $this->_destroy())
 			{
 				// The session has been destroyed, clear all data
 				$this->_data = array();
