@@ -47,6 +47,11 @@ class Kohana_HTML {
 	);
 
 	/**
+	 * @var  boolean  use strict XHTML mode?
+	 */
+	public static $strict = TRUE;
+
+	/**
 	 * @var  boolean  automatically target external URLs to a new window?
 	 */
 	public static $windowed_urls = FALSE;
@@ -316,10 +321,22 @@ class Kohana_HTML {
 			{
 				// Assume non-associative keys are mirrored attributes
 				$key = $value;
+
+				if ( ! HTML::$strict)
+				{
+					// Just use a key
+					$value = FALSE;
+				}
 			}
 
-			// Add the attribute value
-			$compiled .= ' '.$key.'="'.HTML::chars($value).'"';
+			// Add the attribute key
+			$compiled .= ' '.$key;
+
+			if ($value OR HTML::$strict)
+			{
+				// Add the attribute value
+				$compiled .= '="'.HTML::chars($value).'"';
+			}
 		}
 
 		return $compiled;

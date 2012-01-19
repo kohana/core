@@ -179,7 +179,7 @@ class Kohana_Form {
 		if ($checked === TRUE)
 		{
 			// Make the checkbox active
-			$attributes['checked'] = 'checked';
+			$attributes[] = 'checked';
 		}
 
 		return Form::input($name, $value, $attributes);
@@ -205,7 +205,7 @@ class Kohana_Form {
 		if ($checked === TRUE)
 		{
 			// Make the radio active
-			$attributes['checked'] = 'checked';
+			$attributes[] = 'checked';
 		}
 
 		return Form::input($name, $value, $attributes);
@@ -257,7 +257,7 @@ class Kohana_Form {
 		if (is_array($selected))
 		{
 			// This is a multi-select, god save us!
-			$attributes['multiple'] = 'multiple';
+			$attributes[] = 'multiple';
 		}
 
 		if ( ! is_array($selected))
@@ -302,7 +302,7 @@ class Kohana_Form {
 						if (in_array($_value, $selected))
 						{
 							// This option is selected
-							$option['selected'] = 'selected';
+							$option[] = 'selected';
 						}
 
 						// Change the option to the HTML string
@@ -325,7 +325,7 @@ class Kohana_Form {
 					if (in_array($value, $selected))
 					{
 						// This option is selected
-						$option['selected'] = 'selected';
+						$option[] = 'selected';
 					}
 
 					// Change the option to the HTML string
