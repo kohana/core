@@ -48,7 +48,7 @@ class Kohana_Request implements HTTP_Request {
 	 * @param   string  $uri URI of the request
 	 * @param   Cache   $cache
 	 * @param   array   $injected_routes an array of routes to use, for testing
-	 * @return  void
+	 * @return  void|Request
 	 * @throws  Request_Exception
 	 * @uses    Route::all
 	 * @uses    Route::matches
