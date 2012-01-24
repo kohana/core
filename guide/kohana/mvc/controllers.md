@@ -128,7 +128,7 @@ A user login action.
 			// Try to login
 			if (Auth::instance()->login($this->request->post('username'), $this->request->post('password')))
 			{
-				throw HTTP_Exception::factory(302)->location('home');
+				$this->redirect(302, 'home');
 			}
 
 			$view->errors = 'Invalid email or password';
@@ -154,7 +154,7 @@ You can check what action has been requested (via `$this->request->action`) and 
 			// If this user doesn't have the admin role, and is not trying to login, redirect to login
 			if ( ! Auth::instance()->logged_in('admin') AND $this->request->action !== 'login')
 			{
-				throw HTTP_Exception::factory(302)->location('admin/login');
+				$this->redirect(302, 'admin/login');
 			}
 		}
 		

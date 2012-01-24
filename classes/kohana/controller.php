@@ -114,6 +114,20 @@ abstract class Kohana_Controller {
 	}
 
 	/**
+	 * Issues a HTTP redirect.
+	 *
+	 * Proxies to the [HTTP::redirect] method.
+	 *
+	 * @param  int     $code  HTTP Status code to use for the redirect
+	 * @param  string  $uri   URI to redirect to
+	 * @throws HTTP_Exception
+	 */
+	public static function redirect($code = 302, $uri = '')
+	{
+		return HTTP::redirect($code, $uri);
+	}
+
+	/**
 	 * Checks the browser cache to see the response needs to be returned,
 	 * execution will halt and a 304 Not Modified will be sent if the
 	 * browser cache is up to date.
@@ -127,4 +141,5 @@ abstract class Kohana_Controller {
 	{
 		return HTTP::check_cache($this->request, $this->response, $etag);
 	}
+
 } // End Controller

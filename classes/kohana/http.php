@@ -22,6 +22,18 @@ abstract class Kohana_HTTP {
 	public static $protocol = 'HTTP/1.1';
 
 	/**
+	 * Issues a HTTP redirect.
+	 *
+	 * @param  int       $code      HTTP Status code to use for the redirect
+	 * @param  string    $uri       URI to redirect to
+	 * @throws HTTP_Exception
+	 */
+	public static function redirect($code = 302, $uri = '')
+	{
+		throw HTTP_Exception::factory($code)->location($uri);
+	}
+
+	/**
 	 * Checks the browser cache to see the response needs to be returned,
 	 * execution will halt and a 304 Not Modified will be sent if the
 	 * browser cache is up to date.
