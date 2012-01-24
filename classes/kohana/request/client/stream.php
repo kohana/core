@@ -12,7 +12,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  * @uses       [PHP Streams](http://php.net/manual/en/book.stream.php)
  */
@@ -22,11 +22,12 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 	 * Sends the HTTP message [Request] to a remote server and processes
 	 * the response.
 	 *
-	 * @param   Request   request to send
+	 * @param   Request   $request  request to send
+	 * @param   Response  $request  response to send
 	 * @return  Response
 	 * @uses    [PHP cURL](http://php.net/manual/en/book.curl.php)
 	 */
-	public function _send_message(Request $request)
+	public function _send_message(Request $request, Response $response)
 	{
 		// Calculate stream mode
 		$mode = ($request->method() === HTTP_Request::GET) ? 'r' : 'r+';
@@ -89,8 +90,7 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 			$status   = NULL;
 		}
 
-		// Create a response
-		$response = $request->create_response();
+		// Get any exisiting response headers
 		$response_header = $response->headers();
 
 		// Process headers

@@ -25,7 +25,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  * @uses       [PECL HTTP](http://php.net/manual/en/book.http.php)
  */
@@ -48,8 +48,8 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 	 * 
 	 * Request_Client_External::$client can be set in the application bootstrap.
 	 *
-	 * @param   array     parameters to pass to the client
-	 * @param   string    external client to use
+	 * @param   array   $params parameters to pass to the client
+	 * @param   string  $client external client to use
 	 * @return  Request_Client_External
 	 * @throws  Request_Exception
 	 */
@@ -72,8 +72,8 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 
 	/**
 	 * @var     array     curl options
-	 * @see     [http://www.php.net/manual/en/function.curl-setopt.php]
-	 * @see     [http://www.php.net/manual/en/http.request.options.php]
+	 * @link    http://www.php.net/manual/function.curl-setopt
+	 * @link    http://www.php.net/manual/http.request.options
 	 */
 	protected $_options = array();
 
@@ -92,13 +92,14 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 	 *
 	 *     $request->execute();
 	 *
-	 * @param   Request $request A request object
+	 * @param   Request   $request   A request object
+	 * @param   Response  $response  A response object
 	 * @return  Response
 	 * @throws  Kohana_Exception
 	 * @uses    [Kohana::$profiling]
 	 * @uses    [Profiler]
 	 */
-	public function execute_request(Request $request)
+	public function execute_request(Request $request, Response $response)
 	{
 		if (Kohana::$profiling)
 		{
@@ -134,7 +135,7 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 
 		try
 		{
-			$response = $this->_send_message($request);
+			$response = $this->_send_message($request, $response);
 		}
 		catch (Exception $e)
 		{
@@ -197,9 +198,10 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 	 * Sends the HTTP message [Request] to a remote server and processes
 	 * the response.
 	 *
-	 * @param   Request   request to send
+	 * @param   Request   $request    Request to send
+	 * @param   Response  $response   Response to send
 	 * @return  Response
 	 */
-	abstract protected function _send_message(Request $request);
+	abstract protected function _send_message(Request $request, Response $response);
 
 } // End Kohana_Request_Client_External

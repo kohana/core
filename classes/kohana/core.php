@@ -10,7 +10,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Core {
@@ -26,7 +26,7 @@ class Kohana_Core {
 	const DEVELOPMENT = 40;
 
 	// Security check that is added to all generated PHP files
-	const FILE_SECURITY = '<?php defined(\'SYSPATH\') or die(\'No direct script access.\');';
+	const FILE_SECURITY = '<?php defined(\'SYSPATH\') OR die(\'No direct script access.\');';
 
 	// Format of cache files: header, cache name, and data
 	const FILE_CACHE = ":header \n\n// :name\n\n:data\n";
@@ -50,11 +50,6 @@ class Kohana_Core {
 	 * @var  boolean  True if [magic quotes](http://php.net/manual/en/security.magicquotes.php) is enabled.
 	 */
 	public static $magic_quotes = FALSE;
-
-	/**
-	 * @var  boolean  Should errors and exceptions be logged
-	 */
-	public static $log_errors = FALSE;
 
 	/**
 	 * @var  boolean  TRUE if PHP safe mode is on
@@ -183,7 +178,7 @@ class Kohana_Core {
 	 * `boolean` | profile    | Whether to enable the [Profiler](kohana/profiling). <br /> <br />Recommended setting: `TRUE` while developing, `FALSE` on production servers. | `TRUE`	 * `boolean` | caching    | Cache file locations to speed up [Kohana::find_file].  This has nothing to do with [Kohana::cache], [Fragments](kohana/fragments) or the [Cache module](cache).  <br /> <br />  Recommended setting: `FALSE` while developing, `TRUE` on production servers. | `FALSE`
 	 *
 	 * @throws  Kohana_Exception
-	 * @param   array   Array of settings.  See above.
+	 * @param   array   $settings   Array of settings.  See above.
 	 * @return  void
 	 * @uses    Kohana::globals
 	 * @uses    Kohana::sanitize
@@ -223,6 +218,14 @@ class Kohana_Core {
 
 			// Enable Kohana error handling, converts all PHP errors to exceptions.
 			set_error_handler(array('Kohana', 'error_handler'));
+		}
+
+		/**
+		 * Enable xdebug parameter collection in development mode to improve fatal stack traces.
+		 */
+		if (Kohana::$environment == Kohana::DEVELOPMENT AND extension_loaded('xdebug'))
+		{
+		    ini_set('xdebug.collect_params', 3);
 		}
 
 		// Enable the Kohana shutdown handler, which catches E_FATAL errors.
@@ -325,7 +328,7 @@ class Kohana_Core {
 		}
 
 		// Determine if the extremely evil magic quotes are enabled
-		Kohana::$magic_quotes = (bool) get_magic_quotes_gpc();
+		Kohana::$magic_quotes = version_compare(PHP_VERSION, '5.4') < 0 AND get_magic_quotes_gpc();
 
 		// Sanitize all request variables
 		$_GET    = Kohana::sanitize($_GET);
@@ -431,8 +434,8 @@ class Kohana_Core {
 	 * - Strips slashes if magic quotes are enabled
 	 * - Normalizes all newlines to LF
 	 *
-	 * @param   mixed  any variable
-	 * @return  mixed  sanitized variable
+	 * @param   mixed   $value  any variable
+	 * @return  mixed   sanitized variable
 	 */
 	public static function sanitize($value)
 	{
@@ -480,7 +483,7 @@ class Kohana_Core {
 	 *
 	 *     spl_autoload_register(array('Kohana', 'auto_load'));
 	 *
-	 * @param   string   class name
+	 * @param   string  $class  class name
 	 * @return  boolean
 	 */
 	public static function auto_load($class)
@@ -515,8 +518,8 @@ class Kohana_Core {
 	 *
 	 *     Kohana::modules(array('modules/foo', MODPATH.'bar'));
 	 *
-	 * @param   array  list of module paths
-	 * @return  array  enabled modules
+	 * @param   array   $modules    list of module paths
+	 * @return  array   enabled modules
 	 */
 	public static function modules(array $modules = NULL)
 	{
@@ -602,12 +605,12 @@ class Kohana_Core {
 	 *     // Returns an array of all the "mimes" configuration files
 	 *     Kohana::find_file('config', 'mimes');
 	 *
-	 * @param   string   directory name (views, i18n, classes, extensions, etc.)
-	 * @param   string   filename with subdirectory
-	 * @param   string   extension to search for
-	 * @param   boolean  return an array of files?
-	 * @return  array    a list of files when $array is TRUE
-	 * @return  string   single file path
+	 * @param   string  $dir    directory name (views, i18n, classes, extensions, etc.)
+	 * @param   string  $file   filename with subdirectory
+	 * @param   string  $ext    extension to search for
+	 * @param   boolean $array  return an array of files?
+	 * @return  array   a list of files when $array is TRUE
+	 * @return  string  single file path
 	 */
 	public static function find_file($dir, $file, $ext = NULL, $array = FALSE)
 	{
@@ -703,8 +706,8 @@ class Kohana_Core {
 	 *     // Find all view files.
 	 *     $views = Kohana::list_files('views');
 	 *
-	 * @param   string  directory name
-	 * @param   array   list of paths to search
+	 * @param   string  $directory  directory name
+	 * @param   array   $paths      list of paths to search
 	 * @return  array
 	 */
 	public static function list_files($directory = NULL, array $paths = NULL)
@@ -784,7 +787,7 @@ class Kohana_Core {
 	 *
 	 *     $foo = Kohana::load('foo.php');
 	 *
-	 * @param   string
+	 * @param   string  $file
 	 * @return  mixed
 	 */
 	public static function load($file)
@@ -810,9 +813,9 @@ class Kohana_Core {
 	 * [ref-var]: http://php.net/var_export
 	 *
 	 * @throws  Kohana_Exception
-	 * @param   string   name of the cache
-	 * @param   mixed    data to cache
-	 * @param   integer  number of seconds the cache is valid for
+	 * @param   string  $name       name of the cache
+	 * @param   mixed   $data       data to cache
+	 * @param   integer $lifetime   number of seconds the cache is valid for
 	 * @return  mixed    for getting
 	 * @return  boolean  for setting
 	 */
@@ -898,9 +901,9 @@ class Kohana_Core {
 	 *     // Get "username" from messages/text.php
 	 *     $username = Kohana::message('text', 'username');
 	 *
-	 * @param   string  file name
-	 * @param   string  key path to get
-	 * @param   mixed   default value if the path does not exist
+	 * @param   string  $file       file name
+	 * @param   string  $path       key path to get
+	 * @param   mixed   $default    default value if the path does not exist
 	 * @return  string  message string for the given path
 	 * @return  array   complete message list, when no path is specified
 	 * @uses    Arr::merge

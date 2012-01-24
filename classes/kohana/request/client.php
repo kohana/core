@@ -7,7 +7,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  * @since      3.1.0
  */
@@ -50,7 +50,8 @@ abstract class Kohana_Request_Client {
 	 *
 	 *     $request->execute();
 	 *
-	 * @param   Request $request
+	 * @param   Request   $request
+	 * @param   Response  $response
 	 * @return  Response
 	 * @throws  Kohana_Exception
 	 * @uses    [Kohana::$profiling]
@@ -58,10 +59,12 @@ abstract class Kohana_Request_Client {
 	 */
 	public function execute(Request $request)
 	{
-		if ($this->_cache instanceof HTTP_Cache)
-			return $this->_cache->execute($this, $request);
+		$response = Response::factory();
 
-		return $this->execute_request($request);
+		if ($this->_cache instanceof HTTP_Cache)
+			return $this->_cache->execute($this, $request, $response);
+
+		return $this->execute_request($request, $response);
 	}
 
 	/**
@@ -70,19 +73,20 @@ abstract class Kohana_Request_Client {
 	 * 
 	 * This method must be implemented by all clients.
 	 *
-	 * @param   Request   request to execute by client
+	 * @param   Request   $request   request to execute by client
+	 * @param   Response  $response
 	 * @return  Response
 	 * @since   3.2.0
 	 */
-	abstract public function execute_request(Request $request);
+	abstract public function execute_request(Request $request, Response $response);
 
 	/**
 	 * Getter and setter for the internal caching engine,
 	 * used to cache responses if available and valid.
 	 *
-	 * @param   [HTTP_Cache] cache engine to use for caching
-	 * @return  [HTTP_Cache]
-	 * @return  [Request_Client]
+	 * @param   HTTP_Cache  $cache  engine to use for caching
+	 * @return  HTTP_Cache
+	 * @return  Request_Client
 	 */
 	public function cache(HTTP_Cache $cache = NULL)
 	{

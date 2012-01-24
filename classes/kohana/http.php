@@ -11,7 +11,7 @@
  * @category   HTTP
  * @author     Kohana Team
  * @since      3.1.0
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 abstract class Kohana_HTTP {
@@ -20,6 +20,49 @@ abstract class Kohana_HTTP {
 	 * @var  The default protocol to use if it cannot be detected
 	 */
 	public static $protocol = 'HTTP/1.1';
+
+	/**
+	 * Checks the browser cache to see the response needs to be returned,
+	 * execution will halt and a 304 Not Modified will be sent if the
+	 * browser cache is up to date.
+	 * 
+	 * @param  Request   $request   Request
+	 * @param  Response  $response  Response
+	 * @param  string    $etag      Resource ETag
+	 * @throws HTTP_Exception_304
+	 * @return Response
+	 */
+	public static function check_cache(Request $request, Response $response, $etag = NULL)
+	{
+		// Generate an etag if necessary
+		if ($etag == NULL)
+		{
+			$etag = $response->generate_etag();
+		}
+
+		// Set the ETag header
+		$response->headers('etag', $etag);
+
+		// Add the Cache-Control header if it is not already set
+		// This allows etags to be used with max-age, etc
+		if ($response->headers('cache-control'))
+		{
+			$response->headers('cache-control', $response->headers('cache-control').', must-revalidate');
+		}
+		else
+		{
+			$response->headers('cache-control', 'must-revalidate');
+		}
+
+		// Check if we have a matching etag
+		if ($request->headers('if-none-match') AND (string) $request->headers('if-none-match') === $etag)
+		{
+			// No need to send data again
+			throw HTTP_Exception::factory(304)->headers('etag', $etag);
+		}
+
+		return $response;
+	}
 
 	/**
 	 * Parses a HTTP header string into an associative array

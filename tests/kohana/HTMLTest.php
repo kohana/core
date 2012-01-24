@@ -10,7 +10,7 @@
  * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_HTMLTest extends Unittest_TestCase
@@ -146,6 +146,16 @@ class Kohana_HTMLTest extends Unittest_TestCase
 				'<link type="text/css" href="https://www.kohanaframework.org/kohana/index.php/my/style.css" rel="stylesheet" />',
 				'my/style.css',
 				array(),
+				'https',
+				TRUE
+			),
+			array(
+				// #4283: http://dev.kohanaframework.org/issues/4283
+				'<link type="text/css" href="https://www.kohanaframework.org/kohana/index.php/my/style.css" rel="stylesheet/less" />',
+				'my/style.css',
+				array(
+					'rel' => 'stylesheet/less'
+				),
 				'https',
 				TRUE
 			),

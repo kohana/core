@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2011 Kohana Team
+ * @copyright  (c) 2007-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Text {
@@ -52,9 +52,9 @@ class Kohana_Text {
 	 *
 	 *     $text = Text::limit_words($text);
 	 *
-	 * @param   string   phrase to limit words of
-	 * @param   integer  number of words to limit to
-	 * @param   string   end character or entity
+	 * @param   string  $str        phrase to limit words of
+	 * @param   integer $limit      number of words to limit to
+	 * @param   string  $end_char   end character or entity
 	 * @return  string
 	 */
 	public static function limit_words($str, $limit = 100, $end_char = NULL)
@@ -80,10 +80,10 @@ class Kohana_Text {
 	 *
 	 *     $text = Text::limit_chars($text);
 	 *
-	 * @param   string   phrase to limit characters of
-	 * @param   integer  number of characters to limit to
-	 * @param   string   end character or entity
-	 * @param   boolean  enable or disable the preservation of words while limiting
+	 * @param   string  $str            phrase to limit characters of
+	 * @param   integer $limit          number of characters to limit to
+	 * @param   string  $end_char       end character or entity
+	 * @param   boolean $preserve_words enable or disable the preservation of words while limiting
 	 * @return  string
 	 * @uses    UTF8::strlen
 	 */
@@ -120,7 +120,7 @@ class Kohana_Text {
 	 * Note that using multiple iterations of different strings may produce
 	 * unexpected results.
 	 *
-	 * @param   string  strings to alternate between
+	 * @param   string  $str,...    strings to alternate between
 	 * @return  string
 	 */
 	public static function alternate()
@@ -160,8 +160,8 @@ class Kohana_Text {
 	 * You can also create a custom type by providing the "pool" of characters
 	 * as the type.
 	 *
-	 * @param   string   a type of pool, or a string of characters to use as the pool
-	 * @param   integer  length of string to return
+	 * @param   string  $type   a type of pool, or a string of characters to use as the pool
+	 * @param   integer $length length of string to return
 	 * @return  string
 	 * @uses    UTF8::split
 	 */
@@ -238,8 +238,8 @@ class Kohana_Text {
 	 * 
 	 *      $str = Text::ucfirst('content-type'); // returns "Content-Type" 
 	 *
-	 * @param   string    string to transform
-	 * @param   string    delemiter to use
+	 * @param   string  $string     string to transform
+	 * @param   string  $delimiter  delemiter to use
 	 * @return  string
 	 */
 	public static function ucfirst($string, $delimiter = '-')
@@ -253,7 +253,7 @@ class Kohana_Text {
 	 *
 	 *     $str = Text::reduce_slashes('foo//bar/baz'); // "foo/bar/baz"
 	 *
-	 * @param   string  string to reduce slashes of
+	 * @param   string  $str    string to reduce slashes of
 	 * @return  string
 	 */
 	public static function reduce_slashes($str)
@@ -269,10 +269,10 @@ class Kohana_Text {
 	 *         'frick' => '#####',
 	 *     ));
 	 *
-	 * @param   string   phrase to replace words in
-	 * @param   array    words to replace
-	 * @param   string   replacement string
-	 * @param   boolean  replace words across word boundries (space, period, etc)
+	 * @param   string  $str                    phrase to replace words in
+	 * @param   array   $badwords               words to replace
+	 * @param   string  $replacement            replacement string
+	 * @param   boolean $replace_partial_words  replace words across word boundries (space, period, etc)
 	 * @return  string
 	 * @uses    UTF8::strlen
 	 */
@@ -307,7 +307,7 @@ class Kohana_Text {
 	 *
 	 *     $match = Text::similar(array('fred', 'fran', 'free'); // "fr"
 	 *
-	 * @param   array   words to find similar text of
+	 * @param   array   $words  words to find similar text of
 	 * @return  string
 	 */
 	public static function similar(array $words)
@@ -337,7 +337,7 @@ class Kohana_Text {
 	 *
 	 * [!!] This method is not foolproof since it uses regex to parse HTML.
 	 *
-	 * @param   string   text to auto link
+	 * @param   string  $text   text to auto link
 	 * @return  string
 	 * @uses    Text::auto_link_urls
 	 * @uses    Text::auto_link_emails
@@ -355,7 +355,7 @@ class Kohana_Text {
 	 *
 	 * [!!] This method is not foolproof since it uses regex to parse HTML.
 	 *
-	 * @param   string   text to auto link
+	 * @param   string  $text   text to auto link
 	 * @return  string
 	 * @uses    HTML::anchor
 	 */
@@ -386,7 +386,7 @@ class Kohana_Text {
 	 *
 	 * [!!] This method is not foolproof since it uses regex to parse HTML.
 	 *
-	 * @param   string   text to auto link
+	 * @param   string  $text   text to auto link
 	 * @return  string
 	 * @uses    HTML::mailto
 	 */
@@ -411,8 +411,8 @@ class Kohana_Text {
 	 *
 	 * [!!] This method is not foolproof since it uses regex to parse HTML.
 	 *
-	 * @param   string   subject
-	 * @param   boolean  convert single linebreaks to <br />
+	 * @param   string  $str    subject
+	 * @param   boolean $br     convert single linebreaks to <br />
 	 * @return  string
 	 */
 	public static function auto_p($str, $br = TRUE)
@@ -467,10 +467,10 @@ class Kohana_Text {
 	 *
 	 *     echo Text::bytes(filesize($file));
 	 *
-	 * @param   integer  size in bytes
-	 * @param   string   a definitive unit
-	 * @param   string   the return string format
-	 * @param   boolean  whether to use SI prefixes or IEC
+	 * @param   integer $bytes      size in bytes
+	 * @param   string  $force_unit a definitive unit
+	 * @param   string  $format     the return string format
+	 * @param   boolean $si         whether to use SI prefixes or IEC
 	 * @return  string
 	 */
 	public static function bytes($bytes, $force_unit = NULL, $format = NULL, $si = TRUE)
@@ -509,7 +509,7 @@ class Kohana_Text {
 	 *     // Display: five million, six hundred and thirty-two
 	 *     echo Text::number(5000632);
 	 *
-	 * @param   integer   number to format
+	 * @param   integer $number number to format
 	 * @return  string
 	 * @since   3.0.8
 	 */
@@ -587,7 +587,7 @@ class Kohana_Text {
 	 *
 	 *     echo Text::widont($text);
 	 *
-	 * @param   string  text to remove widows from
+	 * @param   string  $str    text to remove widows from
 	 * @return  string
 	 */
 	public static function widont($str)
@@ -601,6 +601,86 @@ class Kohana_Text {
 		}
 
 		return $str;
+	}
+
+	/**
+	 * Returns information about the client user agent.
+	 *
+	 *     // Returns "Chrome" when using Google Chrome
+	 *     $browser = Text::user_agent('browser');
+	 *
+	 * Multiple values can be returned at once by using an array:
+	 *
+	 *     // Get the browser and platform with a single call
+	 *     $info = Text::user_agent(array('browser', 'platform'));
+	 *
+	 * When using an array for the value, an associative array will be returned.
+	 *
+	 * @param   mixed   $value  array or string to return: browser, version, robot, mobile, platform
+	 * @return  mixed   requested information, FALSE if nothing is found
+	 * @uses    Kohana::$config
+	 */
+	public static function user_agent($agent, $value)
+	{
+		if (is_array($value))
+		{
+			$data = array();
+			foreach ($value as $part)
+			{
+				// Add each part to the set
+				$data[$part] = Text::user_agent($agent, $part);
+			}
+
+			return $data;
+		}
+
+		if ($value === 'browser' OR $value == 'version')
+		{
+			// Extra data will be captured
+			$info = array();
+
+			// Load browsers
+			$browsers = Kohana::$config->load('user_agents')->browser;
+
+			foreach ($browsers as $search => $name)
+			{
+				if (stripos($agent, $search) !== FALSE)
+				{
+					// Set the browser name
+					$info['browser'] = $name;
+
+					if (preg_match('#'.preg_quote($search).'[^0-9.]*+([0-9.][0-9.a-z]*)#i', Request::$user_agent, $matches))
+					{
+						// Set the version number
+						$info['version'] = $matches[1];
+					}
+					else
+					{
+						// No version number found
+						$info['version'] = FALSE;
+					}
+
+					return $info[$value];
+				}
+			}
+		}
+		else
+		{
+			// Load the search group for this type
+			$group = Kohana::$config->load('user_agents')->$value;
+
+			foreach ($group as $search => $name)
+			{
+				if (stripos($agent, $search) !== FALSE)
+				{
+					// Set the value name
+					return $name;
+				}
+			}
+		}
+
+		// The value requested could not be found
+		return FALSE;
 	}
 
 } // End text

@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Logging
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Log_File extends Log_Writer {
@@ -16,12 +16,22 @@ class Kohana_Log_File extends Log_Writer {
 	protected $_directory;
 
 	/**
+	 * @var  string  timestamp format for log entries
+	 */
+	public static $timestamp = 'Y-m-d H:i:s';
+
+	/**
+	 * @var  string  timezone for log entries
+	 */
+	public static $timezone;
+
+	/**
 	 * Creates a new file logger. Checks that the directory exists and
 	 * is writable.
 	 *
 	 *     $writer = new Log_File($directory);
 	 *
-	 * @param   string  log directory
+	 * @param   string  $directory  log directory
 	 * @return  void
 	 */
 	public function __construct($directory)
@@ -43,7 +53,7 @@ class Kohana_Log_File extends Log_Writer {
 	 *
 	 *     $writer->write($messages);
 	 *
-	 * @param   array   messages
+	 * @param   array   $messages
 	 * @return  void
 	 */
 	public function write(array $messages)
@@ -88,8 +98,26 @@ class Kohana_Log_File extends Log_Writer {
 		{
 			// Write each message into the log file
 			// Format: time --- level: body
-			file_put_contents($filename, PHP_EOL.$message['time'].' --- '.$this->_log_levels[$message['level']].': '.$message['body'], FILE_APPEND);
+			file_put_contents($filename, PHP_EOL.Log_File::format_entry($message), FILE_APPEND);
 		}
+	}
+
+	/**
+	 * Formats a log entry.
+	 *
+	 * @param   array   $message
+	 * @return  string
+	 */
+	public function format_entry(array $message)
+	{
+		$string = Date::formatted_time($message['time'], Log_File::$timestamp, Log_File::$timezone).' --- '.$this->_log_levels[$message['level']].': '.$message['body'];
+
+		if (isset($message['additional']['exception']))
+		{
+			$string .= PHP_EOL.Date::formatted_time($message['time'], Log_File::$timestamp, Log_File::$timezone).' --- STRACE: '.$message['additional']['exception']->getTraceAsString();
+		}
+
+		return $string;
 	}
 
 } // End Kohana_Log_File

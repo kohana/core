@@ -1,12 +1,12 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Request and response wrapper. Uses the [Route] class to determine what
+ * Request. Uses the [Route] class to determine what
  * [Controller] to send the request to.
  *
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Request implements HTTP_Request {
@@ -158,7 +158,7 @@ class Kohana_Request implements HTTP_Request {
 					// client is using a proxy server.
 					// Format: "X-Forwarded-For: client1, proxy1, proxy2"
 					$client_ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-					
+
 					Request::$client_ip = array_shift($client_ips);
 
 					unset($client_ips);
@@ -170,7 +170,7 @@ class Kohana_Request implements HTTP_Request {
 					// Use the forwarded IP address, typically set when the
 					// client is using a proxy server.
 					$client_ips = explode(',', $_SERVER['HTTP_CLIENT_IP']);
-					
+
 					Request::$client_ip = array_shift($client_ips);
 
 					unset($client_ips);
@@ -192,10 +192,20 @@ class Kohana_Request implements HTTP_Request {
 					// Attempt to guess the proper URI
 					$uri = Request::detect_uri();
 				}
+
+				$cookies = array();
+
+				if (($cookie_keys = array_keys($_COOKIE)))
+				{
+					foreach ($cookie_keys as $key)
+					{
+						$cookies[$key] = Cookie::get($key);
+					}
+				}
 			}
 
 			// Create the instance singleton
-			Request::$initial = $request = new Request($uri, $cache);
+			Request::$initial = $request = new Request($uri, $cache, $injected_routes);
 
 			// Store global GET and POST data in the initial request only
 			$request->protocol($protocol)
@@ -230,6 +240,11 @@ class Kohana_Request implements HTTP_Request {
 			{
 				// Set the request body (probably a PUT type)
 				$request->body($body);
+			}
+
+			if (isset($cookies))
+			{
+				$request->cookie($cookies);
 			}
 		}
 		else
@@ -352,89 +367,16 @@ class Kohana_Request implements HTTP_Request {
 	}
 
 	/**
-	 * Returns information about the client user agent.
+	 * Returns information about the initial user agent.
 	 *
-	 *     // Returns "Chrome" when using Google Chrome
-	 *     $browser = Request::user_agent('browser');
-	 *
-	 * Multiple values can be returned at once by using an array:
-	 *
-	 *     // Get the browser and platform with a single call
-	 *     $info = Request::user_agent(array('browser', 'platform'));
-	 *
-	 * When using an array for the value, an associative array will be returned.
-	 *
-	 * @param   mixed   $value String to return: browser, version, robot, mobile, platform; or array of values
+	 * @param   mixed   $value  array or string to return: browser, version, robot, mobile, platform
 	 * @return  mixed   requested information, FALSE if nothing is found
-	 * @uses    Kohana::$config
 	 * @uses    Request::$user_agent
+	 * @uses    Text::user_agent
 	 */
 	public static function user_agent($value)
 	{
-		if (is_array($value))
-		{
-			$agent = array();
-			foreach ($value as $v)
-			{
-				// Add each key to the set
-				$agent[$v] = Request::user_agent($v);
-			}
-
-			return $agent;
-		}
-
-		static $info;
-
-		if (isset($info[$value]))
-		{
-			// This value has already been found
-			return $info[$value];
-		}
-
-		if ($value === 'browser' OR $value == 'version')
-		{
-			// Load browsers
-			$browsers = Kohana::$config->load('user_agents')->browser;
-
-			foreach ($browsers as $search => $name)
-			{
-				if (stripos(Request::$user_agent, $search) !== FALSE)
-				{
-					// Set the browser name
-					$info['browser'] = $name;
-
-					if (preg_match('#'.preg_quote($search).'[^0-9.]*+([0-9.][0-9.a-z]*)#i', Request::$user_agent, $matches))
-					{
-						// Set the version number
-						$info['version'] = $matches[1];
-					}
-					else
-					{
-						// No version number found
-						$info['version'] = FALSE;
-					}
-
-					return $info[$value];
-				}
-			}
-		}
-		else
-		{
-			// Load the search group for this type
-			$group = Kohana::$config->load('user_agents')->$value;
-
-			foreach ($group as $search => $name)
-			{
-				if (stripos(Request::$user_agent, $search) !== FALSE)
-				{
-					// Set the value name
-					return $info[$value] = $name;
-				}
-			}
-		}
-
-		// The value requested could not be found
-		return $info[$value] = FALSE;
+		return Text::user_agent(Request::$user_agent, $value);
 	}
 
 	/**
@@ -443,6 +385,9 @@ class Kohana_Request implements HTTP_Request {
 	 *
 	 *     $types = Request::accept_type();
 	 *
+	 * [!!] Deprecated in favor of using [HTTP_Header::accepts_at_quality].
+	 *
+	 * @deprecated  since version 3.3.0
 	 * @param   string  $type Content MIME type
 	 * @return  mixed   An array of all types or a specific type as a string
 	 * @uses    Request::_parse_accept
@@ -473,6 +418,9 @@ class Kohana_Request implements HTTP_Request {
 	 *
 	 *     $langs = Request::accept_lang();
 	 *
+	 * [!!] Deprecated in favor of using [HTTP_Header::accepts_language_at_quality].
+	 *
+	 * @deprecated  since version 3.3.0
 	 * @param   string  $lang  Language code
 	 * @return  mixed   An array of all types or a specific type as a string
 	 * @uses    Request::_parse_accept
@@ -503,6 +451,9 @@ class Kohana_Request implements HTTP_Request {
 	 *
 	 *     $encodings = Request::accept_encoding();
 	 *
+	 * [!!] Deprecated in favor of using [HTTP_Header::accepts_encoding_at_quality].
+	 *
+	 * @deprecated  since version 3.3.0
 	 * @param   string  $type Encoding type
 	 * @return  mixed   An array of all types or a specific type as a string
 	 * @uses    Request::_parse_accept
@@ -671,11 +622,6 @@ class Kohana_Request implements HTTP_Request {
 	protected $_routes;
 
 	/**
-	 * @var  Kohana_Response  response
-	 */
-	protected $_response;
-
-	/**
 	 * @var  Kohana_HTTP_Header  headers to sent as part of the request
 	 */
 	protected $_header;
@@ -758,7 +704,7 @@ class Kohana_Request implements HTTP_Request {
 		$this->_header = new HTTP_Header(array());
 
 		// Assign injected routes
-		$this->_injected_routes = $injected_routes;
+		$this->_routes = $injected_routes;
 
 		// Cleanse query parameters from URI (faster that parse_url())
 		$split_uri = explode('?', $uri);
@@ -782,7 +728,7 @@ class Kohana_Request implements HTTP_Request {
 			// Remove trailing slashes from the URI
 			$uri = trim($uri, '/');
 
-			$processed_uri = Request::process_uri($uri, $this->_injected_routes);
+			$processed_uri = Request::process_uri($uri, $this->_routes);
 
 			// Return here rather than throw exception. This will allow
 			// use of Request object even with unmatched route
@@ -914,50 +860,6 @@ class Kohana_Request implements HTTP_Request {
 		}
 
 		return isset($this->_params[$key]) ? $this->_params[$key] : $default;
-	}
-
-	/**
-	 * Redirects as the request response. If the URL does not include a
-	 * protocol, it will be converted into a complete URL.
-	 *
-	 *     $request->redirect($url);
-	 *
-	 * [!!] No further processing can be done after this method is called!
-	 *
-	 * @param   string   $url   Redirect location
-	 * @param   integer  $code  Status code: 301, 302, etc
-	 * @return  void
-	 * @uses    URL::site
-	 * @uses    Request::send_headers
-	 */
-	public function redirect($url = '', $code = 302)
-	{
-		$referrer = $this->uri();
-
-		if (strpos($referrer, '://') === FALSE)
-		{
-			$referrer = URL::site($referrer, TRUE, Kohana::$index_file);
-		}
-
-		if (strpos($url, '://') === FALSE)
-		{
-			// Make the URI into a URL
-			$url = URL::site($url, TRUE, Kohana::$index_file);
-		}
-
-		if (($response = $this->response()) === NULL)
-		{
-			$response = $this->create_response();
-		}
-
-		echo $response->status($code)
-			->headers('Location', $url)
-			->headers('Referer', $referrer)
-			->send_headers()
-			->body();
-
-		// Stop execution
-		exit;
 	}
 
 	/**
@@ -1123,9 +1025,9 @@ class Kohana_Request implements HTTP_Request {
 	{
 		if ( ! $this->_route instanceof Route)
 		{
-			throw new HTTP_Exception_404('Unable to find a route to match the URI: :uri', array(
+			throw HTTP_Exception::factory(404, 'Unable to find a route to match the URI: :uri', array(
 				':uri' => $this->_uri,
-			));
+			))->request($this);
 		}
 
 		if ( ! $this->_client instanceof Request_Client)
@@ -1154,7 +1056,7 @@ class Kohana_Request implements HTTP_Request {
 
 	/**
 	 * Readonly access to the [Request::$_external] property.
-	 * 
+	 *
 	 *     if ( ! $request->is_external())
 	 *          // This is an internal request
 	 *
@@ -1173,75 +1075,6 @@ class Kohana_Request implements HTTP_Request {
 	public function is_ajax()
 	{
 		return ($this->requested_with() === 'xmlhttprequest');
-	}
-
-	/**
-	 * Generates an [ETag](http://en.wikipedia.org/wiki/HTTP_ETag) from the
-	 * request response.
-	 *
-	 *     $etag = $request->generate_etag();
-	 *
-	 * [!!] If the request response is empty when this method is called, an
-	 * exception will be thrown!
-	 *
-	 * @return string
-	 * @throws Request_Exception
-	 */
-	public function generate_etag()
-	{
-	    if ($this->_response === NULL)
-		{
-			throw new Request_Exception('No response yet associated with request - cannot auto generate resource ETag');
-		}
-
-		// Generate a unique hash for the response
-		return '"'.sha1($this->_response).'"';
-	}
-
-	/**
-	 * Set or get the response for this request
-	 *
-	 * @param   Response  $response  Response to apply to this request
-	 * @return  Response
-	 * @return  void
-	 */
-	public function response(Response $response = NULL)
-	{
-		if ($response === NULL)
-		{
-			// Act as a getter
-			return $this->_response;
-		}
-
-		// Act as a setter
-		$this->_response = $response;
-
-		return $this;
-	}
-
-	/**
-	 * Creates a response based on the type of request, i.e. an
-	 * Request_HTTP will produce a Response_HTTP, and the same applies
-	 * to CLI.
-	 *
-	 *      // Create a response to the request
-	 *      $response = $request->create_response();
-	 *
-	 * @param   boolean  $bind  Bind to this request
-	 * @return  Response
-	 * @since   3.1.0
-	 */
-	public function create_response($bind = TRUE)
-	{
-		$response = new Response(array('_protocol' => $this->protocol()));
-
-		if ($bind)
-		{
-			// Bind a new response to the request
-			$this->_response = $response;
-		}
-
-		return $response;
 	}
 
 	/**
@@ -1269,7 +1102,7 @@ class Kohana_Request implements HTTP_Request {
 	 * Gets or sets the HTTP protocol. If there is no current protocol set,
 	 * it will use the default set in HTTP::$protocol
 	 *
-	 * @param   string   $protocol  Protocol to set to the request/response
+	 * @param   string   $protocol  Protocol to set to the request
 	 * @return  mixed
 	 */
 	public function protocol($protocol = NULL)
@@ -1291,7 +1124,7 @@ class Kohana_Request implements HTTP_Request {
 	 * Getter/Setter to the security settings for this request. This
 	 * method should be treated as immutable.
 	 *
-	 * @param   boolean   is this request secure?
+	 * @param   boolean $secure is this request secure?
 	 * @return  mixed
 	 */
 	public function secure($secure = NULL)
@@ -1305,7 +1138,7 @@ class Kohana_Request implements HTTP_Request {
 	}
 
 	/**
-	 * Gets or sets HTTP headers to the request or response. All headers
+	 * Gets or sets HTTP headers oo the request. All headers
 	 * are included immediately after the HTTP protocol definition during
 	 * transmission. This method provides a simple array or key/value
 	 * interface to the headers.
@@ -1369,9 +1202,9 @@ class Kohana_Request implements HTTP_Request {
 		{
 			// Act as a setter, replace all cookies
 			$this->_cookies = $key;
+			return $this;
 		}
-
-		if ($key === NULL)
+		elseif ($key === NULL)
 		{
 			// Act as a getter, all cookies
 			return $this->_cookies;
@@ -1389,7 +1222,7 @@ class Kohana_Request implements HTTP_Request {
 	}
 
 	/**
-	 * Gets or sets the HTTP body to the request or response. The body is
+	 * Gets or sets the HTTP body of the request. The body is
 	 * included after the header, separated by a single empty new line.
 	 *
 	 * @param   string  $content Content to set to the object
@@ -1430,7 +1263,6 @@ class Kohana_Request implements HTTP_Request {
 	 *  If there are variables set to the `Kohana_Request::$_post`
 	 *  they will override any values set to body.
 	 *
-	 * @param   boolean  $response  Return the rendered response, else returns the rendered request
 	 * @return  string
 	 */
 	public function render()
@@ -1482,6 +1314,7 @@ class Kohana_Request implements HTTP_Request {
 	 * @param   mixed   $key    Key or key value pairs to set
 	 * @param   string  $value  Value to set to a key
 	 * @return  mixed
+	 * @uses    Arr::path
 	 */
 	public function query($key = NULL, $value = NULL)
 	{
@@ -1501,7 +1334,7 @@ class Kohana_Request implements HTTP_Request {
 		elseif ($value === NULL)
 		{
 			// Act as a getter, single query string
-			return Arr::get($this->_get, $key);
+			return Arr::path($this->_get, $key);
 		}
 
 		// Act as a setter, single query string
@@ -1516,6 +1349,7 @@ class Kohana_Request implements HTTP_Request {
 	 * @param   mixed  $key    Key or key value pairs to set
 	 * @param   string $value  Value to set to a key
 	 * @return  mixed
+	 * @uses    Arr::path
 	 */
 	public function post($key = NULL, $value = NULL)
 	{
@@ -1535,7 +1369,7 @@ class Kohana_Request implements HTTP_Request {
 		elseif ($value === NULL)
 		{
 			// Act as a getter, single field
-			return Arr::get($this->_post, $key);
+			return Arr::path($this->_post, $key);
 		}
 
 		// Act as a setter, single field

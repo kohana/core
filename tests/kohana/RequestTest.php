@@ -10,7 +10,7 @@
  * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_RequestTest extends Unittest_TestCase
@@ -105,7 +105,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 		$route = new Route('(<controller>(/<action>))');
 		$route->defaults(array(
-			'controller' => 'welcome',
+			'controller' => 'kohana_requesttest_dummy',
 			'action'     => 'index',
 		));
 
@@ -145,8 +145,10 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function test_param()
 	{
+		$route = new Route('(<controller>(/<action>(/<id>)))');
+
 		$uri = 'foo/bar/id';
-		$request = Request::factory($uri);
+		$request = Request::factory($uri, NULL, array($route));
 
 		$this->assertArrayHasKey('id', $request->param());
 		$this->assertArrayNotHasKey('foo', $request->param());
@@ -167,46 +169,6 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$request = Request::factory('foobar', NULL, array($route));
 
 		$this->assertSame('foobar', $request->param('uri'));
-	}
-
-	/**
-	 * Provides data for Request::create_response()
-	 */
-	public function provider_create_response()
-	{
-		return array(
-			array('foo/bar', TRUE, TRUE),
-			array('foo/bar', FALSE, FALSE)
-		);
-	}
-
-	/**
-	 * Ensures a request creates an empty response, and binds correctly
-	 *
-	 * @test
-	 * @dataProvider  provider_create_response
-	 */
-	public function test_create_response($uri, $bind, $equality)
-	{
-		$request = Request::factory($uri);
-		$response = $request->create_response($bind);
-
-		$this->assertEquals(($request->response() === $response), $equality);
-	}
-
-	/**
-	 * Tests Request::response()
-	 *
-	 * @test
-	 */
-	public function test_response()
-	{
-		$request = Request::factory('foo/bar');
-		$response = $request->create_response(FALSE);
-
-		$this->assertEquals($request->response(), NULL);
-		$this->assertEquals(($request->response($response) === $request), TRUE);
-		$this->assertEquals(($request->response() === $response), TRUE);
 	}
 
 	/**
@@ -720,3 +682,11 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$this->assertSame($expected, $request->client());
 	}
 } // End Kohana_RequestTest
+
+class Controller_Kohana_RequestTest_Dummy extends Controller
+{
+	public function action_index()
+	{
+	
+	}
+}
