@@ -8,7 +8,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaphp.com/license
  */
-class Kohana_Log_StdErr extends Log_Writer {
+class Kohana_Log_StdErr extends Log_StdOut {
 	/**
 	 * Writes each of the messages to STDERR.
 	 *
@@ -19,13 +19,11 @@ class Kohana_Log_StdErr extends Log_Writer {
 	 */
 	public function write(array $messages)
 	{
-		// Set the log line format
-		$format = 'time --- type: body';
-
 		foreach ($messages as $message)
 		{
 			// Writes out each message
-			fwrite(STDERR, PHP_EOL.strtr($format, $message));
+			fwrite(STDERR, PHP_EOL.$this->format_entry($message));
 		}
 	}
+
 } // End Kohana_Log_StdErr
