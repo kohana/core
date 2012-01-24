@@ -40,6 +40,11 @@ abstract class Kohana_Log_Writer {
 	);
 
 	/**
+	 * @var  int  Level to use for stack traces
+	 */
+	public static $strace_level = LOG_ALERT;
+
+	/**
 	 * Write an array of messages.
 	 *
 	 *     $writer->write($messages);
@@ -79,7 +84,7 @@ abstract class Kohana_Log_Writer {
 		{
 			// Re-use as much as possible, just resetting the body to the trace
 			$message['body'] = $message['additional']['exception']->getTraceAsString();
-			$message['level'] = 'STRACE';
+			$message['level'] = $this->_log_levels[Log_Writer::$strace_level];
 
 			$string .= PHP_EOL.strtr($format, $message);
 		}

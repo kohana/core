@@ -16,11 +16,6 @@ class Kohana_Log_Syslog extends Log_Writer {
 	protected $_ident;
 
 	/**
-	 * @var  int  Level to use for stack traces
-	 */
-	public static $strace_level = LOG_ALERT;
-
-	/**
 	 * Creates a new syslog logger.
 	 *
 	 * @link    http://www.php.net/manual/function.openlog
@@ -51,7 +46,7 @@ class Kohana_Log_Syslog extends Log_Writer {
 
 			if (isset($message['additional']['exception']))
 			{
-				syslog(Log_Syslog::$strace_level, $message['additional']['exception']->getTraceAsString());
+				syslog(Log_Writer::$strace_level, $message['additional']['exception']->getTraceAsString());
 			}
 		}
 	}
