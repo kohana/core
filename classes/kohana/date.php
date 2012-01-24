@@ -584,15 +584,21 @@ class Kohana_Date {
 	 * @param   string  $datetime_str       datetime string
 	 * @param   string  $timestamp_format   timestamp format
 	 * @param   string  $timezone           timezone identifier
+	 * @param   bool    $is_timestamp       Boolean indicating if $datetime_str is a unix timestamp
 	 * @return  string
 	 */
-	public static function formatted_time($datetime_str = 'now', $timestamp_format = NULL, $timezone = NULL)
+	public static function formatted_time($datetime_str = 'now', $timestamp_format = NULL, $timezone = NULL, $is_timestamp = FALSE)
 	{
 		$timestamp_format = ($timestamp_format == NULL) ? Date::$timestamp_format : $timestamp_format;
 		$timezone         = ($timezone === NULL) ? Date::$timezone : $timezone;
 
 		$tz   = new DateTimeZone($timezone ? $timezone : date_default_timezone_get());
 		$time = new DateTime($datetime_str, $tz);
+
+		if ($is_timestamp)
+		{
+			$time->setTimestamp($datetime_str);
+		}
 
 		if ($time->getTimeZone()->getName() !== $tz->getName())
 		{

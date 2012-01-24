@@ -9,6 +9,7 @@
  * @license    http://kohanaphp.com/license
  */
 class Kohana_Log_StdOut extends Log_Writer {
+
 	/**
 	 * Writes each of the messages to STDOUT.
 	 *
@@ -19,13 +20,11 @@ class Kohana_Log_StdOut extends Log_Writer {
 	 */
 	public function write(array $messages)
 	{
-		// Set the log line format
-		$format = 'time --- type: body';
-
 		foreach ($messages as $message)
 		{
 			// Writes out each message
-			fwrite(STDOUT, PHP_EOL.strtr($format, $message));
+			fwrite(STDOUT, PHP_EOL.$this->format_message($message));
 		}
 	}
+
 } // End Kohana_Log_StdOut

@@ -21,17 +21,6 @@ class Kohana_Log {
 	const NOTICE    = LOG_NOTICE;   // 5
 	const INFO      = LOG_INFO;     // 6
 	const DEBUG     = LOG_DEBUG;    // 7
-	const STRACE    = 8;
-
-	/**
-	 * @var  string  timestamp format for log entries
-	 */
-	public static $timestamp = 'Y-m-d H:i:s';
-
-	/**
-	 * @var  string  timezone for log entries
-	 */
-	public static $timezone;
 
 	/**
 	 * @var  boolean  immediately write when logs are added
@@ -130,7 +119,7 @@ class Kohana_Log {
 	 * @param   array   $values     values to replace in the message
 	 * @return  Log
 	 */
-	public function add($level, $message, array $values = NULL)
+	public function add($level, $message, array $values = NULL, array $additional = NULL)
 	{
 		if ($values)
 		{
@@ -138,12 +127,28 @@ class Kohana_Log {
 			$message = strtr($message, $values);
 		}
 
-		// Create a new message and timestamp it
+		// Grab a copy of the trace
+		if (isset($additional['exception']))
+		{
+			$trace = $additional['exception']->getTrace();
+		}
+		else
+		{
+			$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+		}
+
+		// Create a new message
 		$this->_messages[] = array
 		(
-			'time'  => Date::formatted_time('now', Log::$timestamp, Log::$timezone),
-			'level' => $level,
-			'body'  => $message,
+			'time'       => time(),
+			'level'      => $level,
+			'body'       => $message,
+			'trace'      => $trace,
+			'file'       => isset($trace[0]['file']) ? $trace[0]['file'] : NULL,
+			'line'       => isset($trace[0]['line']) ? $trace[0]['line'] : NULL,
+			'class'      => isset($trace[0]['class']) ? $trace[0]['class'] : NULL,
+			'function'   => isset($trace[0]['function']) ? $trace[0]['function'] : NULL,
+			'additional' => $additional,
 		);
 
 		if (Log::$write_on_add)
