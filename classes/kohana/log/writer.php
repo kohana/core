@@ -11,6 +11,20 @@
 abstract class Kohana_Log_Writer {
 
 	/**
+	 * @var  string  timestamp format for log entries.
+	 * 
+	 * Defaults to Date::$timestamp_format
+	 */
+	public static $timestamp;
+
+	/**
+	 * @var  string  timezone for log entries
+	 * 
+	 * Defaults to Date::$timezone, which defaults to date_default_timezone_get()
+	 */
+	public static $timezone;
+
+	/**
 	 * Numeric log level to string lookup table.
 	 * @var array 
 	 */
@@ -23,7 +37,6 @@ abstract class Kohana_Log_Writer {
 		LOG_NOTICE  => 'NOTICE',
 		LOG_INFO    => 'INFO',
 		LOG_DEBUG   => 'DEBUG',
-		8           => 'STRACE',
 	);
 
 	/**
@@ -46,6 +59,32 @@ abstract class Kohana_Log_Writer {
 	final public function __toString()
 	{
 		return spl_object_hash($this);
+	}
+
+	/**
+	 * Formats a log entry.
+	 * 
+	 * @param   array   $message
+	 * @param   string  $format
+	 * @return  string
+	 */
+	public function format_message(array $message, $format = "time --- level: body in file:line")
+	{
+		$message['time'] = Date::formatted_time($message['time'], Log_Writer::$timestamp, Log_Writer::$timezone, TRUE);
+		$message['level'] = $this->_log_levels[$message['level']];
+
+		$string = strtr($format, $message);
+
+		if (isset($message['additional']['exception']))
+		{
+			// Re-use as much as possible, just resetting the body to the trace
+			$message['body'] = $message['additional']['exception']->getTraceAsString();
+			$message['level'] = 'STRACE';
+
+			$string .= PHP_EOL.strtr($format, $message);
+		}
+
+		return $string;
 	}
 
 } // End Kohana_Log_Writer

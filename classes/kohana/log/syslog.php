@@ -16,14 +16,9 @@ class Kohana_Log_Syslog extends Log_Writer {
 	protected $_ident;
 
 	/**
-	 * @var  array  log levels
+	 * @var  int  Level to use for stack traces
 	 */
-	protected $_syslog_levels = array('ERROR'    => LOG_ERR,
-	                                  'CRITICAL' => LOG_CRIT,
-	                                  'STRACE'   => LOG_ALERT,
-	                                  'ALERT'    => LOG_WARNING,
-	                                  'INFO'     => LOG_INFO,
-	                                  'DEBUG'    => LOG_DEBUG);
+	public static $strace_level = LOG_ALERT;
 
 	/**
 	 * Creates a new syslog logger.
@@ -53,6 +48,11 @@ class Kohana_Log_Syslog extends Log_Writer {
 		foreach ($messages as $message)
 		{
 			syslog($message['level'], $message['body']);
+
+			if (isset($message['additional']['exception']))
+			{
+				syslog(Log_Syslog::$strace_level, $message['additional']['exception']->getTraceAsString());
+			}
 		}
 	}
 
