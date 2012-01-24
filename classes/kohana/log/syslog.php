@@ -16,16 +16,6 @@ class Kohana_Log_Syslog extends Log_Writer {
 	protected $_ident;
 
 	/**
-	 * @var  array  log levels
-	 */
-	protected $_syslog_levels = array('ERROR'    => LOG_ERR,
-	                                  'CRITICAL' => LOG_CRIT,
-	                                  'STRACE'   => LOG_ALERT,
-	                                  'ALERT'    => LOG_WARNING,
-	                                  'INFO'     => LOG_INFO,
-	                                  'DEBUG'    => LOG_DEBUG);
-
-	/**
 	 * Creates a new syslog logger.
 	 *
 	 * @link    http://www.php.net/manual/function.openlog
@@ -52,6 +42,10 @@ class Kohana_Log_Syslog extends Log_Writer {
 	{
 		foreach ($messages as $message)
 		{
+			if (Log::STRACE == $message['level'])
+			{
+				$message['level'] = Log::DEBUG;
+			}
 			syslog($message['level'], $message['body']);
 		}
 	}
