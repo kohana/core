@@ -52,26 +52,26 @@ Rule name                 | Function
 
 All validation rules are defined as a field name, a method or function (using the [PHP callback](http://php.net/callback) syntax), and an array of parameters:
 
-    $object->rule($field, $callback, array($parameter1, $parameter2));
+    $post->rule($field, $callback, array($parameter1, $parameter2));
 
 If no parameters are specified, the field value will be passed to the callback. The following two rules are equivalent:
 
-    $object->rule($field, 'not_empty');
-    $object->rule($field, 'not_empty', array(':value'));
+    $post->rule($field, 'not_empty');
+    $post->rule($field, 'not_empty', array(':value'));
 
 Rules defined in the [Valid] class can be added by using the method name alone. The following three rules are equivalent:
 
-    $object->rule('number', 'phone');
-    $object->rule('number', array('Valid', 'phone'));
-    $object->rule('number', 'Valid::phone');
+    $post->rule('number', 'phone');
+    $post->rule('number', array('Valid', 'phone'));
+    $post->rule('number', 'Valid::phone');
 
 ## Binding Variables
 
 The [Validation] class allows you to bind variables to certain strings so that they can be used when defining rules. Variables are bound by calling the [Validation::bind] method.
 
-    $object->bind(':model', $user_model);
+    $post->bind(':model', $user_model);
     // Future code will be able to use :model to reference the object
-    $object->rule('username', 'some_rule', array(':model'));
+    $post->rule('username', 'some_rule', array(':model'));
 
 By default, the validation object will automatically bind the following values for you to use as rule parameters:
 
@@ -83,11 +83,11 @@ By default, the validation object will automatically bind the following values f
 
 The [Validation] class will add an error for a field if any of the rules associated to it return `FALSE`. This allows many built in PHP functions to be used as rules, like `in_array`.
 
-    $object->rule('color', 'in_array', array(':value', array('red', 'green', 'blue')));
+    $post->rule('color', 'in_array', array(':value', array('red', 'green', 'blue')));
 
 Rules added to empty fields will run, but returning `FALSE` will not automatically add an error for the field. In order for a rule to affect empty fields, you must add the error manually by calling the [Validation::error] method. In order to do this, you must pass the validation object to the rule.
 
-    $object->rule($field, 'the_rule', array(':validation', ':field'));
+    $post->rule($field, 'the_rule', array(':validation', ':field'));
     
     public function the_rule($validation, $field)
     {
