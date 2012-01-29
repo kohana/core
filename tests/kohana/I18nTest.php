@@ -31,24 +31,24 @@ class Kohana_I18nTest extends Unittest_TestCase {
 	public function provider_lang()
 	{
 		return array(
-			// $value, $result
+			// $input, $expected_result
 			array(NULL, 'en-us'),
 			array('es-es', 'es-es'),
-			array(NULL, 'es-es'),
 		);
 	}
 
 	/**
-	 * Tests i18n::lang()
+	 * Tests I18n::lang()
 	 *
 	 * @test
 	 * @dataProvider provider_lang
-	 * @param  boolean  $input     Input for File::mime
-	 * @param  boolean  $expected  Output for File::mime
+	 * @param  boolean  $input     Input for I18n::lang
+	 * @param  boolean  $expected  Output for I18n::lang
 	 */
-	public function test_lang($input, $expected)
+	public function test_lang($input, $expected_result)
 	{
-		$this->assertSame($expected, I18n::lang($input));
+		$this->assertSame($expected_result, I18n::lang($input));
+		$this->assertSame($expected_result, I18n::lang());
 	}
 
 	/**
