@@ -178,12 +178,23 @@ class Kohana_Kohana_Exception extends Exception {
 		try
 		{
 			// Get the exception information
-			$type    = get_class($e);
+			$class   = get_class($e);
 			$code    = $e->getCode();
 			$message = $e->getMessage();
 			$file    = $e->getFile();
 			$line    = $e->getLine();
 			$trace   = $e->getTrace();
+
+			/**
+			 * HTTP_Exceptions are constructed in the HTTP_Exception::factory()
+			 * method. We need to remove that entry from the trace and overwrite
+			 * the variables from above.
+			 */
+			if ($e instanceof HTTP_Exception AND $trace[0]['function'] == 'factory')
+			{
+				extract(array_shift($trace));
+			}
+
 
 			if ($e instanceof ErrorException)
 			{
