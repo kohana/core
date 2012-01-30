@@ -22,7 +22,7 @@ class Kohana_Log_StdErr extends Log_Writer {
 		foreach ($messages as $message)
 		{
 			// Writes out each message
-			fwrite(STDERR, PHP_EOL.$this->format_message($message));
+			fwrite(STDERR, $this->format_message($message).PHP_EOL);
 		}
 	}
 

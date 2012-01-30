@@ -23,7 +23,7 @@ class Kohana_Log_StdOut extends Log_Writer {
 		foreach ($messages as $message)
 		{
 			// Writes out each message
-			fwrite(STDOUT, PHP_EOL.$this->format_message($message));
+			fwrite(STDOUT, $this->format_message($message).PHP_EOL);
 		}
 	}
 
