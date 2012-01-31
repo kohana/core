@@ -58,149 +58,100 @@ class Kohana_Request implements HTTP_Request {
 		// If this is the initial request
 		if ( ! Request::$initial)
 		{
-			if (Kohana::$is_cli)
+			if (isset($_SERVER['SERVER_PROTOCOL']))
 			{
-				// Default protocol for command line is cli://
-				$protocol = 'cli';
-
-				// Get the command line options
-				$options = CLI::options('uri', 'method', 'get', 'post', 'referrer');
-
-				if (isset($options['uri']))
-				{
-					// Use the specified URI
-					$uri = $options['uri'];
-				}
-				elseif ($uri === TRUE)
-				{
-					$uri = '';
-				}
-
-				if (isset($options['method']))
-				{
-					// Use the specified method
-					$method = strtoupper($options['method']);
-				}
-				else
-				{
-					// Default to GET requests
-					$method = HTTP_Request::GET;
-				}
-
-				if (isset($options['get']))
-				{
-					// Overload the global GET data
-					parse_str($options['get'], $_GET);
-				}
-
-				if (isset($options['post']))
-				{
-					// Overload the global POST data
-					parse_str($options['post'], $_POST);
-				}
-
-				if (isset($options['referrer']))
-				{
-					$referrer = $options['referrer'];
-				}
+				$protocol = $_SERVER['SERVER_PROTOCOL'];
 			}
 			else
 			{
-				if (isset($_SERVER['SERVER_PROTOCOL']))
-				{
-					$protocol = $_SERVER['SERVER_PROTOCOL'];
-				}
-				else
-				{
-					$protocol = HTTP::$protocol;
-				}
+				$protocol = HTTP::$protocol;
+			}
 
-				if (isset($_SERVER['REQUEST_METHOD']))
+			if (isset($_SERVER['REQUEST_METHOD']))
+			{
+				// Use the server request method
+				$method = $_SERVER['REQUEST_METHOD'];
+			}
+			else
+			{
+				// Default to GET requests
+				$method = HTTP_Request::GET;
+			}
+
+			if ( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
+			{
+				// This request is secure
+				$secure = TRUE;
+			}
+
+			if (isset($_SERVER['HTTP_REFERER']))
+			{
+				// There is a referrer for this request
+				$referrer = $_SERVER['HTTP_REFERER'];
+			}
+
+			if (isset($_SERVER['HTTP_USER_AGENT']))
+			{
+				// Browser type
+				Request::$user_agent = $_SERVER['HTTP_USER_AGENT'];
+			}
+
+			if (isset($_SERVER['HTTP_X_REQUESTED_WITH']))
+			{
+				// Typically used to denote AJAX requests
+				$requested_with = $_SERVER['HTTP_X_REQUESTED_WITH'];
+			}
+
+			if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])
+			    AND isset($_SERVER['REMOTE_ADDR'])
+			    AND in_array($_SERVER['REMOTE_ADDR'], Request::$trusted_proxies))
+			{
+				// Use the forwarded IP address, typically set when the
+				// client is using a proxy server.
+				// Format: "X-Forwarded-For: client1, proxy1, proxy2"
+				$client_ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+
+				Request::$client_ip = array_shift($client_ips);
+
+				unset($client_ips);
+			}
+			elseif (isset($_SERVER['HTTP_CLIENT_IP'])
+			        AND isset($_SERVER['REMOTE_ADDR'])
+			        AND in_array($_SERVER['REMOTE_ADDR'], Request::$trusted_proxies))
+			{
+				// Use the forwarded IP address, typically set when the
+				// client is using a proxy server.
+				$client_ips = explode(',', $_SERVER['HTTP_CLIENT_IP']);
+
+				Request::$client_ip = array_shift($client_ips);
+
+				unset($client_ips);
+			}
+			elseif (isset($_SERVER['REMOTE_ADDR']))
+			{
+				// The remote IP address
+				Request::$client_ip = $_SERVER['REMOTE_ADDR'];
+			}
+
+			if ($method !== HTTP_Request::GET)
+			{
+				// Ensure the raw body is saved for future use
+				$body = file_get_contents('php://input');
+			}
+
+			if ($uri === TRUE)
+			{
+				// Attempt to guess the proper URI
+				$uri = Request::detect_uri();
+			}
+
+			$cookies = array();
+
+			if (($cookie_keys = array_keys($_COOKIE)))
+			{
+				foreach ($cookie_keys as $key)
 				{
-					// Use the server request method
-					$method = $_SERVER['REQUEST_METHOD'];
-				}
-				else
-				{
-					// Default to GET requests
-					$method = HTTP_Request::GET;
-				}
-
-				if ( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
-				{
-					// This request is secure
-					$secure = TRUE;
-				}
-
-				if (isset($_SERVER['HTTP_REFERER']))
-				{
-					// There is a referrer for this request
-					$referrer = $_SERVER['HTTP_REFERER'];
-				}
-
-				if (isset($_SERVER['HTTP_USER_AGENT']))
-				{
-					// Browser type
-					Request::$user_agent = $_SERVER['HTTP_USER_AGENT'];
-				}
-
-				if (isset($_SERVER['HTTP_X_REQUESTED_WITH']))
-				{
-					// Typically used to denote AJAX requests
-					$requested_with = $_SERVER['HTTP_X_REQUESTED_WITH'];
-				}
-
-				if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])
-				    AND isset($_SERVER['REMOTE_ADDR'])
-				    AND in_array($_SERVER['REMOTE_ADDR'], Request::$trusted_proxies))
-				{
-					// Use the forwarded IP address, typically set when the
-					// client is using a proxy server.
-					// Format: "X-Forwarded-For: client1, proxy1, proxy2"
-					$client_ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-
-					Request::$client_ip = array_shift($client_ips);
-
-					unset($client_ips);
-				}
-				elseif (isset($_SERVER['HTTP_CLIENT_IP'])
-				        AND isset($_SERVER['REMOTE_ADDR'])
-				        AND in_array($_SERVER['REMOTE_ADDR'], Request::$trusted_proxies))
-				{
-					// Use the forwarded IP address, typically set when the
-					// client is using a proxy server.
-					$client_ips = explode(',', $_SERVER['HTTP_CLIENT_IP']);
-
-					Request::$client_ip = array_shift($client_ips);
-
-					unset($client_ips);
-				}
-				elseif (isset($_SERVER['REMOTE_ADDR']))
-				{
-					// The remote IP address
-					Request::$client_ip = $_SERVER['REMOTE_ADDR'];
-				}
-
-				if ($method !== HTTP_Request::GET)
-				{
-					// Ensure the raw body is saved for future use
-					$body = file_get_contents('php://input');
-				}
-
-				if ($uri === TRUE)
-				{
-					// Attempt to guess the proper URI
-					$uri = Request::detect_uri();
-				}
-
-				$cookies = array();
-
-				if (($cookie_keys = array_keys($_COOKIE)))
-				{
-					foreach ($cookie_keys as $key)
-					{
-						$cookies[$key] = Cookie::get($key);
-					}
+					$cookies[$key] = Cookie::get($key);
 				}
 			}
 

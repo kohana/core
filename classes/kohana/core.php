@@ -37,11 +37,6 @@ class Kohana_Core {
 	public static $environment = Kohana::DEVELOPMENT;
 
 	/**
-	 * @var  boolean  True if Kohana is running from the command line
-	 */
-	public static $is_cli = FALSE;
-
-	/**
 	 * @var  boolean  True if Kohana is running on windows
 	 */
 	public static $is_windows = FALSE;
@@ -241,9 +236,6 @@ class Kohana_Core {
 		{
 			Kohana::$expose = (bool) $settings['expose'];
 		}
-
-		// Determine if we are running in a command line environment
-		Kohana::$is_cli = (PHP_SAPI === 'cli');
 
 		// Determine if we are running in a Windows environment
 		Kohana::$is_windows = (DIRECTORY_SEPARATOR === '\\');
