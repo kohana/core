@@ -166,10 +166,30 @@ class Kohana_Kohana_Exception extends Exception {
 			get_class($e), $e->getCode(), strip_tags($e->getMessage()), Debug::path($e->getFile()), $e->getLine());
 	}
 
+	/**
+	 * Get a Response object representing the exception
+	 *
+	 * @uses    Kohana_Exception::text
+	 * @param   Exception  $e
+	 * @return  Response
+	 */
+	public static function response(Exception $e)
+	{
+		try
+		{
+			// Get the exception information
+			$class   = get_class($e);
+			$code    = $e->getCode();
+			$message = $e->getMessage();
+			$file    = $e->getFile();
+			$line    = $e->getLine();
+			$trace   = $e->getTrace();
+
 			if ( ! headers_sent())
 			{
 				// Make sure the proper http header is sent
 				$http_header_status = ($e instanceof HTTP_Exception) ? $code : 500;
+			}
 
 			/**
 			 * HTTP_Exceptions are constructed in the HTTP_Exception::factory()
