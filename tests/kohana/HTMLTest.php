@@ -18,6 +18,7 @@ class Kohana_HTMLTest extends Unittest_TestCase
 	protected $environmentDefault = array(
 		'Kohana::$base_url'    => '/kohana/',
 		'Kohana::$index_file'  => 'index.php',
+		'HTML::$strict' => TRUE,
 		'HTTP_HOST'	=> 'www.kohanaframework.org',
 	);
 
@@ -31,19 +32,28 @@ class Kohana_HTMLTest extends Unittest_TestCase
 		return array(
 			array(
 				array('name' => 'field', 'random' => 'not_quite', 'id' => 'unique_field'),
+				array(),
 				' id="unique_field" name="field" random="not_quite"'
 			),
 			array(
 				array('invalid' => NULL),
+				array(),
 				''
 			),
 			array(
+				array(),
 				array(),
 				''
 			),
 			array(
 				array('name' => 'field', 'checked'),
+				array(),
 				' name="field" checked="checked"',
+			),
+			array(
+				array('id' => 'disabled_field', 'disabled'),
+				array('HTML::$strict' => FALSE),
+				' id="disabled_field" disabled',
 			),
 		);
 	}
@@ -54,10 +64,13 @@ class Kohana_HTMLTest extends Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_attributes
 	 * @param array  $attributes  Attributes to use
+	 * @param array  $options     Environment options to use
 	 * @param string $expected    Expected output
 	 */
-	public function test_attributes($attributes, $expected)
+	public function test_attributes(array $attributes, array $options, $expected)
 	{
+		$this->setEnvironment($options);
+
 		$this->assertSame(
 			$expected,
 			HTML::attributes($attributes)
