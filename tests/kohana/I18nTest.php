@@ -77,38 +77,4 @@ class Kohana_I18nTest extends Unittest_TestCase
 		$this->assertSame($expected, I18n::get($input, $lang));
 	}
 
-	/**
-	 * Provides test data for test_underscore()
-	 *
-	 * @return array
-	 */
-	public function provider_underscore()
-	{
-		return array(
-			array('en-us', 'en-us', 'Hello, world!', 'Hello, world!'),
-			array('en-us', 'es-es', 'Hello, world!', '¡Hola, mundo!'),
-			array('en-us', 'fr-fr', 'Hello, world!', 'Bonjour, monde!'),
-			array('es-es', 'en-us', '¡Hola, mundo!', 'Hello, world!'),
-			array('fr-fr', 'en-us', 'Bonjour, monde!', 'Hello, world!'),
-		);
-	}
-
-	/**
-	 * Tests __()
-	 *
-	 * @test
-	 * @dataProvider provider_underscore
-	 * @param boolean $input  Input for File::mime
-	 * @param boolean $expected Output for File::mime
-	 */
-	public function test_underscore($source, $lang, $input, $expected)
-	{
-		I18n::lang($lang);
-
-		$this->assertSame($expected, __($input, NULL, $source));
-
-		I18n::$source = $source;
-		$this->assertSame($expected, __($input));
-	}
-
 }
