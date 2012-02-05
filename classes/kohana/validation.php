@@ -422,6 +422,11 @@ class Kohana_Validation implements ArrayAccess {
 					// This field has an error, stop executing rules
 					break;
 				}
+				elseif (isset($this->_errors[$field]))
+				{
+					// The callback added the error manually, stop checking rules
+					break;
+				}
 			}
 		}
 
