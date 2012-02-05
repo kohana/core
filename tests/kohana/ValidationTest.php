@@ -314,6 +314,42 @@ class Kohana_ValidationTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Tests Validation::check()
+	 *
+	 * @test
+	 * @covers Validation::check
+	 */
+	public function test_check_stops_when_error_added_by_callback()
+	{
+		$validation = new Validation(array(
+			'foo' => 'foo',
+		));
+
+		$validation
+			->rule('foo', array($this, '_validation_callback'), array(':validation'))
+			// This rule should never run
+			->rule('foo', 'min_length', array(':value', 20));
+
+		$validation->check();
+		$errors = $validation->errors();
+
+		$expected = array(
+			'foo' => array(
+				0 => '_validation_callback',
+				1 => NULL,
+			),
+		);
+
+		$this->assertSame($errors, $expected);
+	}
+
+	public function _validation_callback(Validation $object)
+	{
+		// Simply add the error
+		$object->error('foo', '_validation_callback');
+	}
+
+	/**
 	 * Provides test data for test_errors()
 	 *
 	 * @return array
