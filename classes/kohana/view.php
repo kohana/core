@@ -49,7 +49,7 @@ class Kohana_View {
 		if (View::$_global_data)
 		{
 			// Import the global view variables to local namespace
-			extract(View::$_global_data, EXTR_SKIP);
+			extract(View::$_global_data, EXTR_SKIP OR EXTR_REFS);
 		}
 
 		// Capture the view output
