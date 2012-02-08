@@ -29,12 +29,12 @@ class Kohana_Request implements HTTP_Request {
 	/**
 	 * @var  Request  main request instance
 	 */
-	public static $initial;
+	protected static $initial;
 
 	/**
 	 * @var  Request  currently executing request instance
 	 */
-	public static $current;
+	protected static $current;
 
 	/**
 	 * Creates a new request object for the given URI. New requests should be
