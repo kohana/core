@@ -87,10 +87,8 @@ class Kohana_Text {
 	 * @return  string
 	 * @uses    UTF8::strlen
 	 */
-	public static function limit_chars($str, $limit = 100, $end_char = NULL, $preserve_words = FALSE)
+	public static function limit_chars($str, $limit = 100, $end_char = '…', $preserve_words = FALSE)
 	{
-		$end_char = ($end_char === NULL) ? '…' : $end_char;
-
 		$limit = (int) $limit;
 
 		if (trim($str) === '' OR UTF8::strlen($str) <= $limit)
