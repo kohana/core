@@ -45,15 +45,15 @@ class Kohana_Request implements HTTP_Request {
 	 * If $cache parameter is set, the response for the request will attempt to
 	 * be retrieved from the cache.
 	 *
-	 * @param   string  $uri URI of the request
-	 * @param   Cache   $cache
-	 * @param   array   $injected_routes an array of routes to use, for testing
+	 * @param   string  $uri              URI of the request
+	 * @param   array   $client_params    An array of params to pass to the request client
+	 * @param   array   $injected_routes  An array of routes to use, for testing
 	 * @return  void
 	 * @throws  Request_Exception
 	 * @uses    Route::all
 	 * @uses    Route::matches
 	 */
-	public static function factory($uri = TRUE, HTTP_Cache $cache = NULL, $injected_routes = array())
+	public static function factory($uri = TRUE, $client_params = array(), $injected_routes = array())
 	{
 		// If this is the initial request
 		if ( ! Request::$initial)
@@ -156,7 +156,7 @@ class Kohana_Request implements HTTP_Request {
 			}
 
 			// Create the instance singleton
-			Request::$initial = $request = new Request($uri, $cache, $injected_routes);
+			Request::$initial = $request = new Request($uri, $client_params, $injected_routes);
 
 			// Store global GET and POST data in the initial request only
 			$request->protocol($protocol)
@@ -200,7 +200,7 @@ class Kohana_Request implements HTTP_Request {
 		}
 		else
 		{
-			$request = new Request($uri, $cache, $injected_routes);
+			$request = new Request($uri, $client_params, $injected_routes);
 		}
 
 		return $request;
@@ -641,15 +641,15 @@ class Kohana_Request implements HTTP_Request {
 	 * If $cache parameter is set, the response for the request will attempt to
 	 * be retrieved from the cache.
 	 *
-	 * @param   string  $uri URI of the request
-	 * @param   HTTP_Cache   $cache
-	 * @param   array   $injected_routes an array of routes to use, for testing
+	 * @param   string  $uri              URI of the request
+	 * @param   array   $client_params    Array of params to pass to the request client
+	 * @param   array   $injected_routes  An array of routes to use, for testing
 	 * @return  void
 	 * @throws  Request_Exception
 	 * @uses    Route::all
 	 * @uses    Route::matches
 	 */
-	public function __construct($uri, HTTP_Cache $cache = NULL, $injected_routes = array())
+	public function __construct($uri, $client_params = array(), $injected_routes = array())
 	{
 		// Initialise the header
 		$this->_header = new HTTP_Header(array());
@@ -726,7 +726,9 @@ class Kohana_Request implements HTTP_Request {
 			$this->_params = $params;
 
 			// Apply the client
-			$this->_client = new Request_Client_Internal(array('cache' => $cache));
+			$client_params = is_array($client_params) ? $client_params : array();
+
+			$this->_client = new Request_Client_Internal($client_params);
 		}
 		else
 		{
@@ -746,7 +748,7 @@ class Kohana_Request implements HTTP_Request {
 			$this->_external = TRUE;
 
 			// Setup the client
-			$this->_client = Request_Client_External::factory(array('cache' => $cache));
+			$this->_client = Request_Client_External::factory($client_params);
 		}
 	}
 
