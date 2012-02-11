@@ -60,7 +60,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 	public function test_find_file_no_extension()
 	{
 		// EXT is manually appened to the _file name_, not passed as the extension
-		$path = Kohana::find_file('classes', $file = 'kohana/core'.EXT, FALSE);
+		$path = Kohana::find_file('classes', $file = 'Kohana/Core'.EXT, FALSE);
 
 		$this->assertInternalType('string', $path);
 

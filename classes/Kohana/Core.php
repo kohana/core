@@ -462,10 +462,7 @@ class Kohana_Core {
 	 * naming conventions](kohana/conventions#class-names-and-file-location).
 	 * See [Loading Classes](kohana/autoloading) for more information.
 	 *
-	 * Class names are converted to file names by making the class name
-	 * lowercase and converting underscores to slashes:
-	 *
-	 *     // Loads classes/my/class/name.php
+	 *     // Loads classes/My/Class/Name.php
 	 *     Kohana::auto_load('My_Class_Name');
 	 *
 	 * You should never have to call this function, as simply calling a class
@@ -479,6 +476,52 @@ class Kohana_Core {
 	 * @return  boolean
 	 */
 	public static function auto_load($class)
+	{
+		try
+		{
+			// Transform the class name according to PSR-0
+			$class     = ltrim($class, '\\');
+			$file      = '';
+			$namespace = '';
+
+			if ($last_namespace_position = strripos($class, '\\'))
+			{
+				$namespace = substr($class, 0, $last_namespace_position);
+				$class     = substr($class, $last_namespace_position + 1);
+				$file      = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+			}
+
+			$file .= str_replace('_', DIRECTORY_SEPARATOR, $class);
+
+			if ($path = Kohana::find_file('classes', $file))
+			{
+				// Load the class file
+				require $path;
+
+				// Class has been found
+				return TRUE;
+			}
+
+			// Class is not in the filesystem
+			return FALSE;
+		}
+		catch (Exception $e)
+		{
+			Kohana_Exception::handler($e);
+			die;
+		}
+	}
+
+	/**
+	 * Provides auto-loading support of classes that follow Kohana's old class
+	 * naming conventions.
+	 * 
+	 * This is included for compatibility purposes with older modules.
+	 *
+	 * @param   string  $class  class name
+	 * @return  boolean
+	 */
+	public static function auto_load_lowercase($class)
 	{
 		try
 		{

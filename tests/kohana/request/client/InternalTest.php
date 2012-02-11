@@ -19,9 +19,9 @@ class Kohana_Request_Client_InternalTest extends Unittest_TestCase
 	public function provider_response_failure_status()
 	{
 		return array(
-			array('', 'welcome', 'missing_action', 'welcome/missing_action', 404),
+			array('', 'Welcome', 'missing_action', 'Welcome/missing_action', 404),
 			array('kohana3', 'missing_controller', 'index', 'kohana3/missing_controller/index', 404),
-			array('', 'template', 'missing_action', 'kohana3/template/missing_action', 500),
+			array('', 'Template', 'missing_action', 'kohana3/Template/missing_action', 500),
 		);
 	}
 
