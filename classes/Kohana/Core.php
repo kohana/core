@@ -477,39 +477,31 @@ class Kohana_Core {
 	 */
 	public static function auto_load($class)
 	{
-		try
+		// Transform the class name according to PSR-0
+		$class     = ltrim($class, '\\');
+		$file      = '';
+		$namespace = '';
+
+		if ($last_namespace_position = strripos($class, '\\'))
 		{
-			// Transform the class name according to PSR-0
-			$class     = ltrim($class, '\\');
-			$file      = '';
-			$namespace = '';
-
-			if ($last_namespace_position = strripos($class, '\\'))
-			{
-				$namespace = substr($class, 0, $last_namespace_position);
-				$class     = substr($class, $last_namespace_position + 1);
-				$file      = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
-			}
-
-			$file .= str_replace('_', DIRECTORY_SEPARATOR, $class);
-
-			if ($path = Kohana::find_file('classes', $file))
-			{
-				// Load the class file
-				require $path;
-
-				// Class has been found
-				return TRUE;
-			}
-
-			// Class is not in the filesystem
-			return FALSE;
+			$namespace = substr($class, 0, $last_namespace_position);
+			$class     = substr($class, $last_namespace_position + 1);
+			$file      = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
 		}
-		catch (Exception $e)
+
+		$file .= str_replace('_', DIRECTORY_SEPARATOR, $class);
+
+		if ($path = Kohana::find_file('classes', $file))
 		{
-			Kohana_Exception::handler($e);
-			die;
+			// Load the class file
+			require $path;
+
+			// Class has been found
+			return TRUE;
 		}
+
+		// Class is not in the filesystem
+		return FALSE;
 	}
 
 	/**
@@ -523,28 +515,20 @@ class Kohana_Core {
 	 */
 	public static function auto_load_lowercase($class)
 	{
-		try
+		// Transform the class name into a path
+		$file = str_replace('_', DIRECTORY_SEPARATOR, strtolower($class));
+
+		if ($path = Kohana::find_file('classes', $file))
 		{
-			// Transform the class name into a path
-			$file = str_replace('_', '/', strtolower($class));
+			// Load the class file
+			require $path;
 
-			if ($path = Kohana::find_file('classes', $file))
-			{
-				// Load the class file
-				require $path;
-
-				// Class has been found
-				return TRUE;
-			}
-
-			// Class is not in the filesystem
-			return FALSE;
+			// Class has been found
+			return TRUE;
 		}
-		catch (Exception $e)
-		{
-			Kohana_Exception::handler($e);
-			die;
-		}
+
+		// Class is not in the filesystem
+		return FALSE;
 	}
 
 	/**
