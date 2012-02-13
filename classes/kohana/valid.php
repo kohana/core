@@ -478,6 +478,30 @@ class Kohana_Valid {
 	{
 		return ($number >= $min AND $number <= $max);
 	}
+	
+	/**
+	 * Tests if a number is small enough.
+	 *
+	 * @param   string   number to check
+	 * @param   integer  maximum value
+	 * @return  boolean
+	 */
+	public static function max_numeric($number, $max)
+	{
+		return ($number <= $max);
+	}
+	
+	/**
+	 * Tests if a number is large enough.
+	 *
+	 * @param   string   number to check
+	 * @param   integer  minimum value
+	 * @return  boolean
+	 */
+	public static function min_numeric($number, $min)
+	{
+		return ($number >= $min);
+	}
 
 	/**
 	 * Checks if a string is a proper decimal format. Optionally, a specific
