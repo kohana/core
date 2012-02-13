@@ -705,8 +705,8 @@ class Kohana_Request implements HTTP_Request {
 				$this->_directory = $params['directory'];
 			}
 
-			// Store the controller - Ucfirst it for PSR-0
-			$this->_controller = ucfirst(strtolower($params['controller']));
+			// Store the controller
+			$this->_controller = $params['controller'];
 
 			if (isset($params['action']))
 			{
