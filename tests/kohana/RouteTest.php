@@ -278,13 +278,13 @@ class Kohana_RouteTest extends Unittest_TestCase
 			array(
 				'(<controller>(/<action>(/<id>)))',
 				'welcome/index',
-				'welcome',
+				'Welcome',
 				'index',
 			),
 			array(
 				array('Route_Holder', 'matches_returns_array_of_parameters_on_successful_match'),
 				'apple/pie',
-				'welcome',
+				'Welcome',
 				'index',
 			),
 		);
@@ -325,8 +325,8 @@ class Kohana_RouteTest extends Unittest_TestCase
 			array(
 				'<controller>(/<action>(/<id>))',
 				NULL,
-				array('controller' => 'welcome', 'action' => 'index'),
-				'welcome',
+				array('controller' => 'Welcome', 'action' => 'index'),
+				'Welcome',
 				'index',
 				'unit/test/1',
 				array(
@@ -334,7 +334,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 					'action' => 'test',
 					'id' => '1'
 				),
-				'welcome',
+				'Welcome',
 			),
 			array(
 				'(<controller>(/<action>(/<id>)))',
@@ -754,13 +754,13 @@ class Kohana_RouteTest extends Unittest_TestCase
 			array(
 				'<controller>/<action>',
 				array(
-					'controller'  => 'test',
+					'controller'  => 'Test',
 					'action'      => 'same',
 				),
 				array('Route_Holder', 'route_filter_modify_params_array'),
 				'test/different',
 				array(
-					'controller'  => 'test',
+					'controller'  => 'Test',
 					'action'      => 'modified',
 				),
 			),
