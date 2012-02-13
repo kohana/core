@@ -457,6 +457,9 @@ class Kohana_Route {
 			}
 		}
 
+		// Ucfirst the controller, if it was matched from the URL, for PSR-0.
+		$params['controller'] = ucfirst(strtolower($params['controller']));
+
 		foreach ($this->_defaults as $key => $value)
 		{
 			if ( ! isset($params[$key]) OR $params[$key] === '')
