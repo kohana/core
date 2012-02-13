@@ -22,7 +22,7 @@ return array(
 	'numeric'       => ':field must be numeric',
 	'phone'         => ':field must be a phone number',
 	'range'         => ':field must be within the range of :param2 to :param3',
-	'min_numeric'   => ':field must not be less than :param2',
+	'min_numeric'   => ':field must be at least :param2',
 	'max_numeric'   => ':field must be no larger than :param2',
 	'regex'         => ':field does not match the required format',
 	'url'           => ':field must be a url',
