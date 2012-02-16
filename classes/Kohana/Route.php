@@ -457,10 +457,18 @@ class Kohana_Route {
 			}
 		}
 
+		// Ucwords the controller, if it was matched from the URL, for PSR-0.
 		if (array_key_exists('controller', $params))
 		{
-			// Ucfirst the controller, if it was matched from the URL, for PSR-0.
-			$params['controller'] = ucfirst(strtolower($params['controller']));
+			// Add a space after each _, run ucwords, then remove the space.
+			$params['controller'] = str_replace('_ ','_', ucwords(str_replace('_','_ ',$params['controller'])));
+		}
+
+		// Ucwords the directory, if it was matched from the URL, for PSR-0.
+		if (array_key_exists('directory', $params))
+		{
+			// Add a space after each _, run ucwords, then remove the space.
+			$params['directory'] = str_replace('_ ','_', ucwords(str_replace('_','_ ',$params['directory'])));
 		}
 
 		foreach ($this->_defaults as $key => $value)
