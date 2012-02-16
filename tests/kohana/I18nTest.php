@@ -4,7 +4,8 @@
  * Tests Kohana i18n class
  *
  * @group kohana
- * @group kohana.i18n
+ * @group kohana.core
+ * @group kohana.core.i18n
  *
  * @package    Kohana
  * @category   Tests

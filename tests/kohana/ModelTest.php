@@ -4,7 +4,8 @@
  * This test only really exists for code coverage.
  *
  * @group kohana
- * @group kohana.model
+ * @group kohana.core
+ * @group kohana.core.model
  *
  * @package    Kohana
  * @category   Tests

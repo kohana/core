@@ -4,7 +4,8 @@
  * Tests the View class
  *
  * @group kohana
- * @group kohana.view
+ * @group kohana.core
+ * @group kohana.core.view
  *
  * @package    Kohana
  * @category   Tests

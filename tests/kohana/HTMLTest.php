@@ -4,7 +4,8 @@
  * Tests HTML
  *
  * @group kohana
- * @group kohana.html
+ * @group kohana.core
+ * @group kohana.core.html
  *
  * @package    Kohana
  * @category   Tests

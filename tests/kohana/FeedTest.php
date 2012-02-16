@@ -4,7 +4,8 @@
  * Test for feed helper
  *
  * @group kohana
- * @group kohana.feed
+ * @group kohana.core
+ * @group kohana.core.feed
  *
  * @package    Kohana
  * @category   Tests

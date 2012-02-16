@@ -4,7 +4,8 @@
  * Tests the Valid class
  *
  * @group kohana
- * @group kohana.valid
+ * @group kohana.core
+ * @group kohana.core.valid
  *
  * @package    Kohana
  * @category   Tests

@@ -4,7 +4,8 @@
  * Tests the Validation lib that's shipped with Kohana
  *
  * @group kohana
- * @group kohana.validation
+ * @group kohana.core
+ * @group kohana.core.validation
  *
  * @package    Kohana
  * @category   Tests

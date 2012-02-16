@@ -4,7 +4,8 @@
  * Tests Kohana upload class
  *
  * @group kohana
- * @group kohana.upload
+ * @group kohana.core
+ * @group kohana.core.upload
  *
  * @package    Kohana
  * @category   Tests

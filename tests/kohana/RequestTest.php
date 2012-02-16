@@ -4,7 +4,8 @@
  * Unit tests for request class
  *
  * @group kohana
- * @group kohana.request
+ * @group kohana.core
+ * @group kohana.core.request
  *
  * @package    Kohana
  * @category   Tests
@@ -661,4 +662,4 @@ class Controller_Kohana_RequestTest_Dummy extends Controller
 	{
 	
 	}
-}
+} // End Kohana_RequestTest

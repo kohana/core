@@ -3,7 +3,8 @@
  * Tests Kohana_UTF8 class
  *
  * @group kohana
- * @group kohana.utf8
+ * @group kohana.core
+ * @group kohana.core.utf8
  *
  * @package    Kohana
  * @category   Tests
