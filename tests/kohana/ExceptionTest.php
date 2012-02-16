@@ -4,7 +4,8 @@
  * Tests Kohana Exception Class
  *
  * @group kohana
- * @group kohana.exception
+ * @group kohana.core
+ * @group kohana.core.exception
  *
  * @package    Kohana
  * @category   Tests

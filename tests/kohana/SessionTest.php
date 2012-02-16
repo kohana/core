@@ -4,7 +4,8 @@
  * Tests the session class
  *
  * @group kohana
- * @group kohana.session
+ * @group kohana.core
+ * @group kohana.core.session
  *
  * @package    Kohana
  * @category   Tests

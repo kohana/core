@@ -6,7 +6,8 @@
  * Based on the Kohana-unittest test
  *
  * @group kohana
- * @group kohana.cli
+ * @group kohana.core
+ * @group kohana.core.cli
  *
  * @see CLI
  * @package    Kohana

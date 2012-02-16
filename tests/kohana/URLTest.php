@@ -4,7 +4,8 @@
  * Tests URL
  *
  * @group kohana
- * @group kohana.url
+ * @group kohana.core
+ * @group kohana.core.url
  *
  * @package    Kohana
  * @category   Tests

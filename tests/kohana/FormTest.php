@@ -4,7 +4,8 @@
  * Tests Kohana Form helper
  *
  * @group kohana
- * @group kohana.form
+ * @group kohana.core
+ * @group kohana.core.form
  *
  * @package    Kohana
  * @category   Tests

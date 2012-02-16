@@ -4,7 +4,8 @@
  * Tests the cookie class
  *
  * @group kohana
- * @group kohana.cookie
+ * @group kohana.core
+ * @group kohana.core.cookie
  *
  * @package    Kohana
  * @category   Tests

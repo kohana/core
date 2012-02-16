@@ -4,9 +4,10 @@
  * Unit tests for internal request client
  *
  * @group kohana
- * @group kohana.request
- * @group kohana.request.client
- * @group kohana.request.client.internal
+ * @group kohana.core
+ * @group kohana.core.request
+ * @group kohana.core.request.client
+ * @group kohana.core.request.client.internal
  *
  * @package    Kohana
  * @category   Tests

@@ -4,7 +4,8 @@
  * Description of RouteTest
  *
  * @group kohana
- * @group kohana.route
+ * @group kohana.core
+ * @group kohana.core.route
  *
  * @package    Kohana
  * @category   Tests

@@ -3,8 +3,9 @@
 /**
  * Tests Num
  *
- * @group      kohana
- * @group      kohana.num
+ * @group kohana
+ * @group kohana.core
+ * @group kohana.core.num
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team

@@ -4,7 +4,8 @@
  * Tests Kohana_Security
  *
  * @group kohana
- * @group kohana.security
+ * @group kohana.core
+ * @group kohana.core.security
  *
  * @package    Kohana
  * @category   Tests

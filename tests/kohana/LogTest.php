@@ -4,7 +4,8 @@
  * Tests Kohana Logging API
  *
  * @group kohana
- * @group kohana.logging
+ * @group kohana.core
+ * @group kohana.core.logging
  *
  * @package    Kohana
  * @category   Tests
