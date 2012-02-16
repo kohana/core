@@ -3,9 +3,10 @@
  * Unit Tests for Kohana_HTTP_Header
  *
  * @group kohana
- * @group kohana.http
- * @group kohana.http.header
- * @group kohana.http.header
+ * @group kohana.core
+ * @group kohana.core.http
+ * @group kohana.core.http.header
+ * @group kohana.core.http.header
  * 
  * @package    Kohana
  * @category   Tests

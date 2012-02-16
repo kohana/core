@@ -4,7 +4,8 @@
  * Tests Date class
  *
  * @group kohana
- * @group kohana.date
+ * @group kohana.core
+ * @group kohana.core.date
  *
  * @package    Kohana
  * @category   Tests

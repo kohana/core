@@ -4,7 +4,8 @@
  * Tests the Arr lib that's shipped with kohana
  *
  * @group kohana
- * @group kohana.arr
+ * @group kohana.core
+ * @group kohana.core.arr
  *
  * @package    Kohana
  * @category   Tests

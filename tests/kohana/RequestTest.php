@@ -4,7 +4,8 @@
  * Unit tests for request class
  *
  * @group kohana
- * @group kohana.request
+ * @group kohana.core
+ * @group kohana.core.request
  *
  * @package    Kohana
  * @category   Tests

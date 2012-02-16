@@ -4,7 +4,8 @@
  * Tests Kohana inflector class
  *
  * @group kohana
- * @group kohana.inflector
+ * @group kohana.core
+ * @group kohana.core.inflector
  *
  * @package    Kohana
  * @category   Tests

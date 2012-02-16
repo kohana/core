@@ -4,7 +4,8 @@
  * Unit tests for response class
  *
  * @group kohana
- * @group kohana.response
+ * @group kohana.core
+ * @group kohana.core.response
  *
  * @package    Kohana
  * @category   Tests

@@ -4,7 +4,8 @@
  * Tests the kohana text class (Kohana_Text)
  *
  * @group kohana
- * @group kohana.text
+ * @group kohana.core
+ * @group kohana.core.text
  *
  * @package    Kohana
  * @category   Tests

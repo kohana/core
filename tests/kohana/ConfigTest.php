@@ -4,7 +4,8 @@
  * Tests the Config lib that's shipped with kohana
  *
  * @group kohana
- * @group kohana.config
+ * @group kohana.core
+ * @group kohana.core.config
  *
  * @package    Kohana
  * @category   Tests
