@@ -130,7 +130,7 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 		// If Kohana expose, set the user-agent
 		if (Kohana::$expose)
 		{
-			$request->headers('user-agent', 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')');
+			$request->headers('user-agent', Kohana::version());
 		}
 
 		try

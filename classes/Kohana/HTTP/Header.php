@@ -893,8 +893,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 
 		if (Kohana::$expose AND ! isset($headers['x-powered-by']))
 		{
-			$processed_headers[] = 'X-Powered-By: Kohana Framework '.
-				Kohana::VERSION.' ('.Kohana::CODENAME.')';
+			$processed_headers[] = 'X-Powered-By: '.Kohana::version();
 		}
 
 		// Get the cookies and apply

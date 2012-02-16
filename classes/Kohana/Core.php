@@ -1020,4 +1020,14 @@ class Kohana_Core {
 		}
 	}
 
+	/**
+	 * Generates a version string based on the variables defined above.
+	 * 
+	 * @return string
+	 */
+	public static function version()
+	{
+		return 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
+	}
+
 } // End Kohana

@@ -1234,7 +1234,7 @@ class Kohana_Request implements HTTP_Request {
 		// If Kohana expose, set the user-agent
 		if (Kohana::$expose)
 		{
-			$this->headers('user-agent', 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')');
+			$this->headers('user-agent', Kohana::version());
 		}
 
 		// Prepare cookies
