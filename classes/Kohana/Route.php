@@ -457,18 +457,16 @@ class Kohana_Route {
 			}
 		}
 
-		// Ucwords the controller, if it was matched from the URL, for PSR-0.
-		if (array_key_exists('controller', $params))
+		if ( ! empty($params['controller']))
 		{
-			// Add a space after each _, run ucwords, then remove the space.
-			$params['controller'] = str_replace('_ ','_', ucwords(str_replace('_','_ ',$params['controller'])));
+			// PSR-0: Replace underscores with spaces, run ucwords, then replace underscore
+			$params['controller'] = str_replace(' ', '_', ucwords(str_replace('_', ' ', $params['controller'])));
 		}
 
-		// Ucwords the directory, if it was matched from the URL, for PSR-0.
-		if (array_key_exists('directory', $params))
+		if ( ! empty($params['directory']))
 		{
-			// Add a space after each _, run ucwords, then remove the space.
-			$params['directory'] = str_replace('_ ','_', ucwords(str_replace('_','_ ',$params['directory'])));
+			// PSR-0: Replace underscores with spaces, run ucwords, then replace underscore
+			$params['directory'] = str_replace(' ', '_', ucwords(str_replace('_', ' ', $params['directory'])));
 		}
 
 		foreach ($this->_defaults as $key => $value)
