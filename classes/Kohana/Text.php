@@ -60,7 +60,7 @@ class Kohana_Text {
 	public static function limit_words($str, $limit = 100, $end_char = NULL)
 	{
 		$limit = (int) $limit;
-		$end_char = ($end_char === NULL) ? '…' : $end_char;
+		$end_char = ($end_char === NULL) ? '...' : $end_char;
 
 		if (trim($str) === '')
 			return $str;
@@ -89,7 +89,7 @@ class Kohana_Text {
 	 */
 	public static function limit_chars($str, $limit = 100, $end_char = NULL, $preserve_words = FALSE)
 	{
-		$end_char = ($end_char === NULL) ? '…' : $end_char;
+		$end_char = ($end_char === NULL) ? '...' : $end_char;
 
 		$limit = (int) $limit;
 
