@@ -70,13 +70,13 @@ class Kohana_RequestTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests that an initial request won't use an external client
+	 * Tests that the allow_external flag prevents an external request.
 	 * 
 	 * @expectedException HTTP_Exception_404
 	 *
 	 * @return null
 	 */
-	public function test_initial_request_only_loads_internal()
+	public function test_disable_external_tests()
 	{
 		$this->setEnvironment(
 			array(
@@ -84,7 +84,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 			)
 		);
 
-		$request = new Request('http://www.google.com/');
+		$request = new Request('http://www.google.com/', array(), FALSE);
 		$request->execute();
 	}
 
@@ -123,7 +123,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$route = new Route('(<controller>(/<action>(/<id>)))');
 
 		$uri = 'foo/bar/id';
-		$request = Request::factory($uri, NULL, array($route));
+		$request = Request::factory($uri, NULL, TRUE, array($route));
 
 		$this->assertArrayHasKey('id', $request->param());
 		$this->assertArrayNotHasKey('foo', $request->param());
@@ -141,7 +141,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 		$route = new Route('(<uri>)', array('uri' => '.+'));
 		$route->defaults(array('controller' => 'foobar', 'action' => 'index'));
-		$request = Request::factory('foobar', NULL, array($route));
+		$request = Request::factory('foobar', NULL, TRUE, array($route));
 
 		$this->assertSame('foobar', $request->param('uri'));
 	}

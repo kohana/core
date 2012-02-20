@@ -47,13 +47,14 @@ class Kohana_Request implements HTTP_Request {
 	 *
 	 * @param   string  $uri              URI of the request
 	 * @param   array   $client_params    An array of params to pass to the request client
+	 * @param   bool    $allow_external   Allow external requests? (deprecated in 3.3)
 	 * @param   array   $injected_routes  An array of routes to use, for testing
 	 * @return  void
 	 * @throws  Request_Exception
 	 * @uses    Route::all
 	 * @uses    Route::matches
 	 */
-	public static function factory($uri = TRUE, $client_params = array(), $injected_routes = array())
+	public static function factory($uri = TRUE, $client_params = array(), $allow_external = TRUE, $injected_routes = array())
 	{
 		// If this is the initial request
 		if ( ! Request::$initial)
@@ -156,7 +157,7 @@ class Kohana_Request implements HTTP_Request {
 			}
 
 			// Create the instance singleton
-			Request::$initial = $request = new Request($uri, $client_params, $injected_routes);
+			Request::$initial = $request = new Request($uri, $client_params, $allow_external, $injected_routes);
 
 			// Store global GET and POST data in the initial request only
 			$request->protocol($protocol)
@@ -200,7 +201,7 @@ class Kohana_Request implements HTTP_Request {
 		}
 		else
 		{
-			$request = new Request($uri, $client_params, $injected_routes);
+			$request = new Request($uri, $client_params, $allow_external, $injected_routes);
 		}
 
 		return $request;
@@ -643,13 +644,14 @@ class Kohana_Request implements HTTP_Request {
 	 *
 	 * @param   string  $uri              URI of the request
 	 * @param   array   $client_params    Array of params to pass to the request client
+	 * @param   bool    $allow_external   Allow external requests? (deprecated in 3.3)
 	 * @param   array   $injected_routes  An array of routes to use, for testing
 	 * @return  void
 	 * @throws  Request_Exception
 	 * @uses    Route::all
 	 * @uses    Route::matches
 	 */
-	public function __construct($uri, $client_params = array(), $injected_routes = array())
+	public function __construct($uri, $client_params = array(), $allow_external = TRUE, $injected_routes = array())
 	{
 		// Initialise the header
 		$this->_header = new HTTP_Header(array());
@@ -671,10 +673,9 @@ class Kohana_Request implements HTTP_Request {
 		}
 
 		// Detect protocol (if present)
-		// Always default to an internal request if we don't have an initial.
-		// This prevents the default index.php from being able to proxy
-		// external pages.
-		if (Request::$initial === NULL OR strpos($uri, '://') === FALSE)
+		// $allow_external = FALSE prevents the default index.php from
+		// being able to proxy external pages.
+		if ( ! $allow_external OR strpos($uri, '://') === FALSE)
 		{
 			// Remove trailing slashes from the URI
 			$uri = trim($uri, '/');
