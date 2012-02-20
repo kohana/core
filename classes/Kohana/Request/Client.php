@@ -19,6 +19,16 @@ abstract class Kohana_Request_Client {
 	protected $_cache;
 
 	/**
+	 * @var  bool  Should redirects be followed?
+	 */
+	protected $_follow = FALSE;
+
+	/**
+	 * @var  array  Headers to preserve when following a redirect
+	 */
+	protected $_follow_headers = array('Authorization');
+
+	/**
 	 * Creates a new `Request_Client` object,
 	 * allows for dependency injection.
 	 *
@@ -64,7 +74,37 @@ abstract class Kohana_Request_Client {
 		if ($this->_cache instanceof HTTP_Cache)
 			return $this->_cache->execute($this, $request, $response);
 
-		return $this->execute_request($request, $response);
+		$response = $this->execute_request($request, $response);
+
+		// Do we need to follow a Location header ?
+		if ($this->_follow AND in_array($response->status(), array(201, 301, 302, 303, 307))
+			AND $response->headers('Location'))
+		{
+			// Figure out which method to use for the follow request
+			switch ($response->status())
+			{
+				default:
+				case 301:
+				case 302:
+				case 307:
+					$follow_method = $request->method();
+					break;
+				case 201:
+				case 303:
+					$follow_method = Request::GET;
+					break;
+			}
+
+			// Prepare the additional request
+			$follow_request = Request::factory($response->headers('Location'))
+			                         ->method($follow_method)
+			                         ->headers(Arr::extract($request->headers(), $this->_follow_headers));
+
+			// Execute the additional request
+			$response = $follow_request->execute();
+		}
+
+		return $response;
 	}
 
 	/**
@@ -94,6 +134,24 @@ abstract class Kohana_Request_Client {
 			return $this->_cache;
 
 		$this->_cache = $cache;
+		return $this;
+	}
+
+	/**
+	 * Getter and setter for the follow redirects
+	 * settubg.
+	 *
+	 * @param   bool  $follow  Boolean indicating if redirects should be followed
+	 * @return  bool
+	 * @return  Request_Client
+	 */
+	public function follow($follow = FALSE)
+	{
+		if ($follow === NULL)
+			return $this->_follow;
+
+		$this->_follow = $follow;
+
 		return $this;
 	}
 }
