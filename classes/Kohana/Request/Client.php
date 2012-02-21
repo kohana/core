@@ -139,7 +139,7 @@ abstract class Kohana_Request_Client {
 
 	/**
 	 * Getter and setter for the follow redirects
-	 * settubg.
+	 * setting.
 	 *
 	 * @param   bool  $follow  Boolean indicating if redirects should be followed
 	 * @return  bool
@@ -151,6 +151,24 @@ abstract class Kohana_Request_Client {
 			return $this->_follow;
 
 		$this->_follow = $follow;
+
+		return $this;
+	}
+
+	/**
+	 * Getter and setter for the follow redirects
+	 * headers array.
+	 *
+	 * @param   array  $follow_headers  Array of headers to be re-used when following a Location header
+	 * @return  array
+	 * @return  Request_Client
+	 */
+	public function follow_headers($follow_headers = NULL)
+	{
+		if ($follow === NULL)
+			return $this->_follow_headers;
+
+		$this->_follow_headers = $follow_headers;
 
 		return $this;
 	}
