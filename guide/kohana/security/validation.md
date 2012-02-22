@@ -65,6 +65,36 @@ Rules defined in the [Valid] class can be added by using the method name alone. 
     $object->rule('number', array('Valid', 'phone'));
     $object->rule('number', 'Valid::phone');
 
+### Adding Rules for multiple fields together
+
+To validate multiple fields together, you can do something like this:
+
+    $object->rule('one', 'only_one', array(':validation', array('one', 'two')));
+    $object->rule('two', 'only_one', array(':validation', array('one', 'two')));
+
+    public function only_one($validation, $fields)
+    {
+        // If more than 1 field is set, bail.
+        $matched = 0;
+
+        foreach ($fields as $field)
+        {
+            if (isset($validation[$field]))
+            {
+                $matched++;
+            }
+        }
+
+        if ($matched > 0)
+        {
+            // Add the error to all concerned fields
+            foreach ($fields as $field)
+            {
+                $validation->error($field, 'only_one');
+            }
+        }
+    }
+
 ## Binding Variables
 
 The [Validation] class allows you to bind variables to certain strings so that they can be used when defining rules. Variables are bound by calling the [Validation::bind] method.
