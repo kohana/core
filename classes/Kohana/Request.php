@@ -1340,10 +1340,6 @@ class Kohana_Request implements HTTP_Request {
 	/**
 	 * Gets or sets HTTP FILE parameters to the request.
 	 *
-	 * [!!] The initial request will have `$_FILES` content attached using
-	 * this method. In this case, the return value of `files($key)` will be
-	 * an array rather than a string.
-	 *
 	 * @param   mixed   $key   Key or key value pairs to set
 	 * @param   string  $file  full path to file
 	 * @return  mixed
