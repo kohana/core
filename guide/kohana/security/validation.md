@@ -8,7 +8,7 @@ labels
 :  A label is a human-readable version of the field name.
 
 rules
-:  A rule is a callback used to decide whether or not to add an error to a field
+:  A rule is a callback or closure used to decide whether or not to add an error to a field
 
 [!!] Note that any valid [PHP callback](http://php.net/manual/language.pseudo-types.php#language.types.callback) can be used as a rule.
 
@@ -16,7 +16,7 @@ Using `TRUE` as the field name when adding a rule will be applied to all named f
 
 Creating a validation object is done using the [Validation::factory] method:
 
-    $post = Validation::factory($_POST);
+    $post = Validation::factory($this->request->post());
 
 [!!] The `$post` object will be used for the rest of this tutorial. This tutorial will show you how to validate the registration of a new user.
 
@@ -50,7 +50,7 @@ Rule name                 | Function
 
 ## Adding Rules
 
-All validation rules are defined as a field name, a method or function (using the [PHP callback](http://php.net/callback) syntax), and an array of parameters:
+All validation rules are defined as a field name, a method, a function (using the [PHP callback](http://php.net/callback) syntax) or [closure](http://php.net/manual/functions.anonymous.php), and an array of parameters:
 
     $object->rule($field, $callback, array($parameter1, $parameter2));
 
@@ -64,6 +64,36 @@ Rules defined in the [Valid] class can be added by using the method name alone. 
     $object->rule('number', 'phone');
     $object->rule('number', array('Valid', 'phone'));
     $object->rule('number', 'Valid::phone');
+
+### Adding Rules for multiple fields together
+
+To validate multiple fields together, you can do something like this:
+
+    $object->rule('one', 'only_one', array(':validation', array('one', 'two')));
+    $object->rule('two', 'only_one', array(':validation', array('one', 'two')));
+
+    public function only_one($validation, $fields)
+    {
+        // If more than 1 field is set, bail.
+        $matched = 0;
+
+        foreach ($fields as $field)
+        {
+            if (isset($validation[$field]))
+            {
+                $matched++;
+            }
+        }
+
+        if ($matched > 0)
+        {
+            // Add the error to all concerned fields
+            foreach ($fields as $field)
+            {
+                $validation->error($field, 'only_one');
+            }
+        }
+    }
 
 ## Binding Variables
 
@@ -88,7 +118,7 @@ The [Validation] class will add an error for a field if any of the rules associa
 Rules added to empty fields will run, but returning `FALSE` will not automatically add an error for the field. In order for a rule to affect empty fields, you must add the error manually by calling the [Validation::error] method. In order to do this, you must pass the validation object to the rule.
 
     $object->rule($field, 'the_rule', array(':validation', ':field'));
-    
+
     public function the_rule($validation, $field)
     {
         if (something went wrong)
@@ -101,9 +131,9 @@ Rules added to empty fields will run, but returning `FALSE` will not automatical
 
 ## Example
 
-To start our example, we will perform validation on a `$_POST` array that contains user registration information:
+To start our example, we will perform validation on the HTTP POST data of the current request that contains user registration information:
 
-    $post = Validation::factory($_POST);
+    $post = Validation::factory($this->request->post());
 
 Next we need to process the POST'ed information using [Validation]. To start, we need to add some rules:
 
@@ -180,7 +210,7 @@ Next, we need a controller and action to process the registration, which will be
         {
             $user = Model::factory('user');
 
-            $post = Validation::factory($_POST)
+            $post = Validation::factory($this->request->post())
                 ->rule('username', 'not_empty')
                 ->rule('username', 'regex', array(':value', '/^[a-z_.]++$/iD'))
                 ->rule('username', array($user, 'unique_username'))
@@ -198,7 +228,7 @@ Next, we need a controller and action to process the registration, which will be
                 $user->register($post);
 
                 // Always redirect after a successful POST to prevent refresh warnings
-                $this->request->redirect('user/profile');
+                $this->redirect(302, 'user/profile');
             }
 
             // Validation failed, collect the errors

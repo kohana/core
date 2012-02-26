@@ -62,7 +62,6 @@ Property/method | What it does
 [$this->request->route()](../api/Request#property:route) | The [Route] that matched the current request url
 [$this->request->directory()](../api/Request#property:directory), <br /> [$this->request->controller](../api/Request#property:controller), <br /> [$this->request->action](../api/Request#property:action) | The directory, controller and action that matched for the current route
 [$this->request->param()](../api/Request#param) | Any other params defined in your route
-[$this->request->redirect()](../api/Request#redirect) | Redirect the request to a different url
 
 ## $this->response
 [$this->response->body()](../api/Response#property:body) | The content to return for this request
@@ -74,7 +73,7 @@ Property/method | What it does
 
 You create actions for your controller by defining a public function with an `action_` prefix.  Any method that is not declared as `public` and prefixed with `action_` can NOT be called via routing.
 
-An action method will decide what should be done based on the current request, it *controls* the application.  Did the user want to save a blog post?  Did they provide the necessary fields?   Do they have permission to do that?  The controller will call other classes, including models, to accomplish this.  Every action should set `$this->response->body($view)` to the [view file](mvc/views) to be sent to the browser, unless it [redirected](../api/Request#redirect) or otherwise ended the script earlier.
+An action method will decide what should be done based on the current request, it *controls* the application.  Did the user want to save a blog post?  Did they provide the necessary fields?   Do they have permission to do that?  The controller will call other classes, including models, to accomplish this.  Every action should set `$this->response->body($view)` to the [view file](mvc/views) to be sent to the browser, unless it redirected or otherwise ended the script earlier.
 
 A very basic action method that simply loads a [view](mvc/views) file.
 
@@ -111,7 +110,7 @@ A view action for a product page.
 
 		if ( ! $product->loaded())
 		{
-			throw new HTTP_Exception_404('Product not found!');
+			throw HTTP_Exception::factory(404, 'Product not found!');
 		}
 
 		$this->response->body(View::factory('product/view')
@@ -124,12 +123,12 @@ A user login action.
 	{
 		$view = View::factory('user/login');
 
-		if ($_POST)
+		if ($this->request->post())
 		{
 			// Try to login
-			if (Auth::instance()->login(arr::get($_POST, 'username'), arr::get($_POST, 'password')))
+			if (Auth::instance()->login($this->request->post('username'), $this->request->post('password')))
 			{
-				Request::current()->redirect('home');
+				$this->redirect(302, 'home');
 			}
 
 			$view->errors = 'Invalid email or password';
@@ -155,7 +154,7 @@ You can check what action has been requested (via `$this->request->action`) and 
 			// If this user doesn't have the admin role, and is not trying to login, redirect to login
 			if ( ! Auth::instance()->logged_in('admin') AND $this->request->action !== 'login')
 			{
-				$this->request->redirect('admin/login');
+				$this->redirect(302, 'admin/login');
 			}
 		}
 		
