@@ -43,36 +43,22 @@ Kohana comes with a robust system for handing http errors. It includes exception
 
 	throw HTTP_Exception::factory(404, 'File not found!');
 
-[!!] TODO: Update the remainder of this section to take issue [#4377](http://dev.kohanaframework.org/issues/4377) into account.
+To register error pages for these, using 404 as an example:
 
-There is no default method to handle these errors in Kohana. It's recommended that you setup an exception handler (and register it) to handle these kinds of errors. Here's a simple example that would go in */application/classes/foobar/exception/handler.php*:
+    class HTTP_Exception_404 extends Kohana_HTTP_Exception_404 {
 
-	class Foobar_Exception_Handler
-	{
-		public static function handle(Exception $e)
-		{
-			switch (get_class($e))
-			{
-				case 'HTTP_Exception_404':
-					$response = new Response;
-					$response->status(404);
-					$view = new View('error/404');
-					$view->message = $e->getMessage();
-					$view->title = 'File Not Found';
-					echo $response->body($view)->send_headers()->body();
-					return TRUE;
-					break;
-				default:
-					return Kohana_Exception::handler($e);
-					break;
-			}
-		}
-	}
+        public function get_response()
+        {
+            $response = Response::factory();
 
-And put something like this in your bootstrap to register the handler.
+            $view = View::factory('errors/404');
 
-	set_exception_handler(array('Foobar_Exception_Handler', 'handle'));
+            // We're inside an instance of Exception here, all the normal stuff is available.
+            $view->message = $this->getMessage();
 
- > *Note:* Be sure to place `set_exception_handler()` **after** `Kohana::init()` in your bootstrap, or it won't work.
+            $response->body($view->render());
 
- > If you receive *Fatal error: Exception thrown without a stack frame in Unknown on line 0*, it means there was an error within your exception handler. If using the example above, be sure *404.php* exists under */application/views/error/*.
+            return $response;
+        }
+
+    }
