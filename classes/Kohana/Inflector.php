@@ -183,6 +183,10 @@ class Kohana_Inflector {
 		{
 			$str = Inflector::$irregular[$str];
 		}
+		elseif (in_array($str, Inflector::$irregular))
+		{
+			// Do nothing
+		}
 		elseif (preg_match('/[sxz]$/', $str) OR preg_match('/[^aeioudgkprt]h$/', $str))
 		{
 			$str .= 'es';
