@@ -654,6 +654,26 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$request->client($client);
 		$this->assertSame($expected, $request->client());
 	}
+
+	/**
+	 * Tests that the Request constructor passes client params on to the
+	 * Request_Client once created.
+	 */
+	public function test_passes_client_params()
+	{
+		$request = Request::factory('http://example.com/', array(
+			'follow' => TRUE,
+			'strict_redirect' => FALSE
+		));
+
+		$client = $request->client();
+
+		$this->assertEquals($client->follow(), TRUE);
+		$this->assertEquals($client->strict_redirect(), FALSE);
+	}
+
+
+
 } // End Kohana_RequestTest
 
 class Controller_Kohana_RequestTest_Dummy extends Controller
