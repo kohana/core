@@ -76,13 +76,13 @@ abstract class Kohana_Request_Client {
 	{
 		$response = Response::factory();
 
-		if ($this->_cache instanceof HTTP_Cache)
-			return $this->_cache->execute($this, $request, $response);
+		if (($cache = $this->cache()) instanceof HTTP_Cache)
+			return $cache->execute($this, $request, $response);
 
 		$response = $this->execute_request($request, $response);
 
 		// Do we need to follow a Location header ?
-		if ($this->_follow AND in_array($response->status(), array(201, 301, 302, 303, 307))
+		if ($this->follow() AND in_array($response->status(), array(201, 301, 302, 303, 307))
 			AND $response->headers('Location'))
 		{
 			// Figure out which method to use for the follow request
@@ -99,7 +99,7 @@ abstract class Kohana_Request_Client {
 					break;
 				case 302:
 					// Cater for sites with broken HTTP redirect implementations
-					if ($this->_strict_redirect)
+					if ($this->strict_redirect())
 					{
 						$follow_method = $request->method();
 					}
@@ -113,7 +113,7 @@ abstract class Kohana_Request_Client {
 			// Prepare the additional request
 			$follow_request = $this->_create_request($response->headers('Location'))
 			                         ->method($follow_method)
-			                         ->headers(Arr::extract($request->headers(), $this->_follow_headers));
+			                         ->headers(Arr::extract($request->headers(), $this->follow_headers()));
 
 			// Execute the additional request
 			$response = $follow_request->execute();
