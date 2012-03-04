@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Request Client. Processes a [Request] and handles [HTTP_Caching] if 
+ * Request Client. Processes a [Request] and handles [HTTP_Caching] if
  * available. Will usually return a [Response] object as a result of the
  * request unless an unexpected error occurs.
  *
@@ -111,7 +111,7 @@ abstract class Kohana_Request_Client {
 			}
 
 			// Prepare the additional request
-			$follow_request = $this->_create_request($response->headers('Location'))
+			$follow_request = Request::factory($response->headers('Location'))
 			                         ->method($follow_method)
 			                         ->headers(Arr::extract($request->headers(), $this->follow_headers()));
 
@@ -128,21 +128,9 @@ abstract class Kohana_Request_Client {
 	}
 
 	/**
-	 * Creates a new request object to follow a redirect (separated to allow
-	 * mock injection in tests).
-	 *
-	 * @param string $url The URL to pass to Request::factory
-	 * @return Request
-	 */
-	protected function _create_request($url)
-	{
-		return Request::factory($url);
-	}
-
-	/**
 	 * Processes the request passed to it and returns the response from
 	 * the URI resource identified.
-	 * 
+	 *
 	 * This method must be implemented by all clients.
 	 *
 	 * @param   Request   $request   request to execute by client
