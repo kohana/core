@@ -151,6 +151,52 @@ class Kohana_Request_ClientTest extends Unittest_TestCase
 
 		$this->assertEquals($client->test_follow_request->method(), $expect_method);
 	}
+
+	/**
+	 * Provider for test_follows_with_body_if_not_get
+	 *
+	 * @return array
+	 */
+	public function provider_follows_with_body_if_not_get()
+	{
+		return array(
+			array('GET','301',NULL),
+			array('POST','303',NULL),
+			array('POST','307','foo-bar')
+		);
+	}
+
+	/**
+	 * Tests that the original request body is sent when following a redirect
+	 * (unless redirect method is GET)
+	 *
+	 * @dataProvider provider_follows_with_body_if_not_get
+	 * @depends test_follows_with_strict_method
+	 * @depends test_follows_redirects
+	 *
+	 * @param string $original_method  Request method to use for the original request
+	 * @param string $response_status  Redirect status that will be issued
+	 * @param string $expect_body      Expected value of body() in the second request
+	 */
+	public function test_follows_with_body_if_not_get($original_method, $response_status, $expect_body)
+	{
+		$client = new Request_Client_FollowTest_Dummy(array(
+			'follow' => TRUE,
+		));
+
+		$client->test_response_status = $response_status;
+		$client->test_response_headers = array('location' => 'http://foo.com/');
+
+		$response = Request::factory('http://bar.com')
+					->client($client)
+					->method($original_method)
+					->body('foo-bar')
+					->execute();
+
+		$follow_request = $client->test_follow_request;
+		$this->assertEquals($follow_request->body(),$expect_body);
+	}
+
 } // End Kohana_Request_ClientTest
 
 

@@ -115,6 +115,11 @@ abstract class Kohana_Request_Client {
 			                         ->method($follow_method)
 			                         ->headers(Arr::extract($request->headers(), $this->follow_headers()));
 
+			if ($follow_method !== Request::GET)
+			{
+				$follow_request->body($request->body());
+			}
+
 			// Execute the additional request
 			$response = $follow_request->execute();
 		}
