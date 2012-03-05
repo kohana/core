@@ -387,6 +387,52 @@ class Kohana_Request_ClientTest extends Unittest_TestCase
 				->execute();
 	}
 
+	/**
+	 * Header callback for testing that arbitrary callback_params are available
+	 * to the callback.
+	 *
+	 * @param Request $request
+	 * @param Response $response
+	 * @param Request_Client $client
+	 */
+	public function callback_assert_params($request, $response, $client)
+	{
+		$this->assertEquals('foo', $client->callback_params('constructor_param'));
+		$this->assertEquals('bar', $client->callback_params('setter_param'));
+		$response->body('assertions_ran');
+	}
+
+	/**
+	 * Test that arbitrary callback_params can be passed to the callback through
+	 * the Request_Client and are assigned to subsequent requests
+	 */
+	public function test_client_can_hold_params_for_callbacks()
+	{
+		// Test with param in constructor
+		$request = Request::factory(
+				$this->_dummy_uri(
+						302,
+						array('Location' => $this->_dummy_uri('200',array('X-cb'=>'1'), 'followed')),
+						'not-followed'),
+				array(
+					'follow' => TRUE,
+					'header_callbacks' => array(
+						'x-cb' => array($this, 'callback_assert_params'),
+						'location' => 'Request_Client::on_header_location',
+					),
+					'callback_params' => array(
+						'constructor_param' => 'foo'
+					)
+				));
+
+		// Test passing param to setter
+		$request->client()->callback_params('setter_param', 'bar');
+
+		// Callback will throw assertion exceptions when executed
+		$response = $request->execute();
+		$this->assertEquals('assertions_ran', $response->body());
+	}
+
 } // End Kohana_Request_ClientTest
 
 

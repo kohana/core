@@ -51,6 +51,11 @@ abstract class Kohana_Request_Client {
 	protected $_callback_depth = 0;
 
 	/**
+	 * @var array  Arbitrary parameters that are shared with header callbacks through their Request_Client object
+	 */
+	protected $_callback_params = array();
+
+	/**
 	 * Creates a new `Request_Client` object,
 	 * allows for dependency injection.
 	 *
@@ -118,13 +123,8 @@ abstract class Kohana_Request_Client {
 				if ($cb_result instanceof Request)
 				{
 					// If the callback returns a request, automatically assign client params
-					$client = $cb_result->client();
-					$client->cache($this->cache());
-					$client->follow($this->follow());
-					$client->follow_headers($this->follow_headers());
-					$client->header_callbacks($this->header_callbacks());
-					$client->callback_depth($this->callback_depth() + 1);
-					$client->max_callback_depth($this->max_callback_depth());
+					$this->assign_client_properties($cb_result->client());
+					$cb_result->client()->callback_depth($this->callback_depth() + 1);
 
 					// Execute the request
 					$response = $cb_result->execute();
@@ -298,6 +298,70 @@ abstract class Kohana_Request_Client {
 		$this->_callback_depth = $depth;
 
 		return $this;
+	}
+
+	/**
+	 * Getter/Setter for the callback_params array, which allows additional
+	 * application-specific parameters to be shared with callbacks.
+	 *
+	 * As with other Kohana setter/getters, usage is:
+	 *
+	 *     // Set full array
+	 *     $client->callback_params(array('foo'=>'bar'));
+	 *
+	 *     // Set single key
+	 *     $client->callback_params('foo','bar');
+	 *
+	 *     // Get full array
+	 *     $params = $client->callback_params();
+	 *
+	 *     // Get single key
+	 *     $foo = $client->callback_params('foo');
+	 *
+	 * @param string|array $param
+	 * @param mixed $value
+	 * @return Request_Client|mixed
+	 */
+	public function callback_params($param = NULL, $value = NULL)
+	{
+		// Getter for full array
+		if ($param === NULL)
+			return $this->_callback_params;
+
+		// Setter for full array
+		if (is_array($param))
+		{
+			$this->_callback_params = $param;
+			return $this;
+		}
+		// Getter for single value
+		elseif ($value === NULL)
+		{
+			return Arr::get($this->_callback_params, $param);
+		}
+		// Setter for single value
+		else
+		{
+			$this->_callback_params[$param] = $value;
+			return $this;
+		}
+
+	}
+
+	/**
+	 * Assigns the properties of the current Request_Client to another
+	 * Request_Client instance - used when setting up a subsequent request.
+	 *
+	 * @param Request_Client $client
+	 */
+	public function assign_client_properties(Request_Client $client)
+	{
+		$client->cache($this->cache());
+		$client->follow($this->follow());
+		$client->follow_headers($this->follow_headers());
+		$client->header_callbacks($this->header_callbacks());
+		$client->max_callback_depth($this->max_callback_depth());
+		$client->callback_params($this->callback_params());
 	}
 
 	/**
