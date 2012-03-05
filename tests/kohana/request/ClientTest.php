@@ -259,6 +259,110 @@ class Kohana_Request_ClientTest extends Unittest_TestCase
 		$this->assertEquals($expect_body, $data['rq_body']);
 	}
 
+	/**
+	 * Provider for test_triggers_header_callbacks
+	 *
+	 * @return array
+	 */
+	public function provider_triggers_header_callbacks()
+	{
+		return array(
+			// Straightforward response manipulation
+			array(
+				array('X-test-1' =>
+					function($request, $response, $client){
+						$response->body(json_encode(array('body'=>'test1-body-changed')));
+						return $response;
+				}),
+				$this->_dummy_uri(200, array('X-test-1' => 'foo'), 'test1-body'),
+				'test1-body-changed'
+			),
+			// Subsequent request execution
+			array(
+				array('X-test-2' =>
+					function($request, $response, $client){
+						return Request::factory($response->headers('X-test-2'));
+				}),
+				$this->_dummy_uri(200,
+					array('X-test-2' => $this->_dummy_uri(200, NULL, 'test2-subsequent-body')),
+					'test2-orig-body'),
+				'test2-subsequent-body'
+			),
+			// No callbacks triggered
+			array(
+				array('X-test-3' =>
+					function ($request, $response, $client) {
+						throw new Exception("Unexpected execution of X-test-3 callback");
+				}),
+				$this->_dummy_uri(200, array('X-test-1' => 'foo'), 'test3-body'),
+				'test3-body'
+			),
+			// Callbacks not triggered once a previous callback has created a new response
+			array(
+				array(
+					'X-test-1' =>
+						function($request, $response, $client){
+							return Request::factory($response->headers('X-test-1'));
+						},
+					'X-test-2' =>
+						function($request, $response, $client){
+							return Request::factory($response->headers('X-test-2'));
+						}
+				),
+				$this->_dummy_uri(200,
+					array(
+						'X-test-1' => $this->_dummy_uri(200, NULL, 'test1-subsequent-body'),
+						'X-test-2' => $this->_dummy_uri(200, NULL, 'test2-subsequent-body')
+					),
+					'test2-orig-body'),
+				'test1-subsequent-body'
+			),
+			// Nested callbacks are supported if callback creates new request
+			array(
+				array(
+					'X-test-1' =>
+						function($request, $response, $client){
+							return Request::factory($response->headers('X-test-1'));
+						},
+					'X-test-2' =>
+						function($request, $response, $client){
+							return Request::factory($response->headers('X-test-2'));
+						}
+				),
+				$this->_dummy_uri(200,
+					array(
+						'X-test-1' => $this->_dummy_uri(
+							200,
+							array('X-test-2' => $this->_dummy_uri(200, NULL, 'test2-subsequent-body')),
+							'test1-subsequent-body'),
+					),
+					'test-orig-body'),
+				'test2-subsequent-body'
+			),
+		);
+	}
+
+	/**
+	 * Tests that header callbacks are triggered in sequence when specific headers
+	 * are present in the response
+	 *
+	 * @dataProvider provider_triggers_header_callbacks
+	 *
+	 * @param array $callbacks     Array of header callbacks
+	 * @param array  $headers      Headers that will be received in the response
+	 * @param string $expect_body  Response body content to expect
+	 */
+	public function test_triggers_header_callbacks($callbacks, $uri, $expect_body)
+	{
+		$response = Request::factory($uri,
+			array('header_callbacks' => $callbacks))
+			->execute();
+
+		$data = json_decode($response->body(), TRUE);
+
+		$this->assertEquals($expect_body, $data['body']);
+	}
+
 } // End Kohana_Request_ClientTest
 
 
