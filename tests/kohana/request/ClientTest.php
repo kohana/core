@@ -363,6 +363,30 @@ class Kohana_Request_ClientTest extends Unittest_TestCase
 		$this->assertEquals($expect_body, $data['body']);
 	}
 
+	/**
+	 * Tests that the Request_Client is protected from too many recursions of
+	 * requests triggered by header callbacks.
+	 *
+	 * @expectedException Request_Client_Recursion_Exception
+	 */
+	public function test_deep_recursive_callbacks_are_aborted()
+	{
+		$uri = $this->_dummy_uri('200', array('x-cb' => '1'), 'body');
+
+		$response = Request::factory(
+				$uri,
+				array(
+					'header_callbacks' => array(
+						'x-cb' => function ($request, $response, $client)
+							{
+								// Recurse into a new request
+								return Request::factory($request->uri());
+							}),
+					'max_callback_depth' => 2
+				))
+				->execute();
+	}
+
 } // End Kohana_Request_ClientTest
 
 

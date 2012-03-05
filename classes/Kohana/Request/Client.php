@@ -41,6 +41,16 @@ abstract class Kohana_Request_Client {
 	);
 
 	/**
+	 * @var int  Maximum number of requests that header callbacks can trigger before the request is aborted
+	 */
+	protected $_max_callback_depth = 5;
+
+	/**
+	 * @var int  Tracks the callback depth of the currently executing request
+	 */
+	protected $_callback_depth = 0;
+
+	/**
 	 * Creates a new `Request_Client` object,
 	 * allows for dependency injection.
 	 *
@@ -81,6 +91,16 @@ abstract class Kohana_Request_Client {
 	 */
 	public function execute(Request $request)
 	{
+		// Prevent too much recursion of header callback requests
+		if ($this->callback_depth() > $this->max_callback_depth())
+			throw new Request_Client_Recursion_Exception(
+					"Could not execute request to :uri - too many recursions after :depth requests",
+					array(
+						':uri' => $request->uri(),
+						':depth' => $this->callback_depth()
+					));
+
+		// Execute the request
 		$orig_response = $response = Response::factory();
 
 		if (($cache = $this->cache()) instanceof HTTP_Cache)
@@ -103,6 +123,8 @@ abstract class Kohana_Request_Client {
 					$client->follow($this->follow());
 					$client->follow_headers($this->follow_headers());
 					$client->header_callbacks($this->header_callbacks());
+					$client->callback_depth($this->callback_depth() + 1);
+					$client->max_callback_depth($this->max_callback_depth());
 
 					// Execute the request
 					$response = $cb_result->execute();
@@ -236,6 +258,44 @@ abstract class Kohana_Request_Client {
 			return $this->_header_callbacks;
 
 		$this->_header_callbacks = $header_callbacks;
+
+		return $this;
+	}
+
+	/**
+	 * Getter and setter for the maximum callback depth property.
+	 *
+	 * This protects the main execution from recursive callback execution (eg
+	 * following infinite redirects, conflicts between callbacks causing loops
+	 * etc). Requests will only be allowed to nest to the level set by this
+	 * param before execution is aborted with a Request_Client_Recursion_Exception.
+	 *
+	 * @param int $depth  Maximum number of callback requests to execute before aborting
+	 * @return Request_Client|int
+	 */
+	public function max_callback_depth($depth = NULL)
+	{
+		if ($depth === NULL)
+			return $this->_max_callback_depth;
+
+		$this->_max_callback_depth = $depth;
+
+		return $this;
+	}
+
+	/**
+	 * Getter/Setter for the callback depth property, which is used to track
+	 * how many recursions have been executed within the current request execution.
+	 *
+	 * @param int $depth  Current recursion depth
+	 * @return Request_Client|int
+	 */
+	public function callback_depth($depth = NULL)
+	{
+		if ($depth === NULL)
+			return $this->_callback_depth;
+
+		$this->_callback_depth = $depth;
 
 		return $this;
 	}
