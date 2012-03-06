@@ -362,29 +362,46 @@ class Kohana_Request_ClientTest extends Unittest_TestCase
 
 		$this->assertEquals($expect_body, $data['body']);
 	}
-
+	
 	/**
 	 * Tests that the Request_Client is protected from too many recursions of
 	 * requests triggered by header callbacks.
 	 *
-	 * @expectedException Request_Client_Recursion_Exception
 	 */
 	public function test_deep_recursive_callbacks_are_aborted()
 	{
 		$uri = $this->_dummy_uri('200', array('x-cb' => '1'), 'body');
 
-		$response = Request::factory(
-				$uri,
-				array(
-					'header_callbacks' => array(
-						'x-cb' => function ($request, $response, $client)
-							{
-								// Recurse into a new request
-								return Request::factory($request->uri());
-							}),
-					'max_callback_depth' => 2
-				))
-				->execute();
+		// Temporary property to track requests
+		$this->requests_executed = 0;
+
+		try
+		{
+			$response = Request::factory(
+					$uri,
+					array(
+						'header_callbacks' => array(
+							'x-cb' => function ($request, $response, $client)
+								{
+									$client->callback_params('testcase')->requests_executed++;
+									// Recurse into a new request
+									return Request::factory($request->uri());
+								}),
+						'max_callback_depth' => 2,
+						'callback_params' => array(
+							'testcase' => $this,
+						)
+					))
+					->execute();
+		}
+		catch (Request_Client_Recursion_Exception $e)
+		{
+			// Verify that two requests were executed
+			$this->assertEquals(2, $this->requests_executed);
+			return;
+		}
+
+		$this->fail('Expected Request_Client_Recursion_Exception was not thrown');
 	}
 
 	/**

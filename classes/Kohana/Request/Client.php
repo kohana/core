@@ -48,7 +48,7 @@ abstract class Kohana_Request_Client {
 	/**
 	 * @var int  Tracks the callback depth of the currently executing request
 	 */
-	protected $_callback_depth = 0;
+	protected $_callback_depth = 1;
 
 	/**
 	 * @var array  Arbitrary parameters that are shared with header callbacks through their Request_Client object
@@ -102,7 +102,7 @@ abstract class Kohana_Request_Client {
 					"Could not execute request to :uri - too many recursions after :depth requests",
 					array(
 						':uri' => $request->uri(),
-						':depth' => $this->callback_depth()
+						':depth' => $this->callback_depth() - 1,
 					));
 
 		// Execute the request
