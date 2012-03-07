@@ -363,8 +363,12 @@ class Kohana_Route {
 	 * Filters to be run before route parameters are returned:
 	 *
 	 *     $route->filter(
-	 *         function(Route $route, $params)
+	 *         function(Route $route, $params, Request $request)
 	 *         {
+	 *             if ($request->method() !== HTTP_Request::POST)
+	 *             {
+	 *                 return FALSE; // This route only matches POST requests
+	 *             }
 	 *             if ($params AND $params['controller'] === 'welcome')
 	 *             {
 	 *                 $params['controller'] = 'home';
@@ -414,8 +418,11 @@ class Kohana_Route {
 	 * @return  array   on success
 	 * @return  FALSE   on failure
 	 */
-	public function matches($uri)
+	public function matches(Request $request)
 	{
+		// Get the URI from the Request
+		$uri = $request->uri();
+
 		if ( ! preg_match($this->_route_regex, $uri, $matches))
 			return FALSE;
 
@@ -457,8 +464,8 @@ class Kohana_Route {
 		{
 			foreach ($this->_filters as $callback)
 			{
-				// Execute the filter
-				$return = call_user_func($callback, $this, $params);
+				// Execute the filter giving it the route, params, and request
+				$return = call_user_func($callback, $this, $params, $request);
 
 				if ($return === FALSE)
 				{
