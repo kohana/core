@@ -638,7 +638,7 @@ class Kohana_Response implements HTTP_Response {
 	 */
 	public function generate_etag()
 	{
-	    if ($this->_body === NULL)
+	    if ($this->_body === '')
 		{
 			throw new Request_Exception('No response yet associated with request - cannot auto generate resource ETag');
 		}

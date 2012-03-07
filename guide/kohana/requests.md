@@ -56,10 +56,27 @@ To execute a request, use the `execute()` method on it. This will give you a [re
 	$request = Request::factory('welcome');
 	$response = $request->execute();
 
+### Following redirects
+You can optionally instruct the request client to automatically follow redirects (specified with a Location header and a status code in 201, 301, 302, 303, 307). This behaviour is disabled by default, but can be enabled by passing a set of options to the Request's constructor:
+
+	$request = Request::factory('http://example.com/redirectme', array(
+		'follow' => TRUE));
+
+A number of options are available to control the behaviour of the [Request_Client] when following redirects.
+
+Option           |Default                 |Function
+-----------------|------------------------|---------
+follow           | FALSE                  |Whether to follow redirects
+follow_headers   | array('Authorization') |The keys of headers that will be re-sent with the redirected request
+strict_redirect  | TRUE                   |Whether to use the original request method following to a 302 redirect (see below)
+
+[!!] HTTP/1.1 specifies that a 302 redirect should be followed using the original request method. However, the vast majority of clients and servers get this wrong, with 302 widely used for 'POST - 302 redirect - GET' patterns. By default, Kohana's client is fully compliant with the HTTP spec. If you need to interact with non-compliant third party sites you may need to set strict_redirect FALSE to force the client to switch to GET following a 302 response.
+
+
 ## Request Cache Control
 
 You can cache requests for fast execution by passing a cache instance in as the second parameter of factory:
 
-	$request = Request::factory('welcome', Cache::instance());
+	$request = Request::factory('welcome', array('cache'=>Cache::instance()));
 
 TODO

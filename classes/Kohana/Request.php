@@ -49,7 +49,7 @@ class Kohana_Request implements HTTP_Request {
 	 * @param   array   $client_params    An array of params to pass to the request client
 	 * @param   bool    $allow_external   Allow external requests? (deprecated in 3.3)
 	 * @param   array   $injected_routes  An array of routes to use, for testing
-	 * @return  void
+	 * @return  void|Request
 	 * @throws  Request_Exception
 	 * @uses    Route::all
 	 * @uses    Route::matches

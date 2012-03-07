@@ -42,6 +42,10 @@ class Kohana_Log_Syslog extends Log_Writer {
 	{
 		foreach ($messages as $message)
 		{
+			if (Log::STRACE == $message['level'])
+			{
+				$message['level'] = Log::DEBUG;
+			}
 			syslog($message['level'], $message['body']);
 
 			if (isset($message['additional']['exception']))
