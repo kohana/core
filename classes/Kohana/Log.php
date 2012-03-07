@@ -135,7 +135,12 @@ class Kohana_Log {
 		}
 		else
 		{
-			$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+			$trace = array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), 1);
+		}
+
+		if ($additional == NULL)
+		{
+			$additional = array();
 		}
 
 		// Create a new message
