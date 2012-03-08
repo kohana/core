@@ -192,7 +192,6 @@ class Kohana_RouteTest extends Unittest_TestCase
 	{
 		return array(
 			array('<controller>/<action>', '<controller>/<action>'),
-			array(array('Route_Holder', 'default_callback'), array('Route_Holder', 'default_callback')),
 		);
 	}
 
@@ -288,12 +287,6 @@ class Kohana_RouteTest extends Unittest_TestCase
 				'Welcome',
 				'index',
 			),
-			array(
-				array('Route_Holder', 'matches_returns_array_of_parameters_on_successful_match'),
-				'apple/pie',
-				'Welcome',
-				'index',
-			),
 		);
 	}
 
@@ -364,20 +357,6 @@ class Kohana_RouteTest extends Unittest_TestCase
 				),
 				'',
 			),
-			array(
-				array('Route_Holder', 'default_return_callback'),
-				'(<controller>(/<action>(/<id>)))',
-				array('controller' => 'welcome', 'action' => 'index'),
-				'welcome',
-				'index',
-				'unit/test/1',
-				array(
-					'controller' => 'unit',
-					'action' => 'test',
-					'id' => '1'
-				),
-				'',
-			),
 		);
 	}
 
@@ -426,11 +405,6 @@ class Kohana_RouteTest extends Unittest_TestCase
 		return array(
 			array(
 				'admin(/<controller>(/<action>(/<id>)))',
-				'admin',
-				'admin/users/add',
-			),
-			array(
-				array('Route_Holder', 'required_parameters_are_needed'),
 				'admin',
 				'admin/users/add',
 			),
@@ -495,12 +469,6 @@ class Kohana_RouteTest extends Unittest_TestCase
 				'info/about_us',
 				array('some' => 'random', 'params' => 'to confuse'),
 			),
-			array(
-				array('Route_Holder', 'reverse_routing_returns_routes_uri_if_route_is_static'),
-				'info/about_us',
-				'info/about_us',
-				array('some' => 'random', 'params' => 'to confuse'),
-			),
 		);
 	}
 
@@ -533,11 +501,6 @@ class Kohana_RouteTest extends Unittest_TestCase
 			array(
 				'<controller>(/<action)',
 				NULL,
-				array('action' => 'awesome-action'),
-			),
-			array(
-				array('Route_Holder', 'default_return_callback'),
-				'<controller>(/<action)',
 				array('action' => 'awesome-action'),
 			),
 		);
@@ -582,21 +545,6 @@ class Kohana_RouteTest extends Unittest_TestCase
 			array(
 				'<controller>/<action>(/<id>)',
 				NULL,
-				'users/edit',
-				array(
-					'controller' => 'users',
-					'action'     => 'edit',
-				),
-				'users/edit/god',
-				array(
-					'controller' => 'users',
-					'action'     => 'edit',
-					'id'         => 'god',
-				),
-			),
-			array(
-				array('Route_Holder', 'default_return_callback'),
-				'<controller>/<action>(/<id>)',
 				'users/edit',
 				array(
 					'controller' => 'users',
