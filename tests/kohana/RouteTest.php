@@ -249,7 +249,6 @@ class Kohana_RouteTest extends Unittest_TestCase
 	{
 		return array(
 			array('projects/(<project_id>/(<controller>(/<action>(/<id>))))', 'apple/pie'),
-			array(array('Route_Holder', 'default_callback'), 'apple/pie'),
 		);
 	}
 
@@ -265,7 +264,14 @@ class Kohana_RouteTest extends Unittest_TestCase
 	{
 		$route = new Route($uri);
 
-		$this->assertSame(FALSE, $route->matches($match));
+		// Mock a request class with the $match uri
+		$stub = $this->getMock('Request', array('uri'), array($match));
+		$stub->expects($this->any())
+			->method('uri')
+			// Request::uri() called by Route::matches() will return $match
+			->will($this->returnValue($match));
+
+		$this->assertSame(FALSE, $route->matches($stub));
 	}
 
 	/**
@@ -304,7 +310,14 @@ class Kohana_RouteTest extends Unittest_TestCase
 	{
 		$route = new Route($uri);
 
-		$matches = $route->matches($m);
+		// Mock a request class with the $m uri
+		$request = $this->getMock('Request', array('uri'), array($m));
+		$request->expects($this->any())
+			->method('uri')
+			// Request::uri() called by Route::matches() will return $m
+			->will($this->returnValue($m));
+
+		$matches = $route->matches($request);
 
 		$this->assertInternalType('array', $matches);
 		$this->assertArrayHasKey('controller', $matches);
@@ -384,7 +397,13 @@ class Kohana_RouteTest extends Unittest_TestCase
 
 		$this->assertSame($defaults, $route->defaults());
 
-		$matches = $route->matches($default_uri);
+		// Mock a request class
+		$request = $this->getMock('Request', array('uri'), array($default_uri));
+		$request->expects($this->any())
+			->method('uri')
+			->will($this->returnValue($default_uri));
+
+		$matches = $route->matches($request);
 
 		$this->assertInternalType('array', $matches);
 		$this->assertArrayHasKey('controller', $matches);
@@ -430,13 +449,31 @@ class Kohana_RouteTest extends Unittest_TestCase
 	{
 		$route = new Route($uri);
 
-		$this->assertFalse($route->matches(''));
+		// Mock a request class that will return empty uri
+		$request = $this->getMock('Request', array('uri'), array(''));
+		$request->expects($this->any())
+			->method('uri')
+			->will($this->returnValue(''));
 
-		$matches = $route->matches($matches_route1);
+		$this->assertFalse($route->matches($request));
+
+		// Mock a request class that will return route1
+		$request = $this->getMock('Request', array('uri'), array($matches_route1));
+		$request->expects($this->any())
+			->method('uri')
+			->will($this->returnValue($matches_route1));
+
+		$matches = $route->matches($request);
 
 		$this->assertInternalType('array', $matches);
 
-		$matches = $route->matches($matches_route2);
+		// Mock a request class that will return route2 uri
+		$request = $this->getMock('Request', array('uri'), array($matches_route2));
+		$request->expects($this->any())
+			->method('uri')
+			->will($this->returnValue($matches_route2));
+
+		$matches = $route->matches($request);
 
 		$this->assertInternalType('array', $matches);
 		// $this->assertSame(5, count($matches));
@@ -788,7 +825,13 @@ class Kohana_RouteTest extends Unittest_TestCase
 	{
 		$route = new Route($route);
 
-		$params = $route->defaults($defaults)->filter($filter)->matches($uri);
+		// Mock a request class
+		$request = $this->getMock('Request', array('uri'), array($uri));
+		$request->expects($this->any())
+			->method('uri')
+			->will($this->returnValue($uri));
+
+		$params = $route->defaults($defaults)->filter($filter)->matches($request);
 
 		$this->assertSame($expected_params, $params);
 	}
