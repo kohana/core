@@ -421,7 +421,7 @@ class Kohana_Route {
 	public function matches(Request $request)
 	{
 		// Get the URI from the Request
-		$uri = $request->uri();
+		$uri = trim($request->uri(), '/');
 
 		if ( ! preg_match($this->_route_regex, $uri, $matches))
 			return FALSE;
