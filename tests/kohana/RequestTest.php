@@ -194,6 +194,19 @@ class Kohana_RequestTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Tests Request::route()
+	 *
+	 * @test
+	 */
+	public function test_route_is_not_set_before_execute()
+	{
+		$request = Request::factory(''); // This should always match something, no matter what changes people make
+
+		// The route should be NULL since the request has not been executed yet
+		$this->assertEquals($request->route(), NULL);
+	}
+
+	/**
 	 * Tests Request::accept_type()
 	 *
 	 * @test
