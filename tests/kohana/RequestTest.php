@@ -125,6 +125,13 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$uri = 'foo/bar/id';
 		$request = Request::factory($uri, NULL, TRUE, array($route));
 
+		// We need to execute the request before it has matched a route
+		try
+		{
+			$request->execute();
+		}
+		catch (Exception $e) {}
+
 		$this->assertArrayHasKey('id', $request->param());
 		$this->assertArrayNotHasKey('foo', $request->param());
 		$this->assertEquals($request->uri(), $uri);
@@ -142,6 +149,13 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$route = new Route('(<uri>)', array('uri' => '.+'));
 		$route->defaults(array('controller' => 'foobar', 'action' => 'index'));
 		$request = Request::factory('foobar', NULL, TRUE, array($route));
+
+		// We need to execute the request before it has matched a route
+		try
+		{
+			$request->execute();
+		}
+		catch (Exception $e) {}
 
 		$this->assertSame('foobar', $request->param('uri'));
 	}
@@ -168,6 +182,13 @@ class Kohana_RequestTest extends Unittest_TestCase
 	public function test_route()
 	{
 		$request = Request::factory(''); // This should always match something, no matter what changes people make
+
+		// We need to execute the request before it has matched a route
+		try
+		{
+			$request->execute();
+		}
+		catch (Exception $e) {}
 
 		$this->assertInstanceOf('Route', $request->route());
 	}
