@@ -452,13 +452,13 @@ class Kohana_Request implements HTTP_Request {
 	}
 
 	/**
-	 * Process URI
+	 * Process a request to find a matching route
 	 *
-	 * @param   string  $uri     URI
+	 * @param   object  $request Request
 	 * @param   array   $routes  Route
 	 * @return  array
 	 */
-	public static function process_uri($uri, $routes = NULL)
+	public static function process(Request $request, $routes = NULL)
 	{
 		// Load routes
 		$routes = (empty($routes)) ? Route::all() : $routes;
@@ -467,7 +467,7 @@ class Kohana_Request implements HTTP_Request {
 		foreach ($routes as $name => $route)
 		{
 			// We found something suitable
-			if ($params = $route->matches($uri))
+			if ($params = $route->matches($request))
 			{
 				return array(
 					'params' => $params,
@@ -653,6 +653,8 @@ class Kohana_Request implements HTTP_Request {
 	 */
 	public function __construct($uri, $client_params = array(), $allow_external = TRUE, $injected_routes = array())
 	{
+		$client_params = is_array($client_params) ? $client_params : array();
+
 		// Initialise the header
 		$this->_header = new HTTP_Header(array());
 
@@ -678,57 +680,9 @@ class Kohana_Request implements HTTP_Request {
 		if ( ! $allow_external OR strpos($uri, '://') === FALSE)
 		{
 			// Remove trailing slashes from the URI
-			$uri = trim($uri, '/');
-
-			$processed_uri = Request::process_uri($uri, $this->_routes);
-
-			// Return here rather than throw exception. This will allow
-			// use of Request object even with unmatched route
-			if ($processed_uri === NULL)
-			{
-				$this->_uri = $uri;
-				return;
-			}
-
-			// Store the URI
-			$this->_uri = $uri;
-
-			// Store the matching route
-			$this->_route = $processed_uri['route'];
-			$params = $processed_uri['params'];
-
-			// Is this route external?
-			$this->_external = $this->_route->is_external();
-
-			if (isset($params['directory']))
-			{
-				// Controllers are in a sub-directory
-				$this->_directory = $params['directory'];
-			}
-
-			// Store the controller
-			$this->_controller = $params['controller'];
-
-			if (isset($params['action']))
-			{
-				// Store the action
-				$this->_action = $params['action'];
-			}
-			else
-			{
-				// Use the default action
-				$this->_action = Route::$default_action;
-			}
-
-			// These are accessible as public vars and can be overloaded
-			unset($params['controller'], $params['action'], $params['directory']);
-
-			// Params cannot be changed once matched
-			$this->_params = $params;
+			$this->_uri = trim($uri, '/');
 
 			// Apply the client
-			$client_params = is_array($client_params) ? $client_params : array();
-
 			$this->_client = new Request_Client_Internal($client_params);
 		}
 		else
@@ -766,17 +720,23 @@ class Kohana_Request implements HTTP_Request {
 	}
 
 	/**
-	 * Returns the URI for the current route.
+	 * Sets and gets the uri from the request.
 	 *
-	 *     $request->uri();
-	 *
-	 * @param   array   $params  Additional route parameters
-	 * @return  string
-	 * @uses    Route::uri
+	 * @param   string $uri
+	 * @return  mixed
 	 */
-	public function uri()
+	public function uri($uri = NULL)
 	{
-		return empty($this->_uri) ? '/' : $this->_uri;
+		if ($uri === NULL)
+		{
+			// Act as a getter
+			return empty($this->_uri) ? '/' : $this->_uri;
+		}
+
+		// Act as a setter
+		$this->_uri = $uri;
+
+		return $this;
 	}
 
 	/**
@@ -977,6 +937,41 @@ class Kohana_Request implements HTTP_Request {
 	 */
 	public function execute()
 	{
+		if ( ! $this->_external)
+		{
+			$processed = Request::process($this, $this->_routes);
+
+			if ($processed)
+			{
+				// Store the matching route
+				$this->_route = $processed['route'];
+				$params = $processed['params'];
+
+				// Is this route external?
+				$this->_external = $this->_route->is_external();
+
+				if (isset($params['directory']))
+				{
+					// Controllers are in a sub-directory
+					$this->_directory = $params['directory'];
+				}
+
+				// Store the controller
+				$this->_controller = $params['controller'];
+
+				// Store the action
+				$this->_action = (isset($params['action']))
+					? $params['action']
+					: Route::$default_action;
+
+				// These are accessible as public vars and can be overloaded
+				unset($params['controller'], $params['action'], $params['directory']);
+
+				// Params cannot be changed once matched
+				$this->_params = $params;
+			}
+		}
+
 		if ( ! $this->_route instanceof Route)
 		{
 			throw HTTP_Exception::factory(404, 'Unable to find a route to match the URI: :uri', array(
