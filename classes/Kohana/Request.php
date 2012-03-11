@@ -653,6 +653,8 @@ class Kohana_Request implements HTTP_Request {
 	 */
 	public function __construct($uri, $client_params = array(), $allow_external = TRUE, $injected_routes = array())
 	{
+		$client_params = is_array($client_params) ? $client_params : array();
+
 		// Initialise the header
 		$this->_header = new HTTP_Header(array());
 
@@ -681,8 +683,6 @@ class Kohana_Request implements HTTP_Request {
 			$this->_uri = trim($uri, '/');
 
 			// Apply the client
-			$client_params = is_array($client_params) ? $client_params : array();
-
 			$this->_client = new Request_Client_Internal($client_params);
 		}
 		else
