@@ -68,7 +68,7 @@ It is hard to give examples of nginx configuration, but here is a sample for a s
 
     location / {
         index     index.php index.html index.htm;
-        try_files $uri index.php;
+        try_files $uri index.php?$args;
     }
 
     location = index.php {
