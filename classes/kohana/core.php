@@ -208,7 +208,7 @@ class Kohana_Core {
 		}
 
 		// Start an output buffer
-		ob_start();
+		if (PHP_SAPI !== 'cli') ob_start();
 
 		if (isset($settings['errors']))
 		{
