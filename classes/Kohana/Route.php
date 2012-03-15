@@ -226,9 +226,6 @@ class Kohana_Route {
 	 */
 	public static function compile($uri, array $regex = NULL)
 	{
-		if ( ! is_string($uri))
-			return;
-
 		// The URI should be considered literal except for keys and optional parts
 		// Escape everything preg_quote would escape except for : ( ) < >
 		$expression = preg_replace('#'.Route::REGEX_ESCAPE.'#', '\\\\$0', $uri);
@@ -257,11 +254,6 @@ class Kohana_Route {
 
 		return '#^'.$expression.'$#uD';
 	}
-
-	/**
-	 * @var  callback     The callback method for routes
-	 */
-	protected $_callback;
 
 	/**
 	 * @var  array  route filters
@@ -327,13 +319,7 @@ class Kohana_Route {
 			return;
 		}
 
-		if ( ! is_string($uri) AND is_callable($uri))
-		{
-			$this->_callback = $uri;
-			$this->_uri = $regex;
-			$regex = NULL;
-		}
-		elseif ( ! empty($uri))
+		if ( ! empty($uri))
 		{
 			$this->_uri = $uri;
 		}
@@ -377,8 +363,12 @@ class Kohana_Route {
 	 * Filters to be run before route parameters are returned:
 	 *
 	 *     $route->filter(
-	 *         function(Route $route, $params)
+	 *         function(Route $route, $params, Request $request)
 	 *         {
+	 *             if ($request->method() !== HTTP_Request::POST)
+	 *             {
+	 *                 return FALSE; // This route only matches POST requests
+	 *             }
 	 *             if ($params AND $params['controller'] === 'welcome')
 	 *             {
 	 *                 $params['controller'] = 'home';
@@ -428,33 +418,25 @@ class Kohana_Route {
 	 * @return  array   on success
 	 * @return  FALSE   on failure
 	 */
-	public function matches($uri)
+	public function matches(Request $request)
 	{
-		if ($this->_callback)
-		{
-			$closure = $this->_callback;
-			$params = call_user_func($closure, $uri);
+		// Get the URI from the Request
+		$uri = trim($request->uri(), '/');
 
-			if ( ! is_array($params))
-				return FALSE;
-		}
-		else
-		{
-			if ( ! preg_match($this->_route_regex, $uri, $matches))
-				return FALSE;
+		if ( ! preg_match($this->_route_regex, $uri, $matches))
+			return FALSE;
 
-			$params = array();
-			foreach ($matches as $key => $value)
+		$params = array();
+		foreach ($matches as $key => $value)
+		{
+			if (is_int($key))
 			{
-				if (is_int($key))
-				{
-					// Skip all unnamed keys
-					continue;
-				}
-
-				// Set the value for all matched keys
-				$params[$key] = $value;
+				// Skip all unnamed keys
+				continue;
 			}
+
+			// Set the value for all matched keys
+			$params[$key] = $value;
 		}
 
 		if ( ! empty($params['controller']))
@@ -482,8 +464,8 @@ class Kohana_Route {
 		{
 			foreach ($this->_filters as $callback)
 			{
-				// Execute the filter
-				$return = call_user_func($callback, $this, $params);
+				// Execute the filter giving it the route, params, and request
+				$return = call_user_func($callback, $this, $params, $request);
 
 				if ($return === FALSE)
 				{
