@@ -56,3 +56,25 @@ Now, there are two options for using the method:
 which is an alias for:
 
     HTTP::check_cache($this->request, $this->response, sha1('my content'));
+    
+## PSR-0 support (file/class naming conventions)
+With the introduction of [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) support, the autoloading of classes is case sensitive. Now, the file (and folder) 
+names must match the class name exactly.
+
+Examples:
+
+    Kohana_Core
+
+would be located in
+    
+    classes/Kohana/Core.php
+
+and
+
+    Kohana_HTTP_Header
+
+would be located in 
+
+    classes/Kohana/HTTP/Header.php
+
+This also affects dynamically named classes such as drivers and orms, so for example in the database config using `'mysql'` as the type instead of `'MySQL'` would throw a class not found error.
