@@ -31,11 +31,11 @@ Examples:
 
 Redirects are no longer issued against the [Request] object. The new syntax from inside a controler is:
 
-    $this->redirect(302, 'http://www.google.com');
+    $this->redirect('http://www.google.com', 302);
 
 or from outside a controller:
 
-    HTTP::redirect(302, 'http://www.google.com');
+    HTTP::redirect('http://www.google.com', 302);
 
 ## Custom Error Pages (HTTP 500, 404, 403, 401 etc)
 
