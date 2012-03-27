@@ -228,7 +228,7 @@ Next, we need a controller and action to process the registration, which will be
                 $user->register($post);
 
                 // Always redirect after a successful POST to prevent refresh warnings
-                $this->redirect(302, 'user/profile');
+                $this->redirect('user/profile', 302);
             }
 
             // Validation failed, collect the errors
