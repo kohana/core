@@ -118,13 +118,13 @@ abstract class Kohana_Controller {
 	 *
 	 * Proxies to the [HTTP::redirect] method.
 	 *
-	 * @param  int     $code  HTTP Status code to use for the redirect
 	 * @param  string  $uri   URI to redirect to
+	 * @param  int     $code  HTTP Status code to use for the redirect
 	 * @throws HTTP_Exception
 	 */
-	public static function redirect($code = 302, $uri = '')
+	public static function redirect($uri = '', $code = 302)
 	{
-		return HTTP::redirect($code, $uri);
+		return HTTP::redirect($uri, $code);
 	}
 
 	/**
