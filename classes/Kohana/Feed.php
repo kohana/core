@@ -72,11 +72,10 @@ class Kohana_Feed {
 	 *
 	 * @param   array   $info       feed information
 	 * @param   array   $items      items to add to the feed
-	 * @param   string  $format     define which format to use (only rss2 is supported)
 	 * @param   string  $encoding   define which encoding to use
 	 * @return  string
 	 */
-	public static function create($info, $items, $format = 'rss2', $encoding = 'UTF-8')
+	public static function create($info, $items, $encoding = 'UTF-8')
 	{
 		$info += array('title' => 'Generated Feed', 'link' => '', 'generator' => 'KohanaPHP');
 
