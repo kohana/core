@@ -30,10 +30,20 @@ class Kohana_Feed {
 		$error_level = error_reporting(0);
 
 		// Allow loading by filename or raw XML string
-		$load = (is_file($feed) OR Valid::url($feed)) ? 'simplexml_load_file' : 'simplexml_load_string';
+		if (Valid::url($feed))
+		{
+			// Use native Request client to get remote contents
+			$response = Request::factory($feed)->execute();
+			$feed     = $response->body();
+		}
+		elseif (is_file($feed))
+		{
+			// Get file contents
+			$feed = file_get_contents($feed);
+		}
 
 		// Load the feed
-		$feed = $load($feed, 'SimpleXMLElement', LIBXML_NOCDATA);
+		$feed = simplexml_load_string($feed, 'SimpleXMLElement', LIBXML_NOCDATA);
 
 		// Restore error reporting
 		error_reporting($error_level);
