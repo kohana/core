@@ -24,11 +24,11 @@ abstract class Kohana_HTTP {
 	/**
 	 * Issues a HTTP redirect.
 	 *
-	 * @param  int       $code      HTTP Status code to use for the redirect
 	 * @param  string    $uri       URI to redirect to
+	 * @param  int       $code      HTTP Status code to use for the redirect
 	 * @throws HTTP_Exception
 	 */
-	public static function redirect($code = 302, $uri = '')
+	public static function redirect($uri = '', $code = 302)
 	{
 		throw HTTP_Exception::factory($code)->location($uri);
 	}
