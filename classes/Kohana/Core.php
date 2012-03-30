@@ -472,6 +472,11 @@ class Kohana_Core {
 	 *     // Loads classes/My/Class/Name.php
 	 *     Kohana::auto_load('My_Class_Name');
 	 *
+	 * or with a custom directory:
+	 *
+	 *     // Loads vendor/My/Class/Name.php
+	 *     Kohana::auto_load('My_Class_Name', 'vendor');
+	 *
 	 * You should never have to call this function, as simply calling a class
 	 * will cause it to be called.
 	 *
@@ -479,10 +484,11 @@ class Kohana_Core {
 	 *
 	 *     spl_autoload_register(array('Kohana', 'auto_load'));
 	 *
-	 * @param   string  $class  class name
+	 * @param   string  $class      Class name
+	 * @param   string  $directory  Directory to load from
 	 * @return  boolean
 	 */
-	public static function auto_load($class)
+	public static function auto_load($class, $directory = 'classes')
 	{
 		// Transform the class name according to PSR-0
 		$class     = ltrim($class, '\\');
@@ -498,7 +504,7 @@ class Kohana_Core {
 
 		$file .= str_replace('_', DIRECTORY_SEPARATOR, $class);
 
-		if ($path = Kohana::find_file('classes', $file))
+		if ($path = Kohana::find_file($directory, $file))
 		{
 			// Load the class file
 			require $path;
@@ -517,15 +523,16 @@ class Kohana_Core {
 	 * 
 	 * This is included for compatibility purposes with older modules.
 	 *
-	 * @param   string  $class  class name
+	 * @param   string  $class      Class name
+	 * @param   string  $directory  Directory to load from
 	 * @return  boolean
 	 */
-	public static function auto_load_lowercase($class)
+	public static function auto_load_lowercase($class, $directory = 'classes')
 	{
 		// Transform the class name into a path
 		$file = str_replace('_', DIRECTORY_SEPARATOR, strtolower($class));
 
-		if ($path = Kohana::find_file('classes', $file))
+		if ($path = Kohana::find_file($directory, $file))
 		{
 			// Load the class file
 			require $path;
