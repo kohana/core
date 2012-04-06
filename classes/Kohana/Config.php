@@ -82,7 +82,7 @@ class Kohana_Config {
 	 */
 	public function load($group)
 	{
-		if( ! count($this->_sources))
+		if ( ! count($this->_sources))
 		{
 			throw new Kohana_Exception('No configuration sources attached');
 		}
@@ -100,10 +100,10 @@ class Kohana_Config {
 		if (strpos($group, '.') !== FALSE)
 		{
 			// Split the config group and path
-			list ($group, $path) = explode('.', $group, 2);
+			list($group, $path) = explode('.', $group, 2);
 		}
 
-		if(isset($this->_groups[$group]))
+		if (isset($this->_groups[$group]))
 		{
 			if (isset($path))
 			{
@@ -151,7 +151,7 @@ class Kohana_Config {
 		// Load the configuration group
 		$config = $this->load($group);
 
-		foreach($config->as_array() as $key => $value)
+		foreach ($config->as_array() as $key => $value)
 		{
 			$this->_write_config($group, $key, $value);
 		}
@@ -169,13 +169,12 @@ class Kohana_Config {
 	 */
 	public function _write_config($group, $key, $value)
 	{
-		foreach($this->_sources as $source)
+		foreach ($this->_sources as $source)
 		{
 			if ( ! ($source instanceof Kohana_Config_Writer))
 			{
 				continue;
 			}
-
 			
 			// Copy each value in the config
 			$source->write($group, $key, $value);
