@@ -20,10 +20,10 @@ class Kohana_Core {
 	const CODENAME = 'Kolibri';
 
 	// Common environment type constants for consistency and convenience
-	const PRODUCTION  = 10;
-	const STAGING     = 20;
-	const TESTING     = 30;
-	const DEVELOPMENT = 40;
+	const PRODUCTION  = 40;
+	const STAGING     = 30;
+	const TESTING     = 20;
+	const DEVELOPMENT = 10;
 
 	// Security check that is added to all generated PHP files
 	const FILE_SECURITY = '<?php defined(\'SYSPATH\') OR die(\'No direct script access.\');';
