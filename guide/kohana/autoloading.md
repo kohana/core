@@ -1,6 +1,6 @@
 # Loading Classes
 
-Kohana takes advantage of PHP [autoloading](http://php.net/manual/language.oop5.autoload.php). This removes the need to call [include](http://php.net/include) or [require](http://php.net/require) before using a class. When you use a class Kohana will find and include the class file for you. For instance, when you want to use the [Cookie::set] method, you simply call:
+Kohana supports the [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) autoloading specification as of version 3.3. This allows you to take advantage of PHP [autoloading](http://php.net/manual/language.oop5.autoload.php), removing the need to call [include](http://php.net/include) or [require](http://php.net/require) before using a class. When you use a class Kohana will find and include the class file for you. For instance, when you want to use the [Cookie::set] method, you simply call:
 
     Cookie::set('mycookie', 'any string value');
 
@@ -12,9 +12,9 @@ Classes are loaded via the [Kohana::auto_load] method, which makes a simple conv
 
 1. Classes are placed in the `classes/` directory of the [filesystem](files)
 2. Any underscore characters in the class name are converted to slashes
-2. The filename is lowercase
+2. The filename must match the case of the class
 
-When calling a class that has not been loaded (eg: `Session_Cookie`), Kohana will search the filesystem using [Kohana::find_file] for a file named `classes/session/cookie.php`.
+When calling a class that has not been loaded (eg: `Session_Cookie`), Kohana will search the filesystem using [Kohana::find_file] for a file named `classes/Session/Cookie.php`.
 
 If your classes do not follow this convention, they cannot be autoloaded by Kohana.  You will have to manually included your files, or add your own [autoload function.](http://us3.php.net/manual/en/function.spl-autoload-register.php)
 
@@ -24,7 +24,10 @@ Kohana's default autoloader is enabled in `application/bootstrap.php` using [spl
 
     spl_autoload_register(array('Kohana', 'auto_load'));
 
-This allows [Kohana::auto_load] to attempt to find and include any class that does not yet exist when the class is first used.
+This allows [Kohana::auto_load] to attempt to find and include any class that does not yet exist when the class is first used as long as it follows the PSR-0 specification. If you wish to support the previous Kohana filename convention (using lowercase filesnames), an additional autoloader is provided by Kohana:
+
+    spl_autoload_register(array('Kohana', 'auto_load_lowercase'));
+
 
 ### Example: Zend
 

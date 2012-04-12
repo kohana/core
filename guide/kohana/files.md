@@ -21,7 +21,7 @@ This image is only shows certain files, but we can use it to illustrate some exa
 
 * If we used `View::factory('welcome')` it would call `Kohana::find_file('views','welcome')` which would return `application/views/welcome.php` because it takes precidence over `modules/common/views/welcome.php`.  By doing this, you can overwrite things in a module without editing the modules files.
 
-* If use the Cookie class, [Kohana::auto_load] will call `Kohana::find_file('classes', 'cookie')` which will return `application/classes/cookie.php`.  Assuming Cookie extends Kohana_Cookie, the autoloader would then call `Kohana::find_file('classes','kohana/cookie')` which will return `system/classes/kohana/cookie.php` because that file does not exist anywhere higher in the cascade.  This is an example of [transparent extension](extension).
+* If use the Cookie class, [Kohana::auto_load] will call `Kohana::find_file('classes', 'Cookie')` which will return `application/classes/Cookie.php`.  Assuming Cookie extends Kohana_Cookie, the autoloader would then call `Kohana::find_file('classes','Kohana/Cookie')` which will return `system/classes/Kohana/Cookie.php` because that file does not exist anywhere higher in the cascade.  This is an example of [transparent extension](extension).
 
 * If you used `View::factory('user')` it would call `Kohana::find_file('views','user')` which would return `modules/common/views/user.php`.
 
@@ -32,7 +32,7 @@ This image is only shows certain files, but we can use it to illustrate some exa
 The top level directories of the application, module, and system paths have the following default directories:
 
 classes/
-:  All classes that you want to [autoload](autoloading) should be stored here. This includes [controllers](mvc/controllers), [models](mvc/models), and all other classes. All classes must follow the [class naming conventions](conventions#class-names-and-file-location).
+:  All classes that you want to [autoload](autoloading) should be stored here. This includes [controllers](mvc/controllers), [models](mvc/models), and all other classes. All classes must follow the [class naming conventions](conventions#class-names-and-file-location) including matching the case of the class i.e. Kohana_Cookie should be stored in classes/Kohana/Cookie.php and not classes/kohana/cookie.php.
 
 config/
 :  Configuration files return an associative array of options that can be loaded using [Kohana::$config]. Config files are merged rather than overwritten by the cascade. See [config files](files/config) for more information.
@@ -53,8 +53,8 @@ views/
 
 The path to any file within the filesystem can be found by calling [Kohana::find_file]:
 
-    // Find the full path to "classes/cookie.php"
-    $path = Kohana::find_file('classes', 'cookie');
+    // Find the full path to "classes/Cookie.php"
+    $path = Kohana::find_file('classes', 'Cookie');
 
     // Find the full path to "views/user/login.php"
     $path = Kohana::find_file('views', 'user/login');

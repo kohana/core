@@ -8,46 +8,46 @@ Controllers are called by the [Request::execute()] function based on the [Route]
 
 In order to function, a controller must do the following:
 
-* Reside in `classes/controller` (or a sub-directory)
-* Filename must be lowercase, e.g. `articles.php`
+* Reside in `classes/Controller` (or a sub-directory)
+* Filename must match the class name exactly, e.g. `Articles.php`
 * The class name must map to the filename (with `/` replaced with `_`) and each word is capitalized
 * Must have the Controller class as a (grand)parent
 
 Some examples of controller names and file locations:
 
-	// classes/controller/foobar.php
+	// classes/Controller/Foobar.php
 	class Controller_Foobar extends Controller {
 	
-	// classes/controller/admin.php
+	// classes/Controller/Admin.php
 	class Controller_Admin extends Controller {
 
 Controllers can be in sub-folders:
 
-	// classes/controller/baz/bar.php
+	// classes/Controller/Baz/Bar.php
 	class Controller_Baz_Bar extends Controller {
 	
-	// classes/controller/product/category.php
+	// classes/Controller/Product/Category.php
 	class Controller_Product_Category extends Controller {
 	
 [!!] Note that controllers in sub-folders can not be called by the default route, you will need to define a route that has a [directory](routing#directory) param or sets a default value for directory.
 
 Controllers can extend other controllers.
 
-	// classes/controller/users.php
+	// classes/Controller/Users.php
 	class Controller_Users extends Controller_Template
 	
-	// classes/controller/api.php
+	// classes/Controller/Api.php
 	class Controller_Api extends Controller_REST
 	
 [!!] [Controller_Template] is an example controller provided in Kohana.
 
 You can also have a controller extend another controller to share common things, such as requiring you to be logged in to use all of those controllers.
 
-	// classes/controller/admin.php
+	// classes/Controller/Admin.php
 	class Controller_Admin extends Controller {
 		// This controller would have a before() that checks if the user is logged in
 	
-	// classes/controller/admin/plugins.php
+	// classes/Controller/Admin/Plugins.php
 	class Controller_Admin_Plugins extends Controller_Admin {
 		// Because this controller extends Controller_Admin, it would have the same logged in check
 		
