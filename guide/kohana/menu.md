@@ -43,5 +43,6 @@
    - [Content Translation](tutorials/translation)
    - [Clean URLs](tutorials/clean-urls)
    - [Sharing Kohana](tutorials/sharing-kohana)
+   - [Kohana as a Library](tutorials/library-kohana)
    - [Template Driven Site](tutorials/templates)
    - [Working with Git](tutorials/git)
