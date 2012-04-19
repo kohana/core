@@ -29,7 +29,7 @@ Examples:
 
 ## Redirects (HTTP 300, 301, 302, 303, 307)
 
-Redirects are no longer issued against the [Request] object. The new syntax from inside a controler is:
+Redirects are no longer issued against the [Request] object. The new syntax from inside a controller is:
 
     $this->redirect('http://www.google.com', 302);
 
