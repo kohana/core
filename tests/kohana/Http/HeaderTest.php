@@ -3,13 +3,15 @@
  * Unit Tests for Kohana_HTTP_Header
  *
  * @group kohana
- * @group kohana.http
- * @group kohana.http.header
+ * @group kohana.core
+ * @group kohana.core.http
+ * @group kohana.core.http.header
+ * @group kohana.core.http.header
  * 
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
@@ -1358,7 +1360,6 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	public function provider_send_headers()
 	{
 		$content_type = Kohana::$content_type.'; charset='.Kohana::$charset;
-		$version = Kohana::VERSION.' ('.Kohana::CODENAME.')';
 
 		return array(
 			array(
@@ -1374,7 +1375,7 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 				array(
 					'HTTP/1.1 200 OK',
 					'Content-Type: '.$content_type,
-					'X-Powered-By: Kohana Framework '.$version,
+					'X-Powered-By: '.Kohana::version(),
 				),
 				TRUE,
 			),

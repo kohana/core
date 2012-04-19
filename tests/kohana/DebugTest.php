@@ -6,13 +6,14 @@
  * @TODO Use a virtual filesystem (see phpunit doc on mocking fs) for find_file etc.
  *
  * @group kohana
- * @group kohana.debug
+ * @group kohana.core
+ * @group kohana.core.debug
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 class Kohana_DebugTest extends Unittest_TestCase
@@ -26,7 +27,7 @@ class Kohana_DebugTest extends Unittest_TestCase
 	public function provider_vars()
 	{
 		return array(
-			// $exception_type, $message, $is_cli, $expected
+			// $thing, $expected
 			array(array('foobar'), "<pre class=\"debug\"><small>array</small><span>(1)</span> <span>(\n    0 => <small>string</small><span>(6)</span> \"foobar\"\n)</span></pre>"),
 		);
 	}
