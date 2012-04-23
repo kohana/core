@@ -28,7 +28,7 @@ Now that the submodules are added, you can commit them:
 
 Next, create the application directory structure. This is the bare minimum required:
 
-    mkdir -p application/classes/{controller,model}
+    mkdir -p application/classes/{Controller,Model}
     mkdir -p application/{config,views}
     mkdir -m 0777 -p application/{cache,logs}
 
@@ -38,8 +38,8 @@ If you run `find application` you should see this:
     application/cache
     application/config
     application/classes
-    application/classes/controller
-    application/classes/model
+    application/classes/Controller
+    application/classes/Model
     application/logs
     application/views
 

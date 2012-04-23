@@ -15,7 +15,7 @@ For each [HTTP_Exception] class we can individually override the generation of t
 
 [!!] Note: We can also use HMVC to issue a sub-request to another page rather than generating the [Response] in the [HTTP_Exception] itself.
 
-For example, to handle 404 pages we can do this in APPPATH/classes/http/exception/404.php:
+For example, to handle 404 pages we can do this in APPPATH/classes/HTTP/Exception/404.php:
 
 	class HTTP_Exception_404 extends Kohana_HTTP_Exception_404 {
 		
@@ -41,7 +41,7 @@ For example, to handle 404 pages we can do this in APPPATH/classes/http/exceptio
 		}
 	}
 
-Another example, this time to handle 401 Unauthorized errors (aka "Not Logged In") we can do this in APPPATH/classes/http/exception/401.php:
+Another example, this time to handle 401 Unauthorized errors (aka "Not Logged In") we can do this in APPPATH/classes/HTTP/Exception/401.php:
 
 	class HTTP_Exception_401 extends Kohana_HTTP_Exception_401 {
 		
@@ -62,7 +62,7 @@ Another example, this time to handle 401 Unauthorized errors (aka "Not Logged In
 		}
 	}
 
-Finally, to override the default [Response] for all [HTTP_Exception]'s without a more specific override we can do this in APPPATH/classes/http/exception.php:
+Finally, to override the default [Response] for all [HTTP_Exception]'s without a more specific override we can do this in APPPATH/classes/HTTP/Exception.php:
 
 	class HTTP_Exception extends Kohana_HTTP_Exception {
 		

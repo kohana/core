@@ -202,7 +202,7 @@ First, we need a [View] that contains the HTML form, which will be placed in `ap
 
 [!!] This example uses the [Form] helper extensively. Using [Form] instead of writing HTML ensures that all of the form inputs will properly handle input that includes HTML characters. If you prefer to write the HTML yourself, be sure to use [HTML::chars] to escape user input.
 
-Next, we need a controller and action to process the registration, which will be placed in `application/classes/controller/user.php`:
+Next, we need a controller and action to process the registration, which will be placed in `application/classes/Controller/User.php`:
 
     class Controller_User extends Controller {
 
@@ -242,7 +242,7 @@ Next, we need a controller and action to process the registration, which will be
 
     }
 
-We will also need a user model, which will be placed in `application/classes/model/user.php`:
+We will also need a user model, which will be placed in `application/classes/Model/User.php`:
 
     class Model_User extends Model {
 
