@@ -1260,7 +1260,7 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 				),
 				'en-us',
 				TRUE,
-				1
+				(float) 1
 			),			
 		);
 	}
