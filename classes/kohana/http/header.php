@@ -771,7 +771,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 		{
 			if ($this->offsetExists('Accept-Language'))
 			{
-				$language_header = $this->offsetGet('Accept-Language');
+				$language_header = strtolower($this->offsetGet('Accept-Language'));
 			}
 			else
 			{
