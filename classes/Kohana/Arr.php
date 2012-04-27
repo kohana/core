@@ -258,10 +258,10 @@ class Kohana_Arr {
 	}
 
 	/**
-	 * Retrieve a single key from an array. If the key does not exist in the
-	 * array, the default value will be returned instead.
+	 * Retrieve a single value from an array by a given key. If the key does 
+	 * not exist in the array, the default value will be returned instead.
 	 *
-	 *     // Get the value "username" from $_POST, if it exists
+	 *     // Get the value for "username" from $_POST, if it exists
 	 *     $username = Arr::get($_POST, 'username');
 	 *
 	 *     // Get the value "sorting" from $_GET, if it exists
