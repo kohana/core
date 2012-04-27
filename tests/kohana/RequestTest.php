@@ -4,13 +4,14 @@
  * Unit tests for request class
  *
  * @group kohana
- * @group kohana.request
+ * @group kohana.core
+ * @group kohana.core.request
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_RequestTest extends Unittest_TestCase
@@ -33,7 +34,6 @@ class Kohana_RequestTest extends Unittest_TestCase
 	public function test_initial()
 	{
 		$this->setEnvironment(array(
-			'Kohana::$is_cli' => FALSE,
 			'Request::$initial' => NULL,
 			'Request::$client_ip' => NULL,
 			'Request::$user_agent' => NULL,
@@ -70,47 +70,22 @@ class Kohana_RequestTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests that an initial request won't use an external client
+	 * Tests that the allow_external flag prevents an external request.
 	 * 
 	 * @expectedException HTTP_Exception_404
 	 *
 	 * @return null
 	 */
-	public function test_initial_request_only_loads_internal()
+	public function test_disable_external_tests()
 	{
 		$this->setEnvironment(
 			array(
-				'Kohana::$is_cli' => FALSE,
 				'Request::$initial' => NULL,
 			)
 		);
 
-		$request = new Request('http://www.google.com/');
+		$request = new Request('http://www.google.com/', array(), FALSE);
 		$request->execute();
-	}
-
-	/**
-	 * Tests that with an empty request, cli requests are routed properly
-	 *
-	 * @return null
-	 */
-	public function test_empty_cli_requests_route_properly()
-	{
-		$this->setEnvironment(
-			array(
-				'Kohana::$is_cli' => TRUE,
-				'Request::$initial' => NULL,
-			)
-		);
-
-		$route = new Route('(<controller>(/<action>))');
-		$route->defaults(array(
-			'controller' => 'welcome',
-			'action'     => 'index',
-		));
-
-		$request = Request::factory(TRUE, NULL, array($route));
-		$response = $request->execute();
 	}
 
 	/**
@@ -145,8 +120,17 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function test_param()
 	{
+		$route = new Route('(<controller>(/<action>(/<id>)))');
+
 		$uri = 'foo/bar/id';
-		$request = Request::factory($uri);
+		$request = Request::factory($uri, NULL, TRUE, array($route));
+
+		// We need to execute the request before it has matched a route
+		try
+		{
+			$request->execute();
+		}
+		catch (Exception $e) {}
 
 		$this->assertArrayHasKey('id', $request->param());
 		$this->assertArrayNotHasKey('foo', $request->param());
@@ -164,49 +148,16 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 		$route = new Route('(<uri>)', array('uri' => '.+'));
 		$route->defaults(array('controller' => 'foobar', 'action' => 'index'));
-		$request = Request::factory('foobar', NULL, array($route));
+		$request = Request::factory('foobar', NULL, TRUE, array($route));
+
+		// We need to execute the request before it has matched a route
+		try
+		{
+			$request->execute();
+		}
+		catch (Exception $e) {}
 
 		$this->assertSame('foobar', $request->param('uri'));
-	}
-
-	/**
-	 * Provides data for Request::create_response()
-	 */
-	public function provider_create_response()
-	{
-		return array(
-			array('foo/bar', TRUE, TRUE),
-			array('foo/bar', FALSE, FALSE)
-		);
-	}
-
-	/**
-	 * Ensures a request creates an empty response, and binds correctly
-	 *
-	 * @test
-	 * @dataProvider  provider_create_response
-	 */
-	public function test_create_response($uri, $bind, $equality)
-	{
-		$request = Request::factory($uri);
-		$response = $request->create_response($bind);
-
-		$this->assertEquals(($request->response() === $response), $equality);
-	}
-
-	/**
-	 * Tests Request::response()
-	 *
-	 * @test
-	 */
-	public function test_response()
-	{
-		$request = Request::factory('foo/bar');
-		$response = $request->create_response(FALSE);
-
-		$this->assertEquals($request->response(), NULL);
-		$this->assertEquals(($request->response($response) === $request), TRUE);
-		$this->assertEquals(($request->response() === $response), TRUE);
 	}
 
 	/**
@@ -232,7 +183,27 @@ class Kohana_RequestTest extends Unittest_TestCase
 	{
 		$request = Request::factory(''); // This should always match something, no matter what changes people make
 
+		// We need to execute the request before it has matched a route
+		try
+		{
+			$request->execute();
+		}
+		catch (Exception $e) {}
+
 		$this->assertInstanceOf('Route', $request->route());
+	}
+
+	/**
+	 * Tests Request::route()
+	 *
+	 * @test
+	 */
+	public function test_route_is_not_set_before_execute()
+	{
+		$request = Request::factory(''); // This should always match something, no matter what changes people make
+
+		// The route should be NULL since the request has not been executed yet
+		$this->assertEquals($request->route(), NULL);
 	}
 
 	/**
@@ -307,12 +278,11 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_url
 	 * @covers Request::url
-	 * @param string $route the route to use
-	 * @param array $params params to pass to route::uri
+	 * @param string $uri the uri to use
 	 * @param string $protocol the protocol to use
 	 * @param array $expected The string we expect
 	 */
-	public function test_url($uri, $protocol, $is_cli, $expected)
+	public function test_url($uri, $protocol, $expected)
 	{
 		if ( ! isset($_SERVER['argc']))
 		{
@@ -323,7 +293,6 @@ class Kohana_RequestTest extends Unittest_TestCase
 			'Kohana::$base_url'  => '/kohana/',
 			'_SERVER'            => array('HTTP_HOST' => 'localhost', 'argc' => $_SERVER['argc']),
 			'Kohana::$index_file' => FALSE,
-			'Kohana::$is_cli'    => $is_cli,
 		));
 
 		$this->assertEquals(Request::factory($uri)->url($protocol), $expected);
@@ -718,5 +687,33 @@ class Kohana_RequestTest extends Unittest_TestCase
 	{
 		$request->client($client);
 		$this->assertSame($expected, $request->client());
+	}
+
+	/**
+	 * Tests that the Request constructor passes client params on to the
+	 * Request_Client once created.
+	 */
+	public function test_passes_client_params()
+	{
+		$request = Request::factory('http://example.com/', array(
+			'follow' => TRUE,
+			'strict_redirect' => FALSE
+		));
+
+		$client = $request->client();
+
+		$this->assertEquals($client->follow(), TRUE);
+		$this->assertEquals($client->strict_redirect(), FALSE);
+	}
+
+
+
+} // End Kohana_RequestTest
+
+class Controller_Kohana_RequestTest_Dummy extends Controller
+{
+	public function action_index()
+	{
+	
 	}
 } // End Kohana_RequestTest

@@ -6,27 +6,27 @@ The bootstrap is located at `application/bootstrap.php`.  It is responsible for 
 
 ## Environment setup
 
-First the bootstrap sets the timezone and the locale, and adds Kohana's autoloader so the [cascading filesystem](files) works.  You could add any other settings that all your application needed here.
+The bootstrap first sets the timezone and locale, and then adds Kohana's autoloader so the [cascading filesystem](files) works.  You could add any other settings that all your application needed here.
 
 ~~~
 // Sample excerpt from bootstrap.php with comments trimmed down
 
 // Set the default time zone.
 date_default_timezone_set('America/Chicago');
- 
+
 // Set the default locale.
 setlocale(LC_ALL, 'en_US.utf-8');
- 
+
 // Enable the Kohana auto-loader.
 spl_autoload_register(array('Kohana', 'auto_load'));
- 
+
 // Enable the Kohana auto-loader for unserialization.
 ini_set('unserialize_callback_func', 'spl_autoload_call');
 ~~~
 
 ## Initialization and Configuration
 
-Kohana is then initialized by calling [Kohana::init], and the log and [config](files/config) reader/writers are enabled. 
+Kohana is then initialized by calling [Kohana::init], and the log and [config](files/config) reader/writers are enabled.
 
 ~~~
 // Sample excerpt from bootstrap.php with comments trimmed down
@@ -48,7 +48,7 @@ You can add conditional statements to make the bootstrap have different values b
 ~~~
 // Excerpt from http://github.com/isaiahdw/kohanaphp.com/blob/f2afe8e28b/application/bootstrap.php
 ... [trimmed]
- 
+
 /**
  * Set the environment status by the domain.
  */
@@ -56,11 +56,11 @@ if (strpos($_SERVER['HTTP_HOST'], 'kohanaphp.com') !== FALSE)
 {
 	// We are live!
 	Kohana::$environment = Kohana::PRODUCTION;
- 
+
 	// Turn off notices and strict errors
 	error_reporting(E_ALL ^ E_NOTICE ^ E_STRICT);
 }
- 
+
 /**
  * Initialize Kohana, setting the default options.
  ... [trimmed]
@@ -82,7 +82,7 @@ Kohana::init(array(
 
 **Read the [Modules](modules) page for a more detailed description.**
 
-[Modules](modules) are then loaded using [Kohana::modules()].  Including modules is optional.  
+[Modules](modules) are then loaded using [Kohana::modules()].  Including modules is optional.
 
 Each key in the array should be the name of the module, and the value is the path to the module, either relative or absolute.
 ~~~
@@ -99,7 +99,7 @@ Kohana::modules(array(
 
 **Read the [Routing](routing) page for a more detailed description and more examples.**
 
-[Routes](routing) are then defined via [Route::set()].  
+[Routes](routing) are then defined via [Route::set()].
 
 ~~~
 // The default route that comes with Kohana 3

@@ -6,7 +6,7 @@
  *
  * @package    Unittest
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Route_Holder
@@ -16,7 +16,7 @@ class Route_Holder
 	 */
 	public static function default_callback($uri)
 	{
-		
+
 	}
 
 	/**
@@ -27,7 +27,7 @@ class Route_Holder
 	public static function default_return_callback($uri)
 	{
 		return array(
-			
+
 		);
 	}
 
@@ -70,9 +70,31 @@ class Route_Holder
 		if ($uri == 'info/about_us')
 		{
 			return array(
-				
+
 			);
 		}
 	}
-	
+
+	/**
+	 * Route callback for test route_filter_modify_params
+	 *
+	 * @return array
+	 */
+	public static function route_filter_modify_params_array(Route $route, $params)
+	{
+		$params['action'] = 'modified';
+
+		return $params;
+	}
+
+	/**
+	 * Route callback for test route_filter_modify_params
+	 *
+	 * @return array
+	 */
+	public static function route_filter_modify_params_false(Route $route, $params)
+	{
+		return FALSE;
+	}
+
 }
