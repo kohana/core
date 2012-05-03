@@ -1254,6 +1254,14 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 				TRUE,
 				(float) 0
 			),
+			array(
+				array(
+					'accept-language'  => 'en-US'
+				),
+				'en-us',
+				TRUE,
+				(float) 1
+			),			
 		);
 	}
 
@@ -1331,6 +1339,16 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 				TRUE,
 				'fr'
 			),
+			array(
+				array(
+					'accept-language'  => 'en-US'
+				),
+				array(
+					'en-us'
+				),
+				TRUE,
+				'en-us'
+			),			
 		);
 	}
 
