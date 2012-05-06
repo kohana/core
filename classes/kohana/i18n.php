@@ -95,9 +95,9 @@ class Kohana_I18n {
 	 */
 	public static function load($lang)
 	{
-		if (isset(I18n::$_cache[$lang]))
+		if (isset(self::$_cache[$lang]))
 		{
-			return I18n::$_cache[$lang];
+			return self::$_cache[$lang];
 		}
 
 		// New translation table
@@ -131,7 +131,7 @@ class Kohana_I18n {
 		while ($parts);
 
 		// Cache the translation table locally
-		return I18n::$_cache[$lang] = $table;
+		return self::$_cache[$lang] = $table;
 	}
 
 } // End I18n
