@@ -324,8 +324,8 @@ class Kohana_Core {
 			Kohana::$index_file = trim($settings['index_file'], '/');
 		}
 
-		// Determine if the extremely evil magic quotes are enabled
-		Kohana::$magic_quotes = (bool) get_magic_quotes_gpc();
+		// Determine if the extremely evil magic quotes are enabled, it has been deprecated in 5.4
+		Kohana::$magic_quotes = (bool) version_compare(PHP_VERSION, '5.4.0') < 0 && get_magic_quotes_gpc();
 
 		// Sanitize all request variables
 		$_GET    = Kohana::sanitize($_GET);
