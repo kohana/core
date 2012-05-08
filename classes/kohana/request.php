@@ -195,7 +195,7 @@ class Kohana_Request implements HTTP_Request {
 			}
 
 			// Create the instance singleton
-			Request::$initial = $request = new Request($uri, $cache);
+			Request::$initial = $request = new Request($uri, $cache, $injected_routes);
 
 			// Store global GET and POST data in the initial request only
 			$request->protocol($protocol)
@@ -758,7 +758,7 @@ class Kohana_Request implements HTTP_Request {
 		$this->_header = new HTTP_Header(array());
 
 		// Assign injected routes
-		$this->_injected_routes = $injected_routes;
+		$this->_routes = $injected_routes;
 
 		// Cleanse query parameters from URI (faster that parse_url())
 		$split_uri = explode('?', $uri);
@@ -782,7 +782,7 @@ class Kohana_Request implements HTTP_Request {
 			// Remove trailing slashes from the URI
 			$uri = trim($uri, '/');
 
-			$processed_uri = Request::process_uri($uri, $this->_injected_routes);
+			$processed_uri = Request::process_uri($uri, $this->_routes);
 
 			// Return here rather than throw exception. This will allow
 			// use of Request object even with unmatched route
@@ -933,16 +933,17 @@ class Kohana_Request implements HTTP_Request {
 	public function redirect($url = '', $code = 302)
 	{
 		$referrer = $this->uri();
+		$protocol = ($this->secure()) ? 'https' : TRUE;
 
 		if (strpos($referrer, '://') === FALSE)
 		{
-			$referrer = URL::site($referrer, TRUE, Kohana::$index_file);
+			$referrer = URL::site($referrer, $protocol, ! empty(Kohana::$index_file));
 		}
 
 		if (strpos($url, '://') === FALSE)
 		{
 			// Make the URI into a URL
-			$url = URL::site($url, TRUE, Kohana::$index_file);
+			$url = URL::site($url, TRUE, ! empty(Kohana::$index_file));
 		}
 
 		if (($response = $this->response()) === NULL)
@@ -1291,7 +1292,7 @@ class Kohana_Request implements HTTP_Request {
 	 * Getter/Setter to the security settings for this request. This
 	 * method should be treated as immutable.
 	 *
-	 * @param   boolean   is this request secure?
+	 * @param   boolean $secure is this request secure?
 	 * @return  mixed
 	 */
 	public function secure($secure = NULL)

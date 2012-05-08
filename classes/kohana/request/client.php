@@ -70,7 +70,7 @@ abstract class Kohana_Request_Client {
 	 * 
 	 * This method must be implemented by all clients.
 	 *
-	 * @param   Request   request to execute by client
+	 * @param   Request $request    request to execute by client
 	 * @return  Response
 	 * @since   3.2.0
 	 */
@@ -80,9 +80,9 @@ abstract class Kohana_Request_Client {
 	 * Getter and setter for the internal caching engine,
 	 * used to cache responses if available and valid.
 	 *
-	 * @param   [HTTP_Cache] cache engine to use for caching
-	 * @return  [HTTP_Cache]
-	 * @return  [Request_Client]
+	 * @param   HTTP_Cache  $cache  engine to use for caching
+	 * @return  HTTP_Cache
+	 * @return  Request_Client
 	 */
 	public function cache(HTTP_Cache $cache = NULL)
 	{

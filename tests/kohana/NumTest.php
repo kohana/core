@@ -23,7 +23,7 @@ class Kohana_NumTest extends Unittest_TestCase
 	{
 		parent::setUp();
 
-		setlocale(LC_ALL, 'English');
+		setlocale(LC_ALL, 'en_US.utf8');
 	}
 
 	/**

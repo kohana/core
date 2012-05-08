@@ -16,7 +16,7 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 	 * Sends the HTTP message [Request] to a remote server and processes
 	 * the response.
 	 *
-	 * @param   Request   request to send
+	 * @param   Request $request    request to send
 	 * @return  Response
 	 */
 	public function _send_message(Request $request)
@@ -62,7 +62,7 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 		$this->_options[CURLOPT_HEADER]         = FALSE;
 
 		// Apply any additional options set to 
-		$options += $this->_options;
+		$options = Arr::merge($options, $this->_options);
 
 		$uri = $request->uri();
 
