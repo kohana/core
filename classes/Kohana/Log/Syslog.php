@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Syslog log writer.
  *
@@ -42,7 +42,7 @@ class Kohana_Log_Syslog extends Log_Writer {
 	{
 		foreach ($messages as $message)
 		{
-			if (Log::STRACE == $message['level'])
+			if ($message['level'] == Log::STRACE)
 			{
 				$message['level'] = Log::DEBUG;
 			}

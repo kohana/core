@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Redirect HTTP exception class. Used for all [HTTP_Exception]'s where the status
  * code indicates a redirect.

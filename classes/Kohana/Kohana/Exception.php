@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct access');
+<?php defined('SYSPATH') OR die('No direct access');
 /**
  * Kohana exception class. Translates exceptions using the [I18n] class.
  *
@@ -118,7 +118,7 @@ class Kohana_Kohana_Exception extends Exception {
 			 * but to bail. Hard.
 			 */
 			// Clean the output buffer if one exists
-			ob_get_level() and ob_clean();
+			ob_get_level() AND ob_clean();
 
 			// Set the Status code to 500, and Content-Type to text/plain.
 			header('Content-Type: text/plain; charset='.Kohana::$charset, TRUE, 500);
@@ -224,7 +224,7 @@ class Kohana_Kohana_Exception extends Exception {
 						}
 
 						// XDebug also has a different name for the parameters array
-						if ( isset($frame['params']) && ! isset($frame['args']))
+						if (isset($frame['params']) AND ! isset($frame['args']))
 						{
 							$frame['args'] = $frame['params'];
 						}

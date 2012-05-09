@@ -534,7 +534,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	{
 		foreach ($headers as $key => $expected_value)
 		{
-			$this->assertSame((string) $request->headers($key), $expected_value);
+			$this->assertSame( (string) $request->headers($key), $expected_value);
 		}
 	}
 

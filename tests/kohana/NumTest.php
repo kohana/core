@@ -195,7 +195,7 @@ class Kohana_NumTest extends Unittest_TestCase
 	{
 		foreach (array(Num::ROUND_HALF_UP, Num::ROUND_HALF_DOWN, Num::ROUND_HALF_EVEN, Num::ROUND_HALF_ODD) as $i => $mode)
 		{
-			$this->assertSame($expected[$i], Num::round($input, $precision, $mode, false));
+			$this->assertSame($expected[$i], Num::round($input, $precision, $mode, FALSE));
 		}
 	}
 }

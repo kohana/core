@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * RSS and Atom feed helper.
  *
@@ -52,7 +52,7 @@ class Kohana_Feed {
 		if ($feed === FALSE)
 			return array();
 
-		$namespaces = $feed->getNamespaces(true);
+		$namespaces = $feed->getNamespaces(TRUE);
 
 		// Detect the feed type. RSS 1.0/2.0 and Atom 1.0 are supported.
 		$feed = isset($feed->channel) ? $feed->xpath('//item') : $feed->entry;

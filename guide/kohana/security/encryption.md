@@ -8,7 +8,7 @@ Next, copy the default config/encryption.php from system/config folder to your a
 
 The default Encryption config file that ships with Kohana 3.2.x looks like this:
 
-    <?php defined('SYSPATH') or die('No direct script access.');
+    <?php defined('SYSPATH') OR die('No direct script access.');
 
     return array(
 
@@ -42,7 +42,7 @@ It is strongly recommended that you choose a high-strength random key using the 
 
 Here's a sample encryption configuration with three types of encryption defined. **If you copy this example, please change your keys!**
 
-    <?php defined('SYSPATH') or die('No direct script access.');
+    <?php defined('SYSPATH') OR die('No direct script access.');
     // application/config/encrypt.php
 
     return array(
