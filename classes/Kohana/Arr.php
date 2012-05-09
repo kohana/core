@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Array helper.
  *
@@ -296,9 +296,9 @@ class Kohana_Arr {
 	 *     $data = array('level1' => array('level2a' => 'value 1', 'level2b' => 'value 2'));
 	 *     Arr::extract($data, array('level1.level2a', 'password'));
 	 *
-	 * @param   array   array to extract paths from
-	 * @param   array   list of path
-	 * @param   mixed   default value
+	 * @param   array  $array    array to extract paths from
+	 * @param   array  $paths    list of path
+	 * @param   mixed  $default  default value
 	 * @return  array
 	 */
 	public static function extract($array, array $paths, $default = NULL)
@@ -392,7 +392,7 @@ class Kohana_Arr {
 			{
 				$array[$key] = Arr::map($callbacks, $array[$key]);
 			}
-			elseif ( ! is_array($keys) or in_array($key, $keys))
+			elseif ( ! is_array($keys) OR in_array($key, $keys))
 			{
 				if (is_array($callbacks))
 				{

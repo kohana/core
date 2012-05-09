@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Base session class.
  *
@@ -425,7 +425,7 @@ abstract class Kohana_Session {
 	/**
 	 * Serializes the session data.
 	 *
-	 * @param   array    data
+	 * @param   array  $data  data
 	 * @return  string
 	 */
 	protected function _serialize($data)
@@ -436,7 +436,7 @@ abstract class Kohana_Session {
 	/**
 	 * Unserializes the session data.
 	 *
-	 * @param   string   data
+	 * @param   string  $data  data
 	 * @return  array
 	 */
 	protected function _unserialize($data)
@@ -447,7 +447,7 @@ abstract class Kohana_Session {
 	/**
 	 * Encodes the session data using [base64_encode].
 	 *
-	 * @param   string   data
+	 * @param   string  $data  data
 	 * @return  string
 	 */
 	protected function _encode($data)
@@ -458,7 +458,7 @@ abstract class Kohana_Session {
 	/**
 	 * Decodes the session data using [base64_decode].
 	 *
-	 * @param   string   data
+	 * @param   string  $data  data
 	 * @return  string
 	 */
 	protected function _decode($data)

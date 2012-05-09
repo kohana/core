@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Contains the most low-level helpers methods in Kohana:
  *
@@ -499,7 +499,7 @@ class Kohana_Core {
 		{
 			$namespace = substr($class, 0, $last_namespace_position);
 			$class     = substr($class, $last_namespace_position + 1);
-			$file      = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+			$file      = str_replace('\\', DIRECTORY_SEPARATOR, $namespace).DIRECTORY_SEPARATOR;
 		}
 
 		$file .= str_replace('_', DIRECTORY_SEPARATOR, $class);
@@ -1024,7 +1024,7 @@ class Kohana_Core {
 		if (Kohana::$errors AND $error = error_get_last() AND in_array($error['type'], Kohana::$shutdown_errors))
 		{
 			// Clean the output buffer
-			ob_get_level() and ob_clean();
+			ob_get_level() AND ob_clean();
 
 			// Fake an exception for nice debugging
 			Kohana_Exception::handler(new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']));
