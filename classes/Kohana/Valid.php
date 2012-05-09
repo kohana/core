@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Validation rules.
  *
@@ -74,7 +74,7 @@ class Kohana_Valid {
 	{
 		if (is_array($length))
 		{
-			foreach($length as $strlen)
+			foreach ($length as $strlen)
 			{
 				if (UTF8::strlen($value) === $strlen)
 					return TRUE;

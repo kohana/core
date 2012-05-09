@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * [Request_Client_External] provides a wrapper for all external request
  * processing. This class should be extended by all drivers handling external

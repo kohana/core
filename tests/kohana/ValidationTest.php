@@ -443,7 +443,7 @@ class Kohana_ValidationTest extends Unittest_TestCase
 		$current = i18n::lang();
 		i18n::lang('es');
 
-		foreach($rules as $field => $field_rules)
+		foreach ($rules as $field => $field_rules)
 		{
 			$validation->rules($field, $field_rules);
 		}

@@ -530,11 +530,11 @@ class Kohana_ArrTest extends Unittest_TestCase
 	{
 		$range = Arr::range($step, $max);
 
-		$this->assertSame((int) floor($max / $step), count($range));
+		$this->assertSame( (int) floor($max / $step), count($range));
 
 		$current = $step;
 
-		foreach($range as $key => $value)
+		foreach ($range as $key => $value)
 		{
 			$this->assertSame($key, $value);
 			$this->assertSame($current, $key);

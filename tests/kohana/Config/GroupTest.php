@@ -35,7 +35,7 @@ class Kohana_Config_GroupTest extends Kohana_Unittest_TestCase
 	 */
 	public function get_mock_group($group, $config = array(), $instance = NULL)
 	{
-		if($instance === NULL)
+		if ($instance === NULL)
 		{
 			$instance = $this->get_mock_config();
 		}
