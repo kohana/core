@@ -32,6 +32,19 @@ Rename `example.htaccess` to only `.htaccess` and alter the `RewriteBase` line t
 
 The rest of the `.htaccess file` rewrites all requests through index.php, unless the file exists on the server (so your css, images, favicon, etc. are still loaded like normal).  In most cases, you are done!
 
+### 404 errors
+
+If you get a "404 Not Found" error when trying to view a page then it's likely Apache is not configured to read the `.htaccess` file.
+
+In the main apache configuration file (usually `httpd.conf`), or in the virtual server configuration file, check that the `AccessFileName` directive is set to `.htaccess` and the `AllowOverride` directive is set to `All`.
+
+		AccessFileName .htaccess
+
+		<Directory "/var/www/html/myapp">
+				AllowOverride All
+		</Directory>
+
+
 ### Failed!
 
 If you get a "Internal Server Error" or "No input file specified" error, try changing:
@@ -52,7 +65,7 @@ To something more simple:
 
 ### Still Failed!
 
-If you are still getting errors, check to make sure that your host supports URL `mod_rewrite`. If you can change the Apache configuration, add these lines to the the configuration, usually `httpd.conf`:
+If you are still getting errors, check to make sure that your host supports URL `mod_rewrite`. If you can change the Apache configuration, add these lines to the	 configuration, usually `httpd.conf`:
 
     <Directory "/var/www/html/myapp">
         Order allow,deny

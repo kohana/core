@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 
 return array(
 
@@ -94,13 +94,14 @@ return array(
 	),
 
 	'robot' => array(
-		'googlebot'   => 'Googlebot',
-		'msnbot'      => 'MSNBot',
-		'slurp'       => 'Inktomi Slurp',
-		'yahoo'       => 'Yahoo',
-		'askjeeves'   => 'AskJeeves',
-		'fastcrawler' => 'FastCrawler',
-		'infoseek'    => 'InfoSeek Robot 1.0',
-		'lycos'       => 'Lycos',
+		'googlebot'           => 'Googlebot',
+		'msnbot'              => 'MSNBot',
+		'facebookexternalhit' => 'Facebook',
+		'slurp'               => 'Inktomi Slurp',
+		'yahoo'               => 'Yahoo',
+		'askjeeves'           => 'AskJeeves',
+		'fastcrawler'         => 'FastCrawler',
+		'infoseek'            => 'InfoSeek Robot 1.0',
+		'lycos'               => 'Lycos',
 	),
 );

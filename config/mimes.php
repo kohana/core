@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * A list of mime types. Our list is generally more complete and accurate than
  * the operating system MIME list.
@@ -193,6 +193,7 @@ return array
 	'wav'   => array('audio/x-wav'),
 	'wax'   => array('audio/x-ms-wax'),
 	'wbxml' => array('application/wbxml'),
+	'webm'  => array('video/webm'),
 	'wm'    => array('video/x-ms-wm'),
 	'wma'   => array('audio/x-ms-wma'),
 	'wmd'   => array('application/x-ms-wmd'),

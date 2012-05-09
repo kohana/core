@@ -4,13 +4,14 @@
  * Tests Kohana File helper
  *
  * @group kohana
- * @group kohana.url
+ * @group kohana.core
+ * @group kohana.core.url
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_FileTest extends Unittest_TestCase
@@ -24,7 +25,7 @@ class Kohana_FileTest extends Unittest_TestCase
 	{
 		return array(
 			// $value, $result
-			array(Kohana::find_file('classes', 'file')),
+			array(Kohana::find_file('classes', 'File')),
 			array(Kohana::find_file('tests', 'test_data/github', 'png')),
 		);
 	}

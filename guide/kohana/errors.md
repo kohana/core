@@ -41,36 +41,24 @@ Errors should **always** be displayed, even in production, because it allows you
 
 Kohana comes with a robust system for handing http errors. It includes exception classes for each http status code. To trigger a 404 in your application (the most common scenario):
 
-	throw new HTTP_Exception_404('File not found!');
+	throw HTTP_Exception::factory(404, 'File not found!');
 
-There is no default method to handle these errors in Kohana. It's recommended that you setup an exception handler (and register it) to handle these kinds of errors. Here's a simple example that would go in */application/classes/foobar/exception/handler.php*:
+To register error pages for these, using 404 as an example:
 
-	class Foobar_Exception_Handler
-	{
-		public static function handle(Exception $e)
-		{
-			switch (get_class($e))
-			{
-				case 'Http_Exception_404':
-					$response = new Response;
-					$response->status(404);
-					$view = new View('error_404');
-					$view->message = $e->getMessage();
-					$view->title = 'File Not Found';
-					echo $response->body($view)->send_headers()->body();
-					return TRUE;
-					break;
-				default:
-					return Kohana_Exception::handler($e);
-					break;
-			}
-		}
-	}
+    class HTTP_Exception_404 extends Kohana_HTTP_Exception_404 {
 
-And put something like this in your bootstrap to register the handler.
+        public function get_response()
+        {
+            $response = Response::factory();
 
-	set_exception_handler(array('Foobar_Exception_Handler', 'handle'));
+            $view = View::factory('errors/404');
 
- > *Note:* Be sure to place `set_exception_handler()` **after** `Kohana::init()` in your bootstrap, or it won't work.
- 
- > If you receive *Fatal error: Exception thrown without a stack frame in Unknown on line 0*, it means there was an error within your exception handler. If using the example above, be sure *404.php* exists under */application/views/error/*.
+            // We're inside an instance of Exception here, all the normal stuff is available.
+            $view->message = $this->getMessage();
+
+            $response->body($view->render());
+
+            return $response;
+        }
+
+    }

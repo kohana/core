@@ -4,12 +4,13 @@
  * Unit tests for response class
  *
  * @group kohana
- * @group kohana.response
+ * @group kohana.core
+ * @group kohana.core.response
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_ResponseTest extends Unittest_TestCase
@@ -178,21 +179,17 @@ class Kohana_ResponseTest extends Unittest_TestCase
 	public function test_send_headers_cli()
 	{
 		if (headers_sent())
+		{
 			$this->markTestSkipped('Cannot test this feature as headers have already been sent!');
-
-		if (Kohana::$is_cli)
-		{
-			$content_type = 'application/json';
-			$response = new Response;
-			$response->headers('content-type', $content_type)
-				->send_headers();
-
-			$this->assertFalse(headers_sent());
 		}
-		else
-		{
-			$this->markTestSkipped('Unable to perform test outside of CLI mode');
-		}
+
+		$content_type = 'application/json';
+		$response = new Response;
+		$response->headers('content-type', $content_type)
+			->send_headers();
+
+		$this->assertFalse(headers_sent());
+
 	}
 
 	/**
