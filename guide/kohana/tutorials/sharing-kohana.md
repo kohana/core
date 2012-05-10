@@ -1,8 +1,8 @@
 # Sharing Kohana
 
-Because Kohana follows a [front controller] pattern, which means that all requests are sent to `index.php`, the filesystem is very configurable.  Inside of `index.php` you can change the `$application`, `$modules`, and `$system` paths.
+Kohana follows a [front controller pattern](http://en.wikipedia.org/wiki/Front_Controller_pattern "Front Controller pattern") (which means that all requests are sent to `index.php`) and as such the [filesystem](files) is very configurable.  Inside of `index.php` you can change the `$application`, `$modules`, and `$system` paths.
 
-[!!] There is a security check at the top of every Kohana file to prevent it from being accessed without using the front controller.  Also, the `.htaccess` file should protect those folders as well.  Moving the application, modules, and system directories to a location that cannot be accessed vie web can add another layer of security, but is optional.   
+[!!] There is a security check at the top of every Kohana file to prevent it from being accessed without using the front controller.  Also, the `.htaccess` file should protect those folders as well.  Moving the application, modules, and system directories to a location that cannot be accessed via the web can add another layer of security, but is optional.
 
 The `$application` variable lets you set the directory that contains your application files. By default, this is `application`. The `$modules` variable lets you set the directory that contains module files. The `$system` variable lets you set the directory that contains the default Kohana files. You can move these three directories anywhere.
 
@@ -30,7 +30,7 @@ Then you would need to change the settings in `index.php` to be:
 
 ## Sharing system and modules
 
-To take this a step further, we could point several kohana apps to the same system and modules folders.  For example (and this is just an example, you could arrange these anyway you want):
+To take this a step further, we could point several Kohana apps to the same system and modules folders.  For example (and this is just an example, you could arrange these anyway you want):
 
 	apps/
 		foobar/
@@ -51,4 +51,4 @@ And you would need to change the settings in `index.php` to be:
 	$system      = '../../../kohana/3.0.6';
 	$modules     = '../../../kohana/modules';
 
-Using this method each app can point to a central copy of kohana, and you can add a new version, and quickly update your apps to point to the new version by editing their `index.php` files.
+With this method each app can point to a central copy of Kohana, and when you add a new version, allow you to quickly update the apps by editing their respective `index.php` files.
