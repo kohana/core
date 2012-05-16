@@ -20,11 +20,13 @@ class Kohana_FormTest extends Unittest_TestCase
 	 * Defaults for this test
 	 * @var array
 	 */
+	// @codingStandardsIgnoreStart
 	protected $environmentDefault = array(
 		'Kohana::$base_url' => '/',
 		'HTTP_HOST' => 'kohanaframework.org',
 		'Kohana::$index_file' => '',
 	);
+	// @codingStandardsIgnoreEnd
 
 	/**
 	 * Provides test data for test_open()

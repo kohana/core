@@ -381,7 +381,7 @@ class Kohana_ConfigTest extends Unittest_TestCase
 		// Due to crazy limitations in phpunit's mocking engine we have to be fairly
 		// liberal here as to what order we receive the config items
 		// Good news is that order shouldn't matter *yay*
-		//
+		// 
 		// Now save your eyes and skip the next... 13 lines!
 		$key = $this->logicalOr('pie', 'kohana');
 		$val = $this->logicalOr('good', 'awesome');

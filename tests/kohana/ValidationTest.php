@@ -589,7 +589,9 @@ class Kohana_ValidationTest extends Unittest_TestCase
 		$this->assertSame($data, $validation->data());
 	}
 
+	// @codingStandardsIgnoreStart
 	public function test_offsetExists()
+	// @codingStandardsIgnoreEnd
 	{
 		$array = array(
 			'one' => 'Hello',
@@ -604,7 +606,9 @@ class Kohana_ValidationTest extends Unittest_TestCase
 		$this->assertFalse(isset($validation['five']));
 	}
 
+	// @codingStandardsIgnoreStart
 	public function test_offsetSet_throws_exception()
+	// @codingStandardsIgnoreEnd
 	{
 		$this->setExpectedException('Kohana_Exception');
 
@@ -614,7 +618,9 @@ class Kohana_ValidationTest extends Unittest_TestCase
 		$validation['field'] = 'something';
 	}
 
+	// @codingStandardsIgnoreStart
 	public function test_offsetGet()
+	// @codingStandardsIgnoreEnd
 	{
 		$array = array(
 			'one' => 'Hello',
@@ -629,7 +635,9 @@ class Kohana_ValidationTest extends Unittest_TestCase
 		$this->assertSame($array['ten'], $validation['ten']);
 	}
 
+	// @codingStandardsIgnoreStart
 	public function test_offsetUnset()
+	// @codingStandardsIgnoreEnd
 	{
 		$this->setExpectedException('Kohana_Exception');
 

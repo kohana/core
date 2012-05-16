@@ -20,12 +20,14 @@ class Kohana_URLTest extends Unittest_TestCase
 	 * Default values for the environment, see setEnvironment
 	 * @var array
 	 */
+	// @codingStandardsIgnoreStart
 	protected $environmentDefault =	array(
 		'Kohana::$base_url'	=> '/kohana/',
 		'Kohana::$index_file'=> 'index.php',
 		'HTTP_HOST' => 'example.com',
 		'_GET'		=> array(),
 	);
+	// @codingStandardsIgnoreEnd
 
 	/**
 	 * Provides test data for test_base()

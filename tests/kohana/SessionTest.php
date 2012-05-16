@@ -22,7 +22,9 @@ class Kohana_SessionTest extends Unittest_TestCase
 	 *
 	 * @return Session
 	 */
+	// @codingStandardsIgnoreStart
 	public function getMockSession(array $config = array())
+	// @codingStandardsIgnoreEnd
 	{
 		return $this->getMockForAbstractClass('Session', array($config));
 	}
