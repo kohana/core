@@ -22,7 +22,9 @@ class Kohana_RouteTest extends Unittest_TestCase
 	/**
 	 * Remove all caches
 	 */
+	// @codingStandardsIgnoreStart
 	public function setUp()
+	// @codingStandardsIgnoreEnd
 	{
 		parent::setUp();
 
@@ -32,7 +34,9 @@ class Kohana_RouteTest extends Unittest_TestCase
 	/**
 	 * Removes cache files created during tests
 	 */
+	// @codingStandardsIgnoreStart
 	public function tearDown()
+	// @codingStandardsIgnoreEnd
 	{
 		parent::tearDown();
 

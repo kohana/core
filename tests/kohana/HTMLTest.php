@@ -16,12 +16,18 @@
  */
 class Kohana_HTMLTest extends Unittest_TestCase
 {
+	/**
+	 * Defaults for this test
+	 * @var array
+	 */
+	// @codingStandardsIgnoreStart
 	protected $environmentDefault = array(
 		'Kohana::$base_url'    => '/kohana/',
 		'Kohana::$index_file'  => 'index.php',
 		'HTML::$strict' => TRUE,
 		'HTTP_HOST'	=> 'www.kohanaframework.org',
 	);
+	// @codingStandardsIgnoreStart
 
 	/**
 	 * Provides test data for test_attributes()
