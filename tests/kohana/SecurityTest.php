@@ -96,8 +96,9 @@ class Kohana_SecurityTest extends Unittest_TestCase
 	 */
 	public function test_csrf_token($expected, $input, $iteration)
 	{
-		if (headers_sent())
+		if (headers_sent()) {
 			$this->markTestSkipped('Headers have already been sent, session not available');
+		}
 
 		Security::$token_name = 'token_'.$iteration;
 		$this->assertSame(TRUE, $input);
