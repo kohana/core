@@ -270,7 +270,8 @@ class Kohana_Request_ClientTest extends Unittest_TestCase
 			// Straightforward response manipulation
 			array(
 				array('X-test-1' =>
-					function($request, $response, $client){
+					function($request, $response, $client)
+					{
 						$response->body(json_encode(array('body'=>'test1-body-changed')));
 						return $response;
 				}),
@@ -280,7 +281,8 @@ class Kohana_Request_ClientTest extends Unittest_TestCase
 			// Subsequent request execution
 			array(
 				array('X-test-2' =>
-					function($request, $response, $client){
+					function($request, $response, $client)
+					{
 						return Request::factory($response->headers('X-test-2'));
 				}),
 				$this->_dummy_uri(200,
@@ -291,7 +293,8 @@ class Kohana_Request_ClientTest extends Unittest_TestCase
 			// No callbacks triggered
 			array(
 				array('X-test-3' =>
-					function ($request, $response, $client) {
+					function ($request, $response, $client)
+					{
 						throw new Exception("Unexpected execution of X-test-3 callback");
 				}),
 				$this->_dummy_uri(200, array('X-test-1' => 'foo'), 'test3-body'),
@@ -301,11 +304,13 @@ class Kohana_Request_ClientTest extends Unittest_TestCase
 			array(
 				array(
 					'X-test-1' =>
-						function($request, $response, $client){
+						function($request, $response, $client)
+						{
 							return Request::factory($response->headers('X-test-1'));
 						},
 					'X-test-2' =>
-						function($request, $response, $client){
+						function($request, $response, $client)
+						{
 							return Request::factory($response->headers('X-test-2'));
 						}
 				),
@@ -321,11 +326,13 @@ class Kohana_Request_ClientTest extends Unittest_TestCase
 			array(
 				array(
 					'X-test-1' =>
-						function($request, $response, $client){
+						function($request, $response, $client)
+						{
 							return Request::factory($response->headers('X-test-1'));
 						},
 					'X-test-2' =>
-						function($request, $response, $client){
+						function($request, $response, $client)
+						{
 							return Request::factory($response->headers('X-test-2'));
 						}
 				),
@@ -381,7 +388,8 @@ class Kohana_Request_ClientTest extends Unittest_TestCase
 					$uri,
 					array(
 						'header_callbacks' => array(
-							'x-cb' => function ($request, $response, $client)
+							'x-cb' => 
+								function ($request, $response, $client)
 								{
 									$client->callback_params('testcase')->requests_executed++;
 									// Recurse into a new request

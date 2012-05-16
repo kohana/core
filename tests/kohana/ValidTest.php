@@ -831,9 +831,9 @@ class Kohana_ValidTest extends Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_regex
-	 * @param string Value to test against
-	 * @param string Valid pcre regular expression
-	 * @param bool Does the value match the expression?
+	 * @param string $value Value to test against
+	 * @param string $regex Valid pcre regular expression
+	 * @param bool $expected Does the value match the expression?
 	 */
 	public function test_regex($value, $regex, $expected)
 	{

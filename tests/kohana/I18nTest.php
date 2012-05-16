@@ -20,9 +20,11 @@ class Kohana_I18nTest extends Unittest_TestCase {
 	 * Default values for the environment, see setEnvironment
 	 * @var array
 	 */
+	// @codingStandardsIgnoreStart
 	protected $environmentDefault =	array(
 		'I18n::$lang' => 'en-us',
 	);
+	// @codingStandardsIgnoreEnd
 
 	/**
 	 * Provides test data for test_lang()
