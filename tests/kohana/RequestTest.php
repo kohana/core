@@ -18,14 +18,18 @@ class Kohana_RequestTest extends Unittest_TestCase
 {
 	protected $_inital_request;
 
+	// @codingStandardsIgnoreStart
 	public function setUp()
+	// @codingStandardsIgnoreEnd
 	{
 		parent::setUp();
 		$this->_initial_request = Request::$initial;
 		Request::$initial = new Request('/');
 	}
 
+	// @codingStandardsIgnoreStart
 	public function tearDown()
+	// @codingStandardsIgnoreEnd
 	{
 		Request::$initial = $this->_initial_request;
 		parent::tearDown();

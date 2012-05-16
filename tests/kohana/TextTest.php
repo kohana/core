@@ -16,7 +16,9 @@ class Kohana_TextTest extends Unittest_TestCase
 	/**
 	 * Sets up the test enviroment
 	 */
+	// @codingStandardsIgnoreStart
 	function setUp()
+	// @codingStandardsIgnoreEnd
 	{
 		parent::setUp();
 

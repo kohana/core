@@ -429,7 +429,9 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 *
 	 * @return  array
 	 */
+	// @codingStandardsIgnoreStart
 	public function provider_offsetSet()
+	// @codingStandardsIgnoreEnd
 	{
 		return array(
 			array(
@@ -526,7 +528,9 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 * @param   array  $expected     expected
 	 * @return  void
 	 */
+	// @codingStandardsIgnoreStart
 	public function test_offsetSet(array $constructor, array $to_set, array $expected)
+	// @codingStandardsIgnoreEnd
 	{
 		$http_header = new HTTP_Header($constructor);
 
@@ -546,7 +550,9 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 *
 	 * @return  array
 	 */
+	// @codingStandardsIgnoreStart
 	public function provider_offsetGet()
+	// @codingStandardsIgnoreEnd
 	{
 		return array(
 			array(
@@ -607,7 +613,9 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 * @param   mixed     expected
 	 * @return  void
 	 */
+	// @codingStandardsIgnoreStart
 	public function test_offsetGet(array $state, $key, $expected)
+	// @codingStandardsIgnoreEnd
 	{
 		$header = new HTTP_Header($state);
 
@@ -619,7 +627,9 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 *
 	 * @return  array
 	 */
+	// @codingStandardsIgnoreStart
 	public function provider_offsetExists()
+	// @codingStandardsIgnoreEnd
 	{
 		return array(
 			array(
@@ -671,7 +681,9 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 * @param   boolean  $expected  expected 
 	 * @return  void
 	 */
+	// @codingStandardsIgnoreStart
 	public function test_offsetExists(array $state, $key, $expected)
+	// @codingStandardsIgnoreEnd
 	{
 		$header = new HTTP_Header($state);
 
@@ -683,7 +695,9 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 *
 	 * @return  array
 	 */
+	// @codingStandardsIgnoreStart
 	public function provider_offsetUnset()
+	// @codingStandardsIgnoreEnd
 	{
 		return array(
 			array(
@@ -735,7 +749,9 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 * @param   array   $expected  expected 
 	 * @return  void
 	 */
+	// @codingStandardsIgnoreStart
 	public function test_offsetUnset(array $state, $remove, array $expected)
+	// @codingStandardsIgnoreEnd
 	{
 		$header = new HTTP_Header($state);
 		$header->offsetUnset($remove);
