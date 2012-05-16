@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 
 return array(
 	'alpha'         => ':field must contain only letters',
@@ -9,7 +9,7 @@ return array(
 	'date'          => ':field must be a date',
 	'decimal'       => ':field must be a decimal with :param2 places',
 	'digit'         => ':field must be a digit',
-	'email'         => ':field must be a email address',
+	'email'         => ':field must be an email address',
 	'email_domain'  => ':field must contain a valid email domain',
 	'equals'        => ':field must equal :param2',
 	'exact_length'  => ':field must be exactly :param2 characters long',

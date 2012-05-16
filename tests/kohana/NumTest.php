@@ -3,13 +3,14 @@
 /**
  * Tests Num
  *
- * @group      kohana
- * @group      kohana.num
+ * @group kohana
+ * @group kohana.core
+ * @group kohana.core.num
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_NumTest extends Unittest_TestCase
@@ -23,7 +24,7 @@ class Kohana_NumTest extends Unittest_TestCase
 	{
 		parent::setUp();
 
-		setlocale(LC_ALL, 'English');
+		setlocale(LC_ALL, 'en_US.utf8');
 	}
 
 	/**
@@ -194,7 +195,7 @@ class Kohana_NumTest extends Unittest_TestCase
 	{
 		foreach (array(Num::ROUND_HALF_UP, Num::ROUND_HALF_DOWN, Num::ROUND_HALF_EVEN, Num::ROUND_HALF_ODD) as $i => $mode)
 		{
-			$this->assertSame($expected[$i], Num::round($input, $precision, $mode, false));
+			$this->assertSame($expected[$i], Num::round($input, $precision, $mode, FALSE));
 		}
 	}
 }

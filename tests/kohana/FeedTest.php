@@ -4,13 +4,14 @@
  * Test for feed helper
  *
  * @group kohana
- * @group kohana.feed
+ * @group kohana.core
+ * @group kohana.core.feed
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_FeedTest extends Unittest_TestCase
@@ -44,7 +45,7 @@ class Kohana_FeedTest extends Unittest_TestCase
 			$this->markTestSkipped('An internet connection is required for this test');
 		}
 
-		$this->assertEquals($expected, count(feed::parse($source)));
+		$this->assertEquals($expected, count(Feed::parse($source)));
 	}
 
 	/**
@@ -115,11 +116,11 @@ class Kohana_FeedTest extends Unittest_TestCase
 	{
 		$this->setEnvironment($enviroment);
 
-		$this->assertTag($matcher_item, feed::create($info, $items), '', FALSE);
+		$this->assertTag($matcher_item, Feed::create($info, $items), '', FALSE);
 
 		foreach ($matchers_image as $matcher_image)
 		{
-			$this->assertTag($matcher_image, feed::create($info, $items), '', FALSE);
+			$this->assertTag($matcher_image, Feed::create($info, $items), '', FALSE);
 		}
 	}
 }

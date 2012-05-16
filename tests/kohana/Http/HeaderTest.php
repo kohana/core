@@ -1,15 +1,17 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Unit Tests for Kohana_HTTP_Header
  *
  * @group kohana
- * @group kohana.http
- * @group kohana.http.header
+ * @group kohana.core
+ * @group kohana.core.http
+ * @group kohana.core.http.header
+ * @group kohana.core.http.header
  * 
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
@@ -57,8 +59,8 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 * 
 	 * @dataProvider provider_accept_quality
 	 *
-	 * @param   array     input
-	 * @param   array     expected output
+	 * @param   array  $parts     input
+	 * @param   array  $expected  expected output
 	 * @return  void
 	 */
 	public function test_accept_quality(array $parts, array $expected)
@@ -119,8 +121,8 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 * 
 	 * @dataProvider provider_parse_accept_header
 	 *
-	 * @param   string    accept in
-	 * @param   array     expected out
+	 * @param   string  $accept    accept in
+	 * @param   array   $expected  expected out
 	 * @return  void
 	 */
 	public function test_parse_accept_header($accept, array $expected)
@@ -169,8 +171,8 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 * 
 	 * @dataProvider provider_parse_charset_header
 	 *
-	 * @param   string    accept 
-	 * @param   array     expected 
+	 * @param   string  $accept    accept 
+	 * @param   array   $expected  expected 
 	 * @return  void
 	 */
 	public function test_parse_charset_header($accept, array $expected)
@@ -223,8 +225,8 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 * 
 	 * @dataProvider provider_parse_encoding_header
 	 *
-	 * @param   string    accept 
-	 * @param   array     expected 
+	 * @param   string  $accept    accept 
+	 * @param   array   $expected  expected 
 	 * @return  void
 	 */
 	public function test_parse_encoding_header($accept, array $expected)
@@ -292,8 +294,8 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 * 
 	 * @dataProvider provider_parse_language_header
 	 * 
-	 * @param   string    accept 
-	 * @param   array     expected 
+	 * @param   string  $accept    accept 
+	 * @param   array   $expected  expected 
 	 * @return  void
 	 */
 	public function test_parse_language_header($accept, array $expected)
@@ -345,8 +347,8 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 * 
 	 * @dataProvider provider_create_cache_control
 	 *
-	 * @param   array     input 
-	 * @param   string    expected 
+	 * @param   array   $input     input 
+	 * @param   string  $expected  expected 
 	 * @return  void
 	 */
 	public function test_create_cache_control(array $input, $expected)
@@ -398,8 +400,8 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 *
 	 * @dataProvider provider_parse_cache_control
 	 * 
-	 * @param   string    input 
-	 * @param   array     expected 
+	 * @param   string  $input     input 
+	 * @param   array   $expected  expected 
 	 * @return  void
 	 */
 	public function test_parse_cache_control($input, array $expected)
@@ -519,9 +521,9 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 *
 	 * @dataProvider provider_offsetSet
 	 * 
-	 * @param   array     constructor
-	 * @param   array     to_set 
-	 * @param   array     expected
+	 * @param   array  $constructor  constructor
+	 * @param   array  $to_set       to_set 
+	 * @param   array  $expected     expected
 	 * @return  void
 	 */
 	public function test_offsetSet(array $constructor, array $to_set, array $expected)
@@ -551,7 +553,7 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 				array(
 					'FoO'   => 'bar',
 					'START' => 'end',
-					'true'  => true
+					'true'  => TRUE
 				),
 				'FOO',
 				'bar'
@@ -560,25 +562,25 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 				array(
 					'FoO'   => 'bar',
 					'START' => 'end',
-					'true'  => true
+					'true'  => TRUE
 				),
 				'true',
-				true
+				TRUE
 			),
 			array(
 				array(
 					'FoO'   => 'bar',
 					'START' => 'end',
-					'true'  => true
+					'true'  => TRUE
 				),
 				'True',
-				true
+				TRUE
 			),
 			array(
 				array(
 					'FoO'   => 'bar',
 					'START' => 'end',
-					'true'  => true
+					'true'  => TRUE
 				),
 				'Start',
 				'end'
@@ -664,9 +666,9 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 * 
 	 * @dataProvider provider_offsetExists
 	 *
-	 * @param   array    state 
-	 * @param   string   key 
-	 * @param   boolean  expected 
+	 * @param   array    $state     state 
+	 * @param   string   $key       key 
+	 * @param   boolean  $expected  expected 
 	 * @return  void
 	 */
 	public function test_offsetExists(array $state, $key, $expected)
@@ -728,9 +730,9 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	 *
 	 * @dataProvider provider_offsetUnset
 	 *
-	 * @param   array     state 
-	 * @param   string    remove 
-	 * @param   array     expected 
+	 * @param   array   $state     state 
+	 * @param   string  $remove    remove 
+	 * @param   array   $expected  expected 
 	 * @return  void
 	 */
 	public function test_offsetUnset(array $state, $remove, array $expected)
@@ -1252,6 +1254,14 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 				TRUE,
 				(float) 0
 			),
+			array(
+				array(
+					'accept-language'  => 'en-US'
+				),
+				'en-us',
+				TRUE,
+				(float) 1
+			),			
 		);
 	}
 
@@ -1329,6 +1339,16 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 				TRUE,
 				'fr'
 			),
+			array(
+				array(
+					'accept-language'  => 'en-US'
+				),
+				array(
+					'en-us'
+				),
+				TRUE,
+				'en-us'
+			),			
 		);
 	}
 
@@ -1358,7 +1378,6 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 	public function provider_send_headers()
 	{
 		$content_type = Kohana::$content_type.'; charset='.Kohana::$charset;
-		$version = Kohana::VERSION.' ('.Kohana::CODENAME.')';
 
 		return array(
 			array(
@@ -1374,7 +1393,7 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 				array(
 					'HTTP/1.1 200 OK',
 					'Content-Type: '.$content_type,
-					'X-Powered-By: Kohana Framework '.$version,
+					'X-Powered-By: '.Kohana::version(),
 				),
 				TRUE,
 			),

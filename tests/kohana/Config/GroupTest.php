@@ -10,7 +10,7 @@
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
  * @author     Matt Button <matthew@sigswitch.com>
- * @copyright  (c) 2008-2010 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 class Kohana_Config_GroupTest extends Kohana_Unittest_TestCase
@@ -35,7 +35,7 @@ class Kohana_Config_GroupTest extends Kohana_Unittest_TestCase
 	 */
 	public function get_mock_group($group, $config = array(), $instance = NULL)
 	{
-		if($instance === NULL)
+		if ($instance === NULL)
 		{
 			$instance = $this->get_mock_config();
 		}
