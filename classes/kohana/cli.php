@@ -22,7 +22,7 @@ class Kohana_CLI {
 	 * @param   string  $options,...    option name
 	 * @return  array
 	 */
-	public static function options($options)
+	public static function options()
 	{
 		// Get all of the requested options
 		$options = func_get_args();
