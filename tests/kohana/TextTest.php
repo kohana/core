@@ -514,6 +514,27 @@ class Kohana_TextTest extends Unittest_TestCase
 				'<strong><a href="http://www.google.com/">http://www.google.com/</a></strong>',
 				'<strong>http://www.google.com/</strong>',
 			),
+			// @issue 4208, URLs with a path
+			array(
+				'Foobar <a href="http://www.google.com/analytics">www.google.com/analytics</a> cake',
+				'Foobar www.google.com/analytics cake',
+			),
+			array(
+				'Look at this <a href="http://www.google.com/analytics">www.google.com/analytics</a>!',
+				'Look at this www.google.com/analytics!',
+			),
+			array(
+				'Path <a href="http://www.google.com/analytics">http://www.google.com/analytics</a> works?',
+				'Path http://www.google.com/analytics works?',
+			),
+			array(
+				'Path <a href="http://www.google.com/analytics">http://www.google.com/analytics</a>',
+				'Path http://www.google.com/analytics',
+			),
+			array(
+				'Path <a href="http://www.google.com/analytics">www.google.com/analytics</a>',
+				'Path www.google.com/analytics',
+			),
 		);
 	}
 
