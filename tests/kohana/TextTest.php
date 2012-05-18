@@ -487,6 +487,19 @@ class Kohana_TextTest extends Unittest_TestCase
 				'Look at me <a href="http://www.google.com">http://www.google.com</a>',
 				'Look at me <a href="http://www.google.com">http://www.google.com</a>',
 			),
+			// Punctuation at the end of the URL
+			array(
+				'Wow <a href="http://www.google.com">http://www.google.com</a>!',
+				'Wow http://www.google.com!',
+			),
+			array(
+				'Zomg <a href="http://www.google.com">www.google.com</a>!',
+				'Zomg www.google.com!',
+			),
+			array(
+				'Well this, <a href="http://www.google.com">www.google.com</a>, is cool',
+				'Well this, www.google.com, is cool',
+			),
 			// @issue 3190
 			array(
 				'<a href="http://www.google.com/">www.google.com</a>',
