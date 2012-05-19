@@ -3,12 +3,12 @@
  * [Request_Client_External] Stream driver performs external requests using php
  * sockets. To use this driver, ensure the following is completed
  * before executing an external request- ideally in the application bootstrap.
- * 
+ *
  * @example
- * 
+ *
  *       // In application bootstrap
  *       Request_Client_External::$client = 'Request_Client_Stream';
- * 
+ *
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
@@ -30,12 +30,65 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 	public function _send_message(Request $request, Response $response)
 	{
 		// Calculate stream mode
-		$mode = ($request->method() === HTTP_Request::GET) ? 'r' : 'r+';
+		$mode = ($request->method() === HTTP_Request::GET) ? 'r' : 'rb';
 
 		// Process cookies
 		if ($cookies = $request->cookie())
 		{
 			$request->headers('cookie', http_build_query($cookies, NULL, '; '));
+		}
+
+		if ($request->method() === HTTP_Request::POST)
+		{
+			if ($files = $request->files())
+			{
+				// Set multipart form boundary
+				$boundary = '----------------------------'.Text::random('hexdec', 12);
+
+				if ($post = $request->post())
+				{
+					foreach($post as $key => $val)
+					{
+						$q_key = $this->encode_header_param($key);
+
+						$body[] = implode(Request_Client::CRLF, array(
+							'--'.$boundary,
+							'Content-Disposition: form-data; name="'.$q_key.'"',
+							NULL, // Extra newline
+							$val,
+						));
+					}
+				}
+
+				foreach ($files as $name => $file)
+				{
+					$q_name = $this->encode_header_param($name);
+					$q_file = $this->encode_header_param(basename($file));
+
+					$body[] = implode(Request_Client::CRLF, array(
+						'--'.$boundary,
+						'Content-Disposition: form-data; name="'.$q_name.'"; filename="'.$q_file.'"',
+						'Content-Type: '.File::mime($file),
+						'Content-Transfer-Encoding: binary',
+						NULL, // Extra newline
+						file_get_contents($file),
+					));
+				}
+
+				// Final boundary has a double-dash at the end
+				$body[] = '--'.$boundary.'--';
+
+				$request->body(implode(Request_Client::CRLF, $body));
+				$request->headers('content-type', 'multipart/form-data; boundary='.$boundary);
+			}
+			else
+			{
+				if ($post = $request->post())
+				{
+					$request->body(http_build_query($post, NULL, '&'));
+					$request->headers('content-type', 'application/x-www-form-urlencoded');
+				}
+			}
 		}
 
 		// Get the message body
@@ -104,6 +157,23 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 		fclose($stream);
 
 		return $response;
+	}
+
+	/**
+	 * Encodes and escapes header parameters.
+	 *
+	 * @param   string  $str  text to encode
+	 * @return  string
+	 */
+	protected function encode_header_param($str)
+	{
+		// Apply ASCII encoding to the string, as per RFC 2045
+		$str = quoted_printable_encode($str);
+
+		// Escape backslashes and double quotes
+		$str = str_replace(array('\\', '"'), array('\\\\', '\\"'), $str);
+
+		return $str;
 	}
 
 } // End Kohana_Request_Client_Stream

@@ -28,11 +28,29 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 		// Set the request method
 		$options[CURLOPT_CUSTOMREQUEST] = $request->method();
 
-		// Set the request body. This is perfectly legal in CURL even
-		// if using a request other than POST. PUT does support this method
-		// and DOES NOT require writing data to disk before putting it, if
-		// reading the PHP docs you may have got that impression. SdF
-		$options[CURLOPT_POSTFIELDS] = $request->body();
+		if ($request->method() === HTTP_Request::POST)
+		{
+			if ($files = $request->files())
+			{
+				$upload = $request->post();
+
+				foreach ($files as $name => $file)
+				{
+					// Set the files to upload
+					$upload[$name] = '@'.$file;
+				}
+
+				$request->headers('content-type', 'multipart/form-data');
+			}
+			else
+			{
+				if ($post = $request->post())
+				{
+					$request->body(http_build_query($post, NULL, '&'));
+					$request->headers('content-type', 'application/x-www-form-urlencoded');
+				}
+			}
+		}
 
 		// Process headers
 		if ($headers = $request->headers())
@@ -51,6 +69,20 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 		if ($cookies = $request->cookie())
 		{
 			$options[CURLOPT_COOKIE] = http_build_query($cookies, NULL, '; ');
+		}
+
+		if ( ! empty($upload))
+		{
+			// An array _must_ be used here or file uploads will not work!
+			$options[CURLOPT_POSTFIELDS] = $upload;
+		}
+		else
+		{
+			// Set the request body. This is perfectly legal in CURL even
+			// if using a request other than POST. PUT does support this method
+			// and DOES NOT require writing data to disk before putting it, if
+			// reading the PHP docs you may have got that impression. SdF
+			$options[CURLOPT_POSTFIELDS] = $request->body();
 		}
 
 		// Get any exisiting response headers
