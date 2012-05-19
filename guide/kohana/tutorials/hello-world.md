@@ -8,7 +8,7 @@ We'll start out by creating a very very basic hello world, and then we'll expand
 
 First off we have to make a controller that Kohana can use to handle a request.
 
-Create the file `application/classes/controller/hello.php` in your application folder and fill it out like so:
+Create the file `application/classes/Controller/Hello.php` in your application folder and fill it out like so:
 
     <?php defined('SYSPATH') OR die('No Direct Script Access');
 

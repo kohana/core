@@ -8,7 +8,7 @@ HVMC Sub-request isolation has been improved to prevent exceptions leaking from 
 
 The use of HTTP Exceptions is now encouraged over manually setting the [Response] status to, for example, '404'. This allows for easier custom error pages (detailed below);
 
-The full list of supported codes can be seen in the SYSPATH/classes/http/exception/ folder.
+The full list of supported codes can be seen in the SYSPATH/classes/HTTP/Exception/ folder.
 
 Syntax:
 
@@ -58,8 +58,8 @@ which is an alias for:
     HTTP::check_cache($this->request, $this->response, sha1('my content'));
 
 ## PSR-0 support (file/class naming conventions)
-With the introduction of [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) support, the autoloading of classes is case sensitive. Now, the file (and folder)
-names must match the class name exactly.
+
+With the introduction of [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) support, the autoloading of classes is case sensitive. Now, the file (and folder) names must match the class name exactly.
 
 Examples:
 

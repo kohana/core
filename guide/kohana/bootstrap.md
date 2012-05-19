@@ -105,7 +105,7 @@ Kohana::modules(array(
 // The default route that comes with Kohana 3
 Route::set('default', '(<controller>(/<action>(/<id>)))')
 	->defaults(array(
-		'controller' => 'welcome',
+		'controller' => 'Welcome',
 		'action'     => 'index',
 	));
 ~~~

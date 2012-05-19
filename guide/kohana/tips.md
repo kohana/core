@@ -10,6 +10,10 @@ You should (almost) never edit the system folder.  Any change you want to make t
 
 Kohana 3 [routes](routing) are very powerful and flexible, don't be afraid to use as many as you need to make your app function the way you want!
 
+## Files not found on some systems
+
+As of Kohana 3.3, classes are autoloaded using the case-sensitive PSR-0 autoloader. This means that using the class Foo {} with a file in classes/foo.php will work on case-insensitive file systems (such as the default HFS+ FS used in Mac OS X) but will fail when used on a case-sensitive FS (typical on many production Linux servers).
+
 ## Handling lots of routes
 
 Sometimes your application is sufficiently complex that you have many routes and it becomes unmanageable to put them all in bootstrap.php. If this is the case, simply make a `routes.php` file in APPPATH and require that in your bootstrap: `require_once APPPATH.'routes'.EXT;`

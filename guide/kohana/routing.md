@@ -12,7 +12,7 @@ If you look in `APPPATH/bootstrap.php` you will see the "default" route as follo
 
 	Route::set('default', '(<controller>(/<action>(/<id>)))')
 	->defaults(array(
-		'controller' => 'welcome',
+		'controller' => 'Welcome',
 		'action'     => 'index',
 	));
 	
@@ -34,7 +34,7 @@ Lets look at the default route again, the uri is `(<controller>(/<action>(/<id>)
 
 You can use any name you want for your keys, but the following keys have special meaning to the [Request] object, and will influence which controller and action are called:
 
- * **Directory** - The sub-directory of `classes/controller` to look for the controller (\[covered below]\(#directory))
+ * **Directory** - The sub-directory of `classes/Controller` to look for the controller (\[covered below]\(#directory))
  * **Controller** - The controller that the request should execute.
  * **Action** - The action method to call.
 
@@ -42,14 +42,14 @@ You can use any name you want for your keys, but the following keys have special
 
 The Kohana route system uses [perl compatible regular expressions](http://perldoc.perl.org/perlre.html) in its matching process.  By default each key (surrounded by `<>`) will match `[^/.,;?\n]++` (or in english: anything that is not a slash, period, comma, semicolon, question mark, or newline).  You can define your own patterns for each key by passing an associative array of keys and patterns as an additional third argument to Route::set.
 
-In this example, we have controllers in two directories, `admin` and `affiliate`.  Because this route will only match urls that begin with `admin` or `affiliate`, the default route would still work for controllers in `classes/controller`.  
+In this example, we have controllers in two directories, `admin` and `affiliate`.  Because this route will only match urls that begin with `admin` or `affiliate`, the default route would still work for controllers in `classes/Controller`.  
 
 	Route::set('sections', '<directory>(/<controller>(/<action>(/<id>)))',
 		array(
 			'directory' => '(admin|affiliate)'
 		))
 		->defaults(array(
-			'controller' => 'home',
+			'controller' => 'Home',
 			'action'     => 'index',
 		));
 
@@ -57,7 +57,7 @@ You can also use a less restrictive regex to match unlimited parameters, or to i
 
 	Route::set('default', '(<controller>(/<action>(/<stuff>)))', array('stuff' => '.*'))
 		->defaults(array(
-			'controller' => 'welcome',
+			'controller' => 'Welcome',
 			'action' => 'index',
 	  ));
 
@@ -67,6 +67,8 @@ You can also use a less restrictive regex to match unlimited parameters, or to i
 If a key in a route is optional (or not present in the route), you can provide a default value for that key by passing an associated array of keys and default values to [Route::defaults], chained after your [Route::set].  This can be useful to provide a default controller or action for your site, among other things.
 
 [!!] The `controller` and `action` key must always have a value, so they either need to be required in your route (not inside of parentheses) or have a default value provided.
+
+[!!] Kohana automatically converts controllers to follow the standard naming convention. For example /blog/view/123 would look for the controller Controller_Blog in classes/Controller/Blog.php and trigger the action_view() method on it.
 
 In the default route, all the keys are optional, and the controller and action are given a default.   If we called an empty url, the defaults would fill in and `Controller_Welcome::action_index()` would be called.  If we called `foobar` then only the default for action would be used, so it would call `Controller_Foobar::action_index()` and finally, if we called `foobar/baz` then neither default would be used and `Controller_Foobar::action_baz()` would be called.
 
@@ -88,7 +90,7 @@ If you want to use reverse routing with lambda routes, you must pass the third p
 		{
 			if ($uri == 'foo/bar')
 				return array(
-					'controller' => 'welcome',
+					'controller' => 'Welcome',
 					'action'     => 'foobar',
 				);
 		},
@@ -103,7 +105,7 @@ As you can see in the below route, the reverse uri parameter might not make sens
 			{
 				Cookie::set('language', $match[1]);
 				return array(
-					'controller' => 'welcome',
+					'controller' => 'Welcome',
 					'action'     => 'foobar'
 				);
 			}
@@ -127,7 +129,7 @@ There are countless other possibilities for routes. Here are some more examples:
         'action' => '(login|logout)'
       ))
       ->defaults(array(
-        'controller' => 'auth'
+        'controller' => 'Auth'
       ));
       
     /*
@@ -141,7 +143,7 @@ There are countless other possibilities for routes. Here are some more examples:
         'format' => '(rss|atom|json)',
       ))
       ->defaults(array(
-        'controller' => 'feeds',
+        'controller' => 'Feeds',
         'action' => 'status',
       ));
     
@@ -153,7 +155,7 @@ There are countless other possibilities for routes. Here are some more examples:
         'path' => '[a-zA-Z0-9_/]+',
       ))
       ->defaults(array(
-        'controller' => 'static',
+        'controller' => 'Static',
         'action' => 'index',
       ));
       
@@ -176,7 +178,7 @@ There are countless other possibilities for routes. Here are some more examples:
      */
     Route::set('search', ':<query>', array('query' => '.*'))
       ->defaults(array(
-        'controller' => 'search',
+        'controller' => 'Search',
         'action' => 'index',
       ));
 
