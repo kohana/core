@@ -250,6 +250,10 @@ class Kohana_URLTest extends Unittest_TestCase
 			array(array(), '?key=1', array('key' => TRUE)),
 			array(array('_GET' => array('sort' => 'down')), '?sort=down&key=1', array('key' => TRUE)),
 			array(array('_GET' => array('sort' => 'down')), '?sort=down&key=0', array('key' => FALSE)),
+
+			// @issue 4240
+			array(array('_GET' => array('foo' => array('a' => 100))), '?foo%5Ba%5D=100&foo%5Bb%5D=bar', array('foo' => array('b' => 'bar'))),
+			array(array('_GET' => array('a' => 'a')), '?a=b', array('a' => 'b')),
 		);
 	}
 

@@ -147,7 +147,7 @@ class Kohana_URL {
 			else
 			{
 				// Merge the current and new parameters
-				$params = array_merge($_GET, $params);
+				$params = Arr::merge($_GET, $params);
 			}
 		}
 
