@@ -80,7 +80,7 @@ return array
 	'jpe'   => array('image/jpeg', 'image/pjpeg'),
 	'jpeg'  => array('image/jpeg', 'image/pjpeg'),
 	'jpg'   => array('image/jpeg', 'image/pjpeg'),
-	'js'    => array('application/x-javascript'),
+	'js'    => array('application/javascript'),
 	'json'  => array('application/json'),
 	'latex' => array('application/x-latex'),
 	'lha'   => array('application/octet-stream'),
