@@ -6,7 +6,7 @@ Templates allow you to separate the design and layout (view) from the logic and 
 
 The default template controller (`Controller_Template`) looks in the `views` folder for a `template.php` file. For our example we'll be placing the demo template file under a subfolder.
 
-Create a blank document at `/application/views/template/demo.php` and enter the following code:
+Create a blank document at `APPPATH/views/template/demo.php` and enter the following code:
 
     <!doctype html>
     <html lang="<?php echo I18n::$lang ?>">
@@ -46,7 +46,7 @@ The page also has a language attribute defined by `I18n::$lang`, where the defau
 
 While you can work directly with `Controller_Template`, extending it better allows you to customise values and output based on various requests and requirements.
 
-Create a new template controller at `/application/classes/controller/demo.php` with the following code:
+Create a new template controller at `APPPATH/classes/controller/demo.php` with the following code:
 
 
     <?php defined('SYSPATH') OR die('No direct script access.');
@@ -110,7 +110,7 @@ Create a new template controller at `/application/classes/controller/demo.php` w
 
 In order to make use of our template view and template controller, we'll need to create a page controller to bring the two together and serve our pages.
 
-Create a new page controller at `/application/classes/controller/page.php` with the following:
+Create a new page controller at `APPPATH/classes/controller/page.php` with the following:
 
     <?php defined('SYSPATH') OR die('No direct script access.');
 
@@ -131,13 +131,13 @@ Create a new page controller at `/application/classes/controller/page.php` with 
 
 Note the call to two new views, `page/home` and `page/contact`.
 
-Your homepage view is expected at `/application/views/page/home.php`. Create a blank file with the following placeholder content:
+Your homepage view is expected at `APPPATH/views/page/home.php`. Create a blank file with the following placeholder content:
 
     <h1>Welcome home, Starshine</h1>
 
     <p>This is your homepage.</p>
 
-Your contact view will be located at `/application/views/page/contact.php` and may contain something like:
+Your contact view will be located at `APPPATH/views/page/contact.php` and may contain something like:
 
     <h1>Contact Us</h1>
 
