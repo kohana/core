@@ -489,6 +489,19 @@ class Kohana_TextTest extends Unittest_TestCase
 				'Look at me <a href="http://www.google.com">http://www.google.com</a>',
 				'Look at me <a href="http://www.google.com">http://www.google.com</a>',
 			),
+			// Punctuation at the end of the URL
+			array(
+				'Wow <a href="http://www.google.com">http://www.google.com</a>!',
+				'Wow http://www.google.com!',
+			),
+			array(
+				'Zomg <a href="http://www.google.com">www.google.com</a>!',
+				'Zomg www.google.com!',
+			),
+			array(
+				'Well this, <a href="http://www.google.com">www.google.com</a>, is cool',
+				'Well this, www.google.com, is cool',
+			),
 			// @issue 3190
 			array(
 				'<a href="http://www.google.com/">www.google.com</a>',
@@ -502,6 +515,27 @@ class Kohana_TextTest extends Unittest_TestCase
 			array(
 				'<strong><a href="http://www.google.com/">http://www.google.com/</a></strong>',
 				'<strong>http://www.google.com/</strong>',
+			),
+			// @issue 4208, URLs with a path
+			array(
+				'Foobar <a href="http://www.google.com/analytics">www.google.com/analytics</a> cake',
+				'Foobar www.google.com/analytics cake',
+			),
+			array(
+				'Look at this <a href="http://www.google.com/analytics">www.google.com/analytics</a>!',
+				'Look at this www.google.com/analytics!',
+			),
+			array(
+				'Path <a href="http://www.google.com/analytics">http://www.google.com/analytics</a> works?',
+				'Path http://www.google.com/analytics works?',
+			),
+			array(
+				'Path <a href="http://www.google.com/analytics">http://www.google.com/analytics</a>',
+				'Path http://www.google.com/analytics',
+			),
+			array(
+				'Path <a href="http://www.google.com/analytics">www.google.com/analytics</a>',
+				'Path www.google.com/analytics',
 			),
 		);
 	}
