@@ -1,13 +1,13 @@
 # Importing Kohana as a Library
 
-If you're working with an existing codebase it's often difficult to modernise the code as it would mean an complete rewrite and there's rarely the time. An alternative is to improve the codebase incrementally as best you can, gradually outsourcing code to external libraries to reduce the amount of old code there is to maintain.
+If you're working with an existing codebase it's often difficult to modernise the code as it would mean a complete rewrite and there's rarely the time. An alternative is to improve the codebase incrementally as best you can, gradually outsourcing code to external libraries to reduce the amount of old code there is to maintain.
 
-This tutorial describes on how to include the Kohana PHP framework into existing PHP applications, without having to use the routing and HMVC request handling features.
+This tutorial describes how to include the Kohana PHP framework into existing PHP applications, without having to use the routing and HMVC request handling features.
 
 [!!] The code modified in this tutorial was copied from Kohana version 3.1.x. You may need to update it to work with future releases.
 
-In normal usage of the Kohana framework, the `index.php` acts as the request handler; it sets up the environment, loads the system configuration and then handles the request (see [Request Flow](flow)).
-We walk you through the steps required to create a file we'll call `include.php` which will allow you to include Kohana from exiting PHP applications.
+In normal usage of the Kohana framework, the `index.php` file acts as the request handler; it sets up the environment, loads the system configuration, and then handles the request (see [Request Flow](flow)).
+We'll walk you through the steps required to create a file we'll call `include.php` which will allow you to include Kohana from exiting PHP applications.
 
 ## Demo application
 
@@ -31,11 +31,11 @@ The following file will serve as our (insultingly simple) demo application for t
 
 ## Install Kohana
 
-[Download and install the Kohana framework](install) onto your system; from this point on, we'll be referring to the location of the Kohana libraries as the `kohana` directory.
+[Download and install the Kohana framework](install); from this point on, we'll be referring to the location of the Kohana libraries as the `kohana` directory.
 
 ## Create a common setup file
 
-Since `index.php` and `include.php` will duplicate a lot of code, we're going to move that code to a third file, `common.php`. The bulk of the code is unchanged; we've changed the install check to exit after rather than return after rendering, and removed the request execution.
+Since `index.php` and `include.php` will duplicate a lot of code, we're going to move that code to a third file, `common.php`. The bulk of the code is unchanged; we've changed the install check to exit rather than return after rendering, and removed the request execution.
 
 The new file creates the initial request object, rather than fully executing the request, so that, if you do define routes, the `Request::$initial` variable will be set up correctly.
 
@@ -161,9 +161,9 @@ Having moved most of the code from Kohana's `index.php` to `common.php` the new 
 
 ~~~
 	<?php
-	
+
 	require_once 'common.php';
-	
+
 	// Execute the request
 	Request::$initial->execute()
 		->execute()
@@ -179,7 +179,7 @@ Our `include.php` file is also pretty simple. The try-catch clause is needed bec
 
 ~~~
 	<?php
-	
+
 	try {
 		require_once 'common.php';
 	}
@@ -200,7 +200,7 @@ Now that we're set up, we can add Kohana into our application using a single inc
 ~~~
 	<?php
 		require_once 'kohana/include.php';
-		
+
 		$content = 'Hello World';
 		$content = HTML::anchor('http://kohanaframework.org/', $content);
 	?>
