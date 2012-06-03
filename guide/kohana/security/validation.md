@@ -16,9 +16,9 @@ Using `TRUE` as the field name when adding a rule will be applied to all named f
 
 Creating a validation object is done using the [Validation::factory] method:
 
-    $post = Validation::factory($this->request->post());
+    $object = Validation::factory($array);
 
-[!!] The `$post` object will be used for the rest of this tutorial. This tutorial will show you how to validate the registration of a new user.
+[!!] The `$object` object will be used for the rest of this tutorial. This tutorial will show you how to validate the registration of a new user.
 
 ## Provided Rules
 
@@ -103,11 +103,13 @@ Rules added to empty fields will run, but returning `FALSE` will not automatical
 
 To start our example, we will perform validation on the HTTP POST data of the current request that contains user registration information:
 
-    $post = Validation::factory($this->request->post());
+[!!] In Kohana controllers, we access `$this->request->post()` instead of `$_POST` for better request isolation.
+
+    $object = Validation::factory($this->request->post());
 
 Next we need to process the POST'ed information using [Validation]. To start, we need to add some rules:
 
-    $post
+    $object
         ->rule('username', 'not_empty')
         ->rule('username', 'regex', array(':value', '/^[a-z_.]++$/iD'))
         ->rule('password', 'not_empty')
@@ -117,13 +119,13 @@ Next we need to process the POST'ed information using [Validation]. To start, we
 
 Any existing PHP function can also be used a rule. For instance, if we want to check if the user entered a proper value for the SSL question:
 
-    $post->rule('use_ssl', 'in_array', array(':value', array('yes', 'no')));
+    $object->rule('use_ssl', 'in_array', array(':value', array('yes', 'no')));
 
 Note that all array parameters must still be wrapped in an array! Without the wrapping array, `in_array` would be called as `in_array($value, 'yes', 'no')`, which would result in a PHP error.
 
 Any custom rules can be added using a [PHP callback](http://php.net/manual/language.pseudo-types.php#language.types.callback]:
 
-    $post->rule('username', 'User_Model::unique_username');
+    $object->rule('username', 'User_Model::unique_username');
 
 The method `User_Model::unique_username()` would be defined similar to:
 
@@ -180,7 +182,7 @@ Next, we need a controller and action to process the registration, which will be
         {
             $user = Model::factory('user');
 
-            $post = Validation::factory($this->request->post())
+            $validation = Validation::factory($this->request->post())
                 ->rule('username', 'not_empty')
                 ->rule('username', 'regex', array(':value', '/^[a-z_.]++$/iD'))
                 ->rule('username', array($user, 'unique_username'))
@@ -192,21 +194,21 @@ Next, we need a controller and action to process the registration, which will be
                 ->rule('use_ssl', 'not_empty')
                 ->rule('use_ssl', 'in_array', array(':value', array('yes', 'no')));
 
-            if ($post->check())
+            if ($validation->check())
             {
                 // Data has been validated, register the user
-                $user->register($post);
+                $user->register($this->request->post());
 
                 // Always redirect after a successful POST to prevent refresh warnings
                 $this->request->redirect('user/profile');
             }
 
             // Validation failed, collect the errors
-            $errors = $post->errors('user');
+            $errors = $validation->errors('user');
 
             // Display the registration form
             $this->response->body(View::factory('user/register'))
-                ->bind('post', $post)
+                ->bind('post', $this->request->post())
                 ->bind('errors', $errors);
         }
 
