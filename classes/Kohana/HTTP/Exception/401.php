@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-class Kohana_HTTP_Exception_401 extends HTTP_Exception {
+class Kohana_HTTP_Exception_401 extends HTTP_Exception_Expected {
 
 	/**
 	 * @var   integer    HTTP 401 Unauthorized
@@ -14,7 +14,7 @@ class Kohana_HTTP_Exception_401 extends HTTP_Exception {
 	 */
 	public function authenticate($challenge = NULL)
 	{
-		if ($uri === NULL)
+		if ($challenge === NULL)
 			return $this->headers('www-authenticate');
 		
 		$this->headers('www-authenticate', $challenge);
