@@ -227,21 +227,23 @@ class Kohana_Feed {
     {
         $info += array('title' => 'Generated Feed', 'link' => '', 'generator' => 'KohanaPHP');
 
-        $this->set_encoding($encoding);
-        $this->set_format($format);
+		$feed = new self();
+
+        $feed->set_encoding($encoding);
+        $feed->set_format($format);
 
         foreach ($info as $field => $value)
         {    
-            $this->set_feed_info($field, $value, array());
+            $feed->set_feed_info($field, $value, array());
         }
 
         foreach ($items as $item)
         {
-            $this->next_entry();
-            foreach ($item as $field => $value) $this->set_entry_info($field, $value, array());
+            $feed->next_entry();
+            foreach ($item as $field => $value) $feed->set_entry_info($field, $value, array());
         }
 
-        return $this->render();
+        return $feed->render();
     }
 
 } // End Feed
