@@ -12,11 +12,11 @@ class Kohana_Feed {
 	const FEED_FORMAT_RSS2 = 'rss2';
 
 	private $format = self::FEED_FORMAT_RSS2;
+	private $encoding = 'UTF-8';
+
 	private $feed = array();
 	private $entry = array();
-
 	private $current_entry = array();
-	private $encoding = 'UTF-8';
 
 
 	/**
@@ -41,9 +41,24 @@ class Kohana_Feed {
 
 	/**
 	 * add one field to field
+	 * 
+	 * when $value is a scalar
+	 * <field attribue1="foo">value</field>
+	 * 
+	 * when $value is an array
+	 * <field attribue1="foo">
+	 *   <name>foo</name>
+	 *   <url>example.com</url>
+	 * </field>
 	 *
+	 * when $value is null
+	 * <field attribute1="foo" />
+	 *
+	 * @param	string 	tag name
+	 * @param	mixed  	tag value
+	 * @param	array   set of tag attributes as key value pairs
 	 */ 
-	public function add_feed_info($field, $value, array $attributes = array())
+	public function add_feed_info($field, $value = null, array $attributes = array())
 	{
 		$this->feed[] = array($field, $value, $attributes);
 	}
@@ -52,7 +67,7 @@ class Kohana_Feed {
 	 * add one field to current entry
 	 *
 	 */
-	public function add_entry_info($field, $value, array $attributes = array())
+	public function add_entry_info($field, $value = null, array $attributes = array())
 	{
 		$this->current_entry[] = array($field, $value, $attributes);
 	}
@@ -113,6 +128,8 @@ class Kohana_Feed {
 	/**
 	 * helper which handles pushing sub fields and attributes
 	 *
+	 * @param array 
+	 * @param simplexml object
 	 */
 	protected function push_fields($fields, $sxo)
 	{
@@ -145,6 +162,10 @@ class Kohana_Feed {
 	 *
 	 * currently it tries to detect URL fields and attributes, and set them with current site domain if not already set.
 	 * may be extended to do more.
+	 * 
+	 * @param 	string	tag name
+	 * @param   string	tag value
+	 * @return	string  scrubbed value
 	 */
 	protected function scrub_field($field, $value)
 	{
@@ -218,6 +239,7 @@ class Kohana_Feed {
 	/**
 	 * Creates a feed from the given parameters.
 	 *
+	 * Deprecated
 	 * this function provides backwards compatability
 	 *
 	 * @param   array   feed information
