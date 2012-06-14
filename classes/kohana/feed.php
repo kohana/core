@@ -11,7 +11,7 @@ class Kohana_Feed {
     const FEED_FORMAT_ATOM = 'atom';
     const FEED_FORMAT_RSS2 = 'rss2';
 
-    private $format = self::FEED_FORMAT_RSS2;
+    private $format = Feed::FEED_FORMAT_RSS2;
     private $encoding = 'UTF-8';
 
     private $feed = array();
@@ -32,7 +32,7 @@ class Kohana_Feed {
      */
     public function set_format($format)
     {
-    	if (in_array($format, array(self::FEED_FORMAT_ATOM, self::FEED_FORMAT_RSS2)))
+    	if (in_array($format, array(Feed::FEED_FORMAT_ATOM, Feed::FEED_FORMAT_RSS2)))
     	{
     		return $this->format = $format;
     	}
@@ -94,11 +94,11 @@ class Kohana_Feed {
     	$this->next_entry();
     	switch ($this->format)
     	{
-    		case self::FEED_FORMAT_ATOM:
+    		case Feed::FEED_FORMAT_ATOM:
     			$feed = simplexml_load_string('<?xml version="1.0" encoding="'.$this->encoding.'"?><feed xmlns="http://www.w3.org/2005/Atom"></feed>');
     			$entry_tag = 'entry';
     			break;
-    		case self::FEED_FORMAT_RSS2:
+    		case Feed::FEED_FORMAT_RSS2:
     		default:
     			$feed = simplexml_load_string('<?xml version="1.0" encoding="'.$this->encoding.'"?><rss version="2.0"><channel></channel></rss>');
     			$entry_tag = 'item';
@@ -248,12 +248,12 @@ class Kohana_Feed {
      * @param   string  define which encoding to use
      * @return  string
      */
-    public static function create($info, $items, $format = self::FEED_FORMAT_RSS2, $encoding = 'UTF-8')
+    public static function create($info, $items, $format = Feed::FEED_FORMAT_RSS2, $encoding = 'UTF-8')
     {
 
         $info += array('title' => 'Generated Feed', 'link' => '', 'generator' => 'KohanaPHP');
 
-    	$feed = new self();
+    	$feed = new Feed();
 
         $feed->set_encoding($encoding);
         $feed->set_format($format);
