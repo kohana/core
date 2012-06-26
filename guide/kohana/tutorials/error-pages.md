@@ -37,6 +37,12 @@ Our custom exception handler is self explanatory.
 						$params['action'] = $e->getCode();
 					}
 
+					// If an exception happens in bootstrap, we might not have a request object.
+					if ( ! Request::$initial)
+					{
+						Request::factory();
+					}
+
 					// Error sub-request.
 					echo Request::factory(Route::get('error')->uri($params))
 						->execute()
