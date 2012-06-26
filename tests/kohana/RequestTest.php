@@ -4,13 +4,14 @@
  * Unit tests for request class
  *
  * @group kohana
- * @group kohana.request
+ * @group kohana.core
+ * @group kohana.core.request
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_RequestTest extends Unittest_TestCase

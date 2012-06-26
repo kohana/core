@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * HTML helper class. Provides generic methods for generating various HTML
  * tags and making output HTML safe.
@@ -6,7 +6,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2011 Kohana Team
+ * @copyright  (c) 2007-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_HTML {
@@ -57,8 +57,8 @@ class Kohana_HTML {
 	 *
 	 *     echo HTML::chars($username);
 	 *
-	 * @param   string   string to convert
-	 * @param   boolean  encode existing entities
+	 * @param   string  $value          string to convert
+	 * @param   boolean $double_encode  encode existing entities
 	 * @return  string
 	 */
 	public static function chars($value, $double_encode = TRUE)
@@ -73,8 +73,8 @@ class Kohana_HTML {
 	 *
 	 *     echo HTML::entities($username);
 	 *
-	 * @param   string   string to convert
-	 * @param   boolean  encode existing entities
+	 * @param   string  $value          string to convert
+	 * @param   boolean $double_encode  encode existing entities
 	 * @return  string
 	 */
 	public static function entities($value, $double_encode = TRUE)
@@ -88,11 +88,11 @@ class Kohana_HTML {
 	 *
 	 *     echo HTML::anchor('/user/profile', 'My Profile');
 	 *
-	 * @param   string   URL or URI string
-	 * @param   string   link text
-	 * @param   array    HTML anchor attributes
-	 * @param   mixed    protocol to pass to URL::base()
-	 * @param   boolean  include the index page
+	 * @param   string  $uri        URL or URI string
+	 * @param   string  $title      link text
+	 * @param   array   $attributes HTML anchor attributes
+	 * @param   mixed   $protocol   protocol to pass to URL::base()
+	 * @param   boolean $index      include the index page
 	 * @return  string
 	 * @uses    URL::base
 	 * @uses    URL::site
@@ -140,11 +140,11 @@ class Kohana_HTML {
 	 *
 	 *     echo HTML::file_anchor('media/doc/user_guide.pdf', 'User Guide');
 	 *
-	 * @param   string  name of file to link to
-	 * @param   string  link text
-	 * @param   array   HTML anchor attributes
-	 * @param   mixed    protocol to pass to URL::base()
-	 * @param   boolean  include the index page
+	 * @param   string  $file       name of file to link to
+	 * @param   string  $title      link text
+	 * @param   array   $attributes HTML anchor attributes
+	 * @param   mixed   $protocol   protocol to pass to URL::base()
+	 * @param   boolean $index      include the index page
 	 * @return  string
 	 * @uses    URL::base
 	 * @uses    HTML::attributes
@@ -225,9 +225,9 @@ class Kohana_HTML {
 	 *
 	 *     echo HTML::mailto($address);
 	 *
-	 * @param   string  email address to send to
-	 * @param   string  link text
-	 * @param   array   HTML anchor attributes
+	 * @param   string  $email      email address to send to
+	 * @param   string  $title      link text
+	 * @param   array   $attributes HTML anchor attributes
 	 * @return  string
 	 * @uses    HTML::email
 	 * @uses    HTML::attributes
@@ -251,10 +251,10 @@ class Kohana_HTML {
 	 *
 	 *     echo HTML::style('media/css/screen.css');
 	 *
-	 * @param   string   file name
-	 * @param   array    default attributes
-	 * @param   mixed    protocol to pass to URL::base()
-	 * @param   boolean  include the index page
+	 * @param   string  $file       file name
+	 * @param   array   $attributes default attributes
+	 * @param   mixed   $protocol   protocol to pass to URL::base()
+	 * @param   boolean $index      include the index page
 	 * @return  string
 	 * @uses    URL::base
 	 * @uses    HTML::attributes
@@ -284,10 +284,10 @@ class Kohana_HTML {
 	 *
 	 *     echo HTML::script('media/js/jquery.min.js');
 	 *
-	 * @param   string   file name
-	 * @param   array    default attributes
-	 * @param   mixed    protocol to pass to URL::base()
-	 * @param   boolean  include the index page
+	 * @param   string  $file       file name
+	 * @param   array   $attributes default attributes
+	 * @param   mixed   $protocol   protocol to pass to URL::base()
+	 * @param   boolean $index      include the index page
 	 * @return  string
 	 * @uses    URL::base
 	 * @uses    HTML::attributes
@@ -314,10 +314,10 @@ class Kohana_HTML {
 	 *
 	 *     echo HTML::image('media/img/logo.png', array('alt' => 'My Company'));
 	 *
-	 * @param   string   file name
-	 * @param   array    default attributes
-	 * @param   mixed    protocol to pass to URL::base()
-	 * @param   boolean  include the index page
+	 * @param   string  $file       file name
+	 * @param   array   $attributes default attributes
+	 * @param   mixed   $protocol   protocol to pass to URL::base()
+	 * @param   boolean $index      include the index page
 	 * @return  string
 	 * @uses    URL::base
 	 * @uses    HTML::attributes
@@ -342,7 +342,7 @@ class Kohana_HTML {
 	 *
 	 *     echo '<div'.HTML::attributes($attrs).'>'.$content.'</div>';
 	 *
-	 * @param   array   attribute list
+	 * @param   array   $attributes attribute list
 	 * @return  string
 	 */
 	public static function attributes(array $attributes = NULL)

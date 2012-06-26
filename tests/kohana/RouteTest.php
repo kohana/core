@@ -4,13 +4,14 @@
  * Description of RouteTest
  *
  * @group kohana
- * @group kohana.route
+ * @group kohana.core
+ * @group kohana.core.route
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 

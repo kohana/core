@@ -1,11 +1,11 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Helper functions for working in a command-line environment.
  *
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2009-2011 Kohana Team
+ * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_CLI {
@@ -19,8 +19,7 @@ class Kohana_CLI {
 	 *     // Get the values of "username" and "password"
 	 *     $auth = CLI::options('username', 'password');
 	 *
-	 * @param   string  option name
-	 * @param   ...
+	 * @param   string  $options,...    option name
 	 * @return  array
 	 */
 	public static function options($options)

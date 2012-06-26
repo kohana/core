@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Upload helper class for working with uploaded files and [Validation].
  *
@@ -15,7 +15,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2011 Kohana Team
+ * @copyright  (c) 2007-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Upload {
@@ -42,12 +42,12 @@ class Kohana_Upload {
 	 *         Upload::save($array['file']);
 	 *     }
 	 *
-	 * @param   array    uploaded file data
-	 * @param   string   new filename
-	 * @param   string   new directory
-	 * @param   integer  chmod mask
-	 * @return  string   on success, full path to new file
-	 * @return  FALSE    on failure
+	 * @param   array   $file       uploaded file data
+	 * @param   string  $filename   new filename
+	 * @param   string  $directory  new directory
+	 * @param   integer $chmod      chmod mask
+	 * @return  string  on success, full path to new file
+	 * @return  FALSE   on failure
 	 */
 	public static function save(array $file, $filename = NULL, $directory = NULL, $chmod = 0644)
 	{
@@ -106,7 +106,7 @@ class Kohana_Upload {
 	 *
 	 *     $array->rule('file', 'Upload::valid')
 	 *
-	 * @param   array  $_FILES item
+	 * @param   array   $file   $_FILES item
 	 * @return  bool
 	 */
 	public static function valid($file)
@@ -123,7 +123,7 @@ class Kohana_Upload {
 	 *
 	 *     $array->rule('file', 'Upload::not_empty');
 	 *
-	 * @param   array    $_FILES item
+	 * @param   array   $file   $_FILES item
 	 * @return  bool
 	 */
 	public static function not_empty(array $file)
@@ -139,8 +139,8 @@ class Kohana_Upload {
 	 *
 	 *     $array->rule('file', 'Upload::type', array(':value', array('jpg', 'png', 'gif')));
 	 *
-	 * @param   array    $_FILES item
-	 * @param   array    allowed file extensions
+	 * @param   array   $file       $_FILES item
+	 * @param   array   $allowed    allowed file extensions
 	 * @return  bool
 	 */
 	public static function type(array $file, array $allowed)
@@ -162,8 +162,8 @@ class Kohana_Upload {
 	 *     $array->rule('file', 'Upload::size', array(':value', '1M'))
 	 *     $array->rule('file', 'Upload::size', array(':value', '2.5KiB'))
 	 *
-	 * @param   array    $_FILES item
-	 * @param   string   maximum file size allowed
+	 * @param   array   $file   $_FILES item
+	 * @param   string  $size   maximum file size allowed
 	 * @return  bool
 	 */
 	public static function size(array $file, $size)

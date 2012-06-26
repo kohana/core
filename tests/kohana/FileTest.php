@@ -4,13 +4,14 @@
  * Tests Kohana File helper
  *
  * @group kohana
- * @group kohana.url
+ * @group kohana.core
+ * @group kohana.core.url
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_FileTest extends Unittest_TestCase

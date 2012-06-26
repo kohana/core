@@ -1,11 +1,11 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Base session class.
  *
  * @package    Kohana
  * @category   Session
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 abstract class Kohana_Session {
@@ -29,8 +29,8 @@ abstract class Kohana_Session {
 	 *
 	 * [!!] [Session::write] will automatically be called when the request ends.
 	 *
-	 * @param   string   type of session (native, cookie, etc)
-	 * @param   string   session identifier
+	 * @param   string  $type   type of session (native, cookie, etc)
+	 * @param   string  $id     session identifier
 	 * @return  Session
 	 * @uses    Kohana::config
 	 */
@@ -90,8 +90,8 @@ abstract class Kohana_Session {
 	 *
 	 * [!!] Sessions can only be created using the [Session::instance] method.
 	 *
-	 * @param   array   configuration
-	 * @param   string  session id
+	 * @param   array   $config configuration
+	 * @param   string  $id     session id
 	 * @return  void
 	 * @uses    Session::read
 	 */
@@ -204,8 +204,8 @@ abstract class Kohana_Session {
 	 *
 	 *     $foo = $session->get('foo');
 	 *
-	 * @param   string   variable name
-	 * @param   mixed    default value to return
+	 * @param   string  $key        variable name
+	 * @param   mixed   $default    default value to return
 	 * @return  mixed
 	 */
 	public function get($key, $default = NULL)
@@ -218,8 +218,8 @@ abstract class Kohana_Session {
 	 *
 	 *     $bar = $session->get_once('bar');
 	 *
-	 * @param   string  variable name
-	 * @param   mixed   default value to return
+	 * @param   string  $key        variable name
+	 * @param   mixed   $default    default value to return
 	 * @return  mixed
 	 */
 	public function get_once($key, $default = NULL)
@@ -236,8 +236,8 @@ abstract class Kohana_Session {
 	 *
 	 *     $session->set('foo', 'bar');
 	 *
-	 * @param   string   variable name
-	 * @param   mixed    value
+	 * @param   string  $key    variable name
+	 * @param   mixed   $value  value
 	 * @return  $this
 	 */
 	public function set($key, $value)
@@ -252,8 +252,8 @@ abstract class Kohana_Session {
 	 *
 	 *     $session->bind('foo', $foo);
 	 *
-	 * @param   string  variable name
-	 * @param   mixed   referenced value
+	 * @param   string  $key    variable name
+	 * @param   mixed   $value  referenced value
 	 * @return  $this
 	 */
 	public function bind($key, & $value)
@@ -268,8 +268,7 @@ abstract class Kohana_Session {
 	 *
 	 *     $session->delete('foo');
 	 *
-	 * @param   string  variable name
-	 * @param   ...
+	 * @param   string  $key,...    variable name
 	 * @return  $this
 	 */
 	public function delete($key)
@@ -289,7 +288,7 @@ abstract class Kohana_Session {
 	 *
 	 *     $session->read();
 	 *
-	 * @param   string   session id
+	 * @param   string  $id session id
 	 * @return  void
 	 */
 	public function read($id = NULL)
@@ -405,7 +404,7 @@ abstract class Kohana_Session {
 	/**
 	 * Loads the raw session data string and returns it.
 	 *
-	 * @param   string   session id
+	 * @param   string  $id session id
 	 * @return  string
 	 */
 	abstract protected function _read($id = NULL);

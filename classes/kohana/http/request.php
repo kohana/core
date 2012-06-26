@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * A HTTP Request specific interface that adds the methods required
  * by HTTP requests. Over and above [Kohana_HTTP_Interaction], this
@@ -8,7 +8,7 @@
  * @category   HTTP
  * @author     Kohana Team
  * @since      3.1.0
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 interface Kohana_HTTP_Request extends HTTP_Interaction {

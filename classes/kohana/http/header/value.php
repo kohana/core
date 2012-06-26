@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Kohana_HTTP_Header_Value represents a value assigned to an HTTP header, i.e.
  *
@@ -10,7 +10,7 @@
  * @category   HTTP
  * @author     Kohana Team
  * @since      3.1.0
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 class Kohana_HTTP_Header_Value {

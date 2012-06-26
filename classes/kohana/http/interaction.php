@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * The HTTP Interaction interface providing the core HTTP methods that
  * should be implemented by any HTTP request or response class.
@@ -7,7 +7,7 @@
  * @category   HTTP
  * @author     Kohana Team
  * @since      3.1.0
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 interface Kohana_HTTP_Interaction {

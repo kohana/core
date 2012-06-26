@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Response wrapper. Created as the result of any [Request] execution
  * or utility method (i.e. Redirect). Implements standard HTTP
@@ -7,7 +7,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaphp.com/license
  * @since      3.1.0
  */
@@ -340,8 +340,8 @@ class Kohana_Response implements HTTP_Response, Serializable {
 	 *          'expiration' => 12352234
 	 *     ));
 	 *
-	 * @param   mixed     cookie name, or array of cookie values
-	 * @param   string    value to set to cookie
+	 * @param   mixed   $key    cookie name, or array of cookie values
+	 * @param   string  $value  value to set to cookie
 	 * @return  string
 	 * @return  void
 	 * @return  [Response]
@@ -386,7 +386,7 @@ class Kohana_Response implements HTTP_Response, Serializable {
 	/**
 	 * Deletes a cookie set to the response
 	 *
-	 * @param   string   name
+	 * @param   string  $name
 	 * @return  Response
 	 */
 	public function delete_cookie($name)
@@ -496,9 +496,9 @@ class Kohana_Response implements HTTP_Response, Serializable {
 	 *
 	 * [!!] No further processing can be done after this method is called!
 	 *
-	 * @param   string   filename with path, or TRUE for the current response
-	 * @param   string   downloaded file name
-	 * @param   array    additional options
+	 * @param   string  $filename   filename with path, or TRUE for the current response
+	 * @param   string  $download   downloaded file name
+	 * @param   array   $options    additional options
 	 * @return  void
 	 * @throws  Kohana_Exception
 	 * @uses    File::mime_by_ext
@@ -876,7 +876,7 @@ class Kohana_Response implements HTTP_Response, Serializable {
 	 * Parse the byte ranges from the HTTP_RANGE header used for
 	 * resumable downloads.
 	 *
-	 * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
+	 * @link   http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
 	 * @return array|FALSE
 	 */
 	protected function _parse_byte_range()

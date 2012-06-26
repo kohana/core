@@ -1,11 +1,11 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * STDOUT log writer. Writes out messages to STDOUT.
  *
  * @package    Kohana
  * @category   Logging
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 class Kohana_Log_StdOut extends Log_Writer {
@@ -14,7 +14,7 @@ class Kohana_Log_StdOut extends Log_Writer {
 	 *
 	 *     $writer->write($messages);
 	 *
-	 * @param   array   messages
+	 * @param   array   $messages
 	 * @return  void
 	 */
 	public function write(array $messages)

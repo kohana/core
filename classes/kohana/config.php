@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Wrapper for configuration arrays. Multiple configuration readers can be
  * attached to allow loading configuration from files, database, etc.
@@ -6,7 +6,7 @@
  * @package    Kohana
  * @category   Configuration
  * @author     Kohana Team
- * @copyright  (c) 2009-2011 Kohana Team
+ * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Config {
@@ -47,8 +47,8 @@ class Kohana_Config {
 	 *     $config->attach($reader);        // Try first
 	 *     $config->attach($reader, FALSE); // Try last
 	 *
-	 * @param   object   Config_Reader instance
-	 * @param   boolean  add the reader as the first used object
+	 * @param   Config_Reader  $reader  Config_Reader instance
+	 * @param   boolean        $first   add the reader as the first used object
 	 * @return  $this
 	 */
 	public function attach(Config_Reader $reader, $first = TRUE)
@@ -72,7 +72,7 @@ class Kohana_Config {
 	 *
 	 *     $config->detach($reader);
 	 *
-	 * @param   object  Config_Reader instance
+	 * @param   Config_Reader  $source  Config_Reader instance
 	 * @return  $this
 	 */
 	public function detach(Config_Reader $reader)
@@ -93,7 +93,7 @@ class Kohana_Config {
 	 *
 	 *     $array = $config->load($name);
 	 *
-	 * @param   string  configuration group name
+	 * @param   string  $group  configuration group name
 	 * @return  Config_Reader
 	 * @throws  Kohana_Exception
 	 */
@@ -125,7 +125,7 @@ class Kohana_Config {
 	 * 
 	 *     $config->copy($name);
 	 *
-	 * @param   string   configuration group name
+	 * @param   string  $group  configuration group name
 	 * @return  $this
 	 */
 	public function copy($group)

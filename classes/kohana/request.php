@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Request and response wrapper. Uses the [Route] class to determine what
  * [Controller] to send the request to.
@@ -6,7 +6,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Request implements HTTP_Request {
@@ -169,10 +169,20 @@ class Kohana_Request implements HTTP_Request {
 					// Attempt to guess the proper URI
 					$uri = Request::detect_uri();
 				}
+
+				$cookies = array();
+
+				if (($cookie_keys = array_keys($_COOKIE)))
+				{
+					foreach ($cookie_keys as $key)
+					{
+						$cookies[$key] = Cookie::get($key);
+					}
+				}
 			}
 
 			// Create the instance singleton
-			Request::$initial = $request = new Request($uri, $cache);
+			Request::$initial = $request = new Request($uri, $cache, $injected_routes);
 
 			// Store global GET and POST data in the initial request only
 			$request->query($_GET);
@@ -206,6 +216,11 @@ class Kohana_Request implements HTTP_Request {
 			{
 				// Set the request body (probably a PUT type)
 				$request->body($body);
+			}
+
+			if (isset($cookies))
+			{
+				$request->cookie($cookies);
 			}
 		}
 		else
@@ -1343,9 +1358,9 @@ class Kohana_Request implements HTTP_Request {
 		{
 			// Act as a setter, replace all cookies
 			$this->_cookies = $key;
+			return $this;
 		}
-
-		if ($key === NULL)
+		elseif ($key === NULL)
 		{
 			// Act as a getter, all cookies
 			return $this->_cookies;

@@ -1,11 +1,11 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * File log writer. Writes out messages and stores them in a YYYY/MM directory.
  *
  * @package    Kohana
  * @category   Logging
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Log_File extends Log_Writer {
@@ -21,7 +21,7 @@ class Kohana_Log_File extends Log_Writer {
 	 *
 	 *     $writer = new Log_File($directory);
 	 *
-	 * @param   string  log directory
+	 * @param   string  $directory  log directory
 	 * @return  void
 	 */
 	public function __construct($directory)
@@ -43,7 +43,7 @@ class Kohana_Log_File extends Log_Writer {
 	 *
 	 *     $writer->write($messages);
 	 *
-	 * @param   array   messages
+	 * @param   array   $messages
 	 * @return  void
 	 */
 	public function write(array $messages)

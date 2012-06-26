@@ -1,11 +1,11 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Array and variable validation.
  *
  * @package    Kohana
  * @category   Security
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Validation extends ArrayObject {
@@ -13,7 +13,7 @@ class Kohana_Validation extends ArrayObject {
 	/**
 	 * Creates a new Validation instance.
 	 *
-	 * @param   array   array to use for validation
+	 * @param   array   $array  array to use for validation
 	 * @return  Validation
 	 */
 	public static function factory(array $array)
@@ -40,7 +40,7 @@ class Kohana_Validation extends ArrayObject {
 	 * Sets the unique "any field" key and creates an ArrayObject from the
 	 * passed array.
 	 *
-	 * @param   array   array to validate
+	 * @param   array   $array  array to validate
 	 * @return  void
 	 */
 	public function __construct(array $array)
@@ -53,7 +53,7 @@ class Kohana_Validation extends ArrayObject {
 	 *
 	 *     $copy = $array->copy($new_data);
 	 *
-	 * @param   array   new data set
+	 * @param   array   $array  new data set
 	 * @return  Validation
 	 * @since   3.0.5
 	 */
@@ -81,8 +81,8 @@ class Kohana_Validation extends ArrayObject {
 	/**
 	 * Sets or overwrites the label name for a field.
 	 *
-	 * @param   string  field name
-	 * @param   string  label
+	 * @param   string  $field  field name
+	 * @param   string  $label  label
 	 * @return  $this
 	 */
 	public function label($field, $label)
@@ -96,7 +96,7 @@ class Kohana_Validation extends ArrayObject {
 	/**
 	 * Sets labels using an array.
 	 *
-	 * @param   array  list of field => label names
+	 * @param   array   $labels list of field => label names
 	 * @return  $this
 	 */
 	public function labels(array $labels)
@@ -123,9 +123,9 @@ class Kohana_Validation extends ArrayObject {
 	 *     // The "password" field must match the "password_repeat" field
 	 *     $validation->rule('password', 'matches', array(':validation', 'password', 'password_repeat'));
 	 *
-	 * @param   string    field name
-	 * @param   callback  valid PHP callback
-	 * @param   array     extra parameters for the rule
+	 * @param   string      $field  field name
+	 * @param   callback    $rule   valid PHP callback
+	 * @param   array       $params extra parameters for the rule
 	 * @return  $this
 	 */
 	public function rule($field, $rule, array $params = NULL)
@@ -151,8 +151,8 @@ class Kohana_Validation extends ArrayObject {
 	/**
 	 * Add rules using an array.
 	 *
-	 * @param   string  field name
-	 * @param   array   list of callbacks
+	 * @param   string  $field  field name
+	 * @param   array   $rules  list of callbacks
 	 * @return  $this
 	 */
 	public function rules($field, array $rules)
@@ -172,8 +172,8 @@ class Kohana_Validation extends ArrayObject {
 	 *     $validation->bind(':model', $model)
 	 *         ->rule('status', 'valid_status', array(':model'));
 	 *
-	 * @param   string  variable name or an array of variables
-	 * @param   mixed   value
+	 * @param   string  $key    variable name or an array of variables
+	 * @param   mixed   $value  value
 	 * @return  $this
 	 */
 	public function bind($key, $value = NULL)
@@ -202,7 +202,6 @@ class Kohana_Validation extends ArrayObject {
 	 *          // The data is valid, do something here
 	 *     }
 	 *
-	 * @param   boolean   allow empty array?
 	 * @return  boolean
 	 */
 	public function check()
@@ -352,8 +351,9 @@ class Kohana_Validation extends ArrayObject {
 	/**
 	 * Add an error to a field.
 	 *
-	 * @param   string  field name
-	 * @param   string  error message
+	 * @param   string  $field  field name
+	 * @param   string  $error  error message
+	 * @param   array   $params
 	 * @return  $this
 	 */
 	public function error($field, $error, array $params = NULL)
@@ -378,8 +378,8 @@ class Kohana_Validation extends ArrayObject {
 	 *     $errors = $Validation->errors('forms/login');
 	 *
 	 * @uses    Kohana::message
-	 * @param   string  file to load error messages from
-	 * @param   mixed   translate the message
+	 * @param   string  $file       file to load error messages from
+	 * @param   mixed   $translate  translate the message
 	 * @return  array
 	 */
 	public function errors($file = NULL, $translate = TRUE)

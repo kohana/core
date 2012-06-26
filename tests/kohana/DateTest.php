@@ -4,13 +4,14 @@
  * Tests Date class
  *
  * @group kohana
- * @group kohana.date
+ * @group kohana.core
+ * @group kohana.core.date
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_DateTest extends Unittest_TestCase

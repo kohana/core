@@ -1,11 +1,11 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Request Client
  *
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  * @since      3.1.0
  */
@@ -84,7 +84,7 @@ abstract class Kohana_Request_Client {
 	 * This has the effect of deleting the response from the
 	 * [Cache] entry.
 	 *
-	 * @param   Request  $request Response to remove from cache
+	 * @param   Request  $request  Response to remove from cache
 	 * @return  void
 	 */
 	public function invalidate_cache(Request $request)
@@ -101,7 +101,7 @@ abstract class Kohana_Request_Client {
 	 * Getter and setter for the internal caching engine,
 	 * used to cache responses if available and valid.
 	 *
-	 * @param   Kohana_Cache  cache engine to use for caching
+	 * @param   Kohana_Cache  $cache  cache engine to use for caching
 	 * @return  Kohana_Cache
 	 * @return  Kohana_Request_Client
 	 */

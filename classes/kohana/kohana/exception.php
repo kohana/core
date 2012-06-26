@@ -1,11 +1,11 @@
-<?php defined('SYSPATH') or die('No direct access');
+<?php defined('SYSPATH') OR die('No direct access');
 /**
  * Kohana exception class. Translates exceptions using the [I18n] class.
  *
  * @package    Kohana
  * @category   Exceptions
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Kohana_Exception extends Exception {
@@ -35,9 +35,9 @@ class Kohana_Kohana_Exception extends Exception {
 	 *     throw new Kohana_Exception('Something went terrible wrong, :user',
 	 *         array(':user' => $user));
 	 *
-	 * @param   string          error message
-	 * @param   array           translation variables
-	 * @param   integer|string  the exception code
+	 * @param   string          $message    error message
+	 * @param   array           $variables  translation variables
+	 * @param   integer|string  $code       the exception code
 	 * @return  void
 	 */
 	public function __construct($message, array $variables = NULL, $code = 0)
@@ -77,7 +77,7 @@ class Kohana_Kohana_Exception extends Exception {
 	 * exception, and the stack trace of the error.
 	 *
 	 * @uses    Kohana_Exception::text
-	 * @param   object   exception object
+	 * @param   Exception   $e
 	 * @return  boolean
 	 */
 	public static function handler(Exception $e)
@@ -104,8 +104,9 @@ class Kohana_Kohana_Exception extends Exception {
 
 				if (version_compare(PHP_VERSION, '5.3', '<'))
 				{
-					// Workaround for a bug in ErrorException::getTrace() that exists in
-					// all PHP 5.2 versions. @see http://bugs.php.net/bug.php?id=45895
+					// Workaround for a bug in ErrorException::getTrace() that
+					// exists in all PHP 5.2 versions.
+					// @link http://bugs.php.net/45895
 					for ($i = count($trace) - 1; $i > 0; --$i)
 					{
 						if (isset($trace[$i - 1]['args']))
@@ -194,7 +195,7 @@ class Kohana_Kohana_Exception extends Exception {
 	 *
 	 * Error [ Code ]: Message ~ File [ Line ]
 	 *
-	 * @param   object  Exception
+	 * @param   Exception   $e
 	 * @return  string
 	 */
 	public static function text(Exception $e)
