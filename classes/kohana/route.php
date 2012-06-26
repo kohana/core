@@ -155,8 +155,16 @@ class Kohana_Route {
 	{
 		if ($save === TRUE)
 		{
+			$routes = array();
+			foreach (Route::$_routes as $name => $route)
+			{
+				if ( ! $route->is_closure())
+				{
+					$routes[$name] = $route;
+				}
+			}
 			// Cache all defined routes
-			Kohana::cache('Route::cache()', Route::$_routes);
+			Kohana::cache('Route::cache()', $routes);
 		}
 		else
 		{
@@ -543,6 +551,11 @@ class Kohana_Route {
 		}
 
 		return $uri;
+	}
+
+	protected function is_closure()
+	{
+		return is_object($this->_callback) AND get_class($this->_callback) == 'Closure';
 	}
 
 } // End Route
