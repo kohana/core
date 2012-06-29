@@ -16,8 +16,8 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.1.4';
-	const CODENAME = 'fasciinucha';
+	const VERSION  = '3.1.5';
+	const CODENAME = 'biarmicus';
 
 	// Common environment type constants for consistency and convenience
 	const PRODUCTION  = 1;
