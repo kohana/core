@@ -603,4 +603,29 @@ class Kohana_Text {
 		return $str;
 	}
 
+	/**
+	 * Parses text representing tweet (from twitter) and adds links to URLs, twitter screen names, and hashtags.
+	 * Useful after getting tweets from the twitter API and adding links in the text.
+	 *
+	 *     echo Text::twitter($text);
+	 *
+	 * @uses Text::auto_link()
+	 * @param string $text Tweet text.
+	 * @return string
+	 */
+	public static function twitter( $text )
+	{
+		// Turn URLs into HTML links.
+		$text = Text::auto_link( $text );
+		
+		// Turn references to twitter users into links to their twitter accounts.
+		// e.g. @thisishoop becomes <a href='http://twitter.com/thisishoop'>@thisishoop</a>
+		$text = preg_replace( '|@([a-zA-Z0-9_]+)|', '<a href="http://twitter.com/$1">@$1</a>', $text );
+
+		// Turn hash tags into links.
+		$text = preg_replace( '|#([a-zA-Z0-9_]+)|', '<a href="http://twitter.com/search?q=%23$1">#$1</a>', $text );
+
+		return $text;
+	}
+
 } // End text
