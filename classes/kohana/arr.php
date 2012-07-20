@@ -600,8 +600,20 @@ class Kohana_Arr {
 			return $array->count();
 		}
 
+		// Get the type of paramater that was given.
+		// If it wasn't an object then tell the user the datatype.
+		// If it was an object then give them the class name.
+		if (is_object($array))
+		{
+			$type = get_class($array);
+		}
+		else
+		{
+			$type = gettype($array);
+		}
+
 		throw new Kohana_Exception("Parameter 1 for Arr::count() must be array or object of type countable, :type given.",
-			array(":type"	=>	gettype($array)));
+			array(":type" => $type));
 	}
 
 } // End arr
