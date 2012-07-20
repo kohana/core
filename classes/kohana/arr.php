@@ -586,6 +586,7 @@ class Kohana_Arr {
 	 * Count the number of elements in an array or a countable object.
 	 *
 	 * @param   mixed   array or instance of countable
+	 * @throws Kohana_Exception
 	 * @return  int
 	 */
 	public static function count($array)
