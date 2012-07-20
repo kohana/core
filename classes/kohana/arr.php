@@ -584,7 +584,7 @@ class Kohana_Arr {
 
 	public static function count($array)
 	{
-		if (is_array($count))
+		if (is_array($array))
 		{
 			return count($array);
 		}
