@@ -582,4 +582,20 @@ class Kohana_Arr {
 		return $flat;
 	}
 
+	public static function count($array)
+	{
+		if (is_array($count))
+		{
+			return count($array);
+		}
+
+		if ($array instanceof countable)
+		{
+			return $array->count();
+		}
+
+		throw new Kohana_Exception("Parameter 1 for Arr::count() must be array or object of type countable, :type given.",
+			array(":type"	=>	gettype($array));
+	}
+
 } // End arr
