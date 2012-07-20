@@ -595,7 +595,7 @@ class Kohana_Arr {
 		}
 
 		throw new Kohana_Exception("Parameter 1 for Arr::count() must be array or object of type countable, :type given.",
-			array(":type"	=>	gettype($array));
+			array(":type"	=>	gettype($array)));
 	}
 
 } // End arr
