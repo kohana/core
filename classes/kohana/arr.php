@@ -582,6 +582,12 @@ class Kohana_Arr {
 		return $flat;
 	}
 
+	/**
+	 * Count the number of elements in an array or a countable object.
+	 *
+	 * @param   mixed   array or instance of countable
+	 * @return  int
+	 */
 	public static function count($array)
 	{
 		if (is_array($array))
