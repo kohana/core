@@ -591,14 +591,9 @@ class Kohana_Arr {
 	 */
 	public static function count($array)
 	{
-		if (is_array($array))
+		if (is_array($array) OR $array instanceof countable)
 		{
 			return count($array);
-		}
-
-		if ($array instanceof countable)
-		{
-			return $array->count();
 		}
 
 		// Get the type of paramater that was given.
