@@ -135,7 +135,18 @@ class Kohana_Log {
 		}
 		else
 		{
-			$trace = array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), 1);
+			// Older php version don't have 'DEBUG_BACKTRACE_IGNORE_ARGS', so manually remove the args from the backtrace
+			if ( ! defined('DEBUG_BACKTRACE_IGNORE_ARGS'))
+			{
+				$trace = array_map(function ($item) {
+					unset($item['args']);
+					return $item;
+				}, array_slice(debug_backtrace(FALSE), 1));
+			}
+			else
+			{
+				$trace = array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), 1);
+			}
 		}
 
 		if ($additional == NULL)
