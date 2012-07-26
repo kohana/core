@@ -346,7 +346,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	{
 		// Ensure the index is lowercase
 		$index = strtolower($index);
-		$newval = (string) $newval;
+		$newval = $newval;
 
 		if ($replace OR ! $this->offsetExists($index))
 		{
