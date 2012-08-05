@@ -278,12 +278,6 @@ class Kohana_Core {
 			Kohana::$cache_dir = APPPATH.'cache';
 		}
 
-		if ( ! is_writable(Kohana::$cache_dir))
-		{
-			throw new Kohana_Exception('Directory :dir must be writable',
-				array(':dir' => Debug::path(Kohana::$cache_dir)));
-		}
-
 		if (isset($settings['cache_life']))
 		{
 			// Set the default cache lifetime
