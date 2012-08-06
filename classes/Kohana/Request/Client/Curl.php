@@ -25,8 +25,10 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 		// Response headers
 		$response_headers = array();
 
+		$options = array();
+
 		// Set the request method
-		$options[CURLOPT_CUSTOMREQUEST] = $request->method();
+		$options = $this->_set_curl_request_method($request, $options);
 
 		// Set the request body. This is perfectly legal in CURL even
 		// if using a request other than POST. PUT does support this method
@@ -105,6 +107,29 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 			->body($body);
 
 		return $response;
+	}
+
+	/**
+	 * Sets the appropriate curl request options. Uses the responding options
+	 * for POST and PUT, uses CURLOPT_CUSTOMREQUEST otherwise
+	 * @param Request $request
+	 * @param array $options
+	 * @return array
+	 */
+	public function _set_curl_request_method(Request $request, array $options)
+	{
+		switch ($request->method()) {
+			case Request::POST:
+				$options[CURLOPT_POST] = TRUE;
+				break;
+			case Request::PUT:
+				$options[CURLOPT_PUT] = TRUE;
+				break;
+			default:
+				$options[CURLOPT_CUSTOMREQUEST] = $request->method();
+				break;
+		}
+		return $options;
 	}
 
 } // End Kohana_Request_Client_Curl
