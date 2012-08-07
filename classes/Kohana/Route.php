@@ -166,7 +166,7 @@ class Kohana_Route {
 				// We most likely have a lambda in a route, which cannot be cached
 				throw new Kohana_Exception('One or more routes could not be cached (:message)', array(
 						':message' => $e->getMessage(),
-					));
+					), 0, $e);
 			}
 		}
 		else
