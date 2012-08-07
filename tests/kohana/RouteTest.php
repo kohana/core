@@ -114,15 +114,6 @@ class Kohana_RouteTest extends Unittest_TestCase
 		$this->assertEquals($routes, Route::all());
 	}
 
-	public function test_cache_does_not_cache_lambdas()
-	{
-		Route::set('lambda', function($uri) {} );
-
-		Route::cache(TRUE);
-		$this->assertTrue(Route::cache());
-		$this->assertArrayNotHasKey('lambda', Route::all());
-	}
-
 	/**
 	 * Route::cache() should return FALSE if cached routes could not be found
 	 *
