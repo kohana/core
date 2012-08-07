@@ -67,7 +67,7 @@ class Kohana_Route {
 	public static $cache = FALSE;
 
 	/**
-	 * @var  array 
+	 * @var  array
 	 */
 	protected static $_routes = array();
 
@@ -155,8 +155,18 @@ class Kohana_Route {
 	{
 		if ($save === TRUE)
 		{
-			// Cache all defined routes
-			Kohana::cache('Route::cache()', Route::$_routes);
+			try
+			{
+				// Cache all defined routes
+				Kohana::cache('Route::cache()', Route::$_routes);
+			}
+			catch (Exception $e)
+			{
+				// We most likely have a lambda in a route, which cannot be cached
+				throw new Kohana_Exception('One or more routes could not be cached (:message)', array(
+						':message' => $e->getMessage(),
+					));
+			}
 		}
 		else
 		{
@@ -340,7 +350,7 @@ class Kohana_Route {
 	 *         'controller' => 'welcome',
 	 *         'action'     => 'index'
 	 *     ));
-	 * 
+	 *
 	 * If no parameter is passed, this method will act as a getter.
 	 *
 	 * @param   array   $defaults   key values
