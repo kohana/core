@@ -104,7 +104,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 *
 	 * @link    http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
 	 * @param   string  $charset    charset string to parse
-	 * @return  array 
+	 * @return  array
 	 * @since   3.2.0
 	 */
 	public static function parse_charset_header($charset = NULL)
@@ -123,7 +123,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 *
 	 * @link    http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
 	 * @param   string  $encoding   charset string to parse
-	 * @return  array 
+	 * @return  array
 	 * @since   3.2.0
 	 */
 	public static function parse_encoding_header($encoding = NULL)
@@ -149,7 +149,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 *
 	 * @link    http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
 	 * @param   string  $language   charset string to parse
-	 * @return  array 
+	 * @return  array
 	 * @since   3.2.0
 	 */
 	public static function parse_language_header($language = NULL)
@@ -346,7 +346,6 @@ class Kohana_HTTP_Header extends ArrayObject {
 	{
 		// Ensure the index is lowercase
 		$index = strtolower($index);
-		$newval = $newval;
 
 		if ($replace OR ! $this->offsetExists($index))
 		{
@@ -428,7 +427,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 
 	/**
 	 * Parses a HTTP Message header line and applies it to this HTTP_Header
-	 * 
+	 *
 	 *     $header = $response->headers();
 	 *     $header->parse_header_string(NULL, 'content-type: application/json');
 	 *
@@ -457,13 +456,13 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * request `Accept:` header. If the `$explicit` argument is `TRUE`,
 	 * only precise matches will be returned, excluding all wildcard (`*`)
 	 * directives.
-	 * 
+	 *
 	 *     // Accept: application/xml; application/json; q=.5; text/html; q=.2, text/*
 	 *     // Accept quality for application/json
-	 * 
+	 *
 	 *     // $quality = 0.5
 	 *     $quality = $request->headers()->accepts_at_quality('application/json');
-	 * 
+	 *
 	 *     // $quality_explicit = FALSE
 	 *     $quality_explicit = $request->headers()->accepts_at_quality('text/plain', TRUE);
 	 *
@@ -539,7 +538,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * Returns the preferred response content type based on the accept header
 	 * quality settings. If items have the same quality value, the first item
 	 * found in the array supplied as `$types` will be returned.
-	 * 
+	 *
 	 *     // Get the preferred acceptable content type
 	 *     // Accept: text/html, application/json; q=.8, text/*
 	 *     $result = $header->preferred_accept(array(
@@ -547,12 +546,12 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 *         'text/rtf',
 	 *         'application/json'
 	 *     )); // $result = 'application/json'
-	 * 
+	 *
 	 *     $result = $header->preferred_accept(array(
 	 *         'text/rtf',
 	 *         'application/xml'
 	 *     ), TRUE); // $result = FALSE (none matched explicitly)
-	 * 
+	 *
 	 *
 	 * @param   array   $types      the content types to examine
 	 * @param   boolean $explicit   only allow explicit references, no wildcards
@@ -582,7 +581,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * Returns the quality of the supplied `$charset` argument. This method
 	 * will automatically parse the `Accept-Charset` header if present and
 	 * return the associated resolved quality value.
-	 * 
+	 *
 	 *      // Accept-Charset: utf-8, utf-16; q=.8, iso-8859-1; q=.5
 	 *      $quality = $header->accepts_charset_at_quality('utf-8');
 	 *            // $quality = (float) 1
@@ -627,7 +626,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	/**
 	 * Returns the preferred charset from the supplied array `$charsets` based
 	 * on the `Accept-Charset` header directive.
-	 * 
+	 *
 	 *      // Accept-Charset: utf-8, utf-16; q=.8, iso-8859-1; q=.5
 	 *      $charset = $header->preferred_charset(array(
 	 *          'utf-10', 'ascii', 'utf-16', 'utf-8'
@@ -661,7 +660,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * is usually compression such as `gzip`, but could be some other
 	 * message encoding algorithm. This method allows explicit checks to be
 	 * done ignoring wildcards.
-	 * 
+	 *
 	 *      // Accept-Encoding: compress, gzip, *; q=.5
 	 *      $encoding = $header->accepts_encoding_at_quality('gzip');
 	 *      // $encoding = (float) 1.0s
@@ -714,7 +713,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * Returns the preferred message encoding type based on quality, and can
 	 * optionally ignore wildcard references. If two or more encodings have the
 	 * same quality, the first listed in `$encodings` will be returned.
-	 * 
+	 *
 	 *     // Accept-Encoding: compress, gzip, *; q.5
 	 *     $encoding = $header->preferred_encoding(array(
 	 *          'gzip', 'bzip', 'blowfish'
@@ -749,14 +748,14 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * Returns the quality of `$language` supplied, optionally ignoring
 	 * wildcards if `$explicit` is set to a non-`FALSE` value. If the quality
 	 * is not found, `0.0` is returned.
-	 * 
+	 *
 	 *     // Accept-Language: en-us, en-gb; q=.7, en; q=.5
 	 *     $lang = $header->accepts_language_at_quality('en-gb');
 	 *     // $lang = (float) 0.7
-	 * 
+	 *
 	 *     $lang2 = $header->accepts_language_at_quality('en-au');
 	 *     // $lang2 = (float) 0.5
-	 * 
+	 *
 	 *     $lang3 = $header->accepts_language_at_quality('en-au', TRUE);
 	 *     // $lang3 = (float) 0.0
 	 *
@@ -814,7 +813,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	/**
 	 * Returns the preferred language from the supplied array `$languages` based
 	 * on the `Accept-Language` header directive.
-	 * 
+	 *
 	 *      // Accept-Language: en-us, en-gb; q=.7, en; q=.5
 	 *      $lang = $header->preferred_language(array(
 	 *          'en-gb', 'en-au', 'fr', 'es'
@@ -848,7 +847,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * Sends headers to the php processor, or supplied `$callback` argument.
 	 * This method formats the headers correctly for output, re-instating their
 	 * capitalization for transmission.
-	 * 
+	 *
 	 * [!!] if you supply a custom header handler via `$callback`, it is
 	 *  recommended that `$response` is returned
 	 *
