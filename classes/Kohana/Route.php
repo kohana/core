@@ -156,8 +156,18 @@ class Kohana_Route {
 	{
 		if ($save === TRUE)
 		{
-			// Cache all defined routes
-			Kohana::cache('Route::cache()', Route::$_routes);
+			try
+			{
+				// Cache all defined routes
+				Kohana::cache('Route::cache()', Route::$_routes);
+			}
+			catch (Exception $e)
+			{
+				// We most likely have a lambda in a route, which cannot be cached
+				throw new Kohana_Exception('One or more routes could not be cached (:message)', array(
+						':message' => $e->getMessage(),
+					));
+			}
 		}
 		else
 		{
