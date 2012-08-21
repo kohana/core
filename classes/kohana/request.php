@@ -784,16 +784,15 @@ class Kohana_Request implements HTTP_Request {
 
 			$processed_uri = Request::process_uri($uri, $this->_injected_routes);
 
+			// Store the URI
+			$this->_uri = $uri;
+
 			// Return here rather than throw exception. This will allow
 			// use of Request object even with unmatched route
 			if ($processed_uri === NULL)
 			{
-				$this->_uri = $uri;
 				return;
 			}
-
-			// Store the URI
-			$this->_uri = $uri;
 
 			// Store the matching route
 			$this->_route = $processed_uri['route'];
