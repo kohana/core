@@ -67,7 +67,7 @@ class Kohana_Route {
 	public static $cache = FALSE;
 
 	/**
-	 * @var  array 
+	 * @var  array
 	 */
 	protected static $_routes = array();
 
@@ -155,16 +155,18 @@ class Kohana_Route {
 	{
 		if ($save === TRUE)
 		{
-			$routes = array();
-			foreach (Route::$_routes as $name => $route)
+			try
 			{
-				if ( ! $route->is_closure())
-				{
-					$routes[$name] = $route;
-				}
+				// Cache all defined routes
+				Kohana::cache('Route::cache()', Route::$_routes);
 			}
-			// Cache all defined routes
-			Kohana::cache('Route::cache()', $routes);
+			catch (Exception $e)
+			{
+				// We most likely have a lambda in a route, which cannot be cached
+				throw new Kohana_Exception('One or more routes could not be cached (:message)', array(
+						':message' => $e->getMessage(),
+					));
+			}
 		}
 		else
 		{
@@ -348,7 +350,7 @@ class Kohana_Route {
 	 *         'controller' => 'welcome',
 	 *         'action'     => 'index'
 	 *     ));
-	 * 
+	 *
 	 * If no parameter is passed, this method will act as a getter.
 	 *
 	 * @param   array   $defaults   key values
@@ -551,11 +553,6 @@ class Kohana_Route {
 		}
 
 		return $uri;
-	}
-
-	protected function is_closure()
-	{
-		return is_object($this->_callback) AND get_class($this->_callback) == 'Closure';
 	}
 
 } // End Route
