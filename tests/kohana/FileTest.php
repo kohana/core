@@ -40,6 +40,9 @@ class Kohana_FileTest extends Unittest_TestCase
 	 */
 	public function test_mime($input)
 	{
+		$this->markTestSkipped(
+			'This test doesn\'t do anything useful!'
+		);
 		$this->assertSame(1, preg_match('/^(?:application|audio|image|message|multipart|text|video)\/[a-z.+0-9-]+$/i', File::mime($input)));
 	}
 
