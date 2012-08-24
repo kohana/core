@@ -16,7 +16,7 @@ Our custom exception handler is self explanatory.
 
 		public static function handler(Exception $e)
 		{
-			if (Kohana::DEVELOPMENT === Kohana::$environment)
+			if (Kohana::$environment === Kohana::DEVELOPMENT)
 			{
 				parent::handler($e);
 			}
@@ -26,7 +26,7 @@ Our custom exception handler is self explanatory.
 				{
 					Kohana::$log->add(Log::ERROR, parent::text($e));
 
-					$attributes = array
+					$params = array
 					(
 						'action'  => 500,
 						'message' => rawurlencode($e->getMessage())
@@ -34,14 +34,14 @@ Our custom exception handler is self explanatory.
 
 					if ($e instanceof HTTP_Exception)
 					{
-						$attributes['action'] = $e->getCode();
+						$params['action'] = $e->getCode();
 					}
 
 					// Error sub-request.
-					echo Request::factory(Route::get('error')->uri($attributes))
-					->execute()
-					->send_headers()
-					->body();
+					echo Request::factory(Route::get('error')->uri($params))
+						->execute()
+						->send_headers()
+						->body();
 				}
 				catch (Exception $e)
 				{
@@ -92,10 +92,10 @@ would display an error 500 page.
 	{
 		parent::before();
 
-		$this->template->page = URL::site(rawurldecode(Request::$initial->uri()));
+		$this->template->page = URL::site(rawurldecode(Request::initial()->uri()));
 
 		// Internal request only!
-		if (Request::$initial !== Request::$current)
+		if ( ! Request::current()->is_initial())
 		{
 			if ($message = rawurldecode($this->request->param('message')))
 			{

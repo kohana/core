@@ -4,13 +4,14 @@
  * Unit tests for request class
  *
  * @group kohana
- * @group kohana.request
+ * @group kohana.core
+ * @group kohana.core.request
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_RequestTest extends Unittest_TestCase
@@ -105,7 +106,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 		$route = new Route('(<controller>(/<action>))');
 		$route->defaults(array(
-			'controller' => 'welcome',
+			'controller' => 'kohana_requesttest_dummy',
 			'action'     => 'index',
 		));
 
@@ -145,8 +146,10 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function test_param()
 	{
+		$route = new Route('(<controller>(/<action>(/<id>)))');
+
 		$uri = 'foo/bar/id';
-		$request = Request::factory($uri);
+		$request = Request::factory($uri, NULL, array($route));
 
 		$this->assertArrayHasKey('id', $request->param());
 		$this->assertArrayNotHasKey('foo', $request->param());
@@ -718,5 +721,13 @@ class Kohana_RequestTest extends Unittest_TestCase
 	{
 		$request->client($client);
 		$this->assertSame($expected, $request->client());
+	}
+} // End Kohana_RequestTest
+
+class Controller_Kohana_RequestTest_Dummy extends Controller
+{
+	public function action_index()
+	{
+	
 	}
 } // End Kohana_RequestTest

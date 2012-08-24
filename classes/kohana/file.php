@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2011 Kohana Team
+ * @copyright  (c) 2007-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_File {
@@ -17,7 +17,7 @@ class Kohana_File {
 	 *
 	 *     $mime = File::mime($file);
 	 *
-	 * @param   string  file name or path
+	 * @param   string  $filename   file name or path
 	 * @return  string  mime type on success
 	 * @return  FALSE   on failure
 	 */
@@ -66,7 +66,7 @@ class Kohana_File {
 	 *
 	 *     $mime = File::mime_by_ext('png'); // "image/png"
 	 *
-	 * @param   string  extension: php, pdf, txt, etc
+	 * @param   string  $extension  php, pdf, txt, etc
 	 * @return  string  mime type on success
 	 * @return  FALSE   on failure
 	 */
@@ -148,10 +148,9 @@ class Kohana_File {
 	 *
 	 *     $count = File::split($file);
 	 *
-	 * @param   string   file to be split
-	 * @param   string   directory to output to, defaults to the same directory as the file
-	 * @param   integer  size, in MB, for each piece to be
-	 * @return  integer  The number of pieces that were created
+	 * @param   string  $filename   file to be split
+	 * @param   integer $piece_size size, in MB, for each piece to be
+	 * @return  integer The number of pieces that were created
 	 */
 	public static function split($filename, $piece_size = 10)
 	{
@@ -204,9 +203,8 @@ class Kohana_File {
 	 *
 	 *     $count = File::join($file);
 	 *
-	 * @param   string   split filename, without .000 extension
-	 * @param   string   output filename, if different then an the filename
-	 * @return  integer  The number of pieces that were joined.
+	 * @param   string  $filename   split filename, without .000 extension
+	 * @return  integer The number of pieces that were joined.
 	 */
 	public static function join($filename)
 	{

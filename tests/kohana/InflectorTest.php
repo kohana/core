@@ -4,13 +4,14 @@
  * Tests Kohana inflector class
  *
  * @group kohana
- * @group kohana.inflector
+ * @group kohana.core
+ * @group kohana.core.inflector
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_InflectorTest extends Unittest_TestCase

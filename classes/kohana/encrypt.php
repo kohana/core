@@ -20,7 +20,7 @@
  * @package    Kohana
  * @category   Security
  * @author     Kohana Team
- * @copyright  (c) 2007-2011 Kohana Team
+ * @copyright  (c) 2007-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Encrypt {
@@ -46,7 +46,7 @@ class Kohana_Encrypt {
 	 *
 	 *     $encrypt = Encrypt::instance();
 	 *
-	 * @param   string  configuration group name
+	 * @param   string  $name   configuration group name
 	 * @return  Encrypt
 	 */
 	public static function instance($name = NULL)
@@ -91,9 +91,9 @@ class Kohana_Encrypt {
 	/**
 	 * Creates a new mcrypt wrapper.
 	 *
-	 * @param   string   encryption key
-	 * @param   string   mcrypt mode
-	 * @param   string   mcrypt cipher
+	 * @param   string  $key    encryption key
+	 * @param   string  $mode   mcrypt mode
+	 * @param   string  $cipher mcrypt cipher
 	 */
 	public function __construct($key, $mode, $cipher)
 	{
@@ -124,7 +124,7 @@ class Kohana_Encrypt {
 	 * to convert it to a string. This string can be stored in a database,
 	 * displayed, and passed using most other means without corruption.
 	 *
-	 * @param   string  data to be encrypted
+	 * @param   string  $data   data to be encrypted
 	 * @return  string
 	 */
 	public function encode($data)
@@ -179,7 +179,7 @@ class Kohana_Encrypt {
 	 *
 	 *     $data = $encrypt->decode($data);
 	 *
-	 * @param   string  encoded string to be decrypted
+	 * @param   string  $data   encoded string to be decrypted
 	 * @return  FALSE   if decryption fails
 	 * @return  string
 	 */

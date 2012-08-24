@@ -19,7 +19,7 @@
    - [Routing](routing)
    - [Error Handling](errors)
    - [Tips & Common Mistakes](tips)
-   - [Upgrading from v3.0](upgrading)
+   - [Upgrading](upgrading)
 - Basic Usage
    - [Debugging](debugging)
    - [Loading Classes](autoloading)
@@ -44,5 +44,6 @@
    - [Content Translation](tutorials/translation)
    - [Clean URLs](tutorials/clean-urls)
    - [Sharing Kohana](tutorials/sharing-kohana)
+   - [Kohana as a Library](tutorials/library-kohana)
    - [Template Driven Site](tutorials/templates)
    - [Working with Git](tutorials/git)

@@ -6,7 +6,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Request implements HTTP_Request {
@@ -48,7 +48,7 @@ class Kohana_Request implements HTTP_Request {
 	 * @param   string  $uri URI of the request
 	 * @param   Cache   $cache
 	 * @param   array   $injected_routes an array of routes to use, for testing
-	 * @return  void
+	 * @return  void|Request
 	 * @throws  Request_Exception
 	 * @uses    Route::all
 	 * @uses    Route::matches
@@ -158,7 +158,7 @@ class Kohana_Request implements HTTP_Request {
 					// client is using a proxy server.
 					// Format: "X-Forwarded-For: client1, proxy1, proxy2"
 					$client_ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-					
+
 					Request::$client_ip = array_shift($client_ips);
 
 					unset($client_ips);
@@ -170,7 +170,7 @@ class Kohana_Request implements HTTP_Request {
 					// Use the forwarded IP address, typically set when the
 					// client is using a proxy server.
 					$client_ips = explode(',', $_SERVER['HTTP_CLIENT_IP']);
-					
+
 					Request::$client_ip = array_shift($client_ips);
 
 					unset($client_ips);
@@ -192,10 +192,20 @@ class Kohana_Request implements HTTP_Request {
 					// Attempt to guess the proper URI
 					$uri = Request::detect_uri();
 				}
+
+				$cookies = array();
+
+				if (($cookie_keys = array_keys($_COOKIE)))
+				{
+					foreach ($cookie_keys as $key)
+					{
+						$cookies[$key] = Cookie::get($key);
+					}
+				}
 			}
 
 			// Create the instance singleton
-			Request::$initial = $request = new Request($uri, $cache);
+			Request::$initial = $request = new Request($uri, $cache, $injected_routes);
 
 			// Store global GET and POST data in the initial request only
 			$request->protocol($protocol)
@@ -230,6 +240,11 @@ class Kohana_Request implements HTTP_Request {
 			{
 				// Set the request body (probably a PUT type)
 				$request->body($body);
+			}
+
+			if (isset($cookies))
+			{
+				$request->cookie($cookies);
 			}
 		}
 		else
@@ -758,7 +773,7 @@ class Kohana_Request implements HTTP_Request {
 		$this->_header = new HTTP_Header(array());
 
 		// Assign injected routes
-		$this->_injected_routes = $injected_routes;
+		$this->_routes = $injected_routes;
 
 		// Cleanse query parameters from URI (faster that parse_url())
 		$split_uri = explode('?', $uri);
@@ -782,7 +797,7 @@ class Kohana_Request implements HTTP_Request {
 			// Remove trailing slashes from the URI
 			$uri = trim($uri, '/');
 
-			$processed_uri = Request::process_uri($uri, $this->_injected_routes);
+			$processed_uri = Request::process_uri($uri, $this->_routes);
 
 			// Return here rather than throw exception. This will allow
 			// use of Request object even with unmatched route
@@ -933,16 +948,17 @@ class Kohana_Request implements HTTP_Request {
 	public function redirect($url = '', $code = 302)
 	{
 		$referrer = $this->uri();
+		$protocol = ($this->secure()) ? 'https' : TRUE;
 
 		if (strpos($referrer, '://') === FALSE)
 		{
-			$referrer = URL::site($referrer, TRUE, Kohana::$index_file);
+			$referrer = URL::site($referrer, $protocol, ! empty(Kohana::$index_file));
 		}
 
 		if (strpos($url, '://') === FALSE)
 		{
 			// Make the URI into a URL
-			$url = URL::site($url, TRUE, Kohana::$index_file);
+			$url = URL::site($url, TRUE, ! empty(Kohana::$index_file));
 		}
 
 		if (($response = $this->response()) === NULL)
@@ -1154,7 +1170,7 @@ class Kohana_Request implements HTTP_Request {
 
 	/**
 	 * Readonly access to the [Request::$_external] property.
-	 * 
+	 *
 	 *     if ( ! $request->is_external())
 	 *          // This is an internal request
 	 *
@@ -1291,7 +1307,7 @@ class Kohana_Request implements HTTP_Request {
 	 * Getter/Setter to the security settings for this request. This
 	 * method should be treated as immutable.
 	 *
-	 * @param   boolean   is this request secure?
+	 * @param   boolean $secure is this request secure?
 	 * @return  mixed
 	 */
 	public function secure($secure = NULL)
@@ -1369,9 +1385,9 @@ class Kohana_Request implements HTTP_Request {
 		{
 			// Act as a setter, replace all cookies
 			$this->_cookies = $key;
+			return $this;
 		}
-
-		if ($key === NULL)
+		elseif ($key === NULL)
 		{
 			// Act as a getter, all cookies
 			return $this->_cookies;

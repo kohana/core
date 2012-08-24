@@ -124,10 +124,10 @@ A user login action.
 	{
 		$view = View::factory('user/login');
 
-		if ($_POST)
+		if ($this->request->post())
 		{
 			// Try to login
-			if (Auth::instance()->login(arr::get($_POST, 'username'), arr::get($_POST, 'password')))
+			if (Auth::instance()->login($this->request->post('username'), $this->request->post('password')))
 			{
 				Request::current()->redirect('home');
 			}

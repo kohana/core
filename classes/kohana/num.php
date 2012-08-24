@@ -6,7 +6,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2009-2011 Kohana Team
+ * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Num {
@@ -63,7 +63,7 @@ class Kohana_Num {
 	 *     echo 10, Num::ordinal(10); // "10th"
 	 *     echo 33, Num::ordinal(33); // "33rd"
 	 *
-	 * @param   integer  number
+	 * @param   integer $number
 	 * @return  string
 	 */
 	public static function ordinal($number)
@@ -99,9 +99,9 @@ class Kohana_Num {
 	 *     // In Portuguese, "1.200.05"
 	 *     echo Num::format(1200.05, 2, TRUE);
 	 *
-	 * @param   float    number to format
-	 * @param   integer  decimal places
-	 * @param   boolean  monetary formatting?
+	 * @param   float   $number     number to format
+	 * @param   integer $places     decimal places
+	 * @param   boolean $monetary   monetary formatting?
 	 * @return  string
 	 * @since   3.0.2
 	 */
@@ -199,7 +199,7 @@ class Kohana_Num {
 	 *     echo Num::bytes('1000');  // 1000
 	 *     echo Num::bytes('2.5GB'); // 2684354560
 	 *
-	 * @param   string   file size in SB format
+	 * @param   string  $bytes  file size in SB format
 	 * @return  float
 	 */
 	public static function bytes($size)

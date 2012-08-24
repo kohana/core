@@ -8,7 +8,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2009-2011 Kohana Team
+ * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Profiler {
@@ -29,8 +29,8 @@ class Kohana_Profiler {
 	 *
 	 *     $token = Profiler::start('test', 'profiler');
 	 *
-	 * @param   string  group name
-	 * @param   string  benchmark name
+	 * @param   string  $group  group name
+	 * @param   string  $name   benchmark name
 	 * @return  string
 	 */
 	public static function start($group, $name)
@@ -62,7 +62,7 @@ class Kohana_Profiler {
 	 *
 	 *     Profiler::stop($token);
 	 *
-	 * @param   string  token
+	 * @param   string  $token
 	 * @return  void
 	 */
 	public static function stop($token)
@@ -79,7 +79,7 @@ class Kohana_Profiler {
 	 *
 	 *     Profiler::delete($token);
 	 *
-	 * @param   string  token
+	 * @param   string  $token
 	 * @return  void
 	 */
 	public static function delete($token)
@@ -113,8 +113,8 @@ class Kohana_Profiler {
 	 *
 	 *     $stats = Profiler::stats($tokens);
 	 *
-	 * @param   array  profiler tokens
-	 * @return  array  min, max, average, total
+	 * @param   array   $tokens profiler tokens
+	 * @return  array   min, max, average, total
 	 * @uses    Profiler::total
 	 */
 	public static function stats(array $tokens)
@@ -185,8 +185,8 @@ class Kohana_Profiler {
 	 *
 	 *     $stats = Profiler::group_stats('test');
 	 *
-	 * @param   mixed  single group name string, or array with group names; all groups by default
-	 * @return  array  min, max, average, total
+	 * @param   mixed   $groups single group name string, or array with group names; all groups by default
+	 * @return  array   min, max, average, total
 	 * @uses    Profiler::groups
 	 * @uses    Profiler::stats
 	 */
@@ -271,7 +271,7 @@ class Kohana_Profiler {
 	 *
 	 *     list($time, $memory) = Profiler::total($token);
 	 *
-	 * @param   string  token
+	 * @param   string  $token
 	 * @return  array   execution time, memory
 	 */
 	public static function total($token)

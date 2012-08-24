@@ -4,13 +4,14 @@
  * Tests Kohana Logging API
  *
  * @group kohana
- * @group kohana.logging
+ * @group kohana.core
+ * @group kohana.core.logging
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     Matt Button <matthew@sigswitch.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_LogTest extends Unittest_TestCase

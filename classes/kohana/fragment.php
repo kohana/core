@@ -13,7 +13,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2009-2011 Kohana Team
+ * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  * @uses       Kohana::cache
  */
@@ -39,8 +39,8 @@ class Kohana_Fragment {
 	 *
 	 *     $key = Fragment::_cache_key('footer', TRUE);
 	 *
-	 * @param   string   fragment name
-	 * @param   boolean  multilingual fragment support
+	 * @param   string  $name   fragment name
+	 * @param   boolean $i18n   multilingual fragment support
 	 * @return  string
 	 * @uses    I18n::lang
 	 * @since   3.0.4
@@ -69,9 +69,9 @@ class Kohana_Fragment {
 	 *         Fragment::save();
 	 *     }
 	 *
-	 * @param   string   fragment name
-	 * @param   integer  fragment cache lifetime
-	 * @param   boolean  multilingual fragment support
+	 * @param   string  $name       fragment name
+	 * @param   integer $lifetime   fragment cache lifetime
+	 * @param   boolean $i18n       multilingual fragment support
 	 * @return  boolean
 	 */
 	public static function load($name, $lifetime = NULL, $i18n = NULL)
@@ -134,8 +134,8 @@ class Kohana_Fragment {
 	 *
 	 *     Fragment::delete($key);
 	 *
-	 * @param   string   fragment name
-	 * @param   boolean  multilingual fragment support
+	 * @param   string  $name   fragment name
+	 * @param   boolean $i18n   multilingual fragment support
 	 * @return  void
 	 */
 	public static function delete($name, $i18n = NULL)

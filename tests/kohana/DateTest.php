@@ -4,13 +4,14 @@
  * Tests Date class
  *
  * @group kohana
- * @group kohana.date
+ * @group kohana.core
+ * @group kohana.core.date
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_DateTest extends Unittest_TestCase
@@ -248,6 +249,10 @@ class Kohana_DateTest extends Unittest_TestCase
 			// Now we use our own format
 			// Binary date!
 			array('01/01/2010 01:00', '1AM 1st January 2010', 'd/m/Y H:i'),
+			// Timezones (see #3902)
+			array('2011-04-01 01:23:45 Antarctica/South_Pole', '2011-04-01 01:23:45', 'Y-m-d H:i:s e', 'Antarctica/South_Pole'),
+			array('2011-04-01 01:23:45 Antarctica/South_Pole', '2011-03-31 14:23:45 Europe/Paris', 'Y-m-d H:i:s e', 'Antarctica/South_Pole'),
+			array('2011-04-01 01:23:45 Antarctica/South_Pole', '@1301574225', 'Y-m-d H:i:s e', 'Antarctica/South_Pole'),
 		);
 	}
 
@@ -257,14 +262,15 @@ class Kohana_DateTest extends Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_formatted_time
 	 * @covers Date::formatted_time
-	 * @ticket 3035
+	 * @ticket 3035 3902
 	 * @param string         $expected         Expected output
 	 * @param string|integer $datetime_str     The datetime timestamp / string
 	 * @param string|null    $timestamp_format The output format
+	 * @param string|null    $timezone         The timezone identifier
 	 */
-	public function test_formatted_time($expected, $datetime_str, $timestamp_format = NULL)
+	public function test_formatted_time($expected, $datetime_str, $timestamp_format = NULL, $timezone = NULL)
 	{
-		$timestamp = Date::formatted_time($datetime_str, $timestamp_format);
+		$timestamp = Date::formatted_time($datetime_str, $timestamp_format, $timezone);
 
 		$this->assertSame($expected, $timestamp);
 	}

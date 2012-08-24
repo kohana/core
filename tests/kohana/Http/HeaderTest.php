@@ -3,13 +3,15 @@
  * Unit Tests for Kohana_HTTP_Header
  *
  * @group kohana
- * @group kohana.http
- * @group kohana.http.header
+ * @group kohana.core
+ * @group kohana.core.http
+ * @group kohana.core.http.header
+ * @group kohana.core.http.header
  * 
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
@@ -1252,6 +1254,14 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 				TRUE,
 				(float) 0
 			),
+			array(
+				array(
+					'accept-language'  => 'en-US'
+				),
+				'en-us',
+				TRUE,
+				(float) 1
+			),			
 		);
 	}
 
@@ -1329,6 +1339,16 @@ class Kohana_HTTP_HeaderTest extends Unittest_TestCase {
 				TRUE,
 				'fr'
 			),
+			array(
+				array(
+					'accept-language'  => 'en-US'
+				),
+				array(
+					'en-us'
+				),
+				TRUE,
+				'en-us'
+			),			
 		);
 	}
 

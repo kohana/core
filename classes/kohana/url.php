@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2011 Kohana Team
+ * @copyright  (c) 2007-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_URL {
@@ -44,8 +44,15 @@ class Kohana_URL {
 
 		if ($protocol instanceof Request)
 		{
-			// Use the current protocol
-			list($protocol) = explode('/', strtolower($protocol->protocol()));
+			if ( ! $protocol->secure())
+			{
+				// Use the current protocol
+				list($protocol) = explode('/', strtolower($protocol->protocol()));
+			}
+			else
+			{
+				$protocol = 'https';
+			}
 		}
 
 		if ( ! $protocol)
@@ -140,7 +147,7 @@ class Kohana_URL {
 			else
 			{
 				// Merge the current and new parameters
-				$params = array_merge($_GET, $params);
+				$params = Arr::merge($_GET, $params);
 			}
 		}
 

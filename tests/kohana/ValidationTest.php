@@ -4,13 +4,14 @@
  * Tests the Validation lib that's shipped with Kohana
  *
  * @group kohana
- * @group kohana.validation
+ * @group kohana.core
+ * @group kohana.core.validation
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_ValidationTest extends Unittest_TestCase
@@ -314,6 +315,42 @@ class Kohana_ValidationTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Tests Validation::check()
+	 *
+	 * @test
+	 * @covers Validation::check
+	 */
+	public function test_check_stops_when_error_added_by_callback()
+	{
+		$validation = new Validation(array(
+			'foo' => 'foo',
+		));
+
+		$validation
+			->rule('foo', array($this, '_validation_callback'), array(':validation'))
+			// This rule should never run
+			->rule('foo', 'min_length', array(':value', 20));
+
+		$validation->check();
+		$errors = $validation->errors();
+
+		$expected = array(
+			'foo' => array(
+				0 => '_validation_callback',
+				1 => NULL,
+			),
+		);
+
+		$this->assertSame($errors, $expected);
+	}
+
+	public function _validation_callback(Validation $object)
+	{
+		// Simply add the error
+		$object->error('foo', '_validation_callback');
+	}
+
+	/**
 	 * Provides test data for test_errors()
 	 *
 	 * @return array
@@ -603,4 +640,29 @@ class Kohana_ValidationTest extends Unittest_TestCase
 		// Validation is read-only
 		unset($validation['one']);
 	}
+
+	/**
+	 * http://dev.kohanaframework.org/issues/4365
+	 *
+	 * @test
+	 * @covers Validation::errors
+	 */
+	public function test_error_type_check()
+	{
+		$array = array(
+			'email' => 'not an email address',
+		);
+
+		$validation = Validation::factory($array)
+			->rule('email', 'not_empty')
+			->rule('email', 'email')
+			;
+
+		$validation->check();
+
+		$errors = $validation->errors('tests/validation/error_type_check');
+
+		$this->assertSame($errors, $validation->errors('validation'));
+	}
+
 }
