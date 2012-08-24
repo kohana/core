@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Logging
  * @author     Jeremy Bush
- * @copyright  (c) 2010 Kohana Team
+ * @copyright  (c) 2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Log_Syslog extends Log_Writer {
@@ -16,22 +16,12 @@ class Kohana_Log_Syslog extends Log_Writer {
 	protected $_ident;
 
 	/**
-	 * @var  array  log levels
-	 */
-	protected $_syslog_levels = array('ERROR'    => LOG_ERR,
-	                                  'CRITICAL' => LOG_CRIT,
-	                                  'STRACE'   => LOG_ALERT,
-	                                  'ALERT'    => LOG_WARNING,
-	                                  'INFO'     => LOG_INFO,
-	                                  'DEBUG'    => LOG_DEBUG);
-
-	/**
 	 * Creates a new syslog logger.
 	 *
-	 * @see http://us2.php.net/openlog
+	 * @link    http://www.php.net/manual/function.openlog
 	 *
-	 * @param   string  syslog identifier
-	 * @param   int     facility to log to
+	 * @param   string  $ident      syslog identifier
+	 * @param   int     $facility   facility to log to
 	 * @return  void
 	 */
 	public function __construct($ident = 'KohanaPHP', $facility = LOG_USER)
@@ -45,13 +35,17 @@ class Kohana_Log_Syslog extends Log_Writer {
 	/**
 	 * Writes each of the messages into the syslog.
 	 *
-	 * @param   array   messages
+	 * @param   array   $messages
 	 * @return  void
 	 */
 	public function write(array $messages)
 	{
 		foreach ($messages as $message)
 		{
+			if (Log::STRACE == $message['level'])
+			{
+				$message['level'] = Log::DEBUG;
+			}
 			syslog($message['level'], $message['body']);
 		}
 	}

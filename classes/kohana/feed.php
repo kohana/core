@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2011 Kohana Team
+ * @copyright  (c) 2007-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Feed {
@@ -13,8 +13,8 @@ class Kohana_Feed {
 	/**
 	 * Parses a remote feed into an array.
 	 *
-	 * @param   string   remote feed URL
-	 * @param   integer  item limit to fetch
+	 * @param   string  $feed   remote feed URL
+	 * @param   integer $limit  item limit to fetch
 	 * @return  array
 	 */
 	public static function parse($feed, $limit = 0)
@@ -70,10 +70,10 @@ class Kohana_Feed {
 	/**
 	 * Creates a feed from the given parameters.
 	 *
-	 * @param   array   feed information
-	 * @param   array   items to add to the feed
-	 * @param   string  define which format to use (only rss2 is supported)
-	 * @param   string  define which encoding to use
+	 * @param   array   $info       feed information
+	 * @param   array   $items      items to add to the feed
+	 * @param   string  $format     define which format to use (only rss2 is supported)
+	 * @param   string  $encoding   define which encoding to use
 	 * @return  string
 	 */
 	public static function create($info, $items, $format = 'rss2', $encoding = 'UTF-8')

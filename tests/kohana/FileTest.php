@@ -4,13 +4,14 @@
  * Tests Kohana File helper
  *
  * @group kohana
- * @group kohana.url
+ * @group kohana.core
+ * @group kohana.core.url
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_FileTest extends Unittest_TestCase
@@ -39,6 +40,9 @@ class Kohana_FileTest extends Unittest_TestCase
 	 */
 	public function test_mime($input)
 	{
+		$this->markTestSkipped(
+			'This test doesn\'t do anything useful!'
+		);
 		$this->assertSame(1, preg_match('/^(?:application|audio|image|message|multipart|text|video)\/[a-z.+0-9-]+$/i', File::mime($input)));
 	}
 

@@ -5,7 +5,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  * @since      3.1.0
  */
@@ -104,8 +104,6 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 			// Determine the action to use
 			$action = $request->action();
-
-			$params = $request->param();
 
 			// If the action doesn't exist, it's a 404
 			if ( ! $class->hasMethod('action_'.$action))

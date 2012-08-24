@@ -6,13 +6,14 @@
  * @TODO Use a virtual filesystem (see phpunit doc on mocking fs) for find_file etc.
  *
  * @group kohana
- * @group kohana.debug
+ * @group kohana.core
+ * @group kohana.core.debug
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaphp.com/license
  */
 class Kohana_DebugTest extends Unittest_TestCase

@@ -4,13 +4,14 @@
  * Tests the session class
  *
  * @group kohana
- * @group kohana.session
+ * @group kohana.core
+ * @group kohana.core.session
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_SessionTest extends Unittest_TestCase

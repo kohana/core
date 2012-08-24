@@ -7,7 +7,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaphp.com/license
  * @since      3.1.0
  */
@@ -280,8 +280,8 @@ class Kohana_Response implements HTTP_Response {
 	 *          'expiration' => 12352234
 	 *     ));
 	 *
-	 * @param   mixed     cookie name, or array of cookie values
-	 * @param   string    value to set to cookie
+	 * @param   mixed   $key    cookie name, or array of cookie values
+	 * @param   string  $value  value to set to cookie
 	 * @return  string
 	 * @return  void
 	 * @return  [Response]
@@ -326,7 +326,7 @@ class Kohana_Response implements HTTP_Response {
 	/**
 	 * Deletes a cookie set to the response
 	 *
-	 * @param   string   name
+	 * @param   string  $name
 	 * @return  Response
 	 */
 	public function delete_cookie($name)
@@ -349,8 +349,8 @@ class Kohana_Response implements HTTP_Response {
 	/**
 	 * Sends the response status and all set headers.
 	 *
-	 * @param   boolean   replace existing headers
-	 * @param   callback  function to handle header output
+	 * @param   boolean     $replace    replace existing headers
+	 * @param   callback    $callback   function to handle header output
 	 * @return  mixed
 	 */
 	public function send_headers($replace = FALSE, $callback = NULL)
@@ -381,9 +381,9 @@ class Kohana_Response implements HTTP_Response {
 	 *
 	 * [!!] No further processing can be done after this method is called!
 	 *
-	 * @param   string   filename with path, or TRUE for the current response
-	 * @param   string   downloaded file name
-	 * @param   array    additional options
+	 * @param   string  $filename   filename with path, or TRUE for the current response
+	 * @param   string  $download   downloaded file name
+	 * @param   array   $options    additional options
 	 * @return  void
 	 * @throws  Kohana_Exception
 	 * @uses    File::mime_by_ext
@@ -446,7 +446,7 @@ class Kohana_Response implements HTTP_Response {
 			if ( ! isset($mime))
 			{
 				// Get the mime type
-				$mime = File::mime($filename);
+				$mime = File::mime($download);
 			}
 
 			// Open the file for reading
@@ -638,7 +638,7 @@ class Kohana_Response implements HTTP_Response {
 	 */
 	public function generate_etag()
 	{
-	    if ($this->_body === NULL)
+	    if ($this->_body === '')
 		{
 			throw new Request_Exception('No response yet associated with request - cannot auto generate resource ETag');
 		}
@@ -704,7 +704,7 @@ class Kohana_Response implements HTTP_Response {
 	 * Parse the byte ranges from the HTTP_RANGE header used for
 	 * resumable downloads.
 	 *
-	 * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
+	 * @link   http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
 	 * @return array|FALSE
 	 */
 	protected function _parse_byte_range()

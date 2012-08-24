@@ -4,13 +4,14 @@
  * Tests HTML
  *
  * @group kohana
- * @group kohana.html
+ * @group kohana.core
+ * @group kohana.core.html
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_HTMLTest extends Unittest_TestCase
@@ -90,6 +91,13 @@ class Kohana_HTMLTest extends Unittest_TestCase
 				'https',
 				FALSE
 			),
+			array(
+				'<script type="text/javascript" src="https://www.kohanaframework.org/kohana/my/script.js"></script>',
+				'/my/script.js', // Test absolute paths
+				NULL,
+				'https',
+				FALSE
+			),
 
 		);
 	}
@@ -145,6 +153,13 @@ class Kohana_HTMLTest extends Unittest_TestCase
 			array(
 				'<link type="text/css" href="https://www.kohanaframework.org/kohana/index.php/my/style.css" rel="stylesheet" />',
 				'my/style.css',
+				array(),
+				'https',
+				TRUE
+			),
+			array(
+				'<link type="text/css" href="https://www.kohanaframework.org/kohana/index.php/my/style.css" rel="stylesheet" />',
+				'/my/style.css',
 				array(),
 				'https',
 				TRUE
@@ -237,6 +252,15 @@ class Kohana_HTMLTest extends Unittest_TestCase
 				'https',
 				FALSE,
 			),
+			array(
+				'<a href="https://www.kohanaframework.org/kohana/users/example">Kohana</a>',
+				array(),
+				'/users/example',
+				'Kohana',
+				NULL,
+				'https',
+				FALSE,
+			),
 		);
 	}
 
@@ -285,7 +309,15 @@ class Kohana_HTMLTest extends Unittest_TestCase
 				'My picture file',
 				'ftp',
 				FALSE
-			)
+			),
+			array(
+				'<a href="ftp://www.kohanaframework.org/kohana/mypic.png">My picture file</a>',
+				array(),
+				'/mypic.png',
+				'My picture file',
+				'ftp',
+				FALSE
+			),
 		);
 	}
 

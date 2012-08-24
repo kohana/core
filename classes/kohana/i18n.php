@@ -15,7 +15,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_I18n {
@@ -44,7 +44,7 @@ class Kohana_I18n {
 	 *     // Change the current language to Spanish
 	 *     I18n::lang('es-es');
 	 *
-	 * @param   string   new language setting
+	 * @param   string  $lang   new language setting
 	 * @return  string
 	 * @since   3.0.2
 	 */
@@ -65,8 +65,8 @@ class Kohana_I18n {
 	 *
 	 *     $hello = I18n::get('Hello friends, my name is :name');
 	 *
-	 * @param   string   text to translate
-	 * @param   string   target language
+	 * @param   string  $string text to translate
+	 * @param   string  $lang   target language
 	 * @return  string
 	 */
 	public static function get($string, $lang = NULL)
@@ -90,7 +90,7 @@ class Kohana_I18n {
 	 *     // Get all defined Spanish messages
 	 *     $messages = I18n::load('es-es');
 	 *
-	 * @param   string   language to load
+	 * @param   string  $lang   language to load
 	 * @return  array
 	 */
 	public static function load($lang)
@@ -147,9 +147,9 @@ if ( ! function_exists('__'))
 	 * [!!] The target language is defined by [I18n::$lang].
 	 * 
 	 * @uses    I18n::get
-	 * @param   string  text to translate
-	 * @param   array   values to replace in the translated text
-	 * @param   string  source language
+	 * @param   string  $string text to translate
+	 * @param   array   $values values to replace in the translated text
+	 * @param   string  $lang   source language
 	 * @return  string
 	 */
 	function __($string, array $values = NULL, $lang = 'en-us')

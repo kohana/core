@@ -4,13 +4,14 @@
  * Test for feed helper
  *
  * @group kohana
- * @group kohana.feed
+ * @group kohana.core
+ * @group kohana.core.feed
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_FeedTest extends Unittest_TestCase
@@ -39,10 +40,7 @@ class Kohana_FeedTest extends Unittest_TestCase
 	 */
 	public function test_parse($source, $expected)
 	{
-		if ( ! $this->hasInternet())
-		{
-			$this->markTestSkipped('An internet connection is required for this test');
-		}
+		$this->markTestSkipped('We don\'t go to the internet for tests.');
 
 		$this->assertEquals($expected, count(feed::parse($source)));
 	}

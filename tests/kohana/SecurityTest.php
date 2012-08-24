@@ -4,12 +4,12 @@
  * Tests Kohana_Security
  *
  * @group kohana
- * @group kohana.security
+ * @group kohana.core
+ * @group kohana.core.security
  *
  * @package    Kohana
  * @category   Tests
  */
-
 class Kohana_SecurityTest extends Unittest_TestCase
 {
 	/**
@@ -67,6 +67,17 @@ class Kohana_SecurityTest extends Unittest_TestCase
 	 */
 	public function provider_csrf_token()
 	{
+		// Unfortunately this data provider has to use the session in order to 
+		// generate its data. If headers have already been sent then this method
+		// throws an error, even if the test is does not run.  If we return an 
+		// empty array then this also causes an error, so the only way to get 
+		// around it is to return an array of misc data and have the test skip 
+		// if headers have been sent. It's annoying this hack has to be 
+		// implemented, but the security code isn't exactly brilliantly 
+		// implemented. Ideally we'd be able to inject a session instance
+		if (headers_sent())
+			return array(array('', '', 0));
+
 		$array = array();
 		for ($i = 0; $i <= 4; $i++)
 		{
@@ -85,6 +96,9 @@ class Kohana_SecurityTest extends Unittest_TestCase
 	 */
 	public function test_csrf_token($expected, $input, $iteration)
 	{
+		if (headers_sent())
+			$this->markTestSkipped('Headers have already been sent, session not available');
+
 		Security::$token_name = 'token_'.$iteration;
 		$this->assertSame(TRUE, $input);
 		$this->assertSame($expected, Security::token(FALSE));

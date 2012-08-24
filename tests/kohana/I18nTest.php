@@ -4,44 +4,52 @@
  * Tests Kohana i18n class
  *
  * @group kohana
- * @group kohana.i18n
+ * @group kohana.core
+ * @group kohana.core.i18n
  *
  * @package    Kohana
  * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2011 Kohana Team
+ * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_I18nTest extends Unittest_TestCase
-{
+class Kohana_I18nTest extends Unittest_TestCase {
+
+	/**
+	 * Default values for the environment, see setEnvironment
+	 * @var array
+	 */
+	protected $environmentDefault =	array(
+		'I18n::$lang' => 'en-us',
+	);
 
 	/**
 	 * Provides test data for test_lang()
-	 * 
+	 *
 	 * @return array
 	 */
 	public function provider_lang()
 	{
 		return array(
-			// $value, $result
+			// $input, $expected_result
 			array(NULL, 'en-us'),
 			array('es-es', 'es-es'),
-			array(NULL, 'es-es'),
 		);
 	}
 
 	/**
-	 * Tests i18n::lang()
+	 * Tests I18n::lang()
 	 *
 	 * @test
 	 * @dataProvider provider_lang
-	 * @param boolean $input  Input for File::mime
-	 * @param boolean $expected Output for File::mime
+	 * @param  boolean  $input     Input for I18n::lang
+	 * @param  boolean  $expected  Output for I18n::lang
 	 */
-	public function test_open($input, $expected)
+	public function test_lang($input, $expected_result)
 	{
-		$this->assertSame($expected, I18n::lang($input));
+		$this->assertSame($expected_result, I18n::lang($input));
+		$this->assertSame($expected_result, I18n::lang());
 	}
 
 	/**
