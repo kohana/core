@@ -122,7 +122,7 @@ abstract class Kohana_Controller {
 	 * @param  int     $code  HTTP Status code to use for the redirect
 	 * @throws HTTP_Exception
 	 */
-	public static function redirect($uri = '', $code = 302)
+	public function redirect($uri = '', $code = 302)
 	{
 		return HTTP::redirect($uri, $code);
 	}
