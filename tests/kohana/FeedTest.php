@@ -40,10 +40,7 @@ class Kohana_FeedTest extends Unittest_TestCase
 	 */
 	public function test_parse($source, $expected)
 	{
-		if ( ! $this->hasInternet())
-		{
-			$this->markTestSkipped('An internet connection is required for this test');
-		}
+		$this->markTestSkipped('We don\'t go to the internet for tests.');
 
 		$this->assertEquals($expected, count(Feed::parse($source)));
 	}

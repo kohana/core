@@ -29,33 +29,3 @@ There are a few things you'll want to do with your application before moving int
 			'profile'    => Kohana::$environment !== Kohana::PRODUCTION,
 			'caching'    => Kohana::$environment === Kohana::PRODUCTION,
 		));
-
-`index.php`:
-
-		/**
-		 * Execute the main request using PATH_INFO. If no URI source is specified,
-		 * the URI will be automatically detected.
-		 */
-		$request = Request::instance($_SERVER['PATH_INFO']);
-
-		// Attempt to execute the response
-		$request->execute();
-
-		if ($request->send_headers()->response)
-		{
-			// Get the total memory and execution time
-			$total = array(
-			  '{memory_usage}' => number_format((memory_get_peak_usage() - KOHANA_START_MEMORY) / 1024, 2).'KB',
-			  '{execution_time}' => number_format(microtime(TRUE) - KOHANA_START_TIME, 5).' seconds');
-
-			// Insert the totals into the response
-			$request->response = str_replace(array_keys($total), $total, $request->response);
-		}
-
-
-		/**
-		 * Display the request response.
-		 */
-		echo $request->response;
-
-
