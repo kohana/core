@@ -3,7 +3,6 @@
 return array(
 
 	'platform' => array(
-		'windows nt 6.2' => 'Windows 8',
 		'windows nt 6.1' => 'Windows 7',
 		'windows nt 6.0' => 'Windows Vista',
 		'windows nt 5.2' => 'Windows 2003',
