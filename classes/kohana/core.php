@@ -16,8 +16,8 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.2.1';
-	const CODENAME = 'Milvago';
+	const VERSION  = '3.2.2';
+	const CODENAME = 'hypoleucos';
 
 	// Common environment type constants for consistency and convenience
 	const PRODUCTION  = 10;
