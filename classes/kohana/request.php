@@ -1271,7 +1271,7 @@ class Kohana_Request implements HTTP_Request {
 	 * @return  boolean
 	 */
 	public function is_get() {
-		return ($this->method() === 'GET');
+		return ($this->method() === Request::GET);
 	}
 	
 	/**
@@ -1280,7 +1280,7 @@ class Kohana_Request implements HTTP_Request {
 	 * @return  boolean
 	 */
 	public function is_post() {
-		return ($this->method() === 'POST');
+		return ($this->method() === Request::POST);
 	}
 	
 	/**
@@ -1289,7 +1289,7 @@ class Kohana_Request implements HTTP_Request {
 	 * @return  boolean
 	 */
 	public function is_put() {
-		return ($this->method() === 'PUT');
+		return ($this->method() === Request::PUT);
 	}
 	
 	/**
@@ -1298,7 +1298,7 @@ class Kohana_Request implements HTTP_Request {
 	 * @return  boolean
 	 */
 	public function is_delete() {
-		return ($this->method() === 'DELETE');
+		return ($this->method() === Request::DELETE);
 	}
 	
 	/**
