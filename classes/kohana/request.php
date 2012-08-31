@@ -1280,7 +1280,43 @@ class Kohana_Request implements HTTP_Request {
 
 		return $this;
 	}
-
+	
+	/**
+	 * Returns whether this request is GET
+	 *
+	 * @return  boolean
+	 */
+	public function is_get() {
+		return ($this->method() === Request::GET);
+	}
+	
+	/**
+	 * Returns whether this request is POST
+	 *
+	 * @return  boolean
+	 */
+	public function is_post() {
+		return ($this->method() === Request::POST);
+	}
+	
+	/**
+	 * Returns whether this request is PUT
+	 *
+	 * @return  boolean
+	 */
+	public function is_put() {
+		return ($this->method() === Request::PUT);
+	}
+	
+	/**
+	 * Returns whether this request is DELETE
+	 *
+	 * @return  boolean
+	 */
+	public function is_delete() {
+		return ($this->method() === Request::DELETE);
+	}
+	
 	/**
 	 * Gets or sets the HTTP protocol. If there is no current protocol set,
 	 * it will use the default set in HTTP::$protocol
