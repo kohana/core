@@ -588,12 +588,22 @@ class Kohana_Text {
 	 *     echo Text::widont($text);
 	 *
 	 * @param   string  $str    text to remove widows from
+	 * @param   bool    $html	check when words are in HTML-tags, default FALSE
 	 * @return  string
 	 */
-	public static function widont($str)
+	public static function widont($str, $html = FALSE)
 	{
 		$str = rtrim($str);
-		$space = strrpos($str, ' ');
+
+		if($html === TRUE)
+		{
+			$words = explode(' ', strip_tags($str));
+			$second_last = count($words) - 2;
+			$second_last_word = $words[$second_last];
+			$position_second_last = strrpos($str, $second_last_word);
+		}
+
+		$space = ($html === TRUE AND $position_second_last !== FALSE) ? strpos($str, ' ', $position_second_last) : strrpos($str, ' ');
 
 		if ($space !== FALSE)
 		{
