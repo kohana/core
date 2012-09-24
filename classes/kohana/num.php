@@ -215,7 +215,7 @@ class Kohana_Num {
 	 * @param   string  $bytes  file size in SB format
      * @return  float
      */
-	public static function bytes($size)
+	public static function bytes($size, $si = TRUE)
     {
         // Prepare the size
         $size = trim( (string) $size);
