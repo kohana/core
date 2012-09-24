@@ -513,10 +513,13 @@ class Kohana_Text {
 	 * @return  string
 	 * @since   3.0.8
 	 */
-	public static function number($number)
+	public static function number($number, $lang = 'en-us')
 	{
 		// The number must always be an integer
 		$number = (int) $number;
+
+		// Languages that use the word 'and' between hundreds and base units
+		$and_lang = array('en-au', 'en-gb', 'en-uk', 'en-ie', 'en-nz', 'en-za', 'en-ca');
 
 		// Uncompiled text version
 		$text = array();
@@ -575,7 +578,14 @@ class Kohana_Text {
 
 		if (isset($and))
 		{
-			$text .= ' and '.$and;
+			if (in_array($lang, $and_lang))
+			{
+				$text .= ' and '.$and;
+			}
+			else
+			{
+				$text .= ' '.$and;
+			}
 		}
 
 		return $text;
