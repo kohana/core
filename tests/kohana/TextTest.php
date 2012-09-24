@@ -452,7 +452,7 @@ class Kohana_TextTest extends Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_number
 	 */
-	public function test_number($expected, $number, $lang = NULL)
+	public function test_number($expected, $number, $lang = 'en-us')
 	{
 		$this->assertSame($expected, Text::number($number, $lang));
 	}
