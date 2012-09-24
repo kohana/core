@@ -56,6 +56,9 @@ class Kohana_Num {
         'YiB' => 80,
     );
 
+    /**
+     * @var  array  Valid si prefixes => power of 10 that defines the unit's size
+     */
     public static $si_prefixes = array
     (
         'B'   => 0,
