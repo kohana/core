@@ -199,7 +199,7 @@ class Kohana_Num {
 					{
 						return round($value, $precision);
 					}
-					break;
+				break;
 			}
 		}
 	}
