@@ -48,10 +48,13 @@ class Kohana_NumTest extends Unittest_TestCase
 			array(204800.0, '200K'),
 			array(5242880.0, '5MiB'),
 			array(1000.0, 1000),
+
+			// @issue 4178
+			array(2500000000.0, '2.5GB'),
+			array(2500000000.0, '2.5GB', TRUE),
 			array(2684354560.0, '2.5GB', FALSE),
 			array(2684354560.0, '2.5GiB', FALSE),
 			array(2684354560.0, '2.5GiB', TRUE),
-			array(2500000000.0, '2.5GB'),
 		);
 	}
 	
