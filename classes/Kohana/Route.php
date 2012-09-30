@@ -297,26 +297,10 @@ class Kohana_Route {
 	 *
 	 *     $route = new Route($uri, $regex);
 	 *
-	 * The $uri parameter can either be a string for basic regex matching or it
-	 * can be a valid callback or anonymous function (php 5.3+). If you use a
-	 * callback or anonymous function, your method should return an array
-	 * containing the proper keys for the route. If you want the route to be
-	 * "reversable", you need pass the route string as the third parameter.
+	 * The $uri parameter should be a string for basic regex matching.
 	 *
-	 *     $route = new Route(function($uri)
-	 *     {
-	 *     	if (list($controller, $action, $param) = explode('/', $uri) AND $controller == 'foo' AND $action == 'bar')
-	 *     	{
-	 *     		return array(
-	 *     			'controller' => 'foobar',
-	 *     			'action' => $action,
-	 *     			'id' => $param,
-	 *     		);
-	 *     	},
-	 *     	'foo/bar/<id>'
-	 *     });
 	 *
-	 * @param   mixed   $uri    route URI pattern or lambda/callback function
+	 * @param   string  $uri    route URI pattern
 	 * @param   array   $regex  key patterns
 	 * @return  void
 	 * @uses    Route::_compile
