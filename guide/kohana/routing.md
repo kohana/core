@@ -82,40 +82,34 @@ TODO: example of either using directory or controller where it isn't in the rout
 
 ## Lambda/Callback route logic
 
-In 3.1, you can specify advanced routing schemes by using lambda routes. Instead of a URI, you can use an anonymous function or callback syntax to specify a function that will process your routes. Here's a simple example:
+In 3.3, you can specify advanced routing schemes by using filter callbacks. When you need to match a route based on more than just the URI of a request, for example, based on the method request (GET/POST/DELETE), a filter will allow you to do so. Here's a simple example:
 
-If you want to use reverse routing with lambda routes, you must pass the third parameter:
-
-	Route::set('testing', function($uri)
+	Route::set('save-form', 'save')
+		->filter(function($route, $params, $request)
 		{
-			if ($uri == 'foo/bar')
-				return array(
-					'controller' => 'Welcome',
-					'action'     => 'foobar',
-				);
-		},
-		'foo/bar'
-	);
-
-As you can see in the below route, the reverse uri parameter might not make sense.
-
-	Route::set('testing', function($uri)
-		{
-			if ($uri == '</language regex/>(.+)')
+			if ($request->method() !== HTTP_Request::POST)
 			{
-				Cookie::set('language', $match[1]);
-				return array(
-					'controller' => 'Welcome',
-					'action'     => 'foobar'
-				);
+				return FALSE; // This route only matches POST requests
 			}
-		},
-		'<language>/<rest_of_uri>
-	);
+		});
 
-If you are using php 5.2, you can still use callbacks for this behavior (this example omits the reverse route):
+Filters can also replace or alter the array of parameters:
 
-	Route::set('testing', array('Class', 'method_to_process_my_uri'));
+	Route::set('rest-api', 'api/<action>')
+		->filter(function($route, $params, $request)
+		{
+			// Prefix the method to the action name
+			$params['action'] = strtolower($request->method()).'_'.$params['action'];
+			return $params; // Returning an array will replace the parameters
+		})
+		->defaults(array(
+			'controller' => 'api',
+		));
+
+If you are using php 5.2, you can still use any valid callback for this behavior:
+
+	Route::set('testing', 'foo')
+		->filter(array('Class', 'method_to_process_my_uri'));
 
 ## Examples
 
