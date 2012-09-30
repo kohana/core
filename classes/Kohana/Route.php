@@ -81,13 +81,13 @@ class Kohana_Route {
 	 *         ));
 	 *
 	 * @param   string  $name           route name
-	 * @param   string  $uri_callback   URI pattern
+	 * @param   string  $uri            URI pattern
 	 * @param   array   $regex          regex patterns for route keys
 	 * @return  Route
 	 */
-	public static function set($name, $uri_callback = NULL, $regex = NULL)
+	public static function set($name, $uri = NULL, $regex = NULL)
 	{
-		return Route::$_routes[$name] = new Route($uri_callback, $regex);
+		return Route::$_routes[$name] = new Route($uri, $regex);
 	}
 
 	/**
