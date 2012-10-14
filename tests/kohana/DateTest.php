@@ -424,13 +424,6 @@ class Kohana_DateTest extends Unittest_TestCase
 				'months,years',
 				array('months' => 2, 'years' => 1),
 			),
-			array(
-				// #4194: http://dev.kohanaframework.org/issues/4194
-				strtotime('01-01-2010'),
-				strtotime('02-07-2010'),
-				'months',
-				6,
-			),
 		);
 	}
 
