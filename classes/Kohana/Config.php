@@ -20,6 +20,9 @@ class Kohana_Config {
 	// Configuration readers
 	protected $_sources = array();
 
+	// Array of config groups
+	protected $_groups = array();
+
 	/**
 	 * Attach a configuration reader. By default, the reader will be added as
 	 * the first used reader. However, if the reader should be used only when
@@ -44,6 +47,9 @@ class Kohana_Config {
 			// Place the reader at the bottom of the stack
 			$this->_sources[] = $source;
 		}
+
+		// Clear any cached _groups
+		$this->_groups = array();
 
 		return $this;
 	}
