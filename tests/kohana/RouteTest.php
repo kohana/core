@@ -361,6 +361,22 @@ class Kohana_RouteTest extends Unittest_TestCase
 				),
 				'',
 			),
+			/**
+			 * Specifying this should cause controller and action to show up
+			 * refs #4113
+			 */
+			array(
+				'(<controller>(/<action>(/<id>)))',
+				NULL,
+				array('controller' => 'welcome', 'action' => 'index'),
+				'welcome',
+				'index',
+				'welcome/index/1',
+				array(
+					'id' => '1'
+				),
+				'',
+			),
 		);
 	}
 
