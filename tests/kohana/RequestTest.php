@@ -75,8 +75,6 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 	/**
 	 * Tests that the allow_external flag prevents an external request.
-	 * 
-	 * @expectedException HTTP_Exception_404
 	 *
 	 * @return null
 	 */
@@ -89,7 +87,8 @@ class Kohana_RequestTest extends Unittest_TestCase
 		);
 
 		$request = new Request('http://www.google.com/', array(), FALSE);
-		$request->execute();
+
+		$this->assertEquals(FALSE, $request->is_external());
 	}
 
 	/**

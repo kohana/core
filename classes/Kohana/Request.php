@@ -974,9 +974,10 @@ class Kohana_Request implements HTTP_Request {
 
 		if ( ! $this->_route instanceof Route)
 		{
-			throw HTTP_Exception::factory(404, 'Unable to find a route to match the URI: :uri', array(
+			return HTTP_Exception::factory(404, 'Unable to find a route to match the URI: :uri', array(
 				':uri' => $this->_uri,
-			))->request($this);
+			))->request($this)
+				->get_response();
 		}
 
 		if ( ! $this->_client instanceof Request_Client)
