@@ -433,6 +433,15 @@ class Kohana_Route {
 			$params[$key] = $value;
 		}
 
+		foreach ($this->_defaults as $key => $value)
+		{
+			if ( ! isset($params[$key]) OR $params[$key] === '')
+			{
+				// Set default values for any key that was not matched
+				$params[$key] = $value;
+			}
+		}
+
 		if ( ! empty($params['controller']))
 		{
 			// PSR-0: Replace underscores with spaces, run ucwords, then replace underscore
@@ -443,15 +452,6 @@ class Kohana_Route {
 		{
 			// PSR-0: Replace underscores with spaces, run ucwords, then replace underscore
 			$params['directory'] = str_replace(' ', '_', ucwords(str_replace('_', ' ', $params['directory'])));
-		}
-
-		foreach ($this->_defaults as $key => $value)
-		{
-			if ( ! isset($params[$key]) OR $params[$key] === '')
-			{
-				// Set default values for any key that was not matched
-				$params[$key] = $value;
-			}
 		}
 
 		if ($this->_filters)

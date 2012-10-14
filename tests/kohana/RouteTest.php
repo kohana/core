@@ -351,7 +351,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 				'(<controller>(/<action>(/<id>)))',
 				NULL,
 				array('controller' => 'welcome', 'action' => 'index'),
-				'welcome',
+				'Welcome',
 				'index',
 				'unit/test/1',
 				array(
@@ -369,13 +369,25 @@ class Kohana_RouteTest extends Unittest_TestCase
 				'(<controller>(/<action>(/<id>)))',
 				NULL,
 				array('controller' => 'welcome', 'action' => 'index'),
-				'welcome',
+				'Welcome',
 				'index',
 				'welcome/index/1',
 				array(
 					'id' => '1'
 				),
 				'',
+			),
+			array(
+				'<controller>(/<action>(/<id>))',
+				NULL,
+				array('controller' => 'welcome', 'action' => 'index'),
+				'Welcome',
+				'index',
+				'welcome/foo',
+				array(
+					'action' => 'foo',
+				),
+				'welcome',
 			),
 		);
 	}
