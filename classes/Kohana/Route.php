@@ -531,8 +531,12 @@ class Kohana_Route {
 			return rtrim($params['host'], '/').'/'.$uri;
 		}
 
+		// Keep track of whether an optional param was replaced
+		$provided_optional = FALSE;
+
 		while (preg_match('#\([^()]++\)#', $uri, $match))
 		{
+
 			// Search for the matched value
 			$search = $match[0];
 
@@ -545,8 +549,26 @@ class Kohana_Route {
 
 				if (isset($params[$param]))
 				{
+					// Future optional params should be required
+					$provided_optional = TRUE;
+
 					// Replace the key with the parameter value
 					$replace = str_replace($key, $params[$param], $replace);
+				}
+				elseif ($provided_optional)
+				{
+					// Look for a default
+					if (isset($this->_defaults[$param]))
+					{
+						$replace = str_replace($key, $this->_defaults[$param], $replace);
+					}
+					else
+					{
+						// Ungrouped parameters are required
+						throw new Kohana_Exception('Required route parameter not passed: :param', array(
+							':param' => $param,
+						));
+					}
 				}
 				else
 				{
@@ -577,7 +599,7 @@ class Kohana_Route {
 					throw new Kohana_Exception('Required route parameter not passed: :param', array(
 						':param' => $param,
 					));
-			}
+				}
 			}
 
 			$uri = str_replace($key, $params[$param], $uri);
