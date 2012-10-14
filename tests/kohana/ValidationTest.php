@@ -542,7 +542,7 @@ class Kohana_ValidationTest extends Unittest_TestCase
 	public function test_object_parameters_not_in_messages()
 	{
 		$validation = Validation::factory(array('foo' => 'foo'))
-			->rule('bar', 'matches', array(':validation', 'foo', ':field'));
+			->rule('bar', 'matches', array(':validation', ':field', 'foo'));
 
 		$validation->check();
 		$errors = $validation->errors('validation');
