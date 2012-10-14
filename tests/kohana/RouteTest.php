@@ -428,6 +428,27 @@ class Kohana_RouteTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Optional params should not be used if what is passed in is identical
+	 * to the default.
+	 *
+	 * refs #4116
+	 *
+	 * @test
+	 * @covers Route::uri
+	 */
+	public function test_defaults_are_not_used_if_param_is_identical()
+	{
+		$route = new Route('(<controller>(/<action>(/<id>)))');
+		$route->defaults(array(
+			'controller' => 'welcome',
+			'action'     => 'index'
+		));
+
+		$this->assertSame('', $route->uri(array('controller' => 'welcome')));
+		$this->assertSame('welcome2', $route->uri(array('controller' => 'welcome2')));
+	}
+
+	/**
 	 * Provider for test_required_parameters_are_needed
 	 *
 	 * @return array

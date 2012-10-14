@@ -547,7 +547,7 @@ class Kohana_Route {
 			{
 				list($key, $param) = $match;
 
-				if (isset($params[$param]))
+				if (isset($params[$param]) AND $params[$param] !== Arr::get($this->_defaults, $param))
 				{
 					// Future optional params should be required
 					$provided_optional = TRUE;
