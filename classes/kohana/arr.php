@@ -274,7 +274,7 @@ class Kohana_Arr {
 	 */
 	public static function get($array, $key, $default = NULL)
 	{
-		return isset($array[$key]) ? $array[$key] : $default;
+		return (isset($array[$key]) OR array_key_exists($key, $array)) ? $array[$key] : $default;
 	}
 
 	/**
@@ -294,7 +294,7 @@ class Kohana_Arr {
 		$found = array();
 		foreach ($keys as $key)
 		{
-			$found[$key] = isset($array[$key]) ? $array[$key] : $default;
+			$found[$key] = (isset($array[$key]) OR array_key_exists($key, $array)) ? $array[$key] : $default;
 		}
 
 		return $found;
@@ -318,7 +318,7 @@ class Kohana_Arr {
 
 		foreach ($array as $row)
 		{
-			if (isset($row[$key]))
+			if (isset($row[$key]) OR array_key_exists($key, $array))
 			{
 				// Found a value in this row
 				$values[] = $row[$key];
