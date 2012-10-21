@@ -272,18 +272,10 @@ class Kohana_Arr {
 	 * @param   mixed   $default    default value
 	 * @return  mixed
 	 */
-    public static function get($array, $key, $default = NULL)
-    {
-        if (array_key_exists($key, $array)
-            OR ($array instanceof ArrayAccess AND $array->offsetExists($key)))
-        {
-            return $array[$key];
-        }
-        else
-        {
-            return $default;
-        }
-    }
+	public static function get($array, $key, $default = NULL)
+	{
+		return array_key_exists($key, $array) ? $array[$key] : $default;
+	}
 
 	/**
 	 * Retrieves multiple paths from an array. If the path does not exist in the
