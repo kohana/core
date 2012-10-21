@@ -337,6 +337,20 @@ class Kohana_RouteTest extends Unittest_TestCase
 				),
 				'',
 			),
+			array(
+				array('Route_Holder', 'default_return_callback'),
+				'(<controller>(/<action>(/<id>)))',
+				array('controller' => 'welcome', 'action' => 'index'),
+				'welcome',
+				'index',
+				'unit/test/1',
+				array(
+					'controller' => 'unit',
+					'action' => 'test',
+					'id' => "it's fabulous!"
+				),
+				'',
+			),
 		);
 	}
 
