@@ -274,7 +274,7 @@ class Kohana_Arr {
 	 */
 	public static function get($array, $key, $default = NULL)
 	{
-		return array_key_exists($key, $array) ? $array[$key] : $default;
+		return isset($array[$key]) ? $array[$key] : $default;
 	}
 
 	/**
