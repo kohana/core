@@ -78,3 +78,7 @@ would be located in
     classes/Kohana/HTTP/Header.php
 
 This also affects dynamically named classes such as drivers and ORMs. So for example, in the database config using `'mysql'` as the type instead of `'MySQL'` would throw a class not found error.
+
+## Query Builder Identifier Escaping
+
+The query builder will no longer detect columns like `COUNT("*")`. Instead, you will need to use `DB::expr()` any time you need an unescaped column. Ex: `DB::select(DB::expr('COUNT(*)'))->from('users')->execute()`.
