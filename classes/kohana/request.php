@@ -1538,6 +1538,7 @@ class Kohana_Request implements HTTP_Request {
 		if (is_array($key))
 		{
 			// Act as a setter, replace all fields
+			$this->_method = Request::POST;
 			$this->_post = $key;
 
 			return $this;
@@ -1555,6 +1556,7 @@ class Kohana_Request implements HTTP_Request {
 		}
 
 		// Act as a setter, single field
+		$this->_method = Request::POST;
 		$this->_post[$key] = $value;
 
 		return $this;
