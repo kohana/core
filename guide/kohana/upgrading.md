@@ -81,4 +81,20 @@ This also affects dynamically named classes such as drivers and ORMs. So for exa
 
 ## Query Builder Identifier Escaping
 
-The query builder will no longer detect columns like `COUNT("*")`. Instead, you will need to use `DB::expr()` any time you need an unescaped column. Ex: `DB::select(DB::expr('COUNT(*)'))->from('users')->execute()`.
+The query builder will no longer detect columns like `COUNT("*")`. Instead, you will need to use `DB::expr()` any time you need an unescaped column. For example:
+
+    DB::select(DB::expr('COUNT(*)'))->from('users')->execute()
+
+## Route Filters
+
+In `3.3.0`, you can no longer pass a callback to `Route::uri()`. Instead, we've added the ability to define one or more filters which will be able to decide if the route matches and will also allow you to change any of the parameters. These filters will receive the `Route` object being tested, the currently matched `$params` array, and the `Request` object as the three parameters.
+
+    Route::set('route-name', 'some/uri/<id>')
+        ->filter(function($route, $params, $request) {
+            // Returning FALSE will make this route not match
+            // Returning an array will replace the $params sent to the controller
+        });
+
+These filters can be used for things like prepending the request method to the action, checking if a resource exists before matching the route, or any other logic that the URI alone cannot provide. You can add as many filters as needed so it's useful to keep filters as small as possible to make them reusable.
+
+See [Routing](routing#route-filters) for more details.

@@ -80,9 +80,9 @@ TODO: example of either using directory or controller where it isn't in the rout
 
 ### Directory
 
-## Lambda/Callback route logic
+## Route Filters
 
-In 3.3, you can specify advanced routing schemes by using filter callbacks. When you need to match a route based on more than just the URI of a request, for example, based on the method request (GET/POST/DELETE), a filter will allow you to do so. Here's a simple example:
+In 3.3, you can specify advanced routing schemes by using filter callbacks. When you need to match a route based on more than just the URI of a request, for example, based on the method request (GET/POST/DELETE), a filter will allow you to do so. These filters will receive the `Route` object being tested, the currently matched `$params` array, and the `Request` object as the three parameters. Here's a simple example:
 
 	Route::set('save-form', 'save')
 		->filter(function($route, $params, $request)
