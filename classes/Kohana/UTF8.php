@@ -731,7 +731,7 @@ class Kohana_UTF8 {
 	/**
 	 * Takes an array of ints representing the Unicode characters and returns a UTF-8 string.
 	 * Astral planes are supported i.e. the ints in the input can be > 0xFFFF.
-	 * Occurrances of the BOM are ignored. Surrogates are not allowed.
+	 * Occurrences of the BOM are ignored. Surrogates are not allowed.
 	 *
 	 *     $str = UTF8::to_unicode($array);
 	 *

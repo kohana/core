@@ -383,7 +383,7 @@ class Kohana_Core {
 
 	/**
 	 * Reverts the effects of the `register_globals` PHP setting by unsetting
-	 * all global varibles except for the default super globals (GPCS, etc),
+	 * all global variables except for the default super globals (GPCS, etc),
 	 * which is a [potential security hole.][ref-wikibooks]
 	 *
 	 * This is called automatically by [Kohana::init] if `register_globals` is
@@ -927,7 +927,7 @@ class Kohana_Core {
 	}
 
 	/**
-	 * Get a message from a file. Messages are arbitary strings that are stored
+	 * Get a message from a file. Messages are arbitrary strings that are stored
 	 * in the `messages/` directory and reference by a key. Translation is not
 	 * performed on the returned values.  See [message files](kohana/files/messages)
 	 * for more information.
