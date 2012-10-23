@@ -76,7 +76,7 @@ class Kohana_HTTPTest extends Unittest_TestCase {
 		{
 			$response = $e->get_response();
 
-			$this->assertType($expected_exception, $e);
+			$this->assertInstanceOf($expected_exception, $e);
 			$this->assertEquals($expected_location, $response->headers('Location'));
 			
 			return;

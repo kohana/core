@@ -263,13 +263,11 @@ class Kohana_RequestTest extends Unittest_TestCase
 			array(
 				'foo/bar',
 				'http',
-				TRUE,
 				'http://localhost/kohana/foo/bar'
 			),
 			array(
 				'foo',
 				'http',
-				TRUE,
 				'http://localhost/kohana/foo'
 			),
 		);
