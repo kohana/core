@@ -291,13 +291,7 @@ class Kohana_Arr {
 	 */
 	public static function extract($array, array $keys, $default = NULL)
 	{
-		$found = array();
-		foreach ($keys as $key)
-		{
-			$found[$key] = isset($array[$key]) ? $array[$key] : $default;
-		}
-
-		return $found;
+		return self::overwrite(array_fill_keys($keys,$default), $array);
 	}
 
 	/**
