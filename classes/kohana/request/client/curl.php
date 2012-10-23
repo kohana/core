@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
  * [Request_Client_External] Curl driver performs external requests using the
- * php-curl extention. This is the default driver for all external requests.
+ * php-curl extension. This is the default driver for all external requests.
  * 
  * @package    Kohana
  * @category   Base

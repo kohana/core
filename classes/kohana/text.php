@@ -412,7 +412,7 @@ class Kohana_Text {
 	 * [!!] This method is not foolproof since it uses regex to parse HTML.
 	 *
 	 * @param   string  $str    subject
-	 * @param   boolean $br     convert single linebreaks to <br />
+	 * @param   boolean $br     convert single line breaks to <br />
 	 * @return  string
 	 */
 	public static function auto_p($str, $br = TRUE)
@@ -531,7 +531,7 @@ class Kohana_Text {
 		{
 			if ($number / $unit >= 1)
 			{
-				// $value = the number of times the number is divisble by unit
+				// $value = the number of times the number is divisible by unit
 				$number -= $unit * ($value = (int) floor($number / $unit));
 				// Temporary var for textifying the current unit
 				$item = '';
