@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * HTTT Caching adaptor class that provides caching services to the
+ * HTTP Caching adaptor class that provides caching services to the
  * [Request_Client] class, using HTTP cache control logic as defined in
  * RFC 2616.
  *

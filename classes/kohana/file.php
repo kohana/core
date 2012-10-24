@@ -163,16 +163,16 @@ class Kohana_File {
 		// Write files in 8k blocks
 		$block_size = 1024 * 8;
 
-		// Total number of peices
-		$peices = 0;
+		// Total number of pieces
+		$pieces = 0;
 
 		while ( ! feof($file))
 		{
 			// Create another piece
-			$peices += 1;
+			$pieces += 1;
 
 			// Create a new file piece
-			$piece = str_pad($peices, 3, '0', STR_PAD_LEFT);
+			$piece = str_pad($pieces, 3, '0', STR_PAD_LEFT);
 			$piece = fopen($filename.'.'.$piece, 'wb+');
 
 			// Number of bytes read
@@ -195,7 +195,7 @@ class Kohana_File {
 		// Close the file
 		fclose($file);
 
-		return $peices;
+		return $pieces;
 	}
 
 	/**
@@ -214,7 +214,7 @@ class Kohana_File {
 		// Read files in 8k blocks
 		$block_size = 1024 * 8;
 
-		// Total number of peices
+		// Total number of pieces
 		$pieces = 0;
 
 		while (is_file($piece = $filename.'.'.str_pad($pieces + 1, 3, '0', STR_PAD_LEFT)))
@@ -231,7 +231,7 @@ class Kohana_File {
 				fwrite($file, fread($piece, $block_size));
 			}
 
-			// Close the peice
+			// Close the piece
 			fclose($piece);
 		}
 
