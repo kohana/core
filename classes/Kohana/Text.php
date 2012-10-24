@@ -239,7 +239,7 @@ class Kohana_Text {
 	 *      $str = Text::ucfirst('content-type'); // returns "Content-Type" 
 	 *
 	 * @param   string  $string     string to transform
-	 * @param   string  $delimiter  delemiter to use
+	 * @param   string  $delimiter  delimiter to use
 	 * @return  string
 	 */
 	public static function ucfirst($string, $delimiter = '-')
@@ -272,7 +272,7 @@ class Kohana_Text {
 	 * @param   string  $str                    phrase to replace words in
 	 * @param   array   $badwords               words to replace
 	 * @param   string  $replacement            replacement string
-	 * @param   boolean $replace_partial_words  replace words across word boundries (space, period, etc)
+	 * @param   boolean $replace_partial_words  replace words across word boundaries (space, period, etc)
 	 * @return  string
 	 * @uses    UTF8::strlen
 	 */
@@ -681,6 +681,56 @@ class Kohana_Text {
 
 		// The value requested could not be found
 		return FALSE;
+	}
+
+	/**
+	 * Turns an array of strings/ints into a readable, comma separated list.
+	 *
+	 * For example: array('eggs', 'milk', 'cheese') => "eggs, milk and cheese".
+	 *
+	 * @param   array   $words  An array of words.
+	 * @throws  Kohana_Exception
+	 * @return  string          An inline, human readable list.
+	 */
+	public static function readable_list(array $words)
+	{
+		// Check that each element in $words is a string or int.
+		foreach ($words as $word)
+		{
+			if (is_array($word)) {
+				throw new Kohana_Exception('The array must only be one level deep.');
+			}
+			elseif ( ! is_string($word) AND ! is_int($word))
+			{
+				throw new Kohana_Exception('Array values must be either strings or integers.');
+			}
+		}
+
+		// Setup some counting variables.
+		$total = count($words);
+		$current = 1;
+		$string = '';
+
+		// Loop through and generate the readable string.
+		foreach ($words as $word)
+		{
+			if ($total - 1 === $current)
+			{
+				$string .= $word.' and ';
+			}
+			elseif ($total === $current)
+			{
+				$string .= $word;
+			}
+			else
+			{
+				$string .= $word.', ';
+			}
+
+			$current++;
+		}
+
+		return $string;
 	}
 
 } // End text

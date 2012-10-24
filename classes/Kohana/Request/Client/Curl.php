@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * [Request_Client_External] Curl driver performs external requests using the
- * php-curl extention. This is the default driver for all external requests.
+ * php-curl extension. This is the default driver for all external requests.
  * 
  * @package    Kohana
  * @category   Base
@@ -55,7 +55,7 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 			$options[CURLOPT_COOKIE] = http_build_query($cookies, NULL, '; ');
 		}
 
-		// Get any exisiting response headers
+		// Get any existing response headers
 		$response_header = $response->headers();
 
 		// Implement the standard parsing parameters
