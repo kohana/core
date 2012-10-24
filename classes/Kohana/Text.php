@@ -683,4 +683,54 @@ class Kohana_Text {
 		return FALSE;
 	}
 
+	/**
+	 * Turns an array of strings/ints into a readable, comma separated list.
+	 *
+	 * For example: array('eggs', 'milk', 'cheese') => "eggs, milk and cheese".
+	 *
+	 * @param   array   $words  An array of words.
+	 * @throws  Kohana_Exception
+	 * @return  string          An inline, human readable list.
+	 */
+	public static function readable_list(array $words)
+	{
+		// Check that each element in $words is a string or int.
+		foreach ($words as $word)
+		{
+			if (is_array($word)) {
+				throw new Kohana_Exception('The array must only be one level deep.');
+			}
+			elseif ( ! is_string($word) AND ! is_int($word))
+			{
+				throw new Kohana_Exception('Array values must be either strings or integers.');
+			}
+		}
+
+		// Setup some counting variables.
+		$total = count($words);
+		$current = 1;
+		$string = '';
+
+		// Loop through and generate the readable string.
+		foreach ($words as $word)
+		{
+			if ($total - 1 === $current)
+			{
+				$string .= $word.' and ';
+			}
+			elseif ($total === $current)
+			{
+				$string .= $word;
+			}
+			else
+			{
+				$string .= $word.', ';
+			}
+
+			$current++;
+		}
+
+		return $string;
+	}
+
 } // End text
