@@ -361,34 +361,6 @@ class Kohana_RouteTest extends Unittest_TestCase
 				),
 				'',
 			),
-			/**
-			 * Specifying this should cause controller and action to show up
-			 * refs #4113
-			 */
-			array(
-				'(<controller>(/<action>(/<id>)))',
-				NULL,
-				array('controller' => 'welcome', 'action' => 'index'),
-				'Welcome',
-				'index',
-				'welcome/index/1',
-				array(
-					'id' => '1'
-				),
-				'',
-			),
-			array(
-				'<controller>(/<action>(/<id>))',
-				NULL,
-				array('controller' => 'welcome', 'action' => 'index'),
-				'Welcome',
-				'index',
-				'welcome/foo',
-				array(
-					'action' => 'foo',
-				),
-				'welcome',
-			),
 		);
 	}
 
@@ -425,6 +397,49 @@ class Kohana_RouteTest extends Unittest_TestCase
 		$this->assertSame($a, $matches['action']);
 		$this->assertSame($test_uri, $route->uri($test_uri_array));
 		$this->assertSame($default_uri, $route->uri());
+	}
+
+	/**
+	 * Provider for test_optional_groups_containing_specified_params
+	 *
+	 * @return array
+	 */
+	public function provider_optional_groups_containing_specified_params()
+	{
+		return array(
+			/**
+			 * Specifying this should cause controller and action to show up
+			 * refs #4113
+			 */
+			array(
+				'(<controller>(/<action>(/<id>)))',
+				array('controller' => 'welcome', 'action' => 'index'),
+				array('id' => '1'),
+				'welcome/index/1',
+			),
+			array(
+				'<controller>(/<action>(/<id>))',
+				array('controller' => 'welcome', 'action' => 'index'),
+				array('action' => 'foo'),
+				'welcome/foo',
+			),
+		);
+	}
+
+	/**
+	 * When an optional param is specified, the optional params leading up to it
+	 * must be in the URI.
+	 *
+	 * @dataProvider provider_optional_groups_containing_specified_params
+	 *
+	 * @ticket 4113
+	 */
+	public function test_optional_groups_containing_specified_params($uri, $defaults, $params, $expected)
+	{
+		$route = new Route($uri, NULL);
+		$route->defaults($defaults);
+
+		$this->assertSame($expected, $route->uri($params));
 	}
 
 	/**
