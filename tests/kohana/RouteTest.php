@@ -423,6 +423,39 @@ class Kohana_RouteTest extends Unittest_TestCase
 				array('action' => 'foo'),
 				'welcome/foo',
 			),
+			array(
+				'<controller>(/<action>(/<id>))',
+				array('controller' => 'welcome', 'action' => 'index'),
+				array('action' => 'index'),
+				'welcome',
+			),
+			/**
+			 * refs #4630
+			 */
+			array(
+				'api(/<version>)/const(/<id>)(/<custom>)',
+				array('version' => 1),
+				NULL,
+				'api/const',
+			),
+			array(
+				'api(/<version>)/const(/<id>)(/<custom>)',
+				array('version' => 1),
+				array('version' => 9),
+				'api/9/const',
+			),
+			array(
+				'api(/<version>)/const(/<id>)(/<custom>)',
+				array('version' => 1),
+				array('id' => 2),
+				'api/const/2',
+			),
+			array(
+				'api(/<version>)/const(/<id>)(/<custom>)',
+				array('version' => 1),
+				array('custom' => 'x'),
+				'api/const/x',
+			),
 		);
 	}
 
@@ -433,6 +466,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 	 * @dataProvider provider_optional_groups_containing_specified_params
 	 *
 	 * @ticket 4113
+	 * @ticket 4630
 	 */
 	public function test_optional_groups_containing_specified_params($uri, $defaults, $params, $expected)
 	{
@@ -568,6 +602,15 @@ class Kohana_RouteTest extends Unittest_TestCase
 		return array(
 			array(
 				'<controller>(/<action)',
+				NULL,
+				array('action' => 'awesome-action'),
+			),
+			/**
+			 * Optional params are required when they lead to a specified param
+			 * refs #4113
+			 */
+			array(
+				'(<controller>(/<action>))',
 				NULL,
 				array('action' => 'awesome-action'),
 			),
