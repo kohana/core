@@ -588,18 +588,8 @@ class Kohana_RouteTest extends Unittest_TestCase
 	{
 		$route = new Route($uri, $regex);
 
-		try
-		{
-			$route->uri($uri_array);
-
-			$this->fail('Route::uri should throw exception if required param is not provided');
-		}
-		catch(Exception $e)
-		{
-			$this->assertInstanceOf('Kohana_Exception', $e);
-			// Check that the error in question is about the controller param
-			$this->assertContains('controller', $e->getMessage());
-		}
+		$this->setExpectedException('Kohana_Exception', 'controller');
+		$route->uri($uri_array);
 	}
 
 	/**
