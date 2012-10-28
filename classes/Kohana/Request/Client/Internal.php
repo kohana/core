@@ -125,4 +125,5 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		// Return the response
 		return $response;
 	}
-} // End Kohana_Request_Client_Internal
+
+}

@@ -609,4 +609,4 @@ class Kohana_Validation implements ArrayAccess {
 		return $messages;
 	}
 
-} // End Validation
+}

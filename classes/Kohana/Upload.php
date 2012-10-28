@@ -253,4 +253,4 @@ class Kohana_Upload {
 		return FALSE;
 	}
 
-} // End upload
+}
