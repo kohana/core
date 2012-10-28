@@ -69,4 +69,4 @@ abstract class Kohana_HTTP_Exception extends Kohana_Exception {
 		return Kohana_Exception::response($this);
 	}
 
-} // End HTTP_Exception
+}

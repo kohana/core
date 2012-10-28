@@ -548,4 +548,4 @@ class Kohana_Valid {
 		return ($array[$field] === $array[$match]);
 	}
 
-} // End Valid
+}

@@ -711,4 +711,4 @@ class Kohana_Response implements HTTP_Response {
 		return array($start, $end);
 	}
 
-} // End Response
+}

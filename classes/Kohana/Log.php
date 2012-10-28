@@ -225,4 +225,4 @@ class Kohana_Log {
 		}
 	}
 
-} // End Log
+}

@@ -39,4 +39,4 @@ class Kohana_HTTP_Exception_305 extends HTTP_Exception_Expected {
 		return TRUE;
 	}
 
-} // End HTTP_Exception_305
+}

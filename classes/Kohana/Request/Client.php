@@ -421,4 +421,4 @@ abstract class Kohana_Request_Client {
 		return NULL;
 	}
 
-} // End Request_Client
+}

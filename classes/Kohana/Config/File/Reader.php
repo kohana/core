@@ -53,4 +53,4 @@ class Kohana_Config_File_Reader implements Kohana_Config_Reader {
 		return $config;
 	}
 
-} // End Config_File_Reader
+}

@@ -26,4 +26,4 @@ class Kohana_Validation_Exception extends Kohana_Exception {
 		parent::__construct($message, $values, $code, $previous);
 	}
 
-} // End Validation_Exception
+}

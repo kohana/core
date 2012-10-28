@@ -279,4 +279,4 @@ class Kohana_Kohana_Exception extends Exception {
 		return $response;
 	}
 
-} // End Kohana_Exception
+}

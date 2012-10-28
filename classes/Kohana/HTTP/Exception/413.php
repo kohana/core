@@ -7,4 +7,4 @@ class Kohana_HTTP_Exception_413 extends HTTP_Exception {
 	 */
 	protected $_code = 413;
 
-} // End HTTP_Exception_413
+}

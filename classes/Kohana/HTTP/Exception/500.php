@@ -7,4 +7,4 @@ class Kohana_HTTP_Exception_500 extends HTTP_Exception {
 	 */
 	protected $_code = 500;
 
-} // End HTTP_Exception_500
+}

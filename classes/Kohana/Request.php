@@ -1328,4 +1328,4 @@ class Kohana_Request implements HTTP_Request {
 		return $this;
 	}
 
-} // End Request
+}

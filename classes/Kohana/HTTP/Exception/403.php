@@ -7,4 +7,4 @@ class Kohana_HTTP_Exception_403 extends HTTP_Exception {
 	 */
 	protected $_code = 403;
 
-} // End HTTP_Exception_403
+}

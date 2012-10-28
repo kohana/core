@@ -134,7 +134,7 @@ class Kohana_I18n {
 		return I18n::$_cache[$lang] = $table;
 	}
 
-} // End I18n
+}
 
 if ( ! function_exists('__'))
 {

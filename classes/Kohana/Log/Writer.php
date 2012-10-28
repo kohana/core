@@ -92,4 +92,4 @@ abstract class Kohana_Log_Writer {
 		return $string;
 	}
 
-} // End Log_Writer
+}

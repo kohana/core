@@ -25,4 +25,4 @@ interface Kohana_Config_Writer extends Kohana_Config_Source
 	 */
 	public function write($group, $key, $config);
 
-} // End Config_Writer
+}

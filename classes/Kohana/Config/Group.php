@@ -128,4 +128,4 @@ class Kohana_Config_Group extends ArrayObject {
 		return parent::offsetSet($key, $value);
 	}
 
-} // End Config_Group
+}

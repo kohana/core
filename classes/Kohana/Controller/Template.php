@@ -47,4 +47,4 @@ abstract class Kohana_Controller_Template extends Controller {
 		parent::after();
 	}
 
-} // End Controller_Template
+}

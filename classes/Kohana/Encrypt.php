@@ -210,4 +210,4 @@ class Kohana_Encrypt {
 		return rtrim(mcrypt_decrypt($this->_cipher, $this->_key, $data, $this->_mode, $iv), "\0");
 	}
 
-} // End Encrypt
+}

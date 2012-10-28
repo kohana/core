@@ -10,4 +10,4 @@ class Kohana_Session_Exception extends Kohana_Exception {
 
 	const SESSION_CORRUPT = 1;
 
-} // End Session_Exception
+}

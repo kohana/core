@@ -79,4 +79,4 @@ abstract class Kohana_HTTP_Exception_Expected extends HTTP_Exception {
 		return $this->_response;
 	}
 
-} // End HTTP_Excepected
+}
