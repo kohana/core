@@ -2,7 +2,7 @@
 /**
  * [Request_Client_External] Curl driver performs external requests using the
  * php-curl extention. This is the default driver for all external requests.
- * 
+ *
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
@@ -63,7 +63,7 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 		$this->_options[CURLOPT_RETURNTRANSFER] = TRUE;
 		$this->_options[CURLOPT_HEADER]         = FALSE;
 
-		// Apply any additional options set to 
+		// Apply any additional options set to
 		$options += $this->_options;
 
 		$uri = $request->uri();
@@ -132,4 +132,4 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 		return $options;
 	}
 
-} // End Kohana_Request_Client_Curl
+} // End Request_Client_Curl

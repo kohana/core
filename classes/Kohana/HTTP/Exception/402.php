@@ -7,4 +7,4 @@ class Kohana_HTTP_Exception_402 extends HTTP_Exception {
 	 */
 	protected $_code = 402;
 
-}
+} // End HTTP_Exception_402

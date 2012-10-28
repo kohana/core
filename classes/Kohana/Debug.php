@@ -462,4 +462,4 @@ class Kohana_Debug {
 		return $output;
 	}
 
-}
+} // End Debug
