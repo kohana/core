@@ -11,7 +11,7 @@
  */
 interface Kohana_Config_Reader extends Kohana_Config_Source
 {
-	
+
 	/**
 	 * Tries to load the specificed configuration group
 	 *
@@ -21,5 +21,5 @@ interface Kohana_Config_Reader extends Kohana_Config_Source
 	 * @return boolean|array
 	 */
 	public function load($group);
-	
-}
+
+} // End Config_Reader

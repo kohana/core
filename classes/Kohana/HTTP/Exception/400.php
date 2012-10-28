@@ -7,4 +7,4 @@ class Kohana_HTTP_Exception_400 extends HTTP_Exception {
 	 */
 	protected $_code = 400;
 
-}
+} // End HTTP_Exception_400

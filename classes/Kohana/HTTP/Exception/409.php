@@ -7,4 +7,4 @@ class Kohana_HTTP_Exception_409 extends HTTP_Exception {
 	 */
 	protected $_code = 409;
 
-}
+} // End HTTP_Exception_409

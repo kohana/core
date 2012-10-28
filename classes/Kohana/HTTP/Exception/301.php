@@ -7,4 +7,4 @@ class Kohana_HTTP_Exception_301 extends HTTP_Exception_Redirect {
 	 */
 	protected $_code = 301;
 
-}
+} // End HTTP_Exception_301

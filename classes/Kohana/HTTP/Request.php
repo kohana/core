@@ -61,4 +61,4 @@ interface Kohana_HTTP_Request extends HTTP_Message {
 	 */
 	public function post($key = NULL, $value = NULL);
 
-}
+} // End HTTP_Request

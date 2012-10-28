@@ -7,4 +7,4 @@ class Kohana_HTTP_Exception_411 extends HTTP_Exception {
 	 */
 	protected $_code = 411;
 
-}
+} // End HTTP_Exception_411

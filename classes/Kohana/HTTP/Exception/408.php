@@ -7,4 +7,4 @@ class Kohana_HTTP_Exception_408 extends HTTP_Exception {
 	 */
 	protected $_code = 408;
 
-}
+} // End HTTP_Exception_408

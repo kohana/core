@@ -12,21 +12,21 @@ abstract class Kohana_Log_Writer {
 
 	/**
 	 * @var  string  timestamp format for log entries.
-	 * 
+	 *
 	 * Defaults to Date::$timestamp_format
 	 */
 	public static $timestamp;
 
 	/**
 	 * @var  string  timezone for log entries
-	 * 
+	 *
 	 * Defaults to Date::$timezone, which defaults to date_default_timezone_get()
 	 */
 	public static $timezone;
 
 	/**
 	 * Numeric log level to string lookup table.
-	 * @var array 
+	 * @var array
 	 */
 	protected $_log_levels = array(
 		LOG_EMERG   => 'EMERGENCY',
@@ -68,7 +68,7 @@ abstract class Kohana_Log_Writer {
 
 	/**
 	 * Formats a log entry.
-	 * 
+	 *
 	 * @param   array   $message
 	 * @param   string  $format
 	 * @return  string
@@ -92,4 +92,4 @@ abstract class Kohana_Log_Writer {
 		return $string;
 	}
 
-} // End Kohana_Log_Writer
+} // End Log_Writer

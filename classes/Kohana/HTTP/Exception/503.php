@@ -7,4 +7,4 @@ class Kohana_HTTP_Exception_503 extends HTTP_Exception {
 	 */
 	protected $_code = 503;
 
-}
+} // End HTTP_Exception_503

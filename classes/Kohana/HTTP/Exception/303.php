@@ -7,4 +7,4 @@ class Kohana_HTTP_Exception_303 extends HTTP_Exception_Redirect {
 	 */
 	protected $_code = 303;
 
-}
+} // End HTTP_Exception_303
