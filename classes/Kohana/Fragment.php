@@ -144,4 +144,4 @@ class Kohana_Fragment {
 		Kohana::cache(Fragment::_cache_key($name, $i18n), NULL, -3600);
 	}
 
-} // End Fragment
+}

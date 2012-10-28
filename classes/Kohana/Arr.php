@@ -617,4 +617,4 @@ class Kohana_Arr {
 		return $flat;
 	}
 
-} // End Arr
+}

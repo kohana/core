@@ -204,4 +204,4 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 	 */
 	abstract protected function _send_message(Request $request, Response $response);
 
-} // End Request_Client_External
+}

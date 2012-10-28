@@ -626,4 +626,4 @@ class Kohana_Route {
 		return $uri;
 	}
 
-} // End Route
+}

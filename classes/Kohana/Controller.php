@@ -142,4 +142,4 @@ abstract class Kohana_Controller {
 		return HTTP::check_cache($this->request, $this->response, $etag);
 	}
 
-} // End Controller
+}

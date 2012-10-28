@@ -106,4 +106,4 @@ class Kohana_Request_Client_Stream extends Request_Client_External {
 		return $response;
 	}
 
-} // End Request_Client_Stream
+}

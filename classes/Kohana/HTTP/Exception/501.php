@@ -7,4 +7,4 @@ class Kohana_HTTP_Exception_501 extends HTTP_Exception {
 	 */
 	protected $_code = 501;
 
-} // End HTTP_Exception_501
+}

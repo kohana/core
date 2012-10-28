@@ -22,4 +22,4 @@ interface Kohana_Config_Reader extends Kohana_Config_Source
 	 */
 	public function load($group);
 
-} // End Config_Reader
+}

@@ -758,7 +758,7 @@ class Kohana_UTF8 {
 		return _from_unicode($arr);
 	}
 
-} // End UTF8
+}
 
 if (Kohana_UTF8::$server_utf8 === NULL)
 {

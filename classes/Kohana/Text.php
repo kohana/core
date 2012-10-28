@@ -683,4 +683,4 @@ class Kohana_Text {
 		return FALSE;
 	}
 
-} // End Text
+}

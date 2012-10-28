@@ -158,4 +158,4 @@ class Kohana_Cookie {
 		return sha1($agent.$name.$value.Cookie::$salt);
 	}
 
-} // End Cookie
+}

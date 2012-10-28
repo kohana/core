@@ -132,4 +132,4 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 		return $options;
 	}
 
-} // End Request_Client_Curl
+}

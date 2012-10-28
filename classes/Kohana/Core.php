@@ -1045,4 +1045,4 @@ class Kohana_Core {
 		return 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
 	}
 
-} // End Kohana
+}

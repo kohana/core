@@ -7,4 +7,4 @@ class Kohana_HTTP_Exception_406 extends HTTP_Exception {
 	 */
 	protected $_code = 406;
 
-} // End HTTP_Exception_406
+}

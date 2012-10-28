@@ -54,4 +54,4 @@ interface Kohana_HTTP_Message {
 	 */
 	public function render();
 
-} // End HTTP_Message
+}

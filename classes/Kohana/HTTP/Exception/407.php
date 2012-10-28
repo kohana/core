@@ -7,4 +7,4 @@ class Kohana_HTTP_Exception_407 extends HTTP_Exception {
 	 */
 	protected $_code = 407;
 
-} // End HTTP_Exception_407
+}
