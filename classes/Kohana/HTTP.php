@@ -44,7 +44,7 @@ abstract class Kohana_HTTP {
 	 * Checks the browser cache to see the response needs to be returned,
 	 * execution will halt and a 304 Not Modified will be sent if the
 	 * browser cache is up to date.
-	 * 
+	 *
 	 * @param  Request   $request   Request
 	 * @param  Response  $response  Response
 	 * @param  string    $etag      Resource ETag
@@ -214,4 +214,5 @@ abstract class Kohana_HTTP {
 
 		return implode('&', $encoded);
 	}
-} // End Kohana_HTTP
+
+}

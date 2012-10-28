@@ -231,4 +231,4 @@ class Kohana_Num {
 		return $bytes;
 	}
 
-} // End num
+}

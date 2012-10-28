@@ -3,12 +3,12 @@
  * [Request_Client_External] HTTP driver performs external requests using the
  * php-http extention. To use this driver, ensure the following is completed
  * before executing an external request- ideally in the application bootstrap.
- * 
+ *
  * @example
- * 
+ *
  *       // In application bootstrap
  *       Request_Client_External::$client = 'Request_Client_HTTP';
- * 
+ *
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
@@ -118,4 +118,4 @@ class Kohana_Request_Client_HTTP extends Request_Client_External {
 		return $response;
 	}
 
-} // End Kohana_Request_Client_HTTP
+}

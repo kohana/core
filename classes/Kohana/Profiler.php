@@ -382,4 +382,4 @@ class Kohana_Profiler {
 		return $stats;
 	}
 
-} // End Profiler
+}

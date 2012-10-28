@@ -27,4 +27,4 @@ class Kohana_Log_StdOut extends Log_Writer {
 		}
 	}
 
-} // End Kohana_Log_StdOut
+}

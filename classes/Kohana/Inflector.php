@@ -266,4 +266,4 @@ class Kohana_Inflector {
 		return preg_replace('/[_-]+/', ' ', trim($str));
 	}
 
-} // End Inflector
+}
