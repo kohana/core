@@ -997,7 +997,6 @@ class Kohana_Core {
 	/**
 	 * Catches errors that are not caught by the error handler, such as E_PARSE.
 	 *
-	 * @uses    Kohana_Exception::handler
 	 * @return  void
 	 */
 	public static function shutdown_handler()
@@ -1007,6 +1006,12 @@ class Kohana_Core {
 			// Do not execute when not active
 			return;
 		}
+
+		// Retrieve the current exception handler (and consiquently clear it)
+		$exception_handler = set_exception_handler(function(){});
+
+		// Restore it back to it's previous state
+		restore_exception_handler();
 
 		try
 		{
@@ -1019,7 +1024,7 @@ class Kohana_Core {
 		catch (Exception $e)
 		{
 			// Pass the exception to the handler
-			Kohana_Exception::handler($e);
+			call_user_func($exception_handler, $e);
 		}
 
 		if (Kohana::$errors AND $error = error_get_last() AND in_array($error['type'], Kohana::$shutdown_errors))
@@ -1028,7 +1033,7 @@ class Kohana_Core {
 			ob_get_level() AND ob_clean();
 
 			// Fake an exception for nice debugging
-			Kohana_Exception::handler(new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']));
+			call_user_func($exception_handler, new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']));
 
 			// Shutdown now to avoid a "death loop"
 			exit(1);
