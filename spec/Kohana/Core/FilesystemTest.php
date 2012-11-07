@@ -2,12 +2,15 @@
 
 namespace Kohana\Core;
 
+use \org\bovigo\vfs\vfsStreamWrapper;
+use \org\bovigo\vfs\vfsStream;
+
 class FilesystemTest extends \PHPUnit_Framework_TestCase
 {
 	protected function setUp()
 	{
-		\org\bovigo\vfs\vfsStreamWrapper::register();
-		$this->fs_root = \org\bovigo\vfs\vfsStream::create(
+		vfsStreamWrapper::register();
+		$this->fs_root = vfsStream::create(
 			array(
 				'APPPATH' => array(
 					'classes' => array(
@@ -22,19 +25,20 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 				'SYSPATH' => array(
 					'classes' => array(
 						'Foobar.php' => 'other content',
+						'Foo.php' => 'other content',
 					)
 				),
 			),
-			\org\bovigo\vfs\vfsStream::newDirectory('/')
+			vfsStream::newDirectory('/')
 		);
-		\org\bovigo\vfs\vfsStreamWrapper::setRoot($this->fs_root);
+		vfsStreamWrapper::setRoot($this->fs_root);
 
 		$this->filesystem = new Filesystem(
 			array(
-				\org\bovigo\vfs\vfsStream::url('APPPATH/'),
-				\org\bovigo\vfs\vfsStream::url('module1/'),
-				\org\bovigo\vfs\vfsStream::url('module2/'),
-				\org\bovigo\vfs\vfsStream::url('SYSPATH/'),
+				vfsStream::url('APPPATH/'),
+				vfsStream::url('module1/'),
+				vfsStream::url('module2/'),
+				vfsStream::url('SYSPATH/'),
 			)
 		);
 	}
@@ -87,6 +91,20 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(
 			array(),
 			$this->filesystem->find_all_files('classes', 'Test')
+		);
+	}
+
+	/**
+	 * realpath() doesn't work with vfsStream, so we have false as the keys. How to fix?
+	 */
+	public function test_it_lists_all_files()
+	{
+		$this->assertEquals(
+			array(
+				'classes/Foobar.php' => 'vfs://APPPATH/classes/Foobar.php',
+				'classes/Foo.php' => 'vfs://SYSPATH/classes/Foo.php',
+			),
+			$this->filesystem->list_files('classes')
 		);
 	}
 }

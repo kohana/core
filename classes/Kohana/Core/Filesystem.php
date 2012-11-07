@@ -16,6 +16,31 @@ class Filesystem
 		return $this->_paths;
 	}
 
+	public function list_files($directory)
+	{
+		$found = array();
+
+		foreach ($this->_paths as $path)
+		{
+			if (is_dir($path.$directory))
+			{
+				$dir = new \DirectoryIterator($path.$directory);
+
+				foreach ($dir as $file)
+				{
+					$filename = $file->getFilename();
+
+					// Relative filename is the array key
+					$key = $directory.'/'.$filename;
+					if ( ! isset($found[$key]))
+						$found[$key] = realpath($file->getPathName());
+				}
+			}
+		}
+
+		return $found;
+	}
+
 	public function find_file($dir, $file, $ext = 'php')
 	{
 		$found = FALSE;
