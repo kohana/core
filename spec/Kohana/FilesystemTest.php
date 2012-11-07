@@ -16,7 +16,11 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 				),
 				'module1' => array(),
 				'module2' => array(),
-				'SYSPATH' => array(),
+				'SYSPATH' => array(
+					'classes' => array(
+						'Foobar.php' => 'other content',
+					)
+				),
 			),
 			\org\bovigo\vfs\vfsStream::newDirectory('/')
 		);

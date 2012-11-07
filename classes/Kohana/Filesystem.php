@@ -25,7 +25,10 @@ class Filesystem
 		foreach ($this->_include_paths as $dir)
 		{
 			if (is_file($dir.$path))
+			{
 				$found = $dir.$path;
+				break;
+			}
 		}
 
 		return $found;
