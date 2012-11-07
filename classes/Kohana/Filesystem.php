@@ -6,14 +6,14 @@ class Filesystem
 {
 	protected $_include_paths = array();
 
-	public function __construct($apppath, $modules, $syspath)
+	public function __construct(array $paths)
 	{
-		$this->_include_paths = array_merge(array($apppath), $modules, array($syspath));
+		$this->_paths = $paths;
 	}
 
 	public function include_paths()
 	{
-		return $this->_include_paths;
+		return $this->_paths;
 	}
 
 	public function find_file($dir, $file)
@@ -22,7 +22,7 @@ class Filesystem
 
 		$path = $dir.'/'.$file.'.php';
 
-		foreach ($this->_include_paths as $dir)
+		foreach ($this->_paths as $dir)
 		{
 			if (is_file($dir.$path))
 			{

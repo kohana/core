@@ -32,7 +32,7 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function test_include_paths_return_properly()
 	{
-		$filesystem = new Filesystem('/APPPATH', array('/module1', '/module2'), '/SYSPATH');
+		$filesystem = new Filesystem(array('/APPPATH', '/module1', '/module2', '/SYSPATH'));
 		$this->assertEquals(
 			array(
 				'/APPPATH',
@@ -47,12 +47,12 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 	public function test_it_finds_files()
 	{
 		$filesystem = new Filesystem(
-			\org\bovigo\vfs\vfsStream::url('APPPATH/'),
 			array(
+				\org\bovigo\vfs\vfsStream::url('APPPATH/'),
 				\org\bovigo\vfs\vfsStream::url('module1/'),
-				\org\bovigo\vfs\vfsStream::url('module2/')
-			),
-			\org\bovigo\vfs\vfsStream::url('SYSPATH/')
+				\org\bovigo\vfs\vfsStream::url('module2/'),
+				\org\bovigo\vfs\vfsStream::url('SYSPATH/'),
+			)
 		);
 
 		$this->assertEquals('vfs://APPPATH/classes/Foobar.php', $filesystem->find_file('classes', 'Foobar'));
