@@ -1,2 +1,6 @@
 *~
 *.swp
+bin/*
+vendor/*
+composer.lock
+composer.phar
