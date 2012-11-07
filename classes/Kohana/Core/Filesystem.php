@@ -1,6 +1,6 @@
 <?php
 
-namespace Kohana;
+namespace Kohana\Core;
 
 class Filesystem
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Kohana;
+namespace Kohana\Core;
 
 class FilesystemTest extends \PHPUnit_Framework_TestCase
 {
