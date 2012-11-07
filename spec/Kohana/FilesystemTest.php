@@ -28,6 +28,15 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 			\org\bovigo\vfs\vfsStream::newDirectory('/')
 		);
 		\org\bovigo\vfs\vfsStreamWrapper::setRoot($this->fs_root);
+
+		$this->filesystem = new Filesystem(
+			array(
+				\org\bovigo\vfs\vfsStream::url('APPPATH/'),
+				\org\bovigo\vfs\vfsStream::url('module1/'),
+				\org\bovigo\vfs\vfsStream::url('module2/'),
+				\org\bovigo\vfs\vfsStream::url('SYSPATH/'),
+			)
+		);
 	}
 
 	/*
@@ -49,16 +58,7 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 
 	public function test_it_finds_files()
 	{
-		$filesystem = new Filesystem(
-			array(
-				\org\bovigo\vfs\vfsStream::url('APPPATH/'),
-				\org\bovigo\vfs\vfsStream::url('module1/'),
-				\org\bovigo\vfs\vfsStream::url('module2/'),
-				\org\bovigo\vfs\vfsStream::url('SYSPATH/'),
-			)
-		);
-
-		$this->assertEquals('vfs://APPPATH/classes/Foobar.php', $filesystem->find_file('classes', 'Foobar'));
+		$this->assertEquals('vfs://APPPATH/classes/Foobar.php', $this->filesystem->find_file('classes', 'Foobar'));
 	}
 
 	public function test_it_returns_false_when_not_found()
@@ -68,15 +68,25 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 
 	public function test_it_finds_files_with_other_extensions()
 	{
-		$filesystem = new Filesystem(
-			array(
-				\org\bovigo\vfs\vfsStream::url('APPPATH/'),
-				\org\bovigo\vfs\vfsStream::url('module1/'),
-				\org\bovigo\vfs\vfsStream::url('module2/'),
-				\org\bovigo\vfs\vfsStream::url('SYSPATH/'),
-			)
-		);
+		$this->assertEquals('vfs://APPPATH/vendor/foobar.png', $this->filesystem->find_file('vendor', 'foobar', 'png'));
+	}
 
-		$this->assertEquals('vfs://APPPATH/vendor/foobar.png', $filesystem->find_file('vendor', 'foobar', 'png'));
+	public function test_it_finds_all_files()
+	{
+		$this->assertEquals(
+			array(
+				'vfs://APPPATH/classes/Foobar.php',
+				'vfs://SYSPATH/classes/Foobar.php',
+			),
+			$this->filesystem->find_all_files('classes', 'Foobar')
+		);
+	}
+
+	public function test_it_returns_an_array_when_no_files_are_found()
+	{
+		$this->assertEquals(
+			array(),
+			$this->filesystem->find_all_files('classes', 'Test')
+		);
 	}
 }

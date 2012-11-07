@@ -20,7 +20,7 @@ class Filesystem
 	{
 		$found = FALSE;
 
-		$path = $dir.'/'.$file.'.'.$ext;
+		$path = $this->_build_file_path($dir, $file, $ext);
 
 		foreach ($this->_paths as $dir)
 		{
@@ -32,5 +32,25 @@ class Filesystem
 		}
 
 		return $found;
+	}
+
+	public function find_all_files($dir, $file, $ext = 'php')
+	{
+		$found = array();
+
+		$path = $this->_build_file_path($dir, $file, $ext);
+
+		foreach ($this->_paths as $dir)
+		{
+			if (is_file($dir.$path))
+				$found[] = $dir.$path;
+		}
+
+		return $found;
+	}
+
+	protected function _build_file_path($dir, $file, $ext)
+	{
+		return "$dir/$file.$ext";
 	}
 }
