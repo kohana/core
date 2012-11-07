@@ -13,6 +13,35 @@ class AutoLoad
 		$this->_root = $root;
 	}
 
+	/**
+	 * Provides auto-loading support of classes that follow Kohana's [class
+	 * naming conventions](kohana/conventions#class-names-and-file-location).
+	 * See [Loading Classes](kohana/autoloading) for more information.
+	 *
+	 * You must provide a Filesystem instance to the constructor of this class.
+	 *
+	 *     $autoload = new AutoLoad($filesystem);
+	 *
+	 *     // Loads classes/My/Class/Name.php
+	 *     $autoload->load('My_Class_Name');
+	 *
+	 * or with a custom directory:
+	 *
+	 *     // Loads vendor/My/Class/Name.php
+	 *     $autoload = new AutoLoad($filesystem 'vendor');
+	 *     $autoload->load('My_Class_Name');
+	 *
+	 * You should never have to call this function, as simply calling a class
+	 * will cause it to be called.
+	 *
+	 * This function must be enabled as an autoloader in the bootstrap:
+	 *
+	 *     spl_autoload_register(array(new AutoLoad($filesystem), 'auto_load'));
+	 *
+	 * @param   string  $class      Class name
+	 * @param   string  $directory  Directory to load from
+	 * @return  boolean
+	 */
 	public function load($class)
 	{
 		// Transform the class name according to PSR-0
