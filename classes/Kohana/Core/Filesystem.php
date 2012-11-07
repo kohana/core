@@ -16,11 +16,11 @@ class Filesystem
 		return $this->_paths;
 	}
 
-	public function list_files($directory)
+	public function list_files($directory, array $paths = NULL)
 	{
 		$found = array();
 
-		foreach ($this->_paths as $path)
+		foreach ($paths === NULL ? $this->_paths : $paths as $path)
 		{
 			if (is_dir($path.$directory))
 			{
@@ -30,10 +30,34 @@ class Filesystem
 				{
 					$filename = $file->getFilename();
 
+					// Skip all hidden files and UNIX backup files
+					if ($filename[0] === '.' OR $filename[strlen($filename)-1] === '~')
+						continue;
+
 					// Relative filename is the array key
 					$key = $directory.'/'.$filename;
-					if ( ! isset($found[$key]))
-						$found[$key] = realpath($file->getPathName());
+
+					if ($file->isDir())
+					{
+						if ($sub_dir = $this->list_files($key, $paths))
+						{
+							if (isset($found[$key]))
+							{
+								// Append the sub-directory list
+								$found[$key] += $sub_dir;
+							}
+							else
+							{
+								// Create a new sub-directory list
+								$found[$key] = $sub_dir;
+							}
+						}
+					}
+					else
+					{
+						if ( ! isset($found[$key]))
+							$found[$key] = realpath($file->getPathName());
+					}
 				}
 			}
 		}

@@ -14,7 +14,11 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 			array(
 				'APPPATH' => array(
 					'classes' => array(
+						'.' => array(),
 						'Foobar.php' => 'the content',
+						'subfolder' => array(
+							'Foobar.php' => 'the content',
+						),
 					),
 					'vendor' => array(
 						'foobar.png' => 'content',
@@ -103,6 +107,9 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 			array(
 				'classes/Foobar.php' => 'vfs://APPPATH/classes/Foobar.php',
 				'classes/Foo.php' => 'vfs://SYSPATH/classes/Foo.php',
+				'classes/subfolder' => array(
+					'classes/subfolder/Foobar.php' => 'vfs://APPPATH/classes/subfolder/Foobar.php',
+				)
 			),
 			$this->filesystem->list_files('classes')
 		);
