@@ -16,11 +16,11 @@ class Filesystem
 		return $this->_paths;
 	}
 
-	public function find_file($dir, $file)
+	public function find_file($dir, $file, $ext = 'php')
 	{
 		$found = FALSE;
 
-		$path = $dir.'/'.$file.'.php';
+		$path = $dir.'/'.$file.'.'.$ext;
 
 		foreach ($this->_paths as $dir)
 		{

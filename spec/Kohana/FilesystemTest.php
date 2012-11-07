@@ -12,7 +12,10 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 				'APPPATH' => array(
 					'classes' => array(
 						'Foobar.php' => 'the content',
-					)
+					),
+					'vendor' => array(
+						'foobar.png' => 'content',
+					),
 				),
 				'module1' => array(),
 				'module2' => array(),
@@ -56,5 +59,24 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 		);
 
 		$this->assertEquals('vfs://APPPATH/classes/Foobar.php', $filesystem->find_file('classes', 'Foobar'));
+	}
+
+	public function test_it_returns_false_when_not_found()
+	{
+		$this->assertEquals(FALSE, (new Filesystem(array()))->find_file('classes', 'Foobar'));
+	}
+
+	public function test_it_finds_files_with_other_extensions()
+	{
+		$filesystem = new Filesystem(
+			array(
+				\org\bovigo\vfs\vfsStream::url('APPPATH/'),
+				\org\bovigo\vfs\vfsStream::url('module1/'),
+				\org\bovigo\vfs\vfsStream::url('module2/'),
+				\org\bovigo\vfs\vfsStream::url('SYSPATH/'),
+			)
+		);
+
+		$this->assertEquals('vfs://APPPATH/vendor/foobar.png', $filesystem->find_file('vendor', 'foobar', 'png'));
 	}
 }
