@@ -56,7 +56,9 @@ class Filesystem
 					else
 					{
 						if ( ! isset($found[$key]))
-							$found[$key] = realpath($file->getPathName());
+						{
+							$found[$key] = $this->realpath($file->getPathName());
+						}
 					}
 				}
 			}
@@ -96,6 +98,11 @@ class Filesystem
 		}
 
 		return $found;
+	}
+
+	public function realpath($path)
+	{
+		return realpath($path);
 	}
 
 	protected function _build_file_path($dir, $file, $ext)

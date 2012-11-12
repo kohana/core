@@ -7,6 +7,10 @@ use \org\bovigo\vfs\vfsStream;
 
 class FilesystemTest extends \PHPUnit_Framework_TestCase
 {
+	public function teardown()
+	{
+		\Mockery::close();
+	}
 	protected function setUp()
 	{
 		vfsStreamWrapper::register();
@@ -98,20 +102,24 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 		);
 	}
 
-	/**
-	 * realpath() doesn't work with vfsStream, so we have false as the keys. How to fix?
-	 */
 	public function test_it_lists_all_files()
 	{
+		$filesystem = \Mockery::mock($this->filesystem);
+		$filesystem->shouldReceive('realpath')->times(3)->andReturn('path');
 		$this->assertEquals(
 			array(
-				'classes/Foobar.php' => 'vfs://APPPATH/classes/Foobar.php',
-				'classes/Foo.php' => 'vfs://SYSPATH/classes/Foo.php',
+				'classes/Foobar.php' => 'path',
+				'classes/Foo.php' => 'path',
 				'classes/subfolder' => array(
-					'classes/subfolder/Foobar.php' => 'vfs://APPPATH/classes/subfolder/Foobar.php',
+					'classes/subfolder/Foobar.php' => 'path',
 				)
 			),
-			$this->filesystem->list_files('classes')
+			$filesystem->list_files('classes')
 		);
+	}
+
+	public function test_it_returns_realpath()
+	{
+		$this->assertSame($this->filesystem->realpath(__FILE__), __FILE__);
 	}
 }
