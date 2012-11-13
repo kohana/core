@@ -100,6 +100,11 @@ class Filesystem
 		return $found;
 	}
 
+	public function load($file)
+	{
+		return include $file;
+	}
+
 	public function realpath($path)
 	{
 		return realpath($path);
