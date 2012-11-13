@@ -2,7 +2,8 @@
 	"require": {
 		"phpunit/phpunit": "3.7.9",
 		"mockery/mockery": "dev-master",
-		"burti/vfsstream": "v1.1.0"
+		"burti/vfsstream": "v1.1.0",
+		"phing/phing": "dev-master"
 	},
 	"config": {
 		"bin-dir": "bin"

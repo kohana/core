@@ -1,0 +1,172 @@
+<?xml version="1.0" ?>
+<project name="kohana" default="help">
+	<property environment="env"/>
+
+	<property name="basedir" value="${project.basedir}"/>
+	<property name="builddir" value="${basedir}/build"/>
+
+	<property name="branch" value="3.3/develop"/>
+
+	<property name="submodules" value="system,modules/auth,modules/cache,modules/codebench,modules/database,modules/image,modules/orm,modules/unittest,modules/userguide"/>
+
+	<!-- Shows the help message -->
+	<target name="help">
+		<echo message="General Targets"/>
+		<echo message="==============="/>
+		<echo message="phing test              Run unit tests."/>
+		<echo message="phing test-log          Run unit tests with logging enabled."/>
+		<echo message=""/>
+		<echo message="Kohana Developer Targets"/>
+		<echo message="========================"/>
+		<echo message="phing dev-setup         Setup for development on Kohana itself."/>
+		<echo message="phing git-status        Show the git status of each submodule."/>
+		<echo message="phing git-checkout      Checkout a branch accross all submodules."/>
+		<echo message="phing git-pull          Perform a pull for each submodule."/>
+		<echo message="phing git-push          Perform a push for each submodule."/>
+		<echo message=""/>
+		<echo message="Misc Targets"/>
+		<echo message="============"/>
+		<echo message="phing ci                Alias task for continuous integration servers"/>
+	</target>
+
+	<!-- Clean up -->
+	<target name="clean">
+		<delete dir="${builddir}"/>
+		<!-- Create build directories -->
+		<mkdir dir="${builddir}/coverage"/>
+		<mkdir dir="${builddir}/logs"/>
+		<mkdir dir="${builddir}/release"/>
+		<mkdir dir="${builddir}/code-browser"/>
+	</target>
+
+	<target name="dev-setup">
+		<property name="git-checkout-branch" value="${branch}"/> <!-- Prevents git-checkout asking for a branch name -->
+		<exec command="git submodule update --init --recursive" dir="${basedir}" />
+		<phingcall target="_dev-setup-remotes" />
+		<phingcall target="git-pull" />
+		<phingcall target="git-checkout" />
+	</target>
+
+	<target name="git-pull">
+		<phingcall target="_git-pull">
+			<property name="dir" value="." />
+		</phingcall>
+		<foreach list="${submodules}" param="dir" target="_git-pull"/>
+	</target>
+
+	<target name="_git-pull">
+		<exec command="git pull dev" dir="${dir}"/>
+	</target>
+
+	<target name="git-checkout">
+		<if>
+			<not>
+				<isset property="git-checkout-branch"/>
+			</not>
+			<then>
+				<propertyprompt propertyName="git-checkout-branch" defaultValue="${branch}" promptText="Branch name:" />
+			</then>
+		</if>
+
+		<phingcall target="_git-checkout">
+			<property name="dir" value="." />
+		</phingcall>
+
+		<foreach list="${submodules}" param="dir" target="_git-checkout"/>
+	</target>
+
+	<target name="_git-checkout">
+		<exec returnProperty="git-checkout-branch-exists" command="git show-ref --quiet --verify -- 'refs/remotes/dev/${git-checkout-branch}'" dir="${dir}"  passthru="true"/>
+		<if>
+			<equals arg1="${git-checkout-branch-exists}" arg2="0"/>
+			<then>
+				<exec command="git checkout --track -b ${git-checkout-branch} dev/${git-checkout-branch}" dir="${dir}" passthru="true"/>
+			</then>
+			<else>
+				<exec command="git checkout -b ${git-checkout-branch}" dir="${dir}" passthru="true"/>
+			</else>
+		</if>
+	</target>
+
+	<target name="git-push">
+		<foreach list="${submodules}" param="dir" target="_git-push"/>
+		<phingcall target="_git-push">
+			<property name="dir" value="." />
+		</phingcall>
+	</target>
+
+	<target name="_git-push">
+		<exec command="git push dev" dir="${dir}" passthru="true"/>
+	</target>
+
+	<target name="git-status">
+		<foreach list="${submodules}" param="dir" target="_git-status"/>
+		<phingcall target="_git-status">
+			<property name="dir" value="." />
+		</phingcall>
+	</target>
+
+	<target name="_git-status">
+		<exec command="git status" dir="${dir}" passthru="true"/>
+	</target>
+
+	<target name="_dev-setup-remotes">
+		<!-- TODO: Clean up... -->
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/kohana.git" />
+			<property name="dir"        value="${basedir}" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/core.git" />
+			<property name="dir"        value="${basedir}/system" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/auth.git" />
+			<property name="dir"        value="${basedir}/modules/auth" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/cache.git" />
+			<property name="dir"        value="${basedir}/modules/cache" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/codebench.git" />
+			<property name="dir"        value="${basedir}/modules/codebench" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/database.git" />
+			<property name="dir"        value="${basedir}/modules/database" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/image.git" />
+			<property name="dir"        value="${basedir}/modules/image" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/orm.git" />
+			<property name="dir"        value="${basedir}/modules/orm" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/unittest.git" />
+			<property name="dir"        value="${basedir}/modules/unittest" />
+		</phingcall>
+		<phingcall target="_dev-setup-remote">
+			<property name="repository" value="git@github.com:kohana/userguide.git" />
+			<property name="dir"        value="${basedir}/modules/userguide" />
+		</phingcall>
+	</target>
+
+	<target name="_dev-setup-remote">
+		<exec command="git remote rm dev" dir="${dir}"/>
+		<exec command="git remote add dev ${repository}" dir="${dir}"/>
+	</target>
+
+	<!-- Run unit tests -->
+	<target name="test">
+		<exec command="bin/phpunit --process-isolation spec" checkreturn="true" passthru="true"/>
+	</target>
+
+
+	<!-- Run unit tests and generate junit.xml and clover.xml -->
+	<target name="test-log">
+		<exec command="bin/phpunit --process-isolation --coverage-html='${builddir}/coverage' --log-junit='${builddir}/logs/junit.xml' --coverage-clover='${builddir}/logs/clover.xml' spec" checkreturn="true" passthru="true"/>
+	</target>
+</project>
