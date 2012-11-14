@@ -54,4 +54,21 @@ class CacheTest extends \PHPUnit_Framework_Testcase
 			$this->_cache->read('foobar')
 		);
 	}
+
+	public function test_it_returns_null_when_cache_is_expired()
+	{
+		$this->_cache->save('testing', 'the data');
+
+		$this->assertSame(
+			NULL,
+			$this->_cache->read('testing', -1) // Always expired
+		);
+	}
+
+	public function test_it_deletes_cache_file_when_cache_is_expired()
+	{
+		$this->_cache->save('testing', 'the data');
+		$this->_cache->read('testing', -1);
+		$this->assertFalse(file_exists(vfsStream::url('/APPPATH/dc/dc724af18fbdd4e59189f5fe768a5f8311527050.txt')));
+	}
 }

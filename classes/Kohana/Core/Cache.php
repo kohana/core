@@ -5,16 +5,18 @@ namespace Kohana\Core;
 class Cache
 {
 	protected $_base;
+	protected $_cache_life = 60;
 
-	public function __construct($base)
+	public function __construct($base, $cache_life = 60)
 	{
 		$this->_base = $base;
+		$this->_cache_life = $cache_life OR 60;
 	}
 
 	public function save($name, $data)
 	{
-		$file = sha1($name).'.txt';
-		$dir = $this->_base.$file[0].$file[1].'/';
+		$file = $this->_generate_file_name($name);
+		$dir = $this->_generate_directory($file);
 
 		if ( ! is_dir($dir))
 		{
@@ -29,26 +31,55 @@ class Cache
 		return (bool) file_put_contents($dir.$file, $data/*, LOCK_EX*/);
 	}
 
-	public function read($name)
+	public function read($name, $lifetime = NULL)
 	{
-		$file = sha1($name).'.txt';
-		$dir = $this->_base.$file[0].$file[1].'/';
+		$file = $this->_generate_file_name($name);
+		$dir = $this->_generate_directory($file);
 
-		$contents = NULL;
+		return $this->_read_cache($dir.$file, $lifetime);
+	}
 
-		if (is_file($dir.$file))
+	protected function _generate_file_name($name)
+	{
+		return sha1($name).'.txt';
+	}
+
+	protected function _generate_directory($filename)
+	{
+		return $this->_base.$filename[0].$filename[1].'/';
+	}
+
+	protected function _read_cache($file, $lifetime)
+	{
+		if ($lifetime == NULL)
+		{
+			$lifetime = $this->_cache_life;
+		}
+
+		if (is_file($file) AND (time() - filemtime($file)) < $lifetime)
 		{
 			// Return the cache
 			try
 			{
-				$contents = unserialize(file_get_contents($dir.$file));
+				return unserialize(file_get_contents($file));
 			}
 			catch (Exception $e)
 			{
 				// Cache is corrupt, let return happen normally.
 			}
 		}
-
-		return $contents;
+		else
+		{
+			try
+			{
+				// Cache has expired
+				unlink($file);
+			}
+			catch (Exception $e)
+			{
+				// Cache has mostly likely already been deleted,
+				// let return happen normally.
+			}
+		}
 	}
 }
