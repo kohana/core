@@ -17,16 +17,16 @@
  */
 class Kohana_CLITest extends Kohana_Unittest_TestCase
 {
-	
+
 	/**
-	 * Tell PHPUnit to isolate globals during tests 
-	 * @var boolean 
+	 * Tell PHPUnit to isolate globals during tests
+	 * @var boolean
 	 */
 	protected $backupGlobals = TRUE;
 
 	/**
 	 * An array of arguments to put in $_SERVER['argv']
-	 * @var array 
+	 * @var array
 	 */
 	protected $options = array(
 							'--uri' => 'test/something',
@@ -74,7 +74,7 @@ class Kohana_CLITest extends Kohana_Unittest_TestCase
 	public function test_only_loops_over_available_arguments()
 	{
 		++$_SERVER['argc'];
-		
+
 		$options = CLI::options('uri');
 
 		$this->assertSame(1, count($options));
@@ -90,7 +90,7 @@ class Kohana_CLITest extends Kohana_Unittest_TestCase
 		$options = CLI::options('uri');
 
 		$this->assertSame(1, count($options));
-		
+
 		$this->assertArrayHasKey('uri', $options);
 		$this->assertSame($options['uri'], $this->options['--uri']);
 	}
@@ -103,7 +103,7 @@ class Kohana_CLITest extends Kohana_Unittest_TestCase
 	public function test_does_not_parse_invalid_arguments()
 	{
 		$options = CLI::options('uri', 'invalid');
-		
+
 		$this->assertSame(1, count($options));
 		$this->assertArrayHasKey('uri', $options);
 		$this->assertArrayNotHasKey('invalid', $options);

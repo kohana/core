@@ -35,7 +35,7 @@ Getting session or cookie data is done using the [Cookie::get] method:
 ### Deleting Data
 
 Deleting session or cookie data is done using the [Cookie::delete] method:
-    
+
     // Delete cookie data
     Cookie::delete($key);
 
@@ -79,7 +79,7 @@ To only allow the cookie to be accessed over a secure (HTTPS) connection, use th
 
     // Allow cookies to be accessed only on a secure connection
     Cookie::$secure = TRUE;
-    
+
     // Allow cookies to be accessed on any connection
     Cookie::$secure = FALSE;
 

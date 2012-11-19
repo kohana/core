@@ -73,7 +73,7 @@ class Kohana_RouteTest extends Kohana_Unittest_TestCase
 	public function test_name_returns_routes_name_or_false_if_dnx()
 	{
 		$route = Route::set('flamingo_people', 'flamingo/dance');
-		
+
 		$this->assertSame('flamingo_people', Route::name($route));
 
 		$route = new Route('dance/dance');
@@ -108,7 +108,7 @@ class Kohana_RouteTest extends Kohana_Unittest_TestCase
 	/**
 	 * Route::cache() should return FALSE if cached routes could not be found
 	 *
-	 * The cache is cleared before and after each test in setUp tearDown 
+	 * The cache is cleared before and after each test in setUp tearDown
 	 * by cleanCacheDir()
 	 * 
 	 * @test
@@ -301,7 +301,7 @@ class Kohana_RouteTest extends Kohana_Unittest_TestCase
 	{
 		$route = new Route('<controller>(/<action)');
 
-		try 
+		try
 		{
 			$route->uri(array('action' => 'awesome-action'));
 
@@ -400,7 +400,7 @@ class Kohana_RouteTest extends Kohana_Unittest_TestCase
 	public function test_compile_uses_custom_regex_if_specificed()
 	{
 		$route = new Route(
-			'<controller>(/<action>(/<id>))', 
+			'<controller>(/<action>(/<id>))',
 			array(
 				'controller' => '[a-z]+',
 				'id' => '\d+',
@@ -408,8 +408,8 @@ class Kohana_RouteTest extends Kohana_Unittest_TestCase
 		);
 
 		$this->assertAttributeSame(
-			'#^(?P<controller>[a-z]+)(?:/(?P<action>[^/.,;?\n]++)(?:/(?P<id>\d+))?)?$#uD', 
-			'_route_regex', 
+			'#^(?P<controller>[a-z]+)(?:/(?P<action>[^/.,;?\n]++)(?:/(?P<id>\d+))?)?$#uD',
+			'_route_regex',
 			$route
 		);
 	}

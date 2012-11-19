@@ -2,7 +2,7 @@
 
 Because Kohana follows a [front controller] pattern, which means that all requests are sent to `index.php`, the filesystem is very configurable.  Inside of `index.php` you can change the `$application`, `$modules`, and `$system` paths.
 
-[!!] There is a security check at the top of every Kohana file to prevent it from being accessed without using the front controller.  Also, the `.htaccess` file should protect those folders as well.  Moving the application, modules, and system directories to a location that cannot be accessed vie web can add another layer of security, but is optional.   
+[!!] There is a security check at the top of every Kohana file to prevent it from being accessed without using the front controller.  Also, the `.htaccess` file should protect those folders as well.  Moving the application, modules, and system directories to a location that cannot be accessed vie web can add another layer of security, but is optional.
 
 The `$application` variable lets you set the directory that contains your application files. By default, this is `application`. The `$modules` variable lets you set the directory that contains module files. The `$system` variable lets you set the directory that contains the default Kohana files. You can move these three directories anywhere.
 

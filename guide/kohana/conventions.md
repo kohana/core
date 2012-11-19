@@ -1,6 +1,6 @@
 # Conventions and Coding Style
 
-It is encouraged that you follow Kohana's [coding style](http://dev.kohanaframework.org/wiki/kohana2/CodingStyle). This makes code more readable and allows for easier code sharing and contributing. 
+It is encouraged that you follow Kohana's [coding style](http://dev.kohanaframework.org/wiki/kohana2/CodingStyle). This makes code more readable and allows for easier code sharing and contributing.
 
 ## Class Names and File Location
 
@@ -41,7 +41,7 @@ Please use [BSD/Allman Style](http://en.wikipedia.org/wiki/Indent_style#BSD.2FAl
 	{
 		$baz->default();
 	}
-	
+
 	// The opening bracket for a class can be on the same line
 	Class Foobar {
 
@@ -140,7 +140,7 @@ Please use OR and AND for comparison:
 
 	// Incorrect:
 	if (($foo && $bar) || ($b && $c))
-	
+
 Please use elseif, not else if:
 
 	// Correct:

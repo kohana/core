@@ -52,14 +52,14 @@ Once view has been loaded, variables can be assigned to it using the [View::set]
         $this->request->response = $view;
     }
 
-[!!] The only difference between `set()` and `bind()` is that `bind()` assigns the variable by reference. If you `bind()` a variable before it has been defined, the variable will be created with a value of `NULL`.  
+[!!] The only difference between `set()` and `bind()` is that `bind()` assigns the variable by reference. If you `bind()` a variable before it has been defined, the variable will be created with a value of `NULL`.
 
 You can also assign variables directly to the View object.  This is identical to calling `set()`;
 
 	public function action_roadtrip()
 	{
 		$view = View::factory('user/roadtrip');
-            
+
 		$view->places = array('Rome', 'Paris', 'London', 'New York', 'Tokyo');
         $view->user = $this->user;
 
@@ -109,16 +109,16 @@ Next, the home controller will extend `Controller_Website`:
 ## Views Within Views
 
 If you want to include another view within a view, there are two choices. By calling [View::factory] you can sandbox the included view. This means that you will have to provide all of the variables to the view using [View::set] or [View::bind]:
-	
+
 	// In your view file:
-	
+
     // Only the $user variable will be available in "views/user/login.php"
     <?php echo View::factory('user/login')->bind('user', $user) ?>
 
 The other option is to include the view directly, which makes all of the current variables available to the included view:
 
 	// In your view file:
-	
+
     // Any variable defined in this view will be included in "views/message.php"
     <?php include Kohana::find_file('views', 'user/login') ?>
 
@@ -129,18 +129,18 @@ You can also assign a variable of your parent view to be the child view from wit
 	public functin action_index()
 	{
 		$view = View::factory('common/template);
-		
+
 		$view->title = "Some title";
 		$view->body = View::factory('pages/foobar');
 	}
-	
+
 	// In views/common/template.php:
-	
+
 	<html>
 	<head>
 		<title><?php echo $title></title>
 	</head>
-	
+
 	<body>
 		<?php echo $body ?>
 	</body>

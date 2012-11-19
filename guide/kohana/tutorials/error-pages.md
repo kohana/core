@@ -1,11 +1,11 @@
 # Friendly Error Pages <small>written by <a href="http://mathew-davies.co.uk./">Mathew Davies</a></small>
 
-By default Kohana 3 doesn't have a method to display friendly error pages like that 
+By default Kohana 3 doesn't have a method to display friendly error pages like that
 seen in Kohana 2; In this short guide I will teach you how it is done.
 
-## Prerequisites 
+## Prerequisites
 
-You will need `'errors' => TRUE` passed to `Kohana::init`. This will convert PHP 
+You will need `'errors' => TRUE` passed to `Kohana::init`. This will convert PHP
 errors into exceptions which are easier to handle.
 
 ## 1. A Custom Exception
@@ -102,9 +102,9 @@ would display an error 500 page.
 		}
 	}
 
-1. Set a template variable "page" so the user can see what they requested. This 
+1. Set a template variable "page" so the user can see what they requested. This
    is for display purposes only.
-2. If an internal request, then set a template variable "message" to be shown to 
+2. If an internal request, then set a template variable "message" to be shown to
    the user.
 3. Otherwise use the 404 action. Users could otherwise craft their own error messages, eg:
    `error/404/email%20your%20login%20information%20to%20hacker%40google.com`
@@ -114,7 +114,7 @@ would display an error 500 page.
 public function action_404()
 {
 	$this->template->title = '404 Not Found';
-	
+
 	// Here we check to see if a 404 came from our website. This allows the
 	// webmaster to find broken links and update them in a shorter amount of time.
 	if (isset ($_SERVER['HTTP_REFERER']) AND strstr($_SERVER['HTTP_REFERER'], $_SERVER['SERVER_NAME']) !== FALSE)
@@ -122,7 +122,7 @@ public function action_404()
 		// Set a local flag so we can display different messages in our template.
 		$this->template->local = TRUE;
 	}
-	
+
 	// HTTP Status code.
 	$this->request->status = 404;
 }
@@ -140,7 +140,7 @@ public function action_500()
 }
 ~~~
 
-You will notice that each example method is named after the HTTP response code 
+You will notice that each example method is named after the HTTP response code
 and sets the request response code.
 
 ## 4. Handling 3rd Party Modules.

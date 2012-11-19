@@ -87,7 +87,7 @@ class Kohana_RequestTest extends Kohana_Unittest_TestCase
 			'Kohana::$is_cli'    => $is_cli,
 			'Request::$instance' => NULL
 		));
-	
+
 		$request = Request::instance($route);
 
 		$this->assertEquals($status, $request->status);

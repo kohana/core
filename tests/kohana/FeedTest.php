@@ -39,7 +39,7 @@ class Kohana_FeedTest extends Kohana_Unittest_TestCase
 	{
 		if ( ! $this->hasInternet())
 			$this->markTestSkipped('An internet connection is required for this test');
-		
+
 		$this->assertEquals($expected, count(feed::parse($source)));
 	}
 

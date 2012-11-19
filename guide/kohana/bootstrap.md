@@ -13,20 +13,20 @@ First the bootstrap sets the timezone and the locale, and adds Kohana's autoload
 
 // Set the default time zone.
 date_default_timezone_set('America/Chicago');
- 
+
 // Set the default locale.
 setlocale(LC_ALL, 'en_US.utf-8');
- 
+
 // Enable the Kohana auto-loader.
 spl_autoload_register(array('Kohana', 'auto_load'));
- 
+
 // Enable the Kohana auto-loader for unserialization.
 ini_set('unserialize_callback_func', 'spl_autoload_call');
 ~~~
 
 ## Initilization and Configuration
 
-Kohana is then initialized by calling [Kohana::init], and the log and [config](files/config) reader/writers are enabled. 
+Kohana is then initialized by calling [Kohana::init], and the log and [config](files/config) reader/writers are enabled.
 
 ~~~
 // Sample excerpt from bootstrap.php with comments trimmed down
@@ -48,7 +48,7 @@ You can add conditional statements to make the bootstrap have different values b
 ~~~
 // Excerpt from http://github.com/isaiahdw/kohanaphp.com/blob/f2afe8e28b/application/bootstrap.php
 ... [trimmed]
- 
+
 /**
  * Set the environment status by the domain.
  */
@@ -56,11 +56,11 @@ if (strpos($_SERVER['HTTP_HOST'], 'kohanaphp.com') !== FALSE)
 {
 	// We are live!
 	Kohana::$environment = Kohana::PRODUCTION;
- 
+
 	// Turn off notices and strict errors
 	error_reporting(E_ALL ^ E_NOTICE ^ E_STRICT);
 }
- 
+
 /**
  * Initialize Kohana, setting the default options.
  ... [trimmed]
@@ -94,7 +94,7 @@ catch (Exception $e)
 
 **Read the [Modules](modules) page for a more detailed description.**
 
-[Modules](modules) are then loaded using [Kohana::modules()].  Including modules is optional.  
+[Modules](modules) are then loaded using [Kohana::modules()].  Including modules is optional.
 
 Each key in the array should be the name of the module, and the value is the path to the module, either relative or absolute.
 ~~~
@@ -111,7 +111,7 @@ Kohana::modules(array(
 
 **Read the [Routing](routing) page for a more detailed description and more examples.**
 
-[Routes](routing) are then defined via [Route::set()].  
+[Routes](routing) are then defined via [Route::set()].
 
 ~~~
 // The default route that comes with Kohana 3
@@ -124,7 +124,7 @@ Route::set('default', '(<controller>(/<action>(/<id>)))')
 
 ## Execution
 
-Once our environment is initialized and routes defined, it's time to execute our application.  This area of the bootstrap is very flexible.  Do not be afraid to change this around to whatever suits your needs. 
+Once our environment is initialized and routes defined, it's time to execute our application.  This area of the bootstrap is very flexible.  Do not be afraid to change this around to whatever suits your needs.
 
 ### Basic Example
 The most simple way to do this, and what comes default with Kohana 3 is simply:
@@ -152,7 +152,7 @@ catch (Exception $e)
 {
 	// Be sure to log the error
 	Kohana::$log->add(Kohana::ERROR, Kohana::exception_text($e));
-	
+
 	// If there was an error, send a 404 response and display an error
 	$request->status   = 404;
 	$request->response = View::factory('errors/404');

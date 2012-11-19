@@ -3,7 +3,7 @@
 Configuration files are used to store any kind of configuration needed for a module, class, or anything else you want.  They are plain PHP files, stored in the `config/` directory, which return an associative array:
 
     <?php defined('SYSPATH') or die('No direct script access.');
-	
+
     return array(
         'setting' => 'value',
         'options' => array(
@@ -41,7 +41,7 @@ Configuration files are slightly different from most other files within the [cas
 For example, if we wanted to change something in some file
 
 	[TODO]
-	
+
 TODO exmaple of adding something to inflector
 
 ## Creating your own config files
@@ -49,9 +49,9 @@ TODO exmaple of adding something to inflector
 Let's say we want a config file to store and easily change things like the title of a website, or the google analytics code.  We would create a config file, let's call it `site.php`:
 
 	// config/site.php
-	
+
 	<?php defined('SYSPATH') or die('No direct script access.');
-	
+
     return array(
 		'title' => 'Our Shiny Website',
 		'analytics' => FALSE, // analytics code goes here, set to FALSE to disable
@@ -64,7 +64,7 @@ Let's say we want an archive of versions of some software.  We could use config 
 	// config/versions.php
 
 	<?php defined('SYSPATH') or die('No direct script access.');
-	
+
     return array(
 		'1.0.0' => array(
 			'codename' => 'Frog',
@@ -87,7 +87,7 @@ You could then do the following:
 
 	// In your controller
 	$view->versions = Kohana::config('versions');
-	
+
 	// In your view:
 	foreach ($versions as $version)
 	{

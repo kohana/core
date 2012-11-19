@@ -43,7 +43,7 @@ Errors should **always** be displayed, even in production, because it allows you
 In production, **your application should never have any uncaught exceptions**, as this can expose sensitive information (via the stack trace).  In the previous example we make the assumption that there is actually a view called 'views/errors/404', which is fairly safe to assume.  One solution is to turn 'errors' off in Kohana::init for your production machine, so it displays the normal php errors rather than a stack trace.
 
 ~~~
-// snippet from bootstrap.php 
+// snippet from bootstrap.php
 Kohana::init(array('
     ...
     'errors' => false,
@@ -70,7 +70,7 @@ catch (Exception $e)
 	{
 		// Be sure to log the error
 		Kohana::$log->add(Kohana::ERROR, Kohana::exception_text($e));
-		
+
 		// If there was an error, send a 404 response and display an error
 		$request->status   = 404;
 		$request->response = View::factory('errors/404');

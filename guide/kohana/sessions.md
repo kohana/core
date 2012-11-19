@@ -24,7 +24,7 @@ You can also use this to overload the `$_SESSION` global to get and set data in 
 
     // Overload $_SESSION with the session data
     $_SESSION =& $session->as_array();
-    
+
     // Set session data
     $_SESSION[$key] = $value;
 

@@ -15,10 +15,10 @@ If you look in `APPPATH/bootstrap.php` you will see the "default" route as follo
 		'controller' => 'welcome',
 		'action'     => 'index',
 	));
-	
+
 [!!] The default route is simply provided as a sample, you can remove it and replace it with your own routes.
 
-So this creates a route with the name `default` that will match urls in the format of `(<controller>(/<action>(/<id>)))`.  
+So this creates a route with the name `default` that will match urls in the format of `(<controller>(/<action>(/<id>)))`.
 
 Let's take a closer look at each of the parameters of [Route::set], which are `name`, `uri`, and an optional array `regex`.
 
@@ -42,7 +42,7 @@ You can use any name you want for your keys, but the following keys have special
 
 The Kohana route system uses [perl compatible regular expressions](http://perldoc.perl.org/perlre.html) in its matching process.  By default each key (surrounded by `<>`) will match `[^/.,;?\n]++` (or in english: anything that is not a slash, period, comma, semicolon, question mark, or newline).  You can define your own patterns for each key by passing an associative array of keys and patterns as an additional third argument to Route::set.
 
-In this example, we have controllers in two directories, `admin` and `affiliate`.  Because this route will only match urls that begin with `admin` or `affiliate`, the default route would still work for controllers in `classes/controller`.  
+In this example, we have controllers in two directories, `admin` and `affiliate`.  Because this route will only match urls that begin with `admin` or `affiliate`, the default route would still work for controllers in `classes/controller`.
 
 	Route::set('sections', '<directory>(/<controller>(/<action>(/<id>)))',
 		array(
@@ -53,7 +53,7 @@ In this example, we have controllers in two directories, `admin` and `affiliate`
 			'action'     => 'index',
 		));
 
-You can also use a less restrictive regex to match unlimited parameters, or to ignore overflow in a route.  In this example, the url `foobar/baz/and-anything/else_that/is-on-the/url` would be routed to `Controller_Foobar::action_baz()` and the `"stuff"` parameter would be `"and-anything/else_that/is-on-the/url"`.  If you wanted to use this for unlimited parameters, you could [explode](http://php.net/manual/en/function.explode.php) it, or you just ignore the overflow.  
+You can also use a less restrictive regex to match unlimited parameters, or to ignore overflow in a route.  In this example, the url `foobar/baz/and-anything/else_that/is-on-the/url` would be routed to `Controller_Foobar::action_baz()` and the `"stuff"` parameter would be `"and-anything/else_that/is-on-the/url"`.  If you wanted to use this for unlimited parameters, you could [explode](http://php.net/manual/en/function.explode.php) it, or you just ignore the overflow.
 
 	Route::set('default', '(<controller>(/<action>(/<stuff>)))', array('stuff' => '.*'))
 		->defaults(array(
@@ -82,8 +82,8 @@ TODO: example of either using directory or controller where it isn't in the rout
 
 TODO: a million billion examples, you can use the following as a guide for some routes to include:
 
-<http://kerkness.ca/wiki/doku.php?id=routing:routing_basics>   
-<http://kerkness.ca/wiki/doku.php?id=routing:ignoring_overflow_in_a_route>   
+<http://kerkness.ca/wiki/doku.php?id=routing:routing_basics>
+<http://kerkness.ca/wiki/doku.php?id=routing:ignoring_overflow_in_a_route>
 <http://kerkness.ca/wiki/doku.php?id=routing:building_routes_with_subdirectories>
 
 There are countless other possibilities for routes. Here are some more examples:
@@ -98,7 +98,7 @@ There are countless other possibilities for routes. Here are some more examples:
       ->defaults(array(
         'controller' => 'auth'
       ));
-      
+
     /*
      * Multi-format feeds
      *   452346/comments.rss
@@ -113,7 +113,7 @@ There are countless other possibilities for routes. Here are some more examples:
         'controller' => 'feeds',
         'action' => 'status',
       ));
-    
+
     /*
      * Static pages
      */
@@ -125,7 +125,7 @@ There are countless other possibilities for routes. Here are some more examples:
         'controller' => 'static',
         'action' => 'index',
       ));
-      
+
     /*
      * You don't like slashes?
      *   EditGallery:bahamas
@@ -139,7 +139,7 @@ There are countless other possibilities for routes. Here are some more examples:
       ->defaults(array(
         'controller' => 'Slideshow',
       ));
-      
+
     /*
      * Quick search
      */
@@ -157,7 +157,7 @@ The `directory`, `controller` and `action` can be accessed from the [Request] as
 	$this->request->action;
 	$this->request->controller;
 	$this->request->directory;
-	
+
 	// Can be used anywhere:
 	Request::instance()->action;
 	Request::instance()->controller;
@@ -167,7 +167,7 @@ All other keys specified in a route can be accessed via [Request::param()]:
 
 	// From within a controller:
 	$this->request->param('key_name');
-	
+
 	// Can be used anywhere:
 	Request::instance()->param('key_name');
 
@@ -180,7 +180,7 @@ For example, with the following route:
 		'controller' => 'ads',
 		'action'     => 'index',
 	));
-	
+
 If a url matches the route, then `Controller_Ads::index()` will be called.  You could access the parameters in two ways:
 
 First, any non-special parameters (parameters other than controller, action, and directory) in a route are passed as parameters to the action method in the order they appear in the route.  Be sure to define a default value for optional parameters if you don't define them in the route's `->defaults()`.
@@ -188,7 +188,7 @@ First, any non-special parameters (parameters other than controller, action, and
 	class Controller_Ads extends Controller {
 		public function action_index($ad, $affiliate = NULL)
 		{
-			
+
 		}
 
 Secondly, you can access the parameters using the `param()` method of the [Request] class. Again, remember to define a default value (via the second, optional parameter of [Request::param]) if you didn't in `->defaults()`.
@@ -199,7 +199,7 @@ Secondly, you can access the parameters using the `param()` method of the [Reque
 			$ad = $this->request->param('ad');
 			$affiliate = $this->request->param('affiliate',NULL);
 		}
-	
+
 
 ## Where should routes be defined?
 
@@ -228,7 +228,7 @@ Let's say you decided later to make that route definition more verbose by changi
 One method you might use frequently is the shortcut [Request::uri] which is the same as the above except it assumes the current route, directory, controller and action. If our current route is the default and the uri was `users/list`, we can do the following to generate uris in the format `users/view/$id`:
 
     $this->request->uri(array('action' => 'view', 'id' => $user_id));
-    
+
 Or if within a view, the preferable method is:
 
     Request::instance()->uri(array('action' => 'view', 'id' => $user_id));
