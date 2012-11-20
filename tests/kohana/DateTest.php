@@ -362,7 +362,7 @@ class Kohana_DateTest extends Kohana_Unittest_TestCase
 	 * Provides test data to test_fuzzy_span
 	 * 
 	 * This test data is provided on the assumption that it
-	 * won't take phpunit more than 30 seconds to get the 
+	 * won't take phpunit more than 30 seconds to get the
 	 * data from this provider to the test... ;)
 	 *
 	 * @return array Test Data
@@ -387,8 +387,8 @@ class Kohana_DateTest extends Kohana_Unittest_TestCase
 			array('less than a day ago', $now - 12*60*60, $now),
 			array('in less than a day', $now + 12*60*60, $now),
 
-			array('about a day ago', $now - 30*60*60, $now),	
-			array('in about a day', $now + 30*60*60, $now),	
+			array('about a day ago', $now - 30*60*60, $now),
+			array('in about a day', $now + 30*60*60, $now),
 
 			array('a couple of days ago', $now - 3*24*60*60, $now),
 			array('in a couple of days', $now + 3*24*60*60, $now),
@@ -461,15 +461,15 @@ class Kohana_DateTest extends Kohana_Unittest_TestCase
 		return array(
 			array(
 				array (
-					2005 => '2005', 
-					2006 => '2006', 
+					2005 => '2005',
+					2006 => '2006',
 					2007 => '2007',
 				    2008 => '2008',
 				    2009 => '2009',
 				    2010 => '2010',
 				    2011 => '2011',
 				    2012 => '2012',
-					2013 => '2013', 
+					2013 => '2013',
 					2014 => '2014',
 					2015 => '2015',
 				),
@@ -521,7 +521,7 @@ class Kohana_DateTest extends Kohana_Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_hours
 	 */
-	public function test_hours($expected, $step = 1, $long = FALSE, $start = NULL) 
+	public function test_hours($expected, $step = 1, $long = FALSE, $start = NULL)
 	{
 		$this->assertSame(
 			$expected,
@@ -539,19 +539,19 @@ class Kohana_DateTest extends Kohana_Unittest_TestCase
 		return array(
 			array(
 				// Thank god for var_export()
-				array ( 
-					0 => '00', 1 => '01', 2 => '02', 3 => '03', 4 => '04', 
-					5 => '05', 6 => '06', 7 => '07', 8 => '08', 9 => '09', 
-					10 => '10', 11 => '11', 12 => '12', 13 => '13', 14 => '14', 
-					15 => '15', 16 => '16', 17 => '17', 18 => '18', 19 => '19', 
-					20 => '20', 21 => '21', 22 => '22', 23 => '23', 24 => '24', 
-					25 => '25', 26 => '26', 27 => '27', 28 => '28', 29 => '29', 
-					30 => '30', 31 => '31', 32 => '32', 33 => '33', 34 => '34', 
-					35 => '35', 36 => '36', 37 => '37', 38 => '38', 39 => '39', 
-					40 => '40', 41 => '41', 42 => '42', 43 => '43', 44 => '44', 
-					45 => '45', 46 => '46', 47 => '47', 48 => '48', 49 => '49', 
-					50 => '50', 51 => '51', 52 => '52', 53 => '53', 54 => '54', 
-					55 => '55', 56 => '56', 57 => '57', 58 => '58', 59 => '59', 
+				array (
+					0 => '00', 1 => '01', 2 => '02', 3 => '03', 4 => '04',
+					5 => '05', 6 => '06', 7 => '07', 8 => '08', 9 => '09',
+					10 => '10', 11 => '11', 12 => '12', 13 => '13', 14 => '14',
+					15 => '15', 16 => '16', 17 => '17', 18 => '18', 19 => '19',
+					20 => '20', 21 => '21', 22 => '22', 23 => '23', 24 => '24',
+					25 => '25', 26 => '26', 27 => '27', 28 => '28', 29 => '29',
+					30 => '30', 31 => '31', 32 => '32', 33 => '33', 34 => '34',
+					35 => '35', 36 => '36', 37 => '37', 38 => '38', 39 => '39',
+					40 => '40', 41 => '41', 42 => '42', 43 => '43', 44 => '44',
+					45 => '45', 46 => '46', 47 => '47', 48 => '48', 49 => '49',
+					50 => '50', 51 => '51', 52 => '52', 53 => '53', 54 => '54',
+					55 => '55', 56 => '56', 57 => '57', 58 => '58', 59 => '59',
 				),
 				1,
 				0,
@@ -583,14 +583,14 @@ class Kohana_DateTest extends Kohana_Unittest_TestCase
 	{
 		return array(
 			array(
-				array( 
-					0 => '00', 5 => '05', 10 => '10', 
-					15 => '15', 20 => '20', 25 => '25', 
-					30 => '30', 35 => '35', 40 => '40', 
-					45 => '45', 50 => '50', 55 => '55', 
+				array(
+					0 => '00', 5 => '05', 10 => '10',
+					15 => '15', 20 => '20', 25 => '25',
+					30 => '30', 35 => '35', 40 => '40',
+					45 => '45', 50 => '50', 55 => '55',
 				),
 				5,
-			),		
+			),
 		);
 	}
 
@@ -616,11 +616,11 @@ class Kohana_DateTest extends Kohana_Unittest_TestCase
 	 */
 	public function test_minutes_defaults_to_using_step_of5()
 	{
-		$minutes = array( 
-			0 => '00', 5 => '05', 10 => '10', 
-			15 => '15', 20 => '20', 25 => '25', 
-			30 => '30', 35 => '35', 40 => '40', 
-			45 => '45', 50 => '50', 55 => '55', 
+		$minutes = array(
+			0 => '00', 5 => '05', 10 => '10',
+			15 => '15', 20 => '20', 25 => '25',
+			30 => '30', 35 => '35', 40 => '40',
+			45 => '45', 50 => '50', 55 => '55',
 		);
 
 		$this->assertSame(

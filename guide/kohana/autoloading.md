@@ -48,11 +48,11 @@ Somewhere in `application/bootstrap.php`, copy the following code:
 	{
 	    ini_set('include_path',
 	    ini_get('include_path').PATH_SEPARATOR.dirname(dirname($path)));
-	
+
 	    require_once 'Zend/Loader/Autoloader.php';
 	    Zend_Loader_Autoloader::getInstance();
 	}
-	
+
 #### Usage example
 
 You can now autoload any Zend Framework classes from inside your Kohana application.
@@ -60,7 +60,7 @@ You can now autoload any Zend Framework classes from inside your Kohana applicat
 	if ($validate($_POST))
 	{
 		$mailer = new Zend_Mail;
-		
+
 		$mailer->setBodyHtml($view)
 			->setFrom(Kohana::config('site')->email_from)
 			->addTo($email)

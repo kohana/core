@@ -16,7 +16,7 @@
  */
 class Kohana_CoreTest extends Kohana_Unittest_TestCase
 {
-	
+
 	/**
 	 * Provides test data for test_sanitize()
 	 * 
@@ -93,7 +93,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 
 		$this->assertInternalType('array', $files);
 		$this->assertGreaterThan(3, count($files));
-		
+
 		$this->assertSame(array(), Kohana::list_files('geshmuck'));
 	}
 
@@ -179,7 +179,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 					'regex'         => ':field does not match the required format',
 					'url'           => ':field must be a url',
 				),
-				'validate', NULL, 
+				'validate', NULL,
 			),
 		);
 	}
@@ -339,7 +339,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * To make the tests as portable as possible this just tests that 
+	 * To make the tests as portable as possible this just tests that
 	 * you get an array of modules when you can Kohana::modules() and that
 	 * said array contains unittest
 	 *
@@ -375,7 +375,7 @@ class Kohana_CoreTest extends Kohana_Unittest_TestCase
 		// And make sure they're in the correct positions
 		$this->assertSame(APPPATH, reset($include_paths));
 		$this->assertSame(SYSPATH, end($include_paths));
-		
+
 		foreach($modules as $module)
 		{
 			$this->assertContains($module, $include_paths);

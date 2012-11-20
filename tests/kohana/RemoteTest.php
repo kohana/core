@@ -71,7 +71,7 @@ class Kohana_RemoteTest extends Kohana_Unittest_TestCase
 	{
 		if ( ! $this->hasInternet())
 			$this->markTestSkipped('An internet connection is required for this test');
-		
+
 		$this->assertSame($expected, Remote::status($input));
 	}
 }

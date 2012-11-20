@@ -1,10 +1,10 @@
 # Tips and Common Mistakes
 
-This is a collection of tips and common mistakes or errors you may encounter. 
+This is a collection of tips and common mistakes or errors you may encounter.
 
 ## Never edit the `system` folder!
 
-You should (almost) never edit the system folder.  Any change you want to make to files in system and modules can be made via the [cascading filesystem](files) and [transparent extension](extension) and won't break when you try to update your Kohana version.  
+You should (almost) never edit the system folder.  Any change you want to make to files in system and modules can be made via the [cascading filesystem](files) and [transparent extension](extension) and won't break when you try to update your Kohana version.
 
 ## Don't try and use one route for everything
 

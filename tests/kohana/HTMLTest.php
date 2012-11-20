@@ -12,7 +12,7 @@
  * @license    http://kohanaframework.org/license
  */
 class Kohana_HTMLTest extends Kohana_Unittest_TestCase
-{	
+{
 	protected $environmentDefault = array(
 		'Kohana::$base_url' => '/kohana/',
 		'HTTP_HOST'	=> 'www.kohanaframework.org',

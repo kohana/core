@@ -2,13 +2,13 @@
 
 The Kohana filesystem is a heirarchy of similar directory structures that cascade. The heirarchy in Kohana (used when a file is loaded by [Kohana::find_file]) is in the following order:
 
-1. **Application Path**  
+1. **Application Path**
    Defined as `APPPATH` in `index.php`. The default value is `application`.
 
-2. **Module Paths**  
+2. **Module Paths**
    This is set as an associative array using [Kohana::modules] in `APPPATH/bootstrap.php`. Each of the values of the array will be searched **in the order that the modules are added**.
 
-3. **System Path**  
+3. **System Path**
    Defined as `SYSPATH` in `index.php`. The default value is `system`. All of the main or "core" files and classes are defined here.
 
 Files that are in directories higher up the include path order take precedence over files of the same name lower down the order, which makes it is possible to overload any file by placing a file with the same name in a "higher" directory:
@@ -58,7 +58,7 @@ The path to any file within the filesystem can be found by calling [Kohana::find
 
     // Find the full path to "views/user/login.php"
     $path = Kohana::find_file('views', 'user/login');
-	
+
 If the file doesn't have a `.php` extension, pass the extension as the third param.
 
 	// Find the full path to "guide/menu.md"

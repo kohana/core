@@ -63,13 +63,13 @@ When you add your transparently extended cookie class at `application/classes/co
 If you are using the [Cookie](cookies) class, and want to change a setting, you should do so using transparent extension, rather than editing the file in the system folder.  If you edit it directly, and in the future you upgrade your Kohana version by replacing the system folder, your changes will be reverted and your cookies will probably be invalid.  Instead, create a cookie.php file either in `application/classes/cookie.php` or a module (`MODPATH/<modulename>/classes/cookie.php`).
 
 	class Cookie extends Kohana_Cookie {
-	
+
 		// Set a new salt
 		public $salt = "some new better random salt phrase";
-		
+
 		// Don't allow javascript access to cookies
 		public $httponly = TRUE;
-		
+
 	}
 
 ## Example: TODO: an example

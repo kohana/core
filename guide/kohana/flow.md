@@ -13,7 +13,7 @@ Every application follows the same flow:
 	8. [Kohana_Config] readers and [Kohana_Log] writers are attached.
 	9. [Kohana::modules] is called to enable additional modules.
 	    * Module paths are added to the [cascading filesystem](files).
-		* Includes each module's `init.php` file, if it exists. 
+		* Includes each module's `init.php` file, if it exists.
 	    * The `init.php` file can perform additional environment setup, including adding routes.
 	10. [Route::set] is called multiple times to define the [application routes](routing).
 	11. [Request::instance] is called to start processing the request.

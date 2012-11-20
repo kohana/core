@@ -31,7 +31,7 @@ class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 			array('¥', FALSE, TRUE)
 		);
 	}
-	
+
 	/**
 	 * Tests Validate::alpha()
 	 * 
@@ -121,7 +121,7 @@ class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 				$expected,
 				Validate::alpha_dash($input)
 			);
-		}		
+		}
 
 		$this->assertSame(
 			$expected,
@@ -652,7 +652,7 @@ class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 		// arrayObject with value
 		$ao1 = new ArrayObject;
 		$ao1['test'] = 'value';
-		
+
 		return array(
 			array(array(),      FALSE),
 			array(NULL,         FALSE),
@@ -895,7 +895,7 @@ class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 
 	/**
 	 * When we copy() a validate object, we should have a new validate object
-	 * with the exact same attributes, apart from the data, which should be the 
+	 * with the exact same attributes, apart from the data, which should be the
 	 * same as the array we pass to copy()
 	 *
 	 * @test
@@ -914,7 +914,7 @@ class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 		$copy = $validate->copy($copy_data);
 
 		$this->assertNotSame($validate, $copy);
-		
+
 		foreach(array('_filters', '_rules', '_callbacks', '_labels', '_empty_rules', '_errors') as $attribute)
 		{
 			// This is just an easy way to check that the attributes are identical
@@ -969,7 +969,7 @@ class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 		$this->assertAttributeSame(
 			array(
 				'id' => array(array('misc_callback', array())),
-			), 
+			),
 			'_callbacks',
 			$validate
 		);
@@ -990,12 +990,12 @@ class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 
 		$this->assertAttributeSame(
 			array(
-				'year' => array( 
+				'year' => array(
 					array('misc_callback', array()),
 					array('another_callback', array()),
 				),
-			), 
-			'_callbacks', 
+			),
+			'_callbacks',
 			$validate
 		);
 	}
@@ -1181,7 +1181,7 @@ class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * This test asserts that Validate::check will call callbacks with all of the 
+	 * This test asserts that Validate::check will call callbacks with all of the
 	 * parameters supplied when the callback was specified
 	 *
 	 * @test
@@ -1209,7 +1209,7 @@ class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	 * In some cases (such as when validating search params in GET) it is necessary for
 	 * an empty array to validate successfully
 	 *
-	 * This test checks that Validate::check() allows the user to specify this setting when 
+	 * This test checks that Validate::check() allows the user to specify this setting when
 	 * calling check()
 	 *
 	 * @test
@@ -1233,7 +1233,7 @@ class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 	/**
 	 * If you add a rule that says a field should match another field then
 	 * a label should be added for the field to match against to ensure that
-	 * it will be available when check() is called 
+	 * it will be available when check() is called
 	 *
 	 * @test
 	 * @ticket 3158
@@ -1245,14 +1245,14 @@ class Kohana_ValidateTest extends Kohana_Unittest_TestCase
 		$labels = array('password' => 'password', 'password_confirm' => 'password confirm');
 
 		$validate = new Validate($data);
-		
+
 		$validate->rule('password', 'matches', array('password_confirm'));
 
 		$this->assertAttributeSame($labels, '_labels', $validate);
 
 		$this->assertTrue($validate->check());
 
-		// Now we do the dnx check 
+		// Now we do the dnx check
 
 		$validate = new Validate($data);
 

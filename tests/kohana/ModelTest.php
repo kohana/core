@@ -26,5 +26,5 @@ class Kohana_ModelTest extends Kohana_Unittest_TestCase
 
 class Model_Foobar extends Model
 {
-	
+
 }

@@ -49,7 +49,7 @@ class Kohana_TextTest extends Kohana_Unittest_TestCase
 	}
 
 	/**
-	 * This test makes sure that auto_p doesn't enclose HTML tags 
+	 * This test makes sure that auto_p doesn't enclose HTML tags
 	 * in paragraphs
 	 *
 	 * @test
@@ -59,7 +59,7 @@ class Kohana_TextTest extends Kohana_Unittest_TestCase
 	public function test_auto_para_does_not_enclose_html_tags_in_paragraphs(array $tags, $text)
 	{
 		$output = Text::auto_p($text);
-		
+
 		foreach($tags as $tag)
 		{
 			$this->assertNotTag(
@@ -112,7 +112,7 @@ class Kohana_TextTest extends Kohana_Unittest_TestCase
 			array('The rain...', 'The rain in spain', 2, '...'),
 		);
 	}
-	
+
 	/**
 	 *
 	 * @test
@@ -168,7 +168,7 @@ class Kohana_TextTest extends Kohana_Unittest_TestCase
 		$this->assertSame('good', Text::alternate($val_a, $val_b, $val_c));
 		$this->assertSame('bad',  Text::alternate($val_a, $val_b, $val_c));
 		$this->assertSame('ugly', Text::alternate($val_a, $val_b, $val_c));
-		
+
 		$this->assertSame('good', Text::alternate($val_a, $val_b, $val_c));
 	}
 
@@ -181,10 +181,10 @@ class Kohana_TextTest extends Kohana_Unittest_TestCase
 	public function test_alternate_resets_when_called_with_no_params_and_returns_empty_string()
 	{
 		list($val_a, $val_b, $val_c) = array('yes', 'no', 'maybe');
-		
+
 		$this->assertSame('yes', Text::alternate($val_a, $val_b, $val_c));
-		
-		$this->assertSame('', Text::alternate());	
+
+		$this->assertSame('', Text::alternate());
 
 		$this->assertSame('yes', Text::alternate($val_a, $val_b, $val_c));
 	}
@@ -192,7 +192,7 @@ class Kohana_TextTest extends Kohana_Unittest_TestCase
 	/**
 	 * Provides test data for test_reducde_slashes()
 	 *
-	 * @returns array Array of test data 
+	 * @returns array Array of test data
 	 */
 	public function provider_reduce_slashes()
 	{
@@ -268,7 +268,7 @@ class Kohana_TextTest extends Kohana_Unittest_TestCase
 	/**
 	 * Tests Text::random() as well as possible
 	 *
-	 * Obviously you can't compare a randomly generated string against a 
+	 * Obviously you can't compare a randomly generated string against a
 	 * pre-generated one and check that they are the same as this goes
 	 * against the whole ethos of random.
 	 *
@@ -308,7 +308,7 @@ class Kohana_TextTest extends Kohana_Unittest_TestCase
 				$pool = '2345679ACDEFHJKLMNPRSTUVWXYZ';
 			break;
 		}
-		
+
 		$this->assertRegExp('/^['.$pool.']{'.$length.'}$/u', Text::random($type, $length));
 	}
 
@@ -416,7 +416,7 @@ class Kohana_TextTest extends Kohana_Unittest_TestCase
 						<li>voorzitter@xxxx.com</li>
 						<li>vicevoorzitter@xxxx.com</li>
 					</ul>';
-	
+
 		$this->assertFalse(strpos('vice', Text::auto_link_emails($original)));
 	}
 
@@ -454,7 +454,7 @@ class Kohana_TextTest extends Kohana_Unittest_TestCase
 	/**
 	 * Provides test data for test_auto_link_urls()
 	 *
-	 * @return array 
+	 * @return array
 	 */
 	public function provider_auto_link_urls()
 	{
@@ -513,7 +513,7 @@ class Kohana_TextTest extends Kohana_Unittest_TestCase
 	/**
 	 * Provides test data for test_auto_link_emails()
 	 *
-	 * @return array 
+	 * @return array
 	 */
 	public function provider_auto_link_emails()
 	{
@@ -595,7 +595,7 @@ class Kohana_TextTest extends Kohana_Unittest_TestCase
 		{
 			$this->assertNotContains($email, $linked_text);
 		}
-		
+
 	}
 
 }

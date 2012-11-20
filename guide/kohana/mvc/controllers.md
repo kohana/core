@@ -17,7 +17,7 @@ Some examples of controller names and file locations:
 
 	// classes/controller/foobar.php
 	class Controller_Foobar extends Controller {
-	
+
 	// classes/controller/admin.php
 	class Controller_Admin extends Controller {
 
@@ -25,20 +25,20 @@ Controllers can be in sub-folders:
 
 	// classes/controller/baz/bar.php
 	class Controller_Baz_Bar extends Controller {
-	
+
 	// classes/controller/product/category.php
 	class Controller_Product_Category extends Controller {
-	
+
 [!!] Note that controllers in sub-folders can not be called by the default route, you will need to define a route that has a [directory](routing#directory) param or sets a default value for directory.
 
 Controllers can extend other controllers.
 
 	// classes/controller/users.php
 	class Controller_Users extends Controller_Template
-	
+
 	// classes/controller/api.php
 	class Controller_Api extends Controller_REST
-	
+
 [!!] [Controller_Template] and [Controller_REST] are some example controllers provided in Kohana.
 
 You can also have a controller extend another controller to share common things, such as requiring you to be logged in to use all of those controllers.
@@ -46,16 +46,16 @@ You can also have a controller extend another controller to share common things,
 	// classes/controller/admin.php
 	class Controller_Admin extends Controller {
 		// This controller would have a before() that checks if the user is logged in
-	
+
 	// classes/controller/admin/plugins.php
 	class Controller_Admin_Plugins extends Controller_Admin {
 		// Because this controller extends Controller_Admin, it would have the same logged in check
-		
+
 ## $this->request
 
 Every controller has the `$this->request` property which is the [Request] object that called the controller.  You can use this to get information about the current request, as well as set the response via `$this->request->response`.
 
-Here is a partial list of the properties and methods available to `$this->request`.  These can also be accessed via `Request::instance()`, but `$this->request` is provided as a shortcut.  See the [Request] class for more information on any of these. 
+Here is a partial list of the properties and methods available to `$this->request`.  These can also be accessed via `Request::instance()`, but `$this->request` is provided as a shortcut.  See the [Request] class for more information on any of these.
 
 Property/method | What it does
 --- | ---
@@ -86,7 +86,7 @@ A very basic action method that simply loads a [view](mvc/views) file.
 Parameters can be accessed in two ways.  The first is by calling `$this->request->param('name')` where `name` is the name defined in the route.
 
 	// Assuming Route::set('example','<controller>(/<action>(/<id>(/<new>)))');
-	
+
 	public function action_foobar()
 	{
 		$id = $this->request->param('id');
@@ -99,17 +99,17 @@ If that parameter is not set it will be returned as NULL.  You can provide a sec
 		// $id will be false if it was not supplied in the url
 		$id = $this->request->param('user',FALSE);
 
-The second way you can access route parameters is from the actions function definition.  Any extra keys in your route (keys besides `<directory>`, `<controller>`, and `<action>`) are passed as parameters to your action *in the order they appear in the route*.  
+The second way you can access route parameters is from the actions function definition.  Any extra keys in your route (keys besides `<directory>`, `<controller>`, and `<action>`) are passed as parameters to your action *in the order they appear in the route*.
 
 	// Assuming Route::set('example','<controller>(/<action>(/<id>(/<new>)))');
-	
+
 	public function action_foobar($id, $new)
 	{
 
 Note that the names do not actually matter, *only the order*.  You could name the parameters anything you want in both the route and the function definition, they don't even need to match.  The following code is identical in function to the previous example.
 
 	// Assuming Route::set('example','<controller>(/<action>(/<num>(/<word>)))');
-	
+
 	public function action_foobar($foo, $bar)
 	{
 
@@ -121,14 +121,14 @@ You can provide default values in the same way you do for any php function.
 You can use whichever method you prefer.  Using function params is quick and easy and saves on `$this->request->param()` calls, but keep in mind that if your routes ever change it could change the paramater order and break things.  Therefore, it is recommended you use `$this->request->param()`.  For example, assuming the following route
 
 	Route::set('example','<controller>(/<action>(/<id>(/<new>)))');
-	
+
 If you called "example/foobar/4/bobcat" you could access the parameters by either:
 
-	public function action_foobar($id, $new) 
+	public function action_foobar($id, $new)
 	{
-	
+
 	// OR
-	
+
 	public function action_foobar()
 	{
 		$id = $this->request->param('id');
@@ -140,7 +140,7 @@ Then, let's say sometime in the future you change your url schemes and your rout
 	Route::set('example','<controller>(/<action>(/<new>(/<id>)))');
 
 Because the `<new>` and `<id>` keys are in a different order, you will need to fix your function definition to be `action_foobar($new, $id)` whereas the function that used `$this->request->param()` calls would continue to function as desired.
-	
+
 ### Examples
 
 TODO: some examples of actions
@@ -165,7 +165,7 @@ You can check what action has been requested (via `$this->request->action`) and 
 				$this->request->redirect('admin/login');
 			}
 		}
-		
+
 		public function action_login() {
 			...
 
@@ -180,7 +180,7 @@ In general, you should not have to change the `__construct()` function, as anyth
 	{
 		// You must call parent::__construct at some point in your function
 		parent::__construct($request);
-		
+
 		// Do whatever else you want
 	}
 

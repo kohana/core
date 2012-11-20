@@ -33,7 +33,7 @@ class Kohana_NumTest extends Kohana_Unittest_TestCase
 
 		setlocale(LC_ALL, $this->default_locale);
 	}
-	
+
 	/**
 	 * Provides test data for test_ordinal()
 	 * @return array

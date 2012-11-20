@@ -58,10 +58,10 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 				'accept-charset' => 'utf-8',
 			),
 		);
-		
+
 		if($attributes !== NULL)
 			$matcher['attributes'] = $attributes + $matcher['attributes'];
-		
+
 		$this->assertTag($matcher, $tag);
 	}
 
@@ -161,7 +161,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 			array('checkbox', 'foo', NULL, FALSE, NULL),
 			array('checkbox', 'foo', NULL, TRUE, NULL),
 			array('checkbox', 'foo', 'bar', TRUE, NULL),
-			
+
 			array('radio', 'foo', NULL, FALSE, NULL),
 			array('radio', 'foo', NULL, TRUE, NULL),
 			array('radio', 'foo', 'bar', TRUE, NULL),
@@ -301,7 +301,7 @@ class Kohana_FormTest extends Kohana_Unittest_Testcase
 			'tag' => 'input',
 			'attributes' => array('name' => $name, 'type' => 'submit', 'value' => $value)
 		);
-			
+
 		$this->assertTag($matcher, Form::submit($name, $value));
 	}
 

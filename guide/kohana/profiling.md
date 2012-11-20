@@ -11,7 +11,7 @@ Kohana provides a very simple way to display statistics about your application:
 
 ## Profiling your code
 
-You can easily add profiling to your own functions and code.  This is done using the [Profiler::start()] function.  The first parameter is the group, the second parameter is the name of the benchmark.  
+You can easily add profiling to your own functions and code.  This is done using the [Profiler::start()] function.  The first parameter is the group, the second parameter is the name of the benchmark.
 
 	public function foobar($input)
 	{
