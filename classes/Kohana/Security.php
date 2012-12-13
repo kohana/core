@@ -43,7 +43,7 @@ class Kohana_Security {
 		$session = Session::instance();
 
 		// Get the current token
-		$token = $session->get(Security::$token_name);
+		$token = $session->get_once(Security::$token_name);
 
 		if ($new === TRUE OR ! $token)
 		{
