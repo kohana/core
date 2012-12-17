@@ -446,7 +446,7 @@ class Kohana_Response implements HTTP_Response {
 			if ( ! isset($mime))
 			{
 				// Get the mime type
-				$mime = File::mime($download);
+				$mime = File::mime($filename);
 			}
 
 			// Open the file for reading
