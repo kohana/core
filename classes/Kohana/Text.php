@@ -48,6 +48,11 @@ class Kohana_Text {
 	);
 
 	/**
+	 * @var string $list_conjunction The conjunction term used in readable_list().
+	 */
+	public static $list_conjunction = 'and';
+
+	/**
 	 * Limits a phrase to a given number of words.
 	 *
 	 *     $text = Text::limit_words($text);
@@ -681,6 +686,56 @@ class Kohana_Text {
 
 		// The value requested could not be found
 		return FALSE;
+	}
+
+	/**
+	 * Turns an array of strings/ints into a readable, comma separated list.
+	 *
+	 * For example: array('eggs', 'milk', 'cheese') => "eggs, milk and cheese".
+	 *
+	 * @throws  Kohana_Exception
+	 * @param   array   $words  An array of words.
+	 * @return  string          An inline, human readable list.
+	 */
+	public static function readable_list(array $words)
+	{
+		// Check that each element in $words is a string or int.
+		foreach ($words as $word)
+		{
+			if (is_array($word)) {
+				throw new Kohana_Exception('The array must only be one level deep.');
+			}
+			elseif ( ! is_string($word) AND ! is_int($word))
+			{
+				throw new Kohana_Exception('Array values must be either strings or integers.');
+			}
+		}
+
+		// Setup some counting variables.
+		$total = count($words);
+		$current = 1;
+		$string = '';
+
+		// Loop through and generate the readable string.
+		foreach ($words as $word)
+		{
+			if ($total - 1 === $current)
+			{
+				$string .= $word.' '.self::$list_conjunction;
+			}
+			elseif ($total === $current)
+			{
+				$string .= $word;
+			}
+			else
+			{
+				$string .= $word.', ';
+			}
+
+			$current++;
+		}
+
+		return $string;
 	}
 
 } // End text
