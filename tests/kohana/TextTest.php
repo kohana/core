@@ -639,4 +639,67 @@ class Kohana_TextTest extends Unittest_TestCase
 
 	}
 
+	/**
+	 * Provides test data for test_readable_list.
+	 *
+	 * @return array
+	 */
+	public function provider_readable_list()
+	{
+		return array(
+			array('Tom, Dick and Harry',
+				array('Tom', 'Dick', 'Harry')
+			),
+			array('1, 2 and 3',
+				array(1, 2, 3)
+			)
+		);
+	}
+
+	/**
+	 * Provides test data for test_readable_list_throws_exception_with_unexpected_data_types.
+	 *
+	 * @return array
+	 */
+	public function provider_readable_list_throws_exception_with_unexpected_data_types()
+	{
+		return array(
+			array(
+				array(TRUE, FALSE, TRUE)
+			),
+			array(
+				array(
+					array('Values'),
+					array('In'),
+					array('Arrays')
+				)
+			)
+		);
+	}
+
+	/**
+	 * Tests Text::readable_list().
+	 *
+	 * @test
+	 * @dataProvider  provider_readable_list
+	 * @covers        Text::readable_list
+	 */
+	public function test_readable_list($expected, $words)
+	{
+		$this->assertSame($expected, Text::readable_list($words));
+	}
+
+	/**
+	 * Tests Text::readable_list().
+	 *
+	 * @test
+	 * @dataProvider       provider_readable_list_throws_exception_with_unexpected_data_types
+	 * @expectedException  Kohana_Exception
+	 * @covers             Text::readable_list
+	 */
+	public function test_readable_list_throws_exception_with_unexpected_data_types($words)
+	{
+		Text::readable_list($words);
+	}
+
 }
