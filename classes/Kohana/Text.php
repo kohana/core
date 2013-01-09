@@ -48,11 +48,6 @@ class Kohana_Text {
 	);
 
 	/**
-	 * @var string $list_conjunction The conjunction term used in readable_list().
-	 */
-	public static $list_conjunction = 'and';
-
-	/**
 	 * Limits a phrase to a given number of words.
 	 *
 	 *     $text = Text::limit_words($text);
@@ -694,10 +689,11 @@ class Kohana_Text {
 	 * For example: array('eggs', 'milk', 'cheese') => "eggs, milk and cheese".
 	 *
 	 * @throws  Kohana_Exception
-	 * @param   array   $words  An array of words.
-	 * @return  string          An inline, human readable list.
+	 * @param   array   $words        An array of words.
+	 * @param   string  $conjunction  The conjunction term used (e.g. 'and', 'or' etc.).
+	 * @return  string                An inline, human readable list.
 	 */
-	public static function readable_list(array $words)
+	public static function readable_list(array $words, $conjunction = 'and')
 	{
 		// Check that each element in $words is a string or int.
 		foreach ($words as $word)
@@ -721,7 +717,7 @@ class Kohana_Text {
 		{
 			if ($total - 1 === $current)
 			{
-				$string .= $word.' '.self::$list_conjunction;
+				$string .= $word.' '.$conjunction;
 			}
 			elseif ($total === $current)
 			{
