@@ -561,19 +561,19 @@ class Kohana_Validation implements ArrayAccess {
 				}
 			}
 
-			if ($message = Kohana::message($file, "{$field}.{$error}") AND is_string($message))
+			if (($message = Kohana::message($file, "{$field}.{$error}")) AND is_string($message))
 			{
 				// Found a message for this field and error
 			}
-			elseif ($message = Kohana::message($file, "{$field}.default") AND is_string($message))
+			elseif (($message = Kohana::message($file, "{$field}.default")) AND is_string($message))
 			{
 				// Found a default message for this field
 			}
-			elseif ($message = Kohana::message($file, $error) AND is_string($message))
+			elseif (($message = Kohana::message($file, $error)) AND is_string($message))
 			{
 				// Found a default message for this error
 			}
-			elseif ($message = Kohana::message('validation', $error) AND is_string($message))
+			elseif (($message = Kohana::message('validation', $error)) AND is_string($message))
 			{
 				// Found a default message for this error
 			}
