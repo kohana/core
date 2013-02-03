@@ -526,56 +526,50 @@ class Kohana_Route {
 		$compile = function ($portion, $required) use (&$compile, $defaults, $params)
 		{
 			$missing = array();
-			$result = preg_replace_callback(
-				'#(?:'.Route::REGEX_KEY.'|'.Route::REGEX_GROUP.')'
-					.Route::REGEX_OUTSIDE_PARENTHESES.'#',
-				function ($matches)
-					use (&$compile, $defaults, &$missing, $params, &$required)
+
+			$pattern = '#(?:'.Route::REGEX_KEY.'|'.Route::REGEX_GROUP.')'.Route::REGEX_OUTSIDE_PARENTHESES.'#';
+			$result = preg_replace_callback($pattern, function ($matches) use (&$compile, $defaults, &$missing, $params, &$required)
+			{
+				if ($matches[0][0] === '<')
 				{
-					if ($matches[0][0] === '<')
+					// Parameter, unwrapped
+					$param = $matches[1];
+
+					if (isset($params[$param]))
 					{
-						// Parameter, unwrapped
-						$param = $matches[1];
+						// This portion is required when a specified
+						// parameter does not match the default
+						$required = ($required OR ! isset($defaults[$param]) OR $params[$param] !== $defaults[$param]);
 
-						if (isset($params[$param]))
-						{
-							// This portion is required when a specified
-							// parameter does not match the default
-							$required = ($required
-								OR ! isset($defaults[$param])
-								OR $params[$param] !== $defaults[$param]);
-
-							// Add specified parameter to this result
-							return $params[$param];
-						}
-
-						// Add default parameter to this result
-						if (isset($defaults[$param]))
-							return $defaults[$param];
-
-						// This portion is missing a parameter
-						$missing[] = $param;
+						// Add specified parameter to this result
+						return $params[$param];
 					}
-					else
+
+					// Add default parameter to this result
+					if (isset($defaults[$param]))
+						return $defaults[$param];
+
+					// This portion is missing a parameter
+					$missing[] = $param;
+				}
+				else
+				{
+					// Group, unwrapped
+					$result = $compile($matches[2], FALSE);
+
+					if ($result[1])
 					{
-						// Group, unwrapped
-						$result = $compile($matches[2], FALSE);
+						// This portion is required when it contains a group
+						// that is required
+						$required = TRUE;
 
-						if ($result[1])
-						{
-							// This portion is required when it contains a group
-							// that is required
-							$required = TRUE;
-
-							// Add required groups to this result
-							return $result[0];
-						}
-
-						// Do not add optional groups to this result
+						// Add required groups to this result
+						return $result[0];
 					}
-				},
-				$portion
-			);
+
+					// Do not add optional groups to this result
+				}
+			}, $portion);
 
 			if ($required AND $missing)
 			{
