@@ -173,13 +173,41 @@ class Kohana_ArrTest extends Unittest_TestCase
 	public function provider_get()
 	{
 		return array(
+			/**
+			 * Test with array
+			 */
 			array(array('uno', 'dos', 'tress'), 1, NULL, 'dos'),
 			array(array('we' => 'can', 'make' => 'change'), 'we', NULL, 'can'),
+			array(array('we' => 'can', 'make' => 'change'), 1, 'default', 'default'),
 
 			array(array('uno', 'dos', 'tress'), 10, NULL, NULL),
 			array(array('we' => 'can', 'make' => 'change'), 'he', NULL, NULL),
 			array(array('we' => 'can', 'make' => 'change'), 'he', 'who', 'who'),
 			array(array('we' => 'can', 'make' => 'change'), 'he', array('arrays'), array('arrays')),
+
+			array(array('we' => NULL, 'make' => 'change'), 'we', NULL, NULL),
+			array(array('we' => NULL, 'make' => 'change'), 'we', 'default', NULL),
+
+			/**
+			 * Test with instance of ArrayAccess
+			 */
+			array(new ArrayObject(array('uno', 'dos', 'tress')), 1, NULL, 'dos'),
+			array(new ArrayObject(array('we' => 'can', 'make' => 'change')), 'we', NULL, 'can'),
+			array(new ArrayObject(array('we' => 'can', 'make' => 'change')), 1, 'default', 'default'),
+
+			array(new ArrayObject(array('uno', 'dos', 'tress')), 10, NULL, NULL),
+			array(new ArrayObject(array('we' => 'can', 'make' => 'change')), 'he', NULL, NULL),
+			array(new ArrayObject(array('we' => 'can', 'make' => 'change')), 'he', 'who', 'who'),
+			array(new ArrayObject(array('we' => 'can', 'make' => 'change')), 'he', array('arrays'), array('arrays')),
+
+			array(new ArrayObject(array('we' => NULL, 'make' => 'change')), 'we', NULL, NULL),
+			array(new ArrayObject(array('we' => NULL, 'make' => 'change')), 'we', 'default', NULL),
+
+			/**
+			 * Test with NULL
+			 */
+			array(NULL, 'key', NULL, NULL),
+			array(NULL, 'key', 'default', 'default'),
 		);
 	}
 
@@ -188,17 +216,50 @@ class Kohana_ArrTest extends Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_get()
-	 * @param array          $array      Array to look in
-	 * @param string|integer $key        Key to look for
-	 * @param mixed          $default    What to return if $key isn't set
-	 * @param mixed          $expected   The expected value returned
+	 * @param array|ArrayAccess|NULL $array      Array to look in
+	 * @param string|integer         $key        Key to look for
+	 * @param mixed                  $default    What to return if $key isn't set
+	 * @param mixed                  $expected   The expected value returned
 	 */
-	public function test_get(array $array, $key, $default, $expected)
+	public function test_get($array, $key, $default, $expected)
 	{
 		$this->assertSame(
 			$expected,
 			Arr::get($array, $key, $default)
 		);
+	}
+
+	/**
+	 * Provides test data for test_get_exception()
+	 * @return array
+	 */
+	public function provider_get_exception()
+	{
+		return array(
+			array('string'),
+			array(1),
+			array(0),
+			array(TRUE),
+			array(FALSE),
+			array(new stdClass),
+			array(''),
+			array(1.5),
+		);
+	}
+
+	/**
+	 * Tests the exception thrown by Arr::get() when something different than
+	 * array or ArrayAccess instance.
+	 *
+	 * @test
+	 * @dataProvider provider_get_exception()
+	 * @expectedException Kohana_Exception
+	 * @expectedExceptionMessage Argument 1 to Arr::get() must be an array or an instance of ArrayAccess
+	 * @param mixed $array Array to look in
+	 */
+	public function test_get_exception($array)
+	{
+		Arr::get($array, 'some key');
 	}
 
 	/**

@@ -267,14 +267,32 @@ class Kohana_Arr {
 	 *     // Get the value "sorting" from $_GET, if it exists
 	 *     $sorting = Arr::get($_GET, 'sorting');
 	 *
-	 * @param   array   $array      array to extract from
-	 * @param   string  $key        key name
-	 * @param   mixed   $default    default value
+	 * @param   array|ArrayAccess|NULL   $array      array to extract from
+	 * @param   int|string               $key        key name
+	 * @param   mixed                    $default    default value
 	 * @return  mixed
+	 * @throws Kohana_Exception If $array is not of expected types
 	 */
 	public static function get($array, $key, $default = NULL)
 	{
-		return isset($array[$key]) ? $array[$key] : $default;
+		// using isset for performance reasons
+		if (isset($array[$key]))
+			return $array[$key];
+
+		if ($array === NULL)
+			return $default;
+
+		if (is_array($array))
+		{
+			return array_key_exists($key, $array) ? $array[$key] : $default;
+		}
+
+		if ($array instanceof ArrayAccess)
+		{
+			return $array->offsetExists($key) ? $array[$key]: $default;
+		}
+
+		throw new Kohana_Exception('Argument 1 to Arr::get() must be an array or an instance of ArrayAccess');
 	}
 
 	/**
@@ -283,7 +301,7 @@ class Kohana_Arr {
 	 *
 	 *     // Get the values "username", "password" from $_POST
 	 *     $auth = Arr::extract($_POST, array('username', 'password'));
-	 *     
+	 *
 	 *     // Get the value "level1.level2a" from $data
 	 *     $data = array('level1' => array('level2a' => 'value 1', 'level2b' => 'value 2'));
 	 *     Arr::extract($data, array('level1.level2a', 'password'));
