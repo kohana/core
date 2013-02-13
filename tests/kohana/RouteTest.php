@@ -456,6 +456,30 @@ class Kohana_RouteTest extends Unittest_TestCase
 				array('custom' => 'x'),
 				'api/const/x',
 			),
+			array(
+				'(<controller>(/<action>(/<id>)(/<type>)))',
+				array('controller' => 'test', 'action' => 'index', 'type' => 'html'),
+				array('type' => 'json'),
+				'test/index/json',
+			),
+			array(
+				'(<controller>(/<action>(/<id>)(/<type>)))',
+				array('controller' => 'test', 'action' => 'index', 'type' => 'html'),
+				array('id' => 123),
+				'test/index/123',
+			),
+			array(
+				'(<controller>(/<action>(/<id>)(/<type>)))',
+				array('controller' => 'test', 'action' => 'index', 'type' => 'html'),
+				array('id' => 123, 'type' => 'html'),
+				'test/index/123',
+			),
+			array(
+				'(<controller>(/<action>(/<id>)(/<type>)))',
+				array('controller' => 'test', 'action' => 'index', 'type' => 'html'),
+				array('id' => 123, 'type' => 'json'),
+				'test/index/123/json',
+			),
 		);
 	}
 
@@ -474,6 +498,136 @@ class Kohana_RouteTest extends Unittest_TestCase
 		$route->defaults($defaults);
 
 		$this->assertSame($expected, $route->uri($params));
+	}
+
+	public function provider_regex_key()
+	{
+		return array(
+			array('a', array()),
+			array('(a)', array()),
+			array('<a>', array(array('<a>', 'a'))),
+			array('(<a>)', array()),
+
+			array('<a><b>', array(array('<a>', 'a'), array('<b>', 'b'))),
+			array('(<a><b>)', array()),
+			array('<a>(<b>)', array(array('<a>', 'a'))),
+			array('(<a>)<b>', array(array('<b>', 'b'))),
+			array('(<a>)(<b>)', array()),
+
+			array('<a>(<b>)<c>', array(array('<a>', 'a'), array('<c>', 'c'))),
+			array('<a>((<b>))<c>', array(array('<a>', 'a'), array('<c>', 'c'))),
+
+			array('(<a>)<b>(<c>)', array(array('<b>', 'b'))),
+			array('((<a>))<b>((<c>))', array(array('<b>', 'b'))),
+		);
+	}
+
+	/**
+	 * @dataProvider provider_regex_key
+	 * @group cbandy
+	 */
+	public function test_regex_key($subject, $expected)
+	{
+		preg_match_all(
+			'#'.Route::REGEX_KEY.Route::REGEX_OUTSIDE_PARENTHESES.'#',
+			$subject,
+			$matches,
+			PREG_SET_ORDER
+		);
+
+		$this->assertSame($expected, $matches);
+	}
+
+	public function provider_regex_group()
+	{
+		return array(
+			array('a', array()),
+			array('(a)', array(array('(a)', 'a'))),
+			array('<a>', array()),
+			array('(<a>)', array(array('(<a>)', '<a>'))),
+
+			array('<a><b>', array()),
+			array('(<a><b>)', array(array('(<a><b>)', '<a><b>'))),
+			array('<a>(<b>)', array(array('(<b>)', '<b>'))),
+			array('(<a>)<b>', array(array('(<a>)', '<a>'))),
+			array('(<a>)(<b>)', array(array('(<a>)', '<a>'), array('(<b>)', '<b>'))),
+
+			array('<a>(<b>)<c>', array(array('(<b>)', '<b>'))),
+			array('<a>((<b>))<c>', array(array('((<b>))', '(<b>)'))),
+
+			array('(<a>)<b>(<c>)', array(array('(<a>)', '<a>'), array('(<c>)', '<c>'))),
+			array('((<a>))<b>((<c>))', array(array('((<a>))', '(<a>)'), array('((<c>))', '(<c>)'))),
+
+			array('(a(b))', array(array('(a(b))', 'a(b)'))),
+			array('(a(b)(c))', array(array('(a(b)(c))', 'a(b)(c)'))),
+			array('(a(b))(c)', array(array('(a(b))', 'a(b)'), array('(c)', 'c'))),
+			array('(a(b))((d)c)', array(array('(a(b))', 'a(b)'), array('((d)c)', '(d)c'))),
+		);
+	}
+
+	/**
+	 * @dataProvider provider_regex_group
+	 * @group cbandy
+	 */
+	public function test_regex_group($subject, $expected)
+	{
+		preg_match_all(
+			'#'.Route::REGEX_GROUP.'#', $subject, $matches, PREG_SET_ORDER
+		);
+
+		$this->assertSame($expected, $matches);
+	}
+
+	public function provider_regex_key_or_group()
+	{
+		return array(
+			array('a', array()),
+			array('(a)', array(array('(a)', '', 'a'))),
+			array('<a>', array(array('<a>', 'a'))),
+			array('(<a>)', array(array('(<a>)', '', '<a>'))),
+
+			array('<a><b>', array(array('<a>', 'a'), array('<b>', 'b'))),
+			array('(<a><b>)', array(array('(<a><b>)', '', '<a><b>'))),
+			array('<a>(<b>)', array(array('<a>', 'a'), array('(<b>)', '', '<b>'))),
+			array('(<a>)<b>', array(array('(<a>)', '', '<a>'), array('<b>', 'b'))),
+			array('(<a>)(<b>)', array(array('(<a>)', '', '<a>'), array('(<b>)', '', '<b>'))),
+
+			array('<a>(<b>)<c>', array(
+				array('<a>', 'a'), array('(<b>)', '', '<b>'), array('<c>', 'c'),
+			)),
+			array('<a>((<b>))<c>', array(
+				array('<a>', 'a'), array('((<b>))', '', '(<b>)'), array('<c>', 'c'),
+			)),
+
+			array('(<a>)<b>(<c>)', array(
+				array('(<a>)', '', '<a>'), array('<b>', 'b'), array('(<c>)', '', '<c>'),
+			)),
+			array('((<a>))<b>((<c>))', array(
+				array('((<a>))', '', '(<a>)'), array('<b>', 'b'), array('((<c>))', '', '(<c>)'),
+			)),
+
+			array('<a>(<b>(<c>))', array(
+				array('<a>', 'a'), array('(<b>(<c>))', '', '<b>(<c>)'),
+			)),
+			array('(<a>(<b>))<c>', array(
+				array('(<a>(<b>))', '', '<a>(<b>)'), array('<c>', 'c'),
+			)),
+		);
+	}
+
+	/**
+	 * @dataProvider provider_regex_key_or_group
+	 */
+	public function test_regex_key_or_group($subject, $expected)
+	{
+		preg_match_all(
+			'#(?:'.Route::REGEX_KEY.Route::REGEX_OUTSIDE_PARENTHESES.'|'.Route::REGEX_GROUP.')'.'#',
+			$subject,
+			$matches,
+			PREG_SET_ORDER
+		);
+
+		$this->assertSame($expected, $matches);
 	}
 
 	/**

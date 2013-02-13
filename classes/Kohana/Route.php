@@ -36,7 +36,7 @@
 class Kohana_Route {
 
 	// Matches a URI group and captures the contents
-	const REGEX_GROUP   = '\((.*?)\)';
+	const REGEX_GROUP   = '\(((?:(?>[^()]+)|(?R))*)\)';
 
 	// Defines the pattern of a <segment>
 	const REGEX_KEY     = '<([a-zA-Z0-9_]++)>';
@@ -527,7 +527,7 @@ class Kohana_Route {
 		{
 			$missing = array();
 
-			$pattern = '#(?:'.Route::REGEX_KEY.'|'.Route::REGEX_GROUP.')'.Route::REGEX_OUTSIDE_PARENTHESES.'#';
+			$pattern = '#(?:'.Route::REGEX_KEY.Route::REGEX_OUTSIDE_PARENTHESES.'|'.Route::REGEX_GROUP.')#';
 			$result = preg_replace_callback($pattern, function ($matches) use (&$compile, $defaults, &$missing, $params, &$required)
 			{
 				if ($matches[0][0] === '<')
