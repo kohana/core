@@ -41,9 +41,6 @@ class Kohana_Route {
 	// Defines the pattern of a <segment>
 	const REGEX_KEY     = '<([a-zA-Z0-9_]++)>';
 
-	// Asserts that remainder of the string has a pair of parentheses or none
-	const REGEX_OUTSIDE_PARENTHESES = '(?=(?:[^()]|\(.*\))*$)';
-
 	// What can be part of a <segment> value
 	const REGEX_SEGMENT = '[^/.,;?\n]++';
 
@@ -509,7 +506,6 @@ class Kohana_Route {
 	 * @throws  Kohana_Exception
 	 * @uses    Route::REGEX_GROUP
 	 * @uses    Route::REGEX_KEY
-	 * @uses    Route::REGEX_OUTSIDE_PARENTHESES
 	 */
 	public function uri(array $params = NULL)
 	{
@@ -527,7 +523,7 @@ class Kohana_Route {
 		{
 			$missing = array();
 
-			$pattern = '#(?:'.Route::REGEX_KEY.Route::REGEX_OUTSIDE_PARENTHESES.'|'.Route::REGEX_GROUP.')#';
+			$pattern = '#(?:'.Route::REGEX_KEY.'|'.Route::REGEX_GROUP.')#';
 			$result = preg_replace_callback($pattern, function ($matches) use (&$compile, $defaults, &$missing, $params, &$required)
 			{
 				if ($matches[0][0] === '<')
