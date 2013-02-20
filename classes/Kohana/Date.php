@@ -600,4 +600,4 @@ class Kohana_Date {
 		return $time->format($timestamp_format);
 	}
 
-} // End date
+}

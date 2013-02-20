@@ -348,4 +348,4 @@ class Kohana_View {
 		return View::capture($this->_file, $this->_data);
 	}
 
-} // End View
+}

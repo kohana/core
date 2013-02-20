@@ -521,7 +521,7 @@ class Kohana_Core {
 	/**
 	 * Provides auto-loading support of classes that follow Kohana's old class
 	 * naming conventions.
-	 * 
+	 *
 	 * This is included for compatibility purposes with older modules.
 	 *
 	 * @param   string  $class      Class name
@@ -1037,7 +1037,7 @@ class Kohana_Core {
 
 	/**
 	 * Generates a version string based on the variables defined above.
-	 * 
+	 *
 	 * @return string
 	 */
 	public static function version()
@@ -1045,4 +1045,4 @@ class Kohana_Core {
 		return 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
 	}
 
-} // End Kohana
+}
