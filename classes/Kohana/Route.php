@@ -397,9 +397,9 @@ class Kohana_Route {
 	}
 
 	/**
-	 * Tests if the route matches a given URI. A successful match will return
-	 * all of the routed parameters as an array. A failed match will return
-	 * boolean FALSE.
+	 * Tests if the route matches a given URI or a Request object. A successful
+	 * match will return all of the routed parameters as an array. A failed
+	 * match will return boolean FALSE.
 	 *
 	 *     // Params: controller = users, action = edit, id = 10
 	 *     $params = $route->matches('users/edit/10');
@@ -411,12 +411,18 @@ class Kohana_Route {
 	 *         // Parse the parameters
 	 *     }
 	 *
-	 * @param   string  $uri    URI to match
+	 * @param   mixed   $request	URI string or Request object to match
 	 * @return  array   on success
 	 * @return  FALSE   on failure
 	 */
-	public function matches(Request $request)
+	public function matches($request)
 	{
+		// Create a Request object if not provided
+		if ( ! $request instanceof Request)
+		{
+			$request = Request::factory($request);
+		}
+
 		// Get the URI from the Request
 		$uri = trim($request->uri(), '/');
 
