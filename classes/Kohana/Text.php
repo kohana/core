@@ -688,26 +688,14 @@ class Kohana_Text {
 	 *
 	 * For example: array('eggs', 'milk', 'cheese') => "eggs, milk and cheese".
 	 *
-	 * @throws  Kohana_Exception
-	 * @param   array   $words        An array of words.
-	 * @param   string  $conjunction  The conjunction term used (e.g. 'and', 'or' etc.).
-	 * @return  string                An inline, human readable list.
+	 * @throws  InvalidArgumentException
+	 * @param   array   $words         An array of words.
+	 * @param   string  $conjunction   The conjunction term used (e.g. 'and', 'or' etc.).
+	 * @param   bool    $serial_comma  Whether a serial comma should be used.
+	 * @return  string                 An inline, human readable list.
 	 */
-	public static function readable_list(array $words, $conjunction = 'and', $serial_comma = FALSE)
+	public static function readable_list(array $words, $conjunction = 'and', $serial_comma = TRUE)
 	{
-		// Check that each element in $words is a string or int.
-		foreach ($words as $word)
-		{
-			if (is_array($word))
-			{
-				throw new Kohana_Exception('The array must only have one dimension.');
-			}
-			elseif ( ! is_string($word) AND ! is_int($word))
-			{
-				throw new Kohana_Exception('Array values must be either strings or integers.');
-			}
-		}
-
 		// Setup some counting variables.
 		$total = count($words);
 		$current = 1;
@@ -716,9 +704,22 @@ class Kohana_Text {
 		// Loop through and generate the readable string.
 		foreach ($words as $word)
 		{
+			// Check that the word isn't an array itself.
+			if (is_array($word))
+			{
+				throw new InvalidArgumentException('The array must only have one dimension.');
+			}
+
+			// Check that the value of the word is appropriate.
+			elseif ( ! is_string($word) AND ! is_int($word) AND ! (is_object($word) AND is_string((string)$word)))
+			{
+				throw new InvalidArgumentException('Array values must be either strings or integers.');
+			}
+
 			if ($total - 1 === $current)
 			{
-				$string .= $word.($serial_comma ? ', ' : ' ').$conjunction;
+				// As this is the second to last word, we add on the conjunction (with optional serial comma).
+				$string .= $word.($serial_comma ? ', ' : ' ').$conjunction.' ';
 			}
 			elseif ($total === $current)
 			{
