@@ -70,7 +70,7 @@ class Kohana_Inflector {
 	 *
 	 * [!!] Special inflections are defined in `config/inflector.php`.
 	 *
-	 * @param   string  $str    word to singularize
+	 * @param   string  $str    word to make singular
 	 * @param   integer $count  count of thing
 	 * @return  string
 	 * @uses    Inflector::uncountable
@@ -197,7 +197,7 @@ class Kohana_Inflector {
 			$str .= 's';
 		}
 
-		// Convert to uppsecase if nessasary
+		// Convert to uppercase if necessary
 		if ($is_uppercase)
 		{
 			$str = strtoupper($str);
