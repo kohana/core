@@ -693,13 +693,14 @@ class Kohana_Text {
 	 * @param   string  $conjunction  The conjunction term used (e.g. 'and', 'or' etc.).
 	 * @return  string                An inline, human readable list.
 	 */
-	public static function readable_list(array $words, $conjunction = 'and')
+	public static function readable_list(array $words, $conjunction = 'and', $serial_comma = FALSE)
 	{
 		// Check that each element in $words is a string or int.
 		foreach ($words as $word)
 		{
-			if (is_array($word)) {
-				throw new Kohana_Exception('The array must only be one level deep.');
+			if (is_array($word))
+			{
+				throw new Kohana_Exception('The array must only have one dimension.');
 			}
 			elseif ( ! is_string($word) AND ! is_int($word))
 			{
@@ -717,7 +718,7 @@ class Kohana_Text {
 		{
 			if ($total - 1 === $current)
 			{
-				$string .= $word.' '.$conjunction;
+				$string .= $word.($serial_comma ? ', ' : ' ').$conjunction;
 			}
 			elseif ($total === $current)
 			{
