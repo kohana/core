@@ -696,12 +696,7 @@ class Kohana_Text {
 	 */
 	public static function readable_list(array $words, $conjunction = 'and', $serial_comma = TRUE)
 	{
-		// Setup some counting variables.
-		$total = count($words);
-		$current = 1;
-		$string = '';
-
-		// Loop through and generate the readable string.
+		// Validate that the method parameters are suitable.
 		foreach ($words as $word)
 		{
 			// Check that the word isn't an array itself.
@@ -715,23 +710,11 @@ class Kohana_Text {
 			{
 				throw new InvalidArgumentException('Array values must be either strings or integers.');
 			}
-
-			if ($total - 1 === $current)
-			{
-				// As this is the second to last word, we add on the conjunction (with optional serial comma).
-				$string .= $word.($serial_comma ? ', ' : ' ').$conjunction.' ';
-			}
-			elseif ($total === $current)
-			{
-				$string .= $word;
-			}
-			else
-			{
-				$string .= $word.', ';
-			}
-
-			$current++;
 		}
+
+		// Build the list.
+		$last_word = array_pop($words);
+		$string = implode(', ', $words).($serial_comma ? ', ' : ' ').$conjunction.' '.$last_word;
 
 		return $string;
 	}
