@@ -112,6 +112,7 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 	/**
 	 * Sets the appropriate curl request options. Uses the responding option
 	 * for POST or CURLOPT_CUSTOMREQUEST otherwise
+	 *
 	 * @param Request $request
 	 * @param array $options
 	 * @return array
