@@ -320,7 +320,14 @@ class Kohana_RequestTest extends Unittest_TestCase
 			'Kohana::$is_cli'    => $is_cli,
 		));
 
-		$this->assertEquals(Request::factory($uri)->url($params, $protocol), $expected);
+		// Inject the route so we don't conflict with the application's default route
+		$route = new Route('(<controller>(/<action>))');
+		$route->defaults(array(
+			'controller' => 'welcome',
+			'action'     => 'index',
+		));
+		
+		$this->assertEquals(Request::factory($uri, NULL, array($route))->url($params, $protocol), $expected);
 	}
 
 	/**
@@ -546,8 +553,15 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function provider_uri_only_trimed_on_internal()
 	{
+		// Forced route will not conflict the test with application custom routes
+		$route = new Route('(<controller>(/<action>))');
+		$route->defaults(array(
+			'controller' => 'welcome',
+			'action'     => 'index',
+		));
+		
 		$old_request = Request::$initial;
-		Request::$initial = new Request('foo/bar');
+		Request::$initial = new Request('foo/bar', NULL, array($route));
 
 		$result = array(
 			array(
@@ -559,11 +573,11 @@ class Kohana_RequestTest extends Unittest_TestCase
 				'http://www.google.com/'
 			),
 			array(
-				new Request('foo/bar/'),
+				new Request('foo/bar/', NULL, array($route)),
 				'foo/bar'
 			),
 			array(
-				new Request('foo/bar'),
+				new Request('foo/bar', NULL, array($route)),
 				'foo/bar'
 			)
 		);
