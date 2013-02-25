@@ -696,7 +696,7 @@ class Kohana_Text {
 	 */
 	public static function readable_list(array $words, $conjunction = 'and', $serial_comma = TRUE)
 	{
-		// Validate that the method parameters are suitable.
+		// First, validate that the method parameters are suitable.
 		foreach ($words as $word)
 		{
 			// Check that the word isn't an array itself.
@@ -704,7 +704,6 @@ class Kohana_Text {
 			{
 				throw new InvalidArgumentException('The array must only have one dimension.');
 			}
-
 			// Check that the value of the word is appropriate.
 			elseif ( ! is_string($word) AND ! is_int($word) AND ! (is_object($word) AND method_exists($word, '__toString')))
 			{
@@ -712,10 +711,11 @@ class Kohana_Text {
 			}
 		}
 
-		// Build the list.
+		// Build the 'readable list'.
 		$last_word = array_pop($words);
 		$string = implode(', ', $words).($serial_comma ? ', ' : ' ').$conjunction.' '.$last_word;
 
+		// Return the 'readable list'.
 		return $string;
 	}
 
