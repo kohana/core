@@ -711,7 +711,7 @@ class Kohana_Text {
 			}
 
 			// Check that the value of the word is appropriate.
-			elseif ( ! is_string($word) AND ! is_int($word) AND ! (is_object($word) AND is_string((string)$word)))
+			elseif ( ! is_string($word) AND ! is_int($word) AND ! (is_object($word) AND method_exists($word, '__toString')))
 			{
 				throw new InvalidArgumentException('Array values must be either strings or integers.');
 			}
