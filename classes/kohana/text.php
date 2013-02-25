@@ -603,4 +603,22 @@ class Kohana_Text {
 		return $str;
 	}
 
+	/**
+	 * Concatenates a count and a pluralised description.
+	 * This removes duplication from views of showing then number and then calling Inflector::plural().
+	 * This is especially helpful when the count comes from a function call which you don't want to have to repeat.
+	 *
+	 *		echo Text::plural(2, "beer");
+	 * 		echo Text::plural(count($beers), "beer");
+	 *
+	 * @uses	Inflector::plural()
+	 * @param	int		$count	Number of items
+	 * @param 	string	$text	Description of item to be passed to Inflector::plural()	
+	 * @return 	string
+	 */
+	public static function plural( $count, $text )
+	{
+		return $count." ".Inflector::plural($text, $count);
+	}
+
 } // End text
