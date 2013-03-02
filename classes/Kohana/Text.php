@@ -235,8 +235,8 @@ class Kohana_Text {
 	/**
 	 * Uppercase words that are not separated by spaces, using a custom
 	 * delimiter or the default.
-	 * 
-	 *      $str = Text::ucfirst('content-type'); // returns "Content-Type" 
+	 *
+	 *      $str = Text::ucfirst('content-type'); // returns "Content-Type"
 	 *
 	 * @param   string  $string     string to transform
 	 * @param   string  $delimiter  delemiter to use
@@ -681,6 +681,42 @@ class Kohana_Text {
 
 		// The value requested could not be found
 		return FALSE;
+	}
+
+	/**
+	 * Turns an array of strings/ints into a readable, comma separated list.
+	 *
+	 * For example: array('eggs', 'milk', 'cheese') => "eggs, milk and cheese".
+	 *
+	 * @throws  InvalidArgumentException
+	 * @param   array   $words         An array of words.
+	 * @param   string  $conjunction   The conjunction term used (e.g. 'and', 'or' etc.).
+	 * @param   bool    $serial_comma  Whether a serial comma should be used.
+	 * @return  string                 An inline, human readable list.
+	 */
+	public static function readable_list(array $words, $conjunction = 'and', $serial_comma = TRUE)
+	{
+		// First, validate that the method parameters are suitable.
+		foreach ($words as $word)
+		{
+			// Check that the word isn't an array itself.
+			if (is_array($word))
+			{
+				throw new InvalidArgumentException('The array must only have one dimension.');
+			}
+			// Check that the value of the word is appropriate.
+			elseif ( ! is_string($word) AND ! is_int($word) AND ! (is_object($word) AND method_exists($word, '__toString')))
+			{
+				throw new InvalidArgumentException('Array values must be either strings or integers.');
+			}
+		}
+
+		// Build the 'readable list'.
+		$last_word = array_pop($words);
+		$string = implode(', ', $words).($serial_comma ? ', ' : ' ').$conjunction.' '.$last_word;
+
+		// Return the 'readable list'.
+		return $string;
 	}
 
 } // End text
