@@ -76,13 +76,13 @@ class Kohana_Valid {
 		{
 			foreach ($length as $strlen)
 			{
-				if (UTF8::strlen($value) === $strlen)
+				if (UTF8::strlen($value) == $strlen)
 					return TRUE;
 			}
 			return FALSE;
 		}
 
-		return UTF8::strlen($value) === $length;
+		return UTF8::strlen($value) == $length;
 	}
 
 	/**
