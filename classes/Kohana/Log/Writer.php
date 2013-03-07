@@ -78,6 +78,9 @@ abstract class Kohana_Log_Writer {
 		$message['time'] = Date::formatted_time('@'.$message['time'], Log_Writer::$timestamp, Log_Writer::$timezone, TRUE);
 		$message['level'] = $this->_log_levels[$message['level']];
 
+		// FIX: $message should consist of an array of strings
+		$message = array_filter($message, 'is_string');
+
 		$string = strtr($format, $message);
 
 		if (isset($message['additional']['exception']))
