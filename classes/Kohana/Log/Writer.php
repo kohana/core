@@ -78,10 +78,7 @@ abstract class Kohana_Log_Writer {
 		$message['time'] = Date::formatted_time('@'.$message['time'], Log_Writer::$timestamp, Log_Writer::$timezone, TRUE);
 		$message['level'] = $this->_log_levels[$message['level']];
 
-		// FIX: $message should consist of an array of strings
-		$message = array_filter($message, 'is_string');
-
-		$string = strtr($format, $message);
+		$string = strtr($format, array_filter($message, 'is_scalar'));
 
 		if (isset($message['additional']['exception']))
 		{
@@ -89,7 +86,7 @@ abstract class Kohana_Log_Writer {
 			$message['body'] = $message['additional']['exception']->getTraceAsString();
 			$message['level'] = $this->_log_levels[Log_Writer::$strace_level];
 
-			$string .= PHP_EOL.strtr($format, $message);
+			$string .= PHP_EOL.strtr($format, array_filter($message, 'is_scalar'));
 		}
 
 		return $string;
