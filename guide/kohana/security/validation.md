@@ -182,6 +182,7 @@ First, we need a [View] that contains the HTML form, which will be placed in `ap
     <?php foreach ($errors as $message): ?>
         <li><?php echo $message ?></li>
     <?php endforeach ?>
+    </ul>
     <?php endif ?>
 
     <dl>
