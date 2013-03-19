@@ -104,4 +104,4 @@ class Kohana_Session_Native extends Session {
 		return $status;
 	}
 
-} // End Session_Native
+}

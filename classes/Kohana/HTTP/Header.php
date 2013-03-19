@@ -946,4 +946,4 @@ class Kohana_HTTP_Header extends ArrayObject {
 		return $this;
 	}
 
-} // End Kohana_HTTP_Header
+}

@@ -230,7 +230,7 @@ class Kohana_Kohana_Exception extends Exception {
 						}
 					}
 				}
-				
+
 				if (isset(Kohana_Exception::$php_errors[$code]))
 				{
 					// Use the human-readable error name
@@ -251,13 +251,13 @@ class Kohana_Kohana_Exception extends Exception {
 
 			// Instantiate the error view.
 			$view = View::factory(Kohana_Exception::$error_view, get_defined_vars());
-			
+
 			// Prepare the response object.
 			$response = Response::factory();
 
 			// Set the response status
 			$response->status(($e instanceof HTTP_Exception) ? $e->getCode() : 500);
-			
+
 			// Set the response headers
 			$response->headers('Content-Type', Kohana_Exception::$error_view_content_type.'; charset='.Kohana::$charset);
 
@@ -279,4 +279,4 @@ class Kohana_Kohana_Exception extends Exception {
 		return $response;
 	}
 
-} // End Kohana_Exception
+}

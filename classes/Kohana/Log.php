@@ -80,7 +80,7 @@ class Kohana_Log {
 		{
 			$levels = range($min_level, $levels);
 		}
-		
+
 		$this->_writers["{$writer}"] = array
 		(
 			'object' => $writer,
@@ -225,4 +225,4 @@ class Kohana_Log {
 		}
 	}
 
-} // End Kohana_Log
+}

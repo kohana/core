@@ -235,11 +235,11 @@ class Kohana_Text {
 	/**
 	 * Uppercase words that are not separated by spaces, using a custom
 	 * delimiter or the default.
-	 * 
-	 *      $str = Text::ucfirst('content-type'); // returns "Content-Type" 
+	 *
+	 *      $str = Text::ucfirst('content-type'); // returns "Content-Type"
 	 *
 	 * @param   string  $string     string to transform
-	 * @param   string  $delimiter  delemiter to use
+	 * @param   string  $delimiter  delimiter to use
 	 * @return  string
 	 */
 	public static function ucfirst($string, $delimiter = '-')
@@ -272,7 +272,7 @@ class Kohana_Text {
 	 * @param   string  $str                    phrase to replace words in
 	 * @param   array   $badwords               words to replace
 	 * @param   string  $replacement            replacement string
-	 * @param   boolean $replace_partial_words  replace words across word boundries (space, period, etc)
+	 * @param   boolean $replace_partial_words  replace words across word boundaries (space, period, etc)
 	 * @return  string
 	 * @uses    UTF8::strlen
 	 */
@@ -531,7 +531,7 @@ class Kohana_Text {
 		{
 			if ($number / $unit >= 1)
 			{
-				// $value = the number of times the number is divisble by unit
+				// $value = the number of times the number is divisible by unit
 				$number -= $unit * ($value = (int) floor($number / $unit));
 				// Temporary var for textifying the current unit
 				$item = '';
@@ -683,4 +683,4 @@ class Kohana_Text {
 		return FALSE;
 	}
 
-} // End text
+}

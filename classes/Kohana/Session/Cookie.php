@@ -52,4 +52,4 @@ class Kohana_Session_Cookie extends Session {
 		return Cookie::delete($this->_name);
 	}
 
-} // End Session_Cookie
+}
