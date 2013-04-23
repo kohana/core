@@ -195,6 +195,12 @@ class Kohana_Kohana_Exception extends Exception {
 			$line    = $e->getLine();
 			$trace   = $e->getTrace();
 
+			if ($e instanceof http_exception_expected) 
+			{
+				// never display output for http_exception_expected
+				return $e->get_response();
+			}
+
 			if ( ! headers_sent())
 			{
 				// Make sure the proper http header is sent
