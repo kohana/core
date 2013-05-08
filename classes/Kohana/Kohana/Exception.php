@@ -103,11 +103,21 @@ class Kohana_Kohana_Exception extends Exception {
 	{
 		try
 		{
-			// Log the exception
-			Kohana_Exception::log($e);
-
-			// Generate the response
-			$response = Kohana_Exception::response($e);
+			if ($e instanceof Kohana_Exception)
+			{
+				$exception_name = get_class($e);
+				$exception_name::log($e);
+				$response = $exception_name::response($e);
+			} 
+            // non Kohana_Exception Exceptions
+			else 
+			{
+				// Log the exception
+				Kohana_Exception::log($e);
+			    
+                // Generate the response
+				$response = Kohana_Exception::response($e);
+			}
 
 			return $response;
 		}
@@ -184,6 +194,12 @@ class Kohana_Kohana_Exception extends Exception {
 			$file    = $e->getFile();
 			$line    = $e->getLine();
 			$trace   = $e->getTrace();
+
+			if ($e instanceof http_exception_expected) 
+			{
+				// never display output for http_exception_expected
+				return $e->get_response();
+			}
 
 			if ( ! headers_sent())
 			{
