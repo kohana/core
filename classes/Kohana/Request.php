@@ -1223,7 +1223,8 @@ class Kohana_Request implements HTTP_Request {
 		}
 		else
 		{
-			$this->headers('content-type', 'application/x-www-form-urlencoded');
+			$this->headers('content-type',
+				'application/x-www-form-urlencoded; charset='.Kohana::$charset);
 			$body = http_build_query($post, NULL, '&');
 		}
 
