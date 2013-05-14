@@ -80,13 +80,14 @@ class Kohana_Arr {
 	 *     // Using an array of keys
 	 *     $colors = Arr::path($array, array('theme', '*', 'color'));
 	 *
-	 * @param   array   $array      array to search
-	 * @param   mixed   $path       key path string (delimiter separated) or array of keys
-	 * @param   mixed   $default    default value if the path is not set
-	 * @param   string  $delimiter  key path delimiter
+	 * @param   array    $array           array to search
+	 * @param   mixed    $path            key path string (delimiter separated) or array of keys
+	 * @param   mixed    $default         default value if the path is not set
+	 * @param   string   $delimiter       key path delimiter
+	 * @param   boolean  $wildcard_assoc  whether to use associative keys for wildcard expansion
 	 * @return  mixed
 	 */
-	public static function path($array, $path, $default = NULL, $delimiter = NULL)
+	public static function path($array, $path, $default = NULL, $delimiter = NULL, $wildcard_assoc = FALSE)
 	{
 		if ( ! Arr::is_array($array))
 		{
@@ -159,11 +160,18 @@ class Kohana_Arr {
 				// Handle wildcards
 
 				$values = array();
-				foreach ($array as $arr)
+				foreach ($array as $wildcard_key => $arr)
 				{
 					if ($value = Arr::path($arr, implode('.', $keys)))
 					{
-						$values[] = $value;
+						if ($wildcard_assoc)
+						{
+							$values[$wildcard_key] = $value;
+						}
+						else
+						{
+							$values[] = $value;
+						}
 					}
 				}
 
