@@ -18,7 +18,13 @@
 			Kohana::init(array(
 				'base_url'   => '/mywebsite',
 			));
-		~~~	
+		~~~
+	- Set the [Cookie::$salt] property somewhere in the `application/bootstrap.php` file fill it with randomly generated string. More information can be found at [cookies](Cookies)
+
+		~~~
+			// Example of the cookie salt propery
+			Cookie::$salt = 'foobar';
+		~~~
 6. Make sure the `application/cache` and `application/logs` directories are writable by the web server.
 
 	~~~
