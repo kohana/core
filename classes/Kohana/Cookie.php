@@ -149,7 +149,7 @@ class Kohana_Cookie {
 		// Require a valid salt
 		if ( ! Cookie::$salt)
 		{
-			throw new Kohana_Exception('A valid cookie salt is required. Please set Cookie::$salt.');
+			throw new Kohana_Exception('A valid cookie salt is required. Please set Cookie::$salt in your bootstrap.php. For more information check the documentation');
 		}
 
 		// Determine the user agent
