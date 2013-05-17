@@ -454,7 +454,7 @@ class Kohana_Request implements HTTP_Request {
 	/**
 	 * Process a request to find a matching route
 	 *
-	 * @param   object  $request Request
+	 * @param   Request  $request Request
 	 * @param   array   $routes  Route
 	 * @return  array
 	 */
@@ -742,10 +742,9 @@ class Kohana_Request implements HTTP_Request {
 	/**
 	 * Create a URL string from the current request. This is a shortcut for:
 	 *
-	 *     echo URL::site($this->request->uri(), $protocol);
+	 *     $url = $request->url($protocol);
 	 *
-	 * @param   array    $params    URI parameters
-	 * @param   mixed    $protocol  protocol string or Request object
+	 * @param   mixed    $protocol  Protocol string, [Request], or boolean
 	 * @return  string
 	 * @since   3.0.7
 	 * @uses    URL::site
@@ -799,7 +798,7 @@ class Kohana_Request implements HTTP_Request {
 	/**
 	 * Sets and gets the route from the request.
 	 *
-	 * @param   string $route
+	 * @param   Route $route The [Route] object
 	 * @return  mixed
 	 */
 	public function route(Route $route = NULL)
@@ -879,6 +878,7 @@ class Kohana_Request implements HTTP_Request {
 	/**
 	 * Provides access to the [Request_Client].
 	 *
+	 * @param   Request_Client $client The [Request_Client] object
 	 * @return  Request_Client
 	 * @return  self
 	 */
