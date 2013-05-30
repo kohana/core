@@ -42,7 +42,7 @@ sudo chmod -R a+rwx application/logs
 
  - Define a salt for the `Config` class.
 ~~~
-Cookie::$salt = 'd131dd02c5e6eec4693d9a0698aff95c2fcab58712467eab4004583eb8fb7f89'
+Cookie::$salt = [really-long-cookie-salt-here]
 ~~~
 
 [!!] Make sure to use a unique salt for your application and never to share it. Take a look at the [Cookies](cookies) page for more information on how cookies work in Kohana. If you do not define a `Cookie::$salt` value, Kohana will throw an exception when it encounters any cookie on your domain.
