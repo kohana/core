@@ -151,8 +151,8 @@ class Kohana_Route {
 	 *
 	 * @param   boolean $save   cache the current routes
 	 * @param   boolean $append append, rather than replace, cached routes when loading
-	 * @return  void    when saving routes
-	 * @return  boolean when loading routes
+	 * @return  void|boolean    void when saving routes and boolean when loading routes
+	 * @throws  Kohana_Exception
 	 * @uses    Kohana::cache
 	 */
 	public static function cache($save = FALSE, $append = FALSE)
@@ -233,6 +233,8 @@ class Kohana_Route {
 	 *         )
 	 *     );
 	 *
+	 * @param   string $uri The uri string
+	 * @param   array $regex The regex variables
 	 * @return  string
 	 * @uses    Route::REGEX_ESCAPE
 	 * @uses    Route::REGEX_SEGMENT
