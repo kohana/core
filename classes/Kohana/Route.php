@@ -216,9 +216,9 @@ class Kohana_Route {
 
 		// Create a URI with the route and convert it to a URL
 		if ($route->is_external())
-			return Route::get($name)->uri($params);
+			return $route->uri($params);
 		else
-			return URL::site(Route::get($name)->uri($params), $protocol);
+			return URL::site($route->uri($params), $protocol);
 	}
 
 	/**
