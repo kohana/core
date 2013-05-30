@@ -40,7 +40,7 @@ sudo chmod -R a+rwx application/cache
 sudo chmod -R a+rwx application/logs
 ~~~
 
- - Define a salt for the `Config` class.
+ - Define a salt for the `Cookie` class.
 ~~~
 Cookie::$salt = [really-long-cookie-salt-here]
 ~~~
