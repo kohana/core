@@ -105,8 +105,8 @@ abstract class Kohana_Request_Client {
 						':depth' => $this->callback_depth() - 1,
 					));
 
-		// Execute the request
-		$orig_response = $response = Response::factory();
+		// Execute the request and pass the currently used protocol
+		$orig_response = $response = Response::factory(array('_protocol' => $request->protocol()));
 
 		if (($cache = $this->cache()) instanceof HTTP_Cache)
 			return $cache->execute($this, $request, $response);
