@@ -107,11 +107,33 @@ class Kohana_CoreTest extends Unittest_TestCase
 	 */
 	public function test_globals_removes_user_def_globals()
 	{
+		// Store the globals
+		$temp_globals = array(
+			'cookie' => $_COOKIE,
+			'get' => $_GET,
+			'files' => $_FILES,
+			'post' => $_POST,
+			'request' => $_REQUEST,
+			'server' => $_SERVER,
+			'session' => $_SESSION,
+			'globals' => $GLOBALS,
+		);
+
 		$GLOBALS = array('hackers' => 'foobar','name' => array('','',''), '_POST' => array());
 
 		Kohana::globals();
 
 		$this->assertEquals(array('_POST' => array()), $GLOBALS);
+
+		// Reset the globals for other tests
+		$_COOKIE = $temp_globals['cookie'];
+		$_GET = $temp_globals['get'];
+		$_FILES = $temp_globals['files'];
+		$_POST = $temp_globals['post'];
+		$_REQUEST = $temp_globals['request'];
+		$_SERVER = $temp_globals['server'];
+		$_SESSION = $temp_globals['session'];
+		$GLOBALS = $temp_globals['globals'];
 	}
 
 	/**
