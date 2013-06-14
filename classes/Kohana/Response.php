@@ -112,6 +112,11 @@ class Kohana_Response implements HTTP_Response {
 	protected $_protocol;
 
 	/**
+	 * @var  array       The response information/stats
+	 */
+	protected $_info;
+
+	/**
 	 * Sets up the response object
 	 *
 	 * @param   array $config Setup the response object
@@ -211,6 +216,26 @@ class Kohana_Response implements HTTP_Response {
 		else
 		{
 			throw new Kohana_Exception(__METHOD__.' unknown status value : :value', array(':value' => $status));
+		}
+	}
+
+		/**
+	 * Sets or gets the information/stats response.
+	 *
+	 *
+	 * @param   array  $info Information/stats of the response
+	 * @return  mixed
+	 */
+	public function info($info = NULL)
+	{
+		if ($info === NULL)
+		{
+			return $this->_info;
+		}
+		else
+		{
+			$this->_info = (array) $info;
+			return $this;
 		}
 	}
 
