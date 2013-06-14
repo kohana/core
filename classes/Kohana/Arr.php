@@ -207,8 +207,13 @@ class Kohana_Arr {
 			$delimiter = Arr::$delimiter;
 		}
 
-		// Split the keys by delimiter
-		$keys = explode($delimiter, $path);
+		// The path has already been separated into keys
+		$keys = $path;
+		if ( ! is_array($path))
+		{
+			// Split the keys by delimiter
+			$keys = explode($delimiter, $path);
+		}
 
 		// Set current $array to inner-most array path
 		while (count($keys) > 1)
