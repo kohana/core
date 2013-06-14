@@ -87,7 +87,10 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 		$body = curl_exec($curl);
 
 		// Get the response information
-		$code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+		$info = curl_getinfo($curl);
+
+		// Get the response code
+		$code = $info['http_code'];
 
 		if ($body === FALSE)
 		{
@@ -104,6 +107,7 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 		}
 
 		$response->status($code)
+			->info($info)
 			->body($body);
 
 		return $response;
