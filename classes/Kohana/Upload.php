@@ -11,6 +11,7 @@
  *
  * - [Upload::$remove_spaces]
  * - [Upload::$default_directory]
+ * - [Upload::$allow_security_disabling] (never use this in production installations)
  *
  * @package    Kohana
  * @category   Helpers
@@ -29,6 +30,15 @@ class Kohana_Upload {
 	 * @var  string  default upload directory
 	 */
 	public static $default_directory = 'upload';
+
+	/**
+	 * By default, the methods in this class are secure against fake uploads.  However,
+	 * for unit testing purposes, it may be useful to disable security to test functionality
+	 * downstream.  This should never be used in production installations!
+	 *
+	 * @var  boolean  allow security disabling using [Upload::disable_security]
+	 */
+	public static $allow_security_disabling = FALSE;
 
 	/**
 	 * Save an uploaded file to a new location. If no filename is provided,
@@ -51,7 +61,8 @@ class Kohana_Upload {
 	 */
 	public static function save(array $file, $filename = NULL, $directory = NULL, $chmod = 0644)
 	{
-		if ( ! isset($file['tmp_name']) OR ! is_uploaded_file($file['tmp_name']))
+		if ( ! isset($file['tmp_name']) OR ( ! static::$_disable_security AND
+			! is_uploaded_file($file['tmp_name'])))
 		{
 			// Ignore corrupted uploads
 			return FALSE;
@@ -84,7 +95,9 @@ class Kohana_Upload {
 		// Make the filename into a complete path
 		$filename = realpath($directory).DIRECTORY_SEPARATOR.$filename;
 
-		if (move_uploaded_file($file['tmp_name'], $filename))
+		// The file has already been checked with is_uploaded_file(), so it's safe
+		// to move using rename() instead of move_uploaded_file().
+		if (rename($file['tmp_name'], $filename))
 		{
 			if ($chmod !== FALSE)
 			{
@@ -131,7 +144,7 @@ class Kohana_Upload {
 		return (isset($file['error'])
 			AND isset($file['tmp_name'])
 			AND $file['error'] === UPLOAD_ERR_OK
-			AND is_uploaded_file($file['tmp_name']));
+			AND (static::$_disable_security OR is_uploaded_file($file['tmp_name'])));
 	}
 
 	/**
@@ -251,6 +264,32 @@ class Kohana_Upload {
 		}
 
 		return FALSE;
+	}
+
+	/**
+	 * @var  boolean  whether or not upload security is currently disabled
+	 */
+	protected static $_disable_security = FALSE;
+
+	/**
+	 * Disable upload file security.  This does nothing if
+	 * [Upload::$allow_security_disabling] is FALSE (default).
+	 *
+	 * @return  boolean  Upload::$_disable_security (returns TRUE only if allowed)
+	 */
+	public static function disable_security()
+	{
+		return static::$_disable_security = (bool) static::$allow_security_disabling;
+	}
+
+	/**
+	 * Enable upload file security (default).
+	 *
+	 * @return  boolean  Upload::$_disable_security (returns FALSE always)
+	 */
+	public static function enable_security()
+	{
+		return static::$_disable_security = FALSE;
 	}
 
 }
