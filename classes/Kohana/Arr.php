@@ -303,6 +303,29 @@ class Kohana_Arr {
 
 		return $found;
 	}
+	
+	/**
+	* Retrieves multiple keys from an array only if they exist.
+	*
+	* // Get the values "username", "password" from $_POST
+	* $auth = Arr::filter($_POST, array('username', 'password'));
+	*
+	* @param array array to filter keys from
+	* @param array list of key names to search for
+	* @return array
+	*/
+	public static function filter($array, array $keys)
+	{
+		$found = array();
+		foreach ($keys as $key)
+		{
+			if(isset($array[$key]))
+			{
+				$found[$key] = $array[$key];
+			}
+		}
+		return $found;
+	}
 
 	/**
 	 * Retrieves muliple single-key values from a list of arrays.
