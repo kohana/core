@@ -303,7 +303,31 @@ class Kohana_Arr {
 
 		return $found;
 	}
-
+	
+	/**
+	* Retrieves multiple keys from an array only if they exist.
+	*
+	* // Get the values "a", "b" from $arr = array('a' => 'foo', 'b' => 'bar', c => 'car')
+	* $result = Arr::extract_existing($arr, array('a', 'b'));
+	* returns array('array('a' => 'foo', 'b' => 'bar')
+	* 
+	* @param array array to filter keys from
+	* @param array list of key names to search for
+	* @return array
+	*/
+	public static function extract_existing($array, array $keys)
+	{
+		$found = array();
+		foreach ($keys as $key)
+		{
+			if(isset($array[$key]))
+			{
+				$found[$key] = $array[$key];
+			}
+		}
+		return $found;
+	}
+	
 	/**
 	 * Retrieves muliple single-key values from a list of arrays.
 	 *
