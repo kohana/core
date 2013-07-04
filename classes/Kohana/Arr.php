@@ -195,20 +195,25 @@ class Kohana_Arr {
 	*
 	* @see Arr::path()
 	* @param array   $array     Array to update
-	* @param string  $path      Path
+	* @param mixed   $path      Path - delimiter separated keys as a string or array of keys
 	* @param mixed   $value     Value to set
 	* @param string  $delimiter Path delimiter
 	*/
 	public static function set_path( & $array, $path, $value, $delimiter = NULL)
 	{
-		if ( ! $delimiter)
+		if (is_array($path))
+			$keys = $path;
+		else
 		{
-			// Use the default delimiter
-			$delimiter = Arr::$delimiter;
+			if ( ! $delimiter)
+			{
+				// Use the default delimiter
+				$delimiter = Arr::$delimiter;
+			}
+	
+			// Split the keys by delimiter
+			$keys = explode($delimiter, $path);
 		}
-
-		// Split the keys by delimiter
-		$keys = explode($delimiter, $path);
 
 		// Set current $array to inner-most array path
 		while (count($keys) > 1)
