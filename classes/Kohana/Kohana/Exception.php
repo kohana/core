@@ -79,7 +79,7 @@ class Kohana_Kohana_Exception extends Exception {
 	 *
 	 * @uses    Kohana_Exception::response
 	 * @param   Exception  $e
-	 * @return  boolean
+	 * @return  void
 	 */
 	public static function handler(Exception $e)
 	{
@@ -97,7 +97,7 @@ class Kohana_Kohana_Exception extends Exception {
 	 *
 	 * @uses    Kohana_Exception::response
 	 * @param   Exception  $e
-	 * @return  boolean
+	 * @return  Response
 	 */
 	public static function _handler(Exception $e)
 	{
