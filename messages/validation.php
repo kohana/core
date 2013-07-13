@@ -1,6 +1,7 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 return array(
+
 	'alpha'         => ':field must contain only letters',
 	'alpha_dash'    => ':field must contain only numbers, letters and dashes',
 	'alpha_numeric' => ':field must contain only letters and numbers',
@@ -24,4 +25,5 @@ return array(
 	'range'         => ':field must be within the range of :param2 to :param3',
 	'regex'         => ':field does not match the required format',
 	'url'           => ':field must be a url',
+
 );

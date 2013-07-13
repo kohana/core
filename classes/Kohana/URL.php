@@ -122,7 +122,7 @@ class Kohana_URL {
 	/**
 	 * Callback used for encoding all non-ASCII characters, as per RFC 1738
 	 * Used by URL::site()
-	 * 
+	 *
 	 * @param  array $matches  Array of matches from preg_replace_callback()
 	 * @return string          Encoded string
 	 */
@@ -210,4 +210,4 @@ class Kohana_URL {
 		return trim($title, $separator);
 	}
 
-} // End url
+}

@@ -1,4 +1,4 @@
-<?php
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * File-based configuration reader. Multiple configuration directories can be
  * used by attaching multiple instances of this class to [Kohana_Config].
@@ -53,4 +53,4 @@ class Kohana_Config_File_Reader implements Kohana_Config_Reader {
 		return $config;
 	}
 
-} // End Kohana_Config
+}

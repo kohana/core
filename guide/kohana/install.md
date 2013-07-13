@@ -22,8 +22,8 @@
 6. Make sure the `application/cache` and `application/logs` directories are writable by the web server.
 
 	~~~
-		sudo chmod 777 -R application/cache
-		sudo chmod 777 -R application/logs
+		sudo chmod -R a+rwx application/cache
+		sudo chmod -R a+rwx application/logs
 	~~~
 	
 7. Test your installation by opening the URL you set as the `base_url` in your favorite browser.

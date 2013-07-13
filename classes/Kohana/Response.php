@@ -270,10 +270,10 @@ class Kohana_Response implements HTTP_Response {
 
 	/**
 	 * Set and get cookies values for this response.
-	 * 
+	 *
 	 *     // Get the cookies set to the response
 	 *     $cookies = $response->cookie();
-	 *     
+	 *
 	 *     // Set a cookie to the response
 	 *     $response->cookie('session', array(
 	 *          'value' => $value,
@@ -710,4 +710,5 @@ class Kohana_Response implements HTTP_Response {
 
 		return array($start, $end);
 	}
-} // End Kohana_Response
+
+}

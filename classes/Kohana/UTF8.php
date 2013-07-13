@@ -8,8 +8,6 @@
  * - PCRE needs to be compiled with UTF-8 support (--enable-utf8)
  * - Support for [Unicode properties](http://php.net/manual/reference.pcre.pattern.modifiers.php)
  *   is highly recommended (--enable-unicode-properties)
- * - UTF-8 conversion will be much more reliable if the
- *   [iconv extension](http://php.net/iconv) is loaded
  * - The [mbstring extension](http://php.net/mbstring) is highly recommended,
  *   but must not be overloading string functions
  *
@@ -41,8 +39,6 @@ class Kohana_UTF8 {
 	 * incompatible characters.
 	 *
 	 *     UTF8::clean($_GET); // Clean GET data
-	 *
-	 * [!!] This method requires [Iconv](http://php.net/iconv)
 	 *
 	 * @param   mixed   $var        variable to clean
 	 * @param   string  $charset    character set, defaults to Kohana::$charset
@@ -76,8 +72,7 @@ class Kohana_UTF8 {
 				// Disable notices
 				$error_reporting = error_reporting(~E_NOTICE);
 
-				// iconv is expensive, so it is only used when needed
-				$var = iconv($charset, $charset.'//IGNORE', $var);
+				$var = mb_convert_encoding($var, $charset, $charset);
 
 				// Turn notices back on
 				error_reporting($error_reporting);
@@ -454,7 +449,7 @@ class Kohana_UTF8 {
 	}
 
 	/**
-	 * Case-insenstive UTF-8 version of strstr. Returns all of input string
+	 * Case-insensitive UTF-8 version of strstr. Returns all of input string
 	 * from the first occurrence of needle to the end. This is a UTF8-aware
 	 * version of [stristr](http://php.net/stristr).
 	 *
@@ -731,7 +726,7 @@ class Kohana_UTF8 {
 	/**
 	 * Takes an array of ints representing the Unicode characters and returns a UTF-8 string.
 	 * Astral planes are supported i.e. the ints in the input can be > 0xFFFF.
-	 * Occurrances of the BOM are ignored. Surrogates are not allowed.
+	 * Occurrences of the BOM are ignored. Surrogates are not allowed.
 	 *
 	 *     $str = UTF8::to_unicode($array);
 	 *
@@ -758,7 +753,7 @@ class Kohana_UTF8 {
 		return _from_unicode($arr);
 	}
 
-} // End UTF8
+}
 
 if (Kohana_UTF8::$server_utf8 === NULL)
 {
