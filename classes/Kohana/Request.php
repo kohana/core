@@ -59,14 +59,7 @@ class Kohana_Request implements HTTP_Request {
 		// If this is the initial request
 		if ( ! Request::$initial)
 		{
-			if (isset($_SERVER['SERVER_PROTOCOL']))
-			{
-				$protocol = $_SERVER['SERVER_PROTOCOL'];
-			}
-			else
-			{
-				$protocol = HTTP::$protocol;
-			}
+			$protocol = HTTP::$protocol;
 
 			if (isset($_SERVER['REQUEST_METHOD']))
 			{
