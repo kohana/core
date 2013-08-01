@@ -62,6 +62,19 @@ class Kohana_Valid {
 	{
 		return UTF8::strlen($value) <= $length;
 	}
+	
+	/**
+	 * Tests if a value is within a range length.
+	 *
+	 * @param   string   value to check
+	 * @param   integer  minimum value
+	 * @param   integer  maximum value
+	 * @return  boolean
+	 */
+	public static function rangelength($value, $min, $max)
+	{
+		return (strlen($value) >= $min AND strlen($value) <= $max);
+	}
 
 	/**
 	 * Checks that a field is exactly the right length.
