@@ -295,8 +295,11 @@ class Kohana_HTTP_Header extends ArrayObject {
 		 * HTTP header declarations should be treated as case-insensitive
 		 */
 		$input = array_change_key_case( (array) $input, CASE_LOWER);
-
-		parent::__construct($input, $flags, $iterator_class);
+		/**
+		 * @link https://github.com/facebook/hiphop-php
+		 * on hiphop is wrong! fix!
+		 * /
+		parent::__construct($input, (int)$flags, $iterator_class);
 	}
 
 	/**
