@@ -39,6 +39,8 @@ class Kohana_Arr {
 
 	/**
 	 * Test if a value is an array with an additional check for array-like objects.
+	 * Possibly a ArrayAccess object, functionally the same as an array
+	 * @see http://php.net/manual/en/class.arrayaccess.php
 	 *
 	 *     // Returns TRUE
 	 *     Arr::is_array(array());
@@ -54,16 +56,7 @@ class Kohana_Arr {
 	 */
 	public static function is_array($value)
 	{
-		if (is_array($value))
-		{
-			// Definitely an array
-			return TRUE;
-		}
-		else
-		{
-			// Possibly a Traversable object, functionally the same as an array
-			return (is_object($value) AND $value instanceof Traversable);
-		}
+		return (is_array($value) OR $value instanceof ArrayAccess);
 	}
 
 	/**
