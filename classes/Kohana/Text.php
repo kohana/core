@@ -686,7 +686,10 @@ class Kohana_Text {
 	/**
 	 * Turns an array of strings/ints into a readable, comma separated list.
 	 *
-	 * For example: array('eggs', 'milk', 'cheese') => "eggs, milk and cheese".
+	 * Examples:
+	 *     array('eggs', 'milk', 'cheese') => "eggs, milk, and cheese".
+	 *     array('eggs', 'milk', 'cheese', '&') => "eggs, milk, & cheese".
+	 *     array('eggs', 'milk', 'cheese', '&', FALSE) => "eggs, milk & cheese".
 	 *
 	 * @throws  InvalidArgumentException
 	 * @param   array   $words         An array of words.
