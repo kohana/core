@@ -124,7 +124,7 @@ abstract class Kohana_Controller {
 	 */
 	public static function redirect($uri = '', $code = 302)
 	{
-		return HTTP::redirect($uri, $code);
+		return HTTP::redirect( (string) $uri, $code);
 	}
 
 	/**
