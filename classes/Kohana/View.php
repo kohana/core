@@ -220,6 +220,7 @@ class Kohana_View {
 	 *
 	 * @return  string
 	 * @uses    View::render
+	 * @throws  Kohana_Exception
 	 */
 	public function __toString()
 	{
