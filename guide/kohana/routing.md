@@ -241,17 +241,3 @@ However, Kohana also provides a method to generate the uri from the route's defi
     ));
 
 Let's say you decided later to make that route definition more verbose by changing it to `feeds/<user_id>(/<action>).<format>`. If you wrote your code with the above uri generation method you wouldn't have to change a single line! When a part of the uri is enclosed in parentheses and specifies a key for which there in no value provided for uri generation and no default value specified in the route, then that part will be removed from the uri. An example of this is the `(/<id>)` part of the default route; this will not be included in the generated uri if an id is not provided.
-
-One method you might use frequently is the shortcut [Request::uri] which is the same as the above except it assumes the current route, directory, controller and action. If our current route is the default and the uri was `users/list`, we can do the following to generate uris in the format `users/view/$id`:
-
-    $this->request->uri(array('action' => 'view', 'id' => $user_id));
-    
-Or if within a view, the preferable method is:
-
-    Request::instance()->uri(array('action' => 'view', 'id' => $user_id));
-
-TODO: examples of using html::anchor in addition to the above examples
-
-## Testing routes
-
-TODO: mention bluehawk's devtools module

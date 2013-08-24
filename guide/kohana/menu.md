@@ -1,7 +1,7 @@
 ## [Kohana]()
 
+- [Installation](install)
 - Getting Started
-   - [Installation](install)
    - [Conventions and Style](conventions)
    - [Model View Controller](mvc)
       - [Controllers](mvc/controllers)
