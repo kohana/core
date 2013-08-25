@@ -622,4 +622,24 @@ class Kohana_Arr {
 		return $flat;
 	}
 
+	/**
+	 * Count the number of elements in an array or a Countable object.
+	 *
+	 * @param   mixed   array or instance of Countable
+	 * @throws  Kohana_Exception
+	 * @return  integer
+	 */
+	public static function count($array)
+	{
+		if (is_array($array) OR $array instanceof Countable)
+		{
+			return count($array);
+		}
+
+		throw new Kohana_Exception(
+			"Parameter 1 for Arr::count() must be array or object of type Countable, :type given.",
+			array(":type" => is_object($array) ? get_class($array) : gettype($array))
+		);
+	}
+
 }
