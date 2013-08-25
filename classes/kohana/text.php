@@ -603,4 +603,22 @@ class Kohana_Text {
 		return $str;
 	}
 
+	/**
+	 * Performs an array of regular expression replacements on a string.
+	 *
+	 * @param	string	$text			The text for perform replacements on.
+	 * @param	array	$replacements	Array of regular expression replacements in the form $pattern => $replacement
+	 * @param	integer	$limit 			The maximum number of replacements for each pattern/replacement in $replacements
+	 * @return	string
+	 */
+	public static function preg_replace_array($text, array $replacements, $limit = -1)
+	{
+		foreach ($replacements as $pattern => $replacement)
+		{
+			$text = preg_replace($pattern, $replacement, $text, $limit);
+		}
+
+		return $text;
+	}
+
 } // End text
