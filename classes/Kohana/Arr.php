@@ -625,15 +625,16 @@ class Kohana_Arr {
 	/**
 	 * Count the number of elements in an array or a Countable object.
 	 *
-	 * @param   mixed   array or instance of Countable
+	 * @param   mixed  $array Array or instance of Countable
+	 * @param   int    $mode  Mode passed to the count function
 	 * @throws  Kohana_Exception
 	 * @return  integer
 	 */
-	public static function count($array)
+	public static function count($array, $mode = COUNT_NORMAL)
 	{
 		if (is_array($array) OR $array instanceof Countable)
 		{
-			return count($array);
+			return count($array, $mode);
 		}
 
 		throw new Kohana_Exception(
