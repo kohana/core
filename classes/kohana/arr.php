@@ -599,4 +599,34 @@ class Kohana_Arr {
 		return $flat;
 	}
 
+	/**
+	 * Count the number of elements in an array or a Countable object.
+	 *
+	 * @param   mixed   array or instance of Countable
+	 * @throws  Kohana_Exception
+	 * @return  integer
+	 */
+	public static function count($array)
+	{
+		if (is_array($array) OR $array instanceof Countable)
+		{
+			return count($array);
+		}
+
+		// Get the type of paramater that was given.
+		// If it wasn't an object then tell the user the datatype.
+		// If it was an object then give them the class name.
+		if (is_object($array))
+		{
+			$type = get_class($array);
+		}
+		else
+		{
+			$type = gettype($array);
+		}
+
+		throw new Kohana_Exception("Parameter 1 for Arr::count() must be array or object of type Countable, :type given.",
+			array(":type" => $type));
+	}
+
 } // End arr
