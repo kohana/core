@@ -253,7 +253,7 @@ class Kohana_Inflector {
 	 */
 	public static function underscore($str)
 	{
-		return preg_replace('/\s+/', '_', trim($str));
+		return preg_replace('/(\s|-|~|=)+/', '_', trim($str));
 	}
 
 	/**
