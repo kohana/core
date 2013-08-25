@@ -43,7 +43,7 @@ class Kohana_UTF8 {
 	 * @param   mixed   $var        variable to clean
 	 * @param   string  $charset    character set, defaults to Kohana::$charset
 	 * @return  mixed
-	 * @uses    UTF8::self
+	 * @uses    UTF8::clean
 	 * @uses    UTF8::strip_ascii_ctrl
 	 * @uses    UTF8::is_ascii
 	 */
@@ -190,7 +190,6 @@ class Kohana_UTF8 {
 	 * @param   integer $offset offset from which character in haystack to start searching
 	 * @return  integer position of needle
 	 * @return  boolean FALSE if the needle is not found
-	 * @return  mixed   
 	 * @uses    UTF8::$server_utf8
 	 * @uses    Kohana::$charset
 	 */
