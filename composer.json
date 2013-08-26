@@ -28,8 +28,8 @@
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-3.3/dev":  "3.3.x-dev",
-			"dev-3.4/dev":  "3.4.x-dev"
+			"dev-3.3/develop":  "3.3.x-dev",
+			"dev-3.4/develop":  "3.4.x-dev"
 		}
 	}
 }
