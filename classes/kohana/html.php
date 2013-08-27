@@ -48,6 +48,7 @@ class Kohana_HTML {
 
 	/**
 	 * @var  boolean  automatically target external URLs to a new window?
+	 * @deprecated deprecated since version 3.2.3
 	 */
 	public static $windowed_urls = FALSE;
 
