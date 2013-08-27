@@ -1,7 +1,7 @@
 ## [Kohana]()
 
-- [Installation](install)
 - Getting Started
+   - [Installation](install)
    - [Conventions and Style](conventions)
    - [Model View Controller](mvc)
       - [Controllers](mvc/controllers)
@@ -30,7 +30,8 @@
    - [Cookies](cookies)
    - [Fragments](fragments)
    - [Profiling](profiling)
-- [Security](security)
+- Security
+   - [General Security](security)
    - [XSS](security/xss)
    - [Validation](security/validation)
    - [Cookies](security/cookies)
