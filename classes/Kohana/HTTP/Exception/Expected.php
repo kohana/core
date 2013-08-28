@@ -1,8 +1,8 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * "Expected" HTTP exception class. Used for all [HTTP_Exception]'s where a standard
- * Kohana error page should never be shown. 
- * 
+ * Kohana error page should never be shown.
+ *
  * Eg [HTTP_Exception_301], [HTTP_Exception_302] etc
  *
  * @package    Kohana
@@ -39,7 +39,7 @@ abstract class Kohana_HTTP_Exception_Expected extends HTTP_Exception {
 
 	/**
 	 * Gets and sets headers to the [Response].
-	 * 
+	 *
 	 * @see     [Response::headers]
 	 * @param   mixed   $key
 	 * @param   string  $value
@@ -57,7 +57,7 @@ abstract class Kohana_HTTP_Exception_Expected extends HTTP_Exception {
 
 	/**
 	 * Validate this exception contains everything needed to continue.
-	 * 
+	 *
 	 * @throws Kohana_Exception
 	 * @return bool
 	 */
@@ -68,7 +68,7 @@ abstract class Kohana_HTTP_Exception_Expected extends HTTP_Exception {
 
 	/**
 	 * Generate a Response for the current Exception
-	 * 
+	 *
 	 * @uses   Kohana_Exception::response()
 	 * @return Response
 	 */
@@ -79,4 +79,4 @@ abstract class Kohana_HTTP_Exception_Expected extends HTTP_Exception {
 		return $this->_response;
 	}
 
-} // End Kohana_HTTP_Exception
+}

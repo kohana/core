@@ -126,9 +126,9 @@ You can also assign a variable of your parent view to be the child view from wit
 
 	// In your controller:
 
-	public functin action_index()
+	public function action_index()
 	{
-		$view = View::factory('common/template);
+		$view = View::factory('common/template');
 		
 		$view->title = "Some title";
 		$view->body = View::factory('pages/foobar');

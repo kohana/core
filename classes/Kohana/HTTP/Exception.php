@@ -4,7 +4,7 @@ abstract class Kohana_HTTP_Exception extends Kohana_Exception {
 
 	/**
 	 * Creates an HTTP_Exception of the specified type.
-	 * 
+	 *
 	 * @param   integer $code       the http status code
 	 * @param   string  $message    status message, custom content to display with error
 	 * @param   array   $variables  translation variables
@@ -13,7 +13,7 @@ abstract class Kohana_HTTP_Exception extends Kohana_Exception {
 	public static function factory($code, $message = NULL, array $variables = NULL, Exception $previous = NULL)
 	{
 		$class = 'HTTP_Exception_'.$code;
-		
+
 		return new $class($message, $variables, $previous);
 	}
 
@@ -44,7 +44,7 @@ abstract class Kohana_HTTP_Exception extends Kohana_Exception {
 
 	/**
 	 * Store the Request that triggered this exception.
-	 * 
+	 *
 	 * @param   Request   $request  Request object that triggered this exception.
 	 * @return  Response
 	 */
@@ -52,7 +52,7 @@ abstract class Kohana_HTTP_Exception extends Kohana_Exception {
 	{
 		if ($request === NULL)
 			return $this->_request;
-		
+
 		$this->_request = $request;
 
 		return $this;
@@ -60,7 +60,7 @@ abstract class Kohana_HTTP_Exception extends Kohana_Exception {
 
 	/**
 	 * Generate a Response for the current Exception
-	 * 
+	 *
 	 * @uses   Kohana_Exception::response()
 	 * @return Response
 	 */
@@ -69,4 +69,4 @@ abstract class Kohana_HTTP_Exception extends Kohana_Exception {
 		return Kohana_Exception::response($this);
 	}
 
-} // End Kohana_HTTP_Exception
+}

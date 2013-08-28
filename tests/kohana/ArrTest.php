@@ -481,6 +481,8 @@ class Kohana_ArrTest extends Unittest_TestCase
 			array(array('kohana' => array('is' => 'awesome')), array(), 'kohana/is', 'awesome', '/'),
 			// Ensures set_path() casts ints to actual integers for keys
 			array(array('foo' => array('bar')), array('foo' => array('test')), 'foo.0', 'bar'),
+			// Tests if it allows arrays
+			array(array('kohana' => array('is' => 'awesome')), array(), array('kohana', 'is'), 'awesome'),
 		);
 	}
 

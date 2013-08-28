@@ -128,7 +128,7 @@ A user login action.
 			// Try to login
 			if (Auth::instance()->login($this->request->post('username'), $this->request->post('password')))
 			{
-				$this->redirect('home', 302);
+				$this->redirect('home', 303);
 			}
 
 			$view->errors = 'Invalid email or password';

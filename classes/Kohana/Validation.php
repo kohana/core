@@ -302,7 +302,7 @@ class Kohana_Validation implements ArrayAccess {
 		$expected = Arr::merge(array_keys($original), array_keys($this->_labels));
 
 		// Import the rules locally
-		$rules     = $this->_rules;
+		$rules = $this->_rules;
 
 		foreach ($expected as $field)
 		{
@@ -609,4 +609,4 @@ class Kohana_Validation implements ArrayAccess {
 		return $messages;
 	}
 
-} // End Validation
+}

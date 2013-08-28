@@ -2,7 +2,7 @@
 /**
  * Form helper class. Unless otherwise noted, all generated HTML will be made
  * safe using the [HTML::chars] method. This prevents against simple XSS
- * attacks that could otherwise be trigged by inserting HTML characters into
+ * attacks that could otherwise be triggered by inserting HTML characters into
  * form fields.
  *
  * @package    Kohana
@@ -431,4 +431,4 @@ class Kohana_Form {
 		return '<label'.HTML::attributes($attributes).'>'.$text.'</label>';
 	}
 
-} // End form
+}

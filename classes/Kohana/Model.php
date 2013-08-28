@@ -26,4 +26,4 @@ abstract class Kohana_Model {
 		return new $class;
 	}
 
-} // End Model
+}

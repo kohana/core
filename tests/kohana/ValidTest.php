@@ -858,6 +858,15 @@ class Kohana_ValidTest extends Unittest_TestCase
 			// #4043
 			array(2, 0, 10, 2, TRUE),
 			array(3, 0, 10, 2, FALSE),
+			// #4672
+			array(0, 0, 10, NULL, TRUE),
+			array(10, 0, 10, NULL, TRUE),
+			array(-10, -10, 10, NULL, TRUE),
+			array(-10, -1, 1, NULL, FALSE),
+			array(0, 0, 10, 2, TRUE), // with $step
+			array(10, 0, 10, 2, TRUE),
+			array(10, 0, 10, 3, FALSE), // max outside $step
+			array(12, 0, 12, 3, TRUE),
 			// Empty test
 			array('', 5, 10, NULL, FALSE),
 			array(NULL, 5, 10, NULL, FALSE),

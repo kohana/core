@@ -182,4 +182,4 @@ class Kohana_Feed {
 		return $feed;
 	}
 
-} // End Feed
+}
