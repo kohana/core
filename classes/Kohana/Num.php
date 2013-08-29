@@ -56,6 +56,9 @@ class Kohana_Num {
 		'YiB' => 80,
 	);
 
+	/**
+	 * @var  array  SI looking prefixes
+	 */
 	public static $si_prefixes = array
 	(
 		'B'   => 0,
@@ -210,10 +213,14 @@ class Kohana_Num {
 	 *     echo Num::bytes('200K');  // 204800
 	 *     echo Num::bytes('5MiB');  // 5242880
 	 *     echo Num::bytes('1000');  // 1000
-	 *     echo Num::bytes('2.5GB'); // 2684354560
+	 *     echo Num::bytes('2.5GB', FALSE); // 2684354560
+	 *     echo Num::bytes('2.5GB'); // 2500000000
+	 *     echo Num::bytes('2.5GiB'); // 2684354560
 	 *
-	 * @param   string  $bytes  file size in SB format
+	 * @param   string  $size  file size in SB format
+	 * @param   bool  $si Use SI prefixes
 	 * @return  float
+	 * @throws Kohana_Exception
 	 */
 	public static function bytes($size, $si = TRUE)
 	{
