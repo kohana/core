@@ -124,7 +124,6 @@ class Kohana_Cookie {
 	 *
 	 * @param   string  $name   cookie name
 	 * @return  boolean
-	 * @uses    Cookie::set
 	 */
 	public static function delete($name)
 	{
