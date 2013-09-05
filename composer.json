@@ -18,6 +18,9 @@
 		"irc":      "irc://irc.freenode.net/kohana",
 		"source":   "http://github.com/kohana/core"
 	},
+	"autoload": {
+		"psr-0": { "": "classes/" }
+	},
 	"require": {
 		"php":        ">=5.3.3"
 	},
