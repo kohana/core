@@ -514,12 +514,12 @@ class Kohana_Date {
 		if ($timestamp <= $local_timestamp)
 		{
 			// This is in the past
-			return __($span).' '.__('ago');
+			return __(':span ago', array(':span' => __($span)));
 		}
 		else
 		{
 			// This in the future
-			return __('in').' '.__($span);
+			return __('in :span', array(':span' => __($span)));
 		}
 	}
 
