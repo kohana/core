@@ -497,7 +497,7 @@ class Kohana_Text {
 			$power = ($bytes > 0) ? floor(log($bytes, $mod)) : 0;
 		}
 
-		return sprintf($format, $bytes / pow($mod, $power), $units[$power]);
+		return sprintf($format, $bytes / pow($mod, $power), __($units[$power]));
 	}
 
 	/**
@@ -529,6 +529,7 @@ class Kohana_Text {
 
 		foreach (Text::$units as $unit => $name)
 		{
+			$name = __($name);
 			if ($number / $unit >= 1)
 			{
 				// $value = the number of times the number is divisible by unit
@@ -575,7 +576,7 @@ class Kohana_Text {
 
 		if (isset($and))
 		{
-			$text .= ' and '.$and;
+			$text .= ' '.__('and').' '.$and;
 		}
 
 		return $text;
