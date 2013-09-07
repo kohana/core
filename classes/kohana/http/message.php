@@ -8,7 +8,7 @@
  * @author     Kohana Team
  * @since      3.1.0
  * @copyright  (c) 2008-2012 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
 interface Kohana_HTTP_Message {
 

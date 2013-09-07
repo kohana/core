@@ -12,7 +12,7 @@
  * @category   Configuration
  * @author     Kohana Team
  * @copyright  (c) 2012 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Config_Group extends ArrayObject {
 
