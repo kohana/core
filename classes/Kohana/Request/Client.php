@@ -405,10 +405,13 @@ abstract class Kohana_Request_Client {
 					break;
 			}
 
-			// Prepare the additional request
+			// Prepare the additional request, copying any follow_headers that were present on the original request
+			$orig_headers = $request->headers()->getArrayCopy();
+			$follow_headers = array_intersect_assoc($orig_headers, array_fill_keys($client->follow_headers(), TRUE));
+
 			$follow_request = Request::factory($response->headers('Location'))
 			                         ->method($follow_method)
-			                         ->headers(Arr::extract($request->headers(), $client->follow_headers()));
+			                         ->headers($follow_headers);
 
 			if ($follow_method !== Request::GET)
 			{
