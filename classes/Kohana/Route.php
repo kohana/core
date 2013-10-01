@@ -142,6 +142,7 @@ class Kohana_Route {
 	 * Saves or loads the route cache. If your routes will remain the same for
 	 * a long period of time, use this to reload the routes from the cache
 	 * rather than redefining them on every page load.
+	 * By default the $cache_life is set by [Kohana::init] in APPPATH/bootstrap.php
 	 *
 	 *     if ( ! Route::cache())
 	 *     {
