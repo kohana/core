@@ -5,7 +5,7 @@
  * and a route. Routes may also contain keys which can be used to set the
  * controller, action, and parameters.
  *
- * Each <key> will be translated to a regular expression using a default
+ * Each `<key>` will be translated to a regular expression using a default
  * regular expression pattern. You can override the default pattern by providing
  * a pattern for the key:
  *
