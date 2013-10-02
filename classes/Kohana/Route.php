@@ -307,7 +307,7 @@ class Kohana_Route {
 	 * @param   string  $uri    route URI pattern
 	 * @param   array   $regex  key patterns
 	 * @return  void
-	 * @uses    Route::_compile
+	 * @uses    Route::compile
 	 */
 	public function __construct($uri = NULL, $regex = NULL)
 	{
