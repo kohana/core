@@ -332,6 +332,24 @@ class Kohana_Form {
 					$options[$value] = '<option'.HTML::attributes($option).'>'.HTML::chars($name, FALSE).'</option>';
 				}
 			}
+			
+			// Check if prompt value is set
+			if ($attributes && $attributes["prompt"]) {
+				// Prompt value option HTML string
+				$prompt_option = '<option value="">'.HTML::chars($attributes["prompt"], FALSE).'</option>';
+				
+				// Add prompt option to the beggining of the options
+				array_unshift($options, $prompt_option);
+			}
+			
+			// Check if blank is set and prompt is not set
+			if ($attributes && $attributes["blank"] && !$attributes["prompt"]) {
+				// Blank option HTML string
+				$blank_option = '<option value=""></option>';
+				
+				// Add blank option to the beggining of the options
+				array_unshift($options, $blank_option);
+			}
 
 			// Compile the options into a single string
 			$options = "\n".implode("\n", $options)."\n";
