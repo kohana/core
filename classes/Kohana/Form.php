@@ -332,6 +332,15 @@ class Kohana_Form {
 					$options[$value] = '<option'.HTML::attributes($option).'>'.HTML::chars($name, FALSE).'</option>';
 				}
 			}
+			
+			// Check if prompt value is set
+                        if ($attributes && $attributes["prompt"]) {
+                                // Prompt value option HTML string
+                                $prompt_option = '<option value="">'.HTML::chars($attributes["prompt"], FALSE).'</option>';
+                                
+                                // Add prompt option to the beggining of the options
+                                array_unshift($options, $prompt_option);
+                        }
 
 			// Compile the options into a single string
 			$options = "\n".implode("\n", $options)."\n";
