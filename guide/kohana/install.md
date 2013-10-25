@@ -19,7 +19,6 @@
 				'base_url'   => '/mywebsite',
 			));
 		~~~	
-
 	- Define a salt for the `Cookie` class.
 		~~~
 			Cookie::$salt = [really-long-cookie-salt-here]
