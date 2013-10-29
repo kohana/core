@@ -332,7 +332,7 @@ class Kohana_HTML {
 			// Add the attribute key
 			$compiled .= ' '.$key;
 
-			if ($value OR HTML::$strict)
+			if ($value !== FALSE OR HTML::$strict)
 			{
 				// Add the attribute value
 				$compiled .= '="'.HTML::chars($value).'"';
