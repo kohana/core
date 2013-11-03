@@ -7,7 +7,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2012 Kohana Team
+ * @copyright  (c) 2008-2013 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_View {
@@ -17,7 +17,7 @@ class Kohana_View {
 
 	/**
 	 * Returns a new View object. If you do not define the "file" parameter,
-	 * you must call [View::set_filename].
+	 * you must call [View::filename].
 	 *
 	 *     $view = View::factory($file);
 	 *
@@ -128,13 +128,13 @@ class Kohana_View {
 	 * @param   string  $file   view filename
 	 * @param   array   $data   array of values
 	 * @return  void
-	 * @uses    View::set_filename
+	 * @uses    View::filename
 	 */
 	public function __construct($file = NULL, array $data = NULL)
 	{
 		if ($file !== NULL)
 		{
-			$this->set_filename($file);
+			$this->filename($file);
 		}
 
 		if ($data !== NULL)
@@ -242,16 +242,22 @@ class Kohana_View {
 	}
 
 	/**
-	 * Sets the view filename.
-	 *
-	 *     $view->set_filename($file);
-	 *
+	 * Sets or gets the view filename.
+	 * 
+	 *     $view->filename($file);
+	 *     $file = $view->filename();
+	 * 
 	 * @param   string  $file   view filename
 	 * @return  View
 	 * @throws  View_Exception
 	 */
-	public function set_filename($file)
+	public function filename($file = NULL)
 	{
+		if ($file === NULL)
+		{
+			return $this->_file;
+		}
+		
 		if (($path = Kohana::find_file('views', $file)) === FALSE)
 		{
 			throw new View_Exception('The requested view :file could not be found', array(
@@ -319,24 +325,52 @@ class Kohana_View {
 	}
 
 	/**
+	 * Delete all local and global(optional) variables.
+	 *
+	 *     // Full clear
+	 *     $view->clear(TRUE);
+	 *
+	 * @param   bool   global_data  Delete global data?
+	 * @return  $this
+	 */
+	public function clear($global_data = FALSE)
+	{
+		$this->_data = array();
+		
+		if ($global_data === TRUE)
+		{
+			View::$_global_data = array();
+		}
+		
+		return $this;
+	}
+
+	/**
 	 * Renders the view object to a string. Global and local data are merged
 	 * and extracted to create local variables within the view file.
 	 *
 	 *     $output = $view->render();
+	 *     
+	 *     // Fast way to render the same type of data
+	 *     foreach ($items as $item)
+	 *     {
+	 *          $output .= $view->set($item)->render(NULL, TRUE);
+	 *     }
 	 *
 	 * [!!] Global variables with the same key name as local variables will be
 	 * overwritten by the local variable.
 	 *
 	 * @param   string  $file   view filename
+	 * @param   bool    $clear  delete local variables after render?
 	 * @return  string
 	 * @throws  View_Exception
 	 * @uses    View::capture
 	 */
-	public function render($file = NULL)
+	public function render($file = NULL, $clear = FALSE)
 	{
 		if ($file !== NULL)
 		{
-			$this->set_filename($file);
+			$this->filename($file);
 		}
 
 		if (empty($this->_file))
@@ -345,7 +379,14 @@ class Kohana_View {
 		}
 
 		// Combine local and global data and capture the output
-		return View::capture($this->_file, $this->_data);
+		$result = View::capture($this->_file, $this->_data);
+		
+		if ($clear === TRUE)
+		{
+			$this->clear();
+		}
+		
+		return $result;
 	}
 
-}
+} // End View

@@ -12,13 +12,13 @@ Fragments are used by calling [Fragment::load()] in an `if` statement at the beg
 
 You can specify the lifetime (in seconds) of the Fragment using the second parameter of [Fragment::load()].  The default lifetime is 30 seconds.  You can use the [Date] helper to make more readable times.
 
-Fragments will store a different cache for each language (using [I18n]) if you pass `true` as the third parameter to [Fragment::load()];
+Fragments will store a different cache for each language (using [I18n]) if you pass `TRUE` as the third parameter to [Fragment::load()];
 
 You can force the deletion of a Fragment using [Fragment::delete()], or specify a lifetime of 0.
 
 ~~~
 // Cache for 5 minutes, and cache each language
-if ( ! Fragment::load('foobar', Date::MINUTE * 5, true))
+if ( ! Fragment::load('foobar', Date::MINUTE * 5, TRUE))
 {
     // Anything that is echo'ed here will be saved
     Fragment::save();
