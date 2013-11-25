@@ -414,6 +414,11 @@ class Kohana_ArrTest extends Unittest_TestCase
 				3 => 'frank', // Issue #3194
 			),
 			'object' => new ArrayObject(array('iterator' => TRUE)), // Iterable object should work exactly the same
+			'named_users'  => array( // Issue #4743
+				'matt' => array('name' => 'matty matt'),
+				'john' => array('name' => 'johnny boy', 'interests' => array('hocky' => array('length' => 2), 'football' => array())),
+				'frank' => 'frank',
+			),
 		);
 
 		return array(
@@ -435,14 +440,21 @@ class Kohana_ArrTest extends Unittest_TestCase
 			// Test that a wildcard returns the entire array at that "level"
 			array($array['users'], $array, 'users.*'),
 			// Now we check that keys after a wilcard will be processed
-			array(array(0 => array(0 => 2)), $array, 'users.*.interests.*.length'),
+			// Fixed to check associative array indexes (issue #4743)
+			array(array(2 => array('hocky' => 2)), $array, 'users.*.interests.*.length'),
 			// See what happens when it can't dig any deeper from a wildcard
 			array(NULL, $array, 'users.*.fans'),
 			// Starting wildcards, issue #3269
-			array(array('matt', 'john'), $array['users'], '*.name'),
+			// Fixed to check associative array indexes (issue #4743)
+			array(array(1 => 'matt', 2 => 'john'), $array['users'], '*.name'),
 			// Path as array, issue #3260
 			array($array['users'][2]['name'], $array, array('users', 2, 'name')),
 			array($array['object']['iterator'], $array, 'object.iterator'),
+			// Wildcards with associative keys, issue #4743
+			array(array('matt' => 'matty matt', 'john' => 'johnny boy'), $array, 'named_users.*.name'),
+			array(array(2 => array('hocky' => 2)), $array, 'users.*.interests.*.length'),
+			array(array('matt' => 'matty matt', 'john' => 'johnny boy'), $array['named_users'], '*.name'),
+			array(NULL, $array, 'named_users.*.hat_color'),
 		);
 	}
 
