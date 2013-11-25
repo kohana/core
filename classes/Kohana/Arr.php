@@ -159,11 +159,11 @@ class Kohana_Arr {
 				// Handle wildcards
 
 				$values = array();
-				foreach ($array as $arr)
+				foreach ($array as $wildcard_key => $arr)
 				{
 					if ($value = Arr::path($arr, implode('.', $keys)))
 					{
-						$values[] = $value;
+						$values[$wildcard_key] = $value;
 					}
 				}
 
