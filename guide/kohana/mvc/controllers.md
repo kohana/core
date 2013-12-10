@@ -68,7 +68,7 @@ Property/method | What it does
 --- | ---
 [$this->response->_body](../../guide-api/Response#property:_body) | The content to return for this request
 [$this->response->_status](../../guide-api/Response#property:_status) | The HTTP status for the request (200, 404, 500, etc.)
-[$this->response->_headers](../../guide-api/Response#property:_headers) | The HTTP headers to return with the response
+[$this->response->_header](../../guide-api/Response#property:_header) | The HTTP headers to return with the response
 
 
 ## Actions
