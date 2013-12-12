@@ -6,8 +6,6 @@ Modules are simply an addition to the [Cascading Filesystem](files).  A module c
 
 Kolanos has created [kohana-universe](http://github.com/kolanos/kohana-universe/tree/master/modules/), a fairly comprehensive list of modules that are available on Github. To get your module listed there, send him a message via Github.
 
-Mon Geslani created a [very nice site](http://kohana.mongeslani.com/) that allows you to sort Github modules by activity, watchers, forks, etc.  It seems to not be as comprehensive as kohana-universe.
-
 Andrew Hutchings has created [kohana-modules](http://www.kohana-modules.com) which is similar to the above sites.
 
 ## Enabling modules
