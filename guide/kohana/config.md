@@ -136,7 +136,7 @@ For example, using the setup outlined above:
 
 [!!] **Note:** The above syntax is simply pseudo code to illustrate the concept of config merging.
 
-On some occasions you may want to append a config source to the bottom of the stack, to do this pass `FALSE`
+On some occasions you may want to append a config source to the bottom of the stack. To do this pass `FALSE`
 as the second parameter to `attach()`:
 
 	// Stack: <empty>
