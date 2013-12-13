@@ -1,7 +1,7 @@
 <?php
 
 // Get the latest logo contents
-$data = base64_encode(file_get_contents('http://kohanaframework.org/media/img/kohana.png'));
+$data = base64_encode(file_get_contents('http://kohanaframework.org/assets/img/logo.png'));
 
 // Create the logo file
 file_put_contents('logo.php', "<?php
