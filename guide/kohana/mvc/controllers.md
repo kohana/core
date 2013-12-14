@@ -59,7 +59,7 @@ Here is a partial list of the properties and methods available to `$this->reques
 
 Property/method | What it does
 --- | ---
-[$this->request->_route](../../guide-api/Request#property:_route) | [Route], який відповідає за поточний запит URL
+[$this->request->_route](../../guide-api/Request#property:_route) | [Route] that matched the current request url
 [$this->request->_directory](../../guide-api/Request#property:_directory), <br /> [$this->request->_controller](../../guide-api/Request#property:_controller), <br /> [$this->request->_action](../../guide-api/Request#property:_action) | The directory, controller and action that matched for the current route
 [$this->request->param()](../../guide-api/Request#param) | Any other params defined in your route
 
