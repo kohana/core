@@ -51,7 +51,7 @@ You can use this to scrape HTML from a remote site, or make a REST call to a thi
 
 ## Executing Requests
 
-To execute a request, use the `execute()` method on it. This will give you a [response](responses) object.
+To execute a request, use the `execute()` method on it. This will give you a [response] object.
 
 	$request = Request::factory('welcome');
 	$response = $request->execute();
