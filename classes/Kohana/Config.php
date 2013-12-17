@@ -3,7 +3,7 @@
  * Wrapper for configuration arrays. Multiple configuration readers can be
  * attached to allow loading configuration from files, database, etc.
  *
- * Configuration directives cascade across config sources in the same way that 
+ * Configuration directives cascade across config sources in the same way that
  * files cascade across the filesystem.
  *
  * Directives from sources high in the sources list will override ones from those
@@ -74,9 +74,9 @@ class Kohana_Config {
 	}
 
 	/**
-	 * Load a configuration group. Searches all the config sources, merging all the 
-	 * directives found into a single config group.  Any changes made to the config 
-	 * in this group will be mirrored across all writable sources.  
+	 * Load a configuration group. Searches all the config sources, merging all the
+	 * directives found into a single config group.  Any changes made to the config
+	 * in this group will be mirrored across all writable sources.
 	 *
 	 *     $array = $config->load($name);
 	 *
@@ -146,7 +146,7 @@ class Kohana_Config {
 
 	/**
 	 * Copy one configuration group to all of the other writers.
-	 * 
+	 *
 	 *     $config->copy($name);
 	 *
 	 * @param   string  $group  configuration group name
@@ -181,7 +181,7 @@ class Kohana_Config {
 			{
 				continue;
 			}
-			
+
 			// Copy each value in the config
 			$source->write($group, $key, $value);
 		}
@@ -189,4 +189,4 @@ class Kohana_Config {
 		return $this;
 	}
 
-} // End Kohana_Config
+}

@@ -3,25 +3,25 @@
  * [Request_Client_External] provides a wrapper for all external request
  * processing. This class should be extended by all drivers handling external
  * requests.
- * 
+ *
  * Supported out of the box:
  *  - Curl (default)
  *  - PECL HTTP
  *  - Streams
- * 
+ *
  * To select a specific external driver to use as the default driver, set the
  * following property within the Application bootstrap. Alternatively, the
  * client can be injected into the request object.
- * 
+ *
  * @example
- * 
+ *
  *       // In application bootstrap
  *       Request_Client_External::$client = 'Request_Client_Stream';
- * 
+ *
  *       // Add client to request
  *       $request = Request::factory('http://some.host.tld/foo/bar')
  *           ->client(Request_Client_External::factory('Request_Client_HTTP));
- * 
+ *
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
@@ -36,7 +36,7 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 	 *  - Request_Client_Curl (default)
 	 *  - Request_Client_HTTP
 	 *  - Request_Client_Stream
-	 * 
+	 *
 	 * @var     string    defines the external client to use by default
 	 */
 	public static $client = 'Request_Client_Curl';
@@ -45,7 +45,7 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 	 * Factory method to create a new Request_Client_External object based on
 	 * the client name passed, or defaulting to Request_Client_External::$client
 	 * by default.
-	 * 
+	 *
 	 * Request_Client_External::$client can be set in the application bootstrap.
 	 *
 	 * @param   array   $params parameters to pass to the client
@@ -124,7 +124,7 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 		if ($post = $request->post())
 		{
 			$request->body(http_build_query($post, NULL, '&'))
-				->headers('content-type', 'application/x-www-form-urlencoded');
+				->headers('content-type', 'application/x-www-form-urlencoded; charset='.Kohana::$charset);
 		}
 
 		// If Kohana expose, set the user-agent
@@ -204,4 +204,4 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 	 */
 	abstract protected function _send_message(Request $request, Response $response);
 
-} // End Kohana_Request_Client_External
+}

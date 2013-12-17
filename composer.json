@@ -1,0 +1,35 @@
+{
+	"name":        "kohana/core",
+	"description": "Core system classes for the Kohana application framework",
+	"homepage":    "http://kohanaframework.org",
+	"license":     "BSD-3-Clause",
+	"keywords":    ["kohana", "framework"],
+	"authors": [
+		{
+			"name":     "Kohana Team",
+			"email":    "team@kohanaframework.org",
+			"homepage": "http://kohanaframework.org/team",
+			"role":     "developer"
+		}
+	],
+	"support": {
+		"issues":   "http://dev.kohanaframework.org",
+		"forum":    "http://forum.kohanaframework.org",
+		"irc":      "irc://irc.freenode.net/kohana",
+		"source":   "http://github.com/kohana/core"
+	},
+	"require": {
+		"php":        ">=5.3.3"
+	},
+	"suggest": {
+		"ext-http":   "*",
+		"ext-curl":   "*",
+		"ext-mcrypt": "*"
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-3.3/develop":  "3.3.x-dev",
+			"dev-3.4/develop":  "3.4.x-dev"
+		}
+	}
+}

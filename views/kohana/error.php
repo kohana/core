@@ -1,3 +1,4 @@
+<?php defined('SYSPATH') OR die('No direct script access.') ?>
 <?php
 
 // Unique error identifier
@@ -48,7 +49,7 @@ function koggle(elem)
 }
 </script>
 <div id="kohana_error">
-	<h1><span class="type"><?php echo $class ?> [ <?php echo $code ?> ]:</span> <span class="message"><?php echo HTML::chars($message) ?></span></h1>
+	<h1><span class="type"><?php echo $class ?> [ <?php echo $code ?> ]:</span> <span class="message"><?php echo htmlspecialchars( (string) $message, ENT_QUOTES, Kohana::$charset, TRUE); ?></span></h1>
 	<div id="<?php echo $error_id ?>" class="content">
 		<p><span class="file"><?php echo Debug::path($file) ?> [ <?php echo $line ?> ]</span></p>
 		<?php echo Debug::source($file, $line) ?>
@@ -117,7 +118,7 @@ function koggle(elem)
 			<table cellspacing="0">
 				<?php foreach ($GLOBALS[$var] as $key => $value): ?>
 				<tr>
-					<td><code><?php echo HTML::chars($key) ?></code></td>
+					<td><code><?php echo htmlspecialchars( (string) $key, ENT_QUOTES, Kohana::$charset, TRUE); ?></code></td>
 					<td><pre><?php echo Debug::dump($value) ?></pre></td>
 				</tr>
 				<?php endforeach ?>

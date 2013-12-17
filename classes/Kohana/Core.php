@@ -16,8 +16,8 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.3.0';
-	const CODENAME = 'badius';
+	const VERSION  = '3.3.1';
+	const CODENAME = 'peregrinus';
 
 	// Common environment type constants for consistency and convenience
 	const PRODUCTION  = 10;
@@ -383,7 +383,7 @@ class Kohana_Core {
 
 	/**
 	 * Reverts the effects of the `register_globals` PHP setting by unsetting
-	 * all global varibles except for the default super globals (GPCS, etc),
+	 * all global variables except for the default super globals (GPCS, etc),
 	 * which is a [potential security hole.][ref-wikibooks]
 	 *
 	 * This is called automatically by [Kohana::init] if `register_globals` is
@@ -521,7 +521,7 @@ class Kohana_Core {
 	/**
 	 * Provides auto-loading support of classes that follow Kohana's old class
 	 * naming conventions.
-	 * 
+	 *
 	 * This is included for compatibility purposes with older modules.
 	 *
 	 * @param   string  $class      Class name
@@ -927,7 +927,7 @@ class Kohana_Core {
 	}
 
 	/**
-	 * Get a message from a file. Messages are arbitary strings that are stored
+	 * Get a message from a file. Messages are arbitrary strings that are stored
 	 * in the `messages/` directory and reference by a key. Translation is not
 	 * performed on the returned values.  See [message files](kohana/files/messages)
 	 * for more information.
@@ -1037,7 +1037,7 @@ class Kohana_Core {
 
 	/**
 	 * Generates a version string based on the variables defined above.
-	 * 
+	 *
 	 * @return string
 	 */
 	public static function version()
@@ -1045,4 +1045,4 @@ class Kohana_Core {
 		return 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
 	}
 
-} // End Kohana
+}

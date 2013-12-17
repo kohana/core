@@ -104,6 +104,12 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		}
 		catch (HTTP_Exception $e)
 		{
+			// Store the request context in the Exception
+			if ($e->request() === NULL)
+			{
+				$e->request($request);
+			}
+
 			// Get the response via the Exception
 			$response = $e->get_response();
 		}
@@ -125,4 +131,5 @@ class Kohana_Request_Client_Internal extends Request_Client {
 		// Return the response
 		return $response;
 	}
-} // End Kohana_Request_Client_Internal
+
+}

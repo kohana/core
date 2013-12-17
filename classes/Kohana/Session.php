@@ -502,4 +502,4 @@ abstract class Kohana_Session {
 	 */
 	abstract protected function _restart();
 
-} // End Session
+}

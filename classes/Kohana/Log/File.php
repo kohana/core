@@ -91,4 +91,4 @@ class Kohana_Log_File extends Log_Writer {
 		}
 	}
 
-} // End Kohana_Log_File
+}

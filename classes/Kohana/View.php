@@ -235,7 +235,7 @@ class Kohana_View {
 			 * We use this method here because it's impossible to throw and
 			 * exception from __toString().
 			 */
-			$error_response = Kohana_exception::_handler($e);
+			$error_response = Kohana_Exception::_handler($e);
 
 			return $error_response->body();
 		}
@@ -348,4 +348,4 @@ class Kohana_View {
 		return View::capture($this->_file, $this->_data);
 	}
 
-} // End View
+}

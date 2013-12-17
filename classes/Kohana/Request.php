@@ -59,14 +59,7 @@ class Kohana_Request implements HTTP_Request {
 		// If this is the initial request
 		if ( ! Request::$initial)
 		{
-			if (isset($_SERVER['SERVER_PROTOCOL']))
-			{
-				$protocol = $_SERVER['SERVER_PROTOCOL'];
-			}
-			else
-			{
-				$protocol = HTTP::$protocol;
-			}
+			$protocol = HTTP::$protocol;
 
 			if (isset($_SERVER['REQUEST_METHOD']))
 			{
@@ -79,7 +72,10 @@ class Kohana_Request implements HTTP_Request {
 				$method = HTTP_Request::GET;
 			}
 
-			if ( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
+			if (( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
+			   OR (isset($_SERVER['HTTP_X_FORWARDED_PROTO'])
+			   	   AND $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+			       AND in_array($_SERVER['REMOTE_ADDR'], Request::$trusted_proxies))
 			{
 				// This request is secure
 				$secure = TRUE;
@@ -1223,7 +1219,8 @@ class Kohana_Request implements HTTP_Request {
 		}
 		else
 		{
-			$this->headers('content-type', 'application/x-www-form-urlencoded');
+			$this->headers('content-type',
+				'application/x-www-form-urlencoded; charset='.Kohana::$charset);
 			$body = http_build_query($post, NULL, '&');
 		}
 
@@ -1328,4 +1325,4 @@ class Kohana_Request implements HTTP_Request {
 		return $this;
 	}
 
-} // End Request
+}

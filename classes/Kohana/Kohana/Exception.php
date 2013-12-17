@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct access');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Kohana exception class. Translates exceptions using the [I18n] class.
  *
@@ -79,7 +79,7 @@ class Kohana_Kohana_Exception extends Exception {
 	 *
 	 * @uses    Kohana_Exception::response
 	 * @param   Exception  $e
-	 * @return  boolean
+	 * @return  void
 	 */
 	public static function handler(Exception $e)
 	{
@@ -97,7 +97,7 @@ class Kohana_Kohana_Exception extends Exception {
 	 *
 	 * @uses    Kohana_Exception::response
 	 * @param   Exception  $e
-	 * @return  boolean
+	 * @return  Response
 	 */
 	public static function _handler(Exception $e)
 	{
@@ -185,12 +185,6 @@ class Kohana_Kohana_Exception extends Exception {
 			$line    = $e->getLine();
 			$trace   = $e->getTrace();
 
-			if ( ! headers_sent())
-			{
-				// Make sure the proper http header is sent
-				$http_header_status = ($e instanceof HTTP_Exception) ? $code : 500;
-			}
-
 			/**
 			 * HTTP_Exceptions are constructed in the HTTP_Exception::factory()
 			 * method. We need to remove that entry from the trace and overwrite
@@ -230,7 +224,7 @@ class Kohana_Kohana_Exception extends Exception {
 						}
 					}
 				}
-				
+
 				if (isset(Kohana_Exception::$php_errors[$code]))
 				{
 					// Use the human-readable error name
@@ -251,13 +245,13 @@ class Kohana_Kohana_Exception extends Exception {
 
 			// Instantiate the error view.
 			$view = View::factory(Kohana_Exception::$error_view, get_defined_vars());
-			
+
 			// Prepare the response object.
 			$response = Response::factory();
 
 			// Set the response status
 			$response->status(($e instanceof HTTP_Exception) ? $e->getCode() : 500);
-			
+
 			// Set the response headers
 			$response->headers('Content-Type', Kohana_Exception::$error_view_content_type.'; charset='.Kohana::$charset);
 
@@ -279,4 +273,4 @@ class Kohana_Kohana_Exception extends Exception {
 		return $response;
 	}
 
-} // End Kohana_Exception
+}
