@@ -4,7 +4,6 @@
 - Getting Started
    - [Request Flow](flow)
    - [Bootstrap](bootstrap)
-   - [Modules](modules)
    - [Routing](routing)
    - [Conventions](conventions)
    - [Model View Controller](mvc)
@@ -16,6 +15,7 @@
       - [Config Files](files/config)
       - [Translation Files](files/i18n)
       - [Message Files](files/messages)
+   - [Modules](modules)
    - [Configuration](config)
    - [Error Handling](errors)
    - [Tips & Common Mistakes](tips)
