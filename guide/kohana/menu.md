@@ -4,8 +4,8 @@
 - Getting Started
    - [Request Flow](flow)
    - [Bootstrap](bootstrap)
-   - [Routing](routing)
    - [Conventions](conventions)
+   - [Routing](routing)
    - [Model View Controller](mvc)
       - [Controllers](mvc/controllers)
       - [Models](mvc/models)
