@@ -178,7 +178,7 @@ There are countless other possibilities for routes. Here are some more examples:
 
 ## Request parameters
 
-The `directory`, `controller` and `action` can be accessed from the [Request] as public properties like so:
+The `directory`, `controller` and `action` can be accessed from the [Request] as public methods like so:
 
 	// From within a controller:
 	$this->request->action();
