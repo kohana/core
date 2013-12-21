@@ -10,10 +10,22 @@
  * @copyright  (c) 2008-2013 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_View {
+abstract class Kohana_View {
 
-	// Array of global variables
+	/**
+	 * @var  array  Global variables
+	 */
 	protected static $_global_data = array();
+
+	/**
+	 * @var  array  Local variables
+	 */
+	protected $_data = array();
+
+	/**
+	 * @var  string  View filename
+	 */
+	protected $_file;
 
 	/**
 	 * Returns a new View object. If you do not define the "file" parameter,
@@ -112,12 +124,6 @@ class Kohana_View {
 	{
 		View::$_global_data[$key] =& $value;
 	}
-
-	// View filename
-	protected $_file;
-
-	// Array of local variables
-	protected $_data = array();
 
 	/**
 	 * Sets the initial view filename and local data. Views should almost
@@ -248,7 +254,7 @@ class Kohana_View {
 	 *     $file = $view->filename();
 	 * 
 	 * @param   string  $file   view filename
-	 * @return  View
+	 * @return  string|View
 	 * @throws  View_Exception
 	 */
 	public function filename($file = NULL)
@@ -366,7 +372,7 @@ class Kohana_View {
 	 * @throws  View_Exception
 	 * @uses    View::capture
 	 */
-	public function render($file = NULL, $clear = FALSE)
+	public function render($file = NULL, $clear = NULL)
 	{
 		if ($file !== NULL)
 		{
@@ -380,12 +386,12 @@ class Kohana_View {
 
 		// Combine local and global data and capture the output
 		$result = View::capture($this->_file, $this->_data);
-		
-		if ($clear === TRUE)
+
+		if (is_bool($clear))
 		{
-			$this->clear();
+			$this->clear($clear);
 		}
-		
+
 		return $result;
 	}
 
