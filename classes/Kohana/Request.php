@@ -1335,14 +1335,7 @@ class Kohana_Request implements HTTP_Request {
 	 */
 	public function is_post()
 	{
-		if ($this->method() === HTTP_Request::POST)
-		{
-			return TRUE;
-		}
-		else
-		{
-			return FALSE;
-		}
+		return (HTTP_Request::POST === $this->_method);
 	}
 
 	/**
@@ -1352,14 +1345,7 @@ class Kohana_Request implements HTTP_Request {
 	 */
 	public function is_get()
 	{
-		if ($this->method() === HTTP_Request::GET)
-		{
-			return TRUE;
-		}
-		else
-		{
-			return FALSE;
-		}
+		return (HTTP_Request::GET === $this->_method);
 	}
 
 	/**
@@ -1369,14 +1355,7 @@ class Kohana_Request implements HTTP_Request {
 	 */
 	public function is_put()
 	{
-		if ($this->method() === HTTP_Request::PUT)
-		{
-			return TRUE;
-		}
-		else
-		{
-			return FALSE;
-		}
+		return (HTTP_Request::PUT === $this->_method);
 	}
 
 	/**
@@ -1386,14 +1365,7 @@ class Kohana_Request implements HTTP_Request {
 	 */
 	public function is_delete()
 	{
-		if ($this->method() === HTTP_Request::DELETE)
-		{
-			return TRUE;
-		}
-		else
-		{
-			return FALSE;
-		}
+		return (HTTP_Request::DELETE === $this->_method);
 	}
 
 } // End Request
