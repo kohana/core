@@ -631,7 +631,7 @@ class Kohana_Request implements HTTP_Request {
 
 	/**
 	 * Creates a new request object for the given URI. New requests should be
-	 * created using the [Request::factory] methods.
+	 * created using the [Request::factory] method.
 	 *
 	 *     $request = new Request($uri);
 	 *
