@@ -38,7 +38,7 @@ class Kohana_Request implements HTTP_Request {
 
 	/**
 	 * Creates a new request object for the given URI. New requests should be
-	 * created using this methods.
+	 * created using this method.
 	 *
 	 *     $request = Request::factory($uri);
 	 *
