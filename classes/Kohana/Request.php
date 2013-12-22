@@ -1328,4 +1328,72 @@ class Kohana_Request implements HTTP_Request {
 		return $this;
 	}
 
+	/**
+	 * Check to see if the current request is a POST request.
+	 *
+	 * @return bool Whether the request is a POST request or not.
+	 */
+	public function is_post()
+	{
+		if ($this->method() === HTTP_Request::POST)
+		{
+			return TRUE;
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+
+	/**
+	 * Check to see if the current request is a GET request.
+	 *
+	 * @return bool Whether the request is a GET request or not.
+	 */
+	public function is_get()
+	{
+		if ($this->method() === HTTP_Request::GET)
+		{
+			return TRUE;
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+
+	/**
+	 * Check to see if the current request is a PUT request.
+	 *
+	 * @return bool Whether the request is a PUT request or not.
+	 */
+	public function is_put()
+	{
+		if ($this->method() === HTTP_Request::PUT)
+		{
+			return TRUE;
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+
+	/**
+	 * Check to see if the current request is a DELETE request.
+	 *
+	 * @return bool Whether the request is a DELETE request or not.
+	 */
+	public function is_delete()
+	{
+		if ($this->method() === HTTP_Request::DELETE)
+		{
+			return TRUE;
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+
 } // End Request
