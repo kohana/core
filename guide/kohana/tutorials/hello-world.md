@@ -39,10 +39,14 @@ Now if you open your browser and go to http://localhost/index.php/hello you shou
 
 ![Hello, World!](hello_world_1.png "Hello, World!")
 
-If you get a 404 Error Check these issues:
+If you get a 404 Error....	Check these issues:
+
 1. You probably did not rename example.htaccess to .htaccess in your application directory. 
-2. Also try typing http://localhost/index.php/hello/index into your browser.
+
+2. Also try typing http://localhost/index.php/hello/index into your browser. If this doesn't work you might have a route issue.
+
 3. Make sure you created a default Route in the bootstrap.php
+
 4. Just because http:://localhost/appname  runs correctly do not assume above issues are correct. You will run into problems as soon as you try to do a real world view and controller.
 
 ## That was good, but we can do better
