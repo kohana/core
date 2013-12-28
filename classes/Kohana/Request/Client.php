@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 /**
- * Request Client. Processes a [Request] and handles [HTTP_Caching] if
+ * Request Client. Processes a [Request] and handles [HTTP_Caching](../../guide-api/HTTP_Cache) if
  * available. Will usually return a [Response] object as a result of the
  * request unless an unexpected error occurs.
  *

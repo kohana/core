@@ -42,9 +42,6 @@ class Kohana_Request implements HTTP_Request {
 	 *
 	 *     $request = Request::factory($uri);
 	 *
-	 * If $cache parameter is set, the response for the request will attempt to
-	 * be retrieved from the cache.
-	 *
 	 * @param   string  $uri              URI of the request
 	 * @param   array   $client_params    An array of params to pass to the request client
 	 * @param   bool    $allow_external   Allow external requests? (deprecated in 3.3)
@@ -635,9 +632,6 @@ class Kohana_Request implements HTTP_Request {
 	 *
 	 *     $request = new Request($uri);
 	 *
-	 * If $cache parameter is set, the response for the request will attempt to
-	 * be retrieved from the cache.
-	 *
 	 * @param   string  $uri              URI of the request
 	 * @param   array   $client_params    Array of params to pass to the request client
 	 * @param   bool    $allow_external   Allow external requests? (deprecated in 3.3)
@@ -928,8 +922,8 @@ class Kohana_Request implements HTTP_Request {
 	 * @return  Response
 	 * @throws  Request_Exception
 	 * @throws  HTTP_Exception_404
-	 * @uses    [Kohana::$profiling]
-	 * @uses    [Profiler]
+	 * @uses    Kohana::$profiling
+	 * @uses    Profiler
 	 */
 	public function execute()
 	{

@@ -145,6 +145,6 @@ You can easily alter this behaviour by configuring your own 'Location' header ca
 
 You can cache requests for fast execution by passing a cache instance in as the second parameter of factory:
 
-	$request = Request::factory('welcome', array('cache'=>Cache::instance()));
+	$request = Request::factory('welcome', array('cache'=>HTTP_Cache::factory()));
 
 TODO
