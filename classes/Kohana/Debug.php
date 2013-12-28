@@ -11,6 +11,17 @@
 class Kohana_Debug {
 
 	/**
+	 * Returns the type of a variable
+	 *
+	 * @param   mixed   $var
+	 * @return  string  Class name or type, if not an object
+	 */
+	public static function type($var)
+	{
+		return is_object($var) ? get_class($var) : gettype($var);
+	}
+
+	/**
 	 * Returns an HTML string of debugging information about any number of
 	 * variables, each wrapped in a "pre" tag:
 	 *
