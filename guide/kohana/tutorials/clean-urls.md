@@ -32,6 +32,11 @@ Rename `example.htaccess` to only `.htaccess` and alter the `RewriteBase` line t
 
 The rest of the `.htaccess file` rewrites all requests through index.php, unless the file exists on the server (so your css, images, favicon, etc. are still loaded like normal).  In most cases, you are done!
 
+For more information, see:
+
+- [Apache HTTP Server Tutorial: .htaccess files](http://httpd.apache.org/docs/2.2/howto/htaccess.html)
+- [Real configuration example in HTML5 Boilerplate](http://github.com/h5bp/html5-boilerplate/blob/master/.htaccess)
+
 ### 404 errors
 
 If you get a "404 Not Found" error when trying to view a page then it's likely Apache is not configured to read the `.htaccess` file.
