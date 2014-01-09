@@ -287,7 +287,7 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * @param   int     $flags          Flags
 	 * @param   string  $iterator_class The iterator class to use
 	 */
-	public function __construct(array $input = array(), $flags = NULL, $iterator_class = 'ArrayIterator')
+	public function __construct(array $input = array(), $flags = 0, $iterator_class = 'ArrayIterator')
 	{
 		/**
 		 * @link http://www.w3.org/Protocols/rfc2616/rfc2616.html
