@@ -66,7 +66,11 @@ abstract class Kohana_Controller {
 	public function execute()
 	{
 		// Execute the "before action" method
-		$this->before();
+		$result = $this->before();
+
+		if ($result === false) {
+			return $this->response;
+		}
 
 		// Determine the action to use
 		$action = 'action_'.$this->request->action();
@@ -81,7 +85,11 @@ abstract class Kohana_Controller {
 		}
 
 		// Execute the action itself
-		$this->{$action}();
+		$result = $this->{$action}();
+		
+		if ($result === false) {
+			return $this->response;
+		}
 
 		// Execute the "after action" method
 		$this->after();
