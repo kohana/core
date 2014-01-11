@@ -441,7 +441,15 @@ class Kohana_Arr {
 						else
 						{
 							// Find the values that are not already present
-							$diff = array_diff($val, $result[$key]);
+							$diff = array();
+
+							foreach ($val as $val_val)
+							{
+								if ( ! in_array($val_val, $result[$key], TRUE))
+								{
+									$diff[] = $val_val;
+								}
+							}
 
 							// Indexed arrays are merged to prevent duplicates
 							$result[$key] = array_merge($result[$key], $diff);
