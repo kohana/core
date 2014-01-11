@@ -280,6 +280,45 @@ class Kohana_ArrTest extends Unittest_TestCase
 				array('foo'	=> array('bar')),
 				array('foo'	=> 'bar'),
 			),
+			/**
+			 * @ticket 4482
+			 */
+			array(
+				array(
+					'foo' => array(
+						'bar' => array(
+							array(
+								'foo'  => 'bar',
+								'bar' => TRUE,
+							),
+							array(
+								'foo1'  => 'foo',
+								'bar1' => FALSE,
+							),
+						),
+					),
+				),
+				array(
+					'foo' => array(
+						'bar' => array(
+							array(
+								'foo'  => 'bar',
+								'bar' => TRUE,
+							),
+						),
+					),
+				),
+				array(
+					'foo' => array(
+						'bar' => array(
+							array(
+								'foo1'  => 'foo',
+								'bar1' => FALSE,
+							),
+						),
+					),
+				)
+			)
 		);
 	}
 
