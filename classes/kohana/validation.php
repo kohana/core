@@ -219,7 +219,7 @@ class Kohana_Validation implements ArrayAccess {
 		if ($field !== TRUE AND ! isset($this->_labels[$field]))
 		{
 			// Set the field label to the field name
-			$this->_labels[$field] = preg_replace('/[^\pL]+/u', ' ', $field);
+			$this->_labels[$field] = $field;
 		}
 
 		// Store the rule and params for this rule
