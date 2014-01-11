@@ -715,4 +715,41 @@ class Kohana_RouteTest extends Unittest_TestCase
 
 		$this->assertSame($expected_uri, Route::get('test')->uri());
 	}
+
+	/**
+	 * Provides test data for test_route_uri_encode_parameters
+	 *
+	 * @return array
+	 */
+	public function provider_route_uri_encode_parameters()
+	{
+		return array(
+			array(
+				'article',
+				'blog/article/<article_name>',
+				array(
+					'controller' => 'home',
+					'action' => 'index'
+				),
+				'blog/article/Article%20name%20with%20special%20chars%20%5C%20%23%23'
+			)
+		);
+	}
+
+	/**
+	 * http://dev.kohanaframework.org/issues/4079
+	 *
+	 * @test
+	 * @covers Route::get
+	 * @ticket 4079
+	 * @dataProvider provider_route_uri_encode_parameters
+	 */
+	public function test_route_uri_encode_parameters($name, $uri_callback, $defaults, $expected)
+	{
+		Route::set($name, $uri_callback)->defaults($defaults);
+
+		$get_route_uri = Route::get($name)->uri(array('article_name' => 'Article name with special chars \\ ##'));
+
+		$this->assertSame($expected, $get_route_uri);
+	}
 }
