@@ -445,7 +445,7 @@ class Kohana_Arr {
 
 							foreach ($val as $val_val)
 							{
-								if ( ! in_array($val_val, $result[$key]))
+								if ( ! in_array($val_val, $result[$key], TRUE))
 								{
 									$diff[] = $val_val;
 								}

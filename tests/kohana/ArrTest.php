@@ -287,22 +287,19 @@ class Kohana_ArrTest extends Unittest_TestCase
 				array(
 					'foo' => array(
 						'bar' => array(
+							'foo'  => TRUE,
 							array(
-								'foo'  => 'bar',
 								'bar' => TRUE,
-							),
-							array(
-								'foo1'  => 'foo',
 								'bar1' => FALSE,
 							),
 						),
-					),
+					)
 				),
 				array(
 					'foo' => array(
 						'bar' => array(
+							'foo'  => 'php',
 							array(
-								'foo'  => 'bar',
 								'bar' => TRUE,
 							),
 						),
@@ -311,14 +308,14 @@ class Kohana_ArrTest extends Unittest_TestCase
 				array(
 					'foo' => array(
 						'bar' => array(
+							'foo' => TRUE,
 							array(
-								'foo1'  => 'foo',
 								'bar1' => FALSE,
 							),
 						),
 					),
 				)
-			)
+			),
 		);
 	}
 
