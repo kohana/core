@@ -430,6 +430,13 @@ class Kohana_Validation implements ArrayAccess {
 			}
 		}
 
+		// Unbind all the automatic bindings to avoid memory leaks.
+		unset($this->_bound[':validation']);
+		unset($this->_bound[':data']);
+		unset($this->_bound[':field']);
+		unset($this->_bound[':value']);
+
+
 		// Restore the data to its original form
 		$this->_data = $original;
 
