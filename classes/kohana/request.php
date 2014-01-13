@@ -948,17 +948,16 @@ class Kohana_Request implements HTTP_Request {
 	public function redirect($url = '', $code = 302)
 	{
 		$referrer = $this->uri();
-		$protocol = ($this->secure()) ? 'https' : TRUE;
 
 		if (strpos($referrer, '://') === FALSE)
 		{
-			$referrer = URL::site($referrer, $protocol, ! empty(Kohana::$index_file));
+			$referrer = URL::site($referrer);
 		}
 
 		if (strpos($url, '://') === FALSE)
 		{
 			// Make the URI into a URL
-			$url = URL::site($url, TRUE, ! empty(Kohana::$index_file));
+			$url = URL::site($url);
 		}
 
 		if (($response = $this->response()) === NULL)
