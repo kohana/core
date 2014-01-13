@@ -951,13 +951,13 @@ class Kohana_Request implements HTTP_Request {
 
 		if (strpos($referrer, '://') === FALSE)
 		{
-			$referrer = URL::site($referrer, NULL, TRUE);
+			$referrer = URL::site($referrer);
 		}
 
 		if (strpos($url, '://') === FALSE)
 		{
 			// Make the URI into a URL
-			$url = URL::site($url, NULL, TRUE);
+			$url = URL::site($url);
 		}
 
 		if (($response = $this->response()) === NULL)
