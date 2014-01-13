@@ -731,6 +731,8 @@ class Kohana_RouteTest extends Unittest_TestCase
 					'controller' => 'home',
 					'action' => 'index'
 				),
+				'article_name',
+				'Article name with special chars \\ ##',
 				'blog/article/Article%20name%20with%20special%20chars%20%5C%20%23%23'
 			)
 		);
@@ -744,11 +746,11 @@ class Kohana_RouteTest extends Unittest_TestCase
 	 * @ticket 4079
 	 * @dataProvider provider_route_uri_encode_parameters
 	 */
-	public function test_route_uri_encode_parameters($name, $uri_callback, $defaults, $expected)
+	public function test_route_uri_encode_parameters($name, $uri_callback, $defaults, $uri_key, $uri_value, $expected)
 	{
 		Route::set($name, $uri_callback)->defaults($defaults);
 
-		$get_route_uri = Route::get($name)->uri(array('article_name' => 'Article name with special chars \\ ##'));
+		$get_route_uri = Route::get($name)->uri(array($uri_key => $uri_value));
 
 		$this->assertSame($expected, $get_route_uri);
 	}
