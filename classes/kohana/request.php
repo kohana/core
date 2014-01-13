@@ -578,6 +578,12 @@ class Kohana_Request implements HTTP_Request {
 
 		foreach ($routes as $name => $route)
 		{
+			// Use external routes for reverse routing only
+			if ($route->is_external())
+			{
+				continue;
+			}
+
 			// We found something suitable
 			if ($params = $route->matches($uri))
 			{
