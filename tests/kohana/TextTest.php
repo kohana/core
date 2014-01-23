@@ -384,9 +384,23 @@ class Kohana_TextTest extends Unittest_TestCase
 	{
 		return array
 			(
-				array('No gain, no&nbsp;pain', 'No gain, no pain'),
-				array("spaces?what'rethey?", "spaces?what'rethey?"),
-				array('', ''),
+				array(
+					'No gain, no&nbsp;pain',
+					'No gain, no pain',
+				),
+				array(
+					"spaces?what'rethey?",
+					"spaces?what'rethey?",
+				),
+				// @issue 3499
+				array(
+					'with HTML at the end:&nbsp;<a href="kohanaframework.org" title="Kohana">Kohana</a>',
+					'with HTML at the end: <a href="kohanaframework.org" title="Kohana">Kohana</a>',
+				),
+				array(
+					'',
+					'',
+				),
 			);
 	}
 
