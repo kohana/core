@@ -301,6 +301,12 @@ class Kohana_RequestTest extends Unittest_TestCase
 				TRUE,
 				'http://localhost/kohana/foo'
 			),
+			array(
+				'http://www.google.com',
+				'http',
+				TRUE,
+				'http://www.google.com'
+			),
 		);
 	}
 
