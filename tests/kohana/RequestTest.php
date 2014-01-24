@@ -310,10 +310,10 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_url
 	 * @covers Request::url
-	 * @param string $route the route to use
-	 * @param array $params params to pass to route::uri
-	 * @param string $protocol the protocol to use
-	 * @param array $expected The string we expect
+	 * @param string $uri the uri to use
+	 * @param mixed $protocol the protocol to use (string or Request object)
+	 * @param bool $is_cli whether the call is from CLI or not
+	 * @param string $expected The url string we expect
 	 */
 	public function test_url($uri, $protocol, $is_cli, $expected)
 	{
