@@ -73,14 +73,19 @@ class Kohana_UTF8 {
 
 			if ( ! UTF8::is_ascii($var))
 			{
-				// Disable notices
-				$error_reporting = error_reporting(~E_NOTICE);
 
+				// Set the mb_substitute_character() value into temporary variable
+				$mb_substitute_character = mb_substitute_character();
+				
+				// Disable substituting illigal characters with the default '?' character
+				mb_substitute_character('none');
+				
 				// iconv is expensive, so it is only used when needed
 				$var = mb_convert_encoding($var, $charset, $charset);
+				
+				// Reset mb_substitute_character() value back to the original setting
+				mb_substitute_character($mb_substitute_character);
 
-				// Turn notices back on
-				error_reporting($error_reporting);
 			}
 		}
 
@@ -759,14 +764,6 @@ class Kohana_UTF8 {
 	}
 
 } // End UTF8
-
-/**
- * Set the mb_substitute_character to "none"
- *
- * @link http://www.php.net/manual/function.mb-substitute-character.php
- */
-
-mb_substitute_character('none');
 
 if (Kohana_UTF8::$server_utf8 === NULL)
 {
