@@ -80,7 +80,7 @@ class Kohana_UTF8 {
 				// Disable substituting illigal characters with the default '?' character
 				mb_substitute_character('none');
 				
-				// iconv is expensive, so it is only used when needed
+				// mb_convert_encoding is expensive, so it is only used when needed
 				$var = mb_convert_encoding($var, $charset, $charset);
 				
 				// Reset mb_substitute_character() value back to the original setting
