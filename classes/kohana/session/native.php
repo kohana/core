@@ -25,7 +25,14 @@ class Kohana_Session_Native extends Session {
 	protected function _read($id = NULL)
 	{
 		// Sync up the session cookie with Cookie parameters
-		session_set_cookie_params($this->_lifetime, Cookie::$path, Cookie::$domain, Cookie::$secure, Cookie::$httponly);
+		session_set_cookie_params(
+			$this->_lifetime,
+			Cookie::$path,
+			// set to Cookie::$domain if available, otherwise default to ini setting, see issue #3604
+			Cookie::$domain ? : ini_get('session.cookie_domain'),
+			Cookie::$secure,
+			Cookie::$httponly
+		);
 
 		// Do not allow PHP to send Cache-Control headers
 		session_cache_limiter(FALSE);
