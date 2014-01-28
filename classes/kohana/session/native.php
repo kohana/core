@@ -24,12 +24,22 @@ class Kohana_Session_Native extends Session {
 	 */
 	protected function _read($id = NULL)
 	{
+		// session_set_cookie_params will override php ini settings
+		// If a NULL or empty string is passed, PHP will sent cookies with
+		// the host name of the server which generated the cookie
+		//
+		// see issue #3604
+		//
+		// set to Cookie::$domain if available, otherwise default to ini setting, 
+		$session_cookie_domain = empty(Cookie::$domain) ?
+			Cookie::$domain :
+			ini_get('session.cookie_domain');
+		
 		// Sync up the session cookie with Cookie parameters
 		session_set_cookie_params(
 			$this->_lifetime,
 			Cookie::$path,
-			// set to Cookie::$domain if available, otherwise default to ini setting, see issue #3604
-			Cookie::$domain ? : ini_get('session.cookie_domain'),
+			$session_cookie_domain,
 			Cookie::$secure,
 			Cookie::$httponly
 		);
