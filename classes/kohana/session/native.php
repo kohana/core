@@ -30,11 +30,11 @@ class Kohana_Session_Native extends Session {
 		//
 		// see issue #3604
 		//
-		// set to Cookie::$domain if available, otherwise default to ini setting, 
-		$session_cookie_domain = Cookie::$domain
-		    ? Cookie::$domain
-		    : ini_get('session.cookie_domain');
-		
+		// set to Cookie::$domain if available, otherwise default to ini setting
+		$session_cookie_domain = empty(Cookie::$domain)
+		    ? ini_get('session.cookie_domain')
+		    : Cookie::$domain;
+
 		// Sync up the session cookie with Cookie parameters
 		session_set_cookie_params(
 			$this->_lifetime,
