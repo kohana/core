@@ -906,14 +906,15 @@ class Kohana_Request implements HTTP_Request {
 	 */
 	public function url($protocol = NULL)
 	{
-		// test if the request is external
-		return $this->is_external()
-			// if it is an external request return the uri
-			? $this->uri()
-			// Create a URI with the current route and convert it to a URL
-			: URL::site($this->uri(), $protocol);
-	}
+		if ($this->is_external())
+		{
+			// If it's an external request return the URI
+			return $this->uri();
+		}
 
+		// Create a URI with the current route, convert to a URL and returns
+		return URL::site($this->uri(), $protocol);
+	}
 	/**
 	 * Retrieves a value from the route parameters.
 	 *
