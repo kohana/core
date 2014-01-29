@@ -10,14 +10,14 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2012 Kohana Team
+ * @copyright  (c) 2008-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.3.0';
-	const CODENAME = 'badius';
+	const VERSION  = '3.3.1';
+	const CODENAME = 'peregrinus';
 
 	// Common environment type constants for consistency and convenience
 	const PRODUCTION  = 10;
@@ -37,12 +37,12 @@ class Kohana_Core {
 	public static $environment = Kohana::DEVELOPMENT;
 
 	/**
-	 * @var  boolean  True if Kohana is running on windows
+	 * @var  boolean  True if Kohana is running on Windows OS
 	 */
 	public static $is_windows = FALSE;
 
 	/**
-	 * @var  boolean  True if [magic quotes](http://php.net/manual/en/security.magicquotes.php) is enabled.
+	 * @var  boolean  True if [magic quotes](http://php.net/manual/security.magicquotes.php) is enabled.
 	 */
 	public static $magic_quotes = FALSE;
 
@@ -165,7 +165,7 @@ class Kohana_Core {
 	 * Type      | Setting    | Description                                    | Default Value
 	 * ----------|------------|------------------------------------------------|---------------
 	 * `string`  | base_url   | The base URL for your application.  This should be the *relative* path from your DOCROOT to your `index.php` file, in other words, if Kohana is in a subfolder, set this to the subfolder name, otherwise leave it as the default.  **The leading slash is required**, trailing slash is optional.   | `"/"`
-	 * `string`  | index_file | The name of the [front controller](http://en.wikipedia.org/wiki/Front_Controller_pattern).  This is used by Kohana to generate relative urls like [HTML::anchor()] and [URL::base()]. This is usually `index.php`.  To [remove index.php from your urls](tutorials/clean-urls), set this to `FALSE`. | `"index.php"`
+	 * `string`  | index_file | The name of the [front controller](http://wikipedia.org/wiki/Front_Controller_pattern).  This is used by Kohana to generate relative urls like [HTML::anchor()] and [URL::base()]. This is usually `index.php`.  To [remove index.php from your urls](tutorials/clean-urls), set this to `FALSE`. | `"index.php"`
 	 * `string`  | charset    | Character set used for all input and output    | `"utf-8"`
 	 * `string`  | cache_dir  | Kohana's cache directory.  Used by [Kohana::cache] for simple internal caching, like [Fragments](kohana/fragments) and **\[caching database queries](this should link somewhere)**.  This has nothing to do with the [Cache module](cache). | `APPPATH."cache"`
 	 * `integer` | cache_life | Lifetime, in seconds, of items cached by [Kohana::cache]         | `60`
@@ -252,15 +252,17 @@ class Kohana_Core {
 				try
 				{
 					// Create the cache directory
-					mkdir($settings['cache_dir'], 0755, TRUE);
+					mkdir($settings['cache_dir'], 0777, TRUE);
 
 					// Set permissions (must be manually set to fix umask issues)
-					chmod($settings['cache_dir'], 0755);
+					chmod($settings['cache_dir'], 0777);
 				}
 				catch (Exception $e)
 				{
-					throw new Kohana_Exception('Could not create cache directory :dir',
-						array(':dir' => Debug::path($settings['cache_dir'])));
+					throw new Kohana_Exception(
+						'Could not create cache directory :dir',
+						array(':dir' => Debug::path($settings['cache_dir']))
+					);
 				}
 			}
 
@@ -275,8 +277,10 @@ class Kohana_Core {
 
 		if ( ! is_writable(Kohana::$cache_dir))
 		{
-			throw new Kohana_Exception('Directory :dir must be writable',
-				array(':dir' => Debug::path(Kohana::$cache_dir)));
+			throw new Kohana_Exception(
+				'Directory :dir must be writable',
+				array(':dir' => Debug::path(Kohana::$cache_dir))
+			);
 		}
 
 		if (isset($settings['cache_life']))
@@ -385,13 +389,12 @@ class Kohana_Core {
 	 * Reverts the effects of the `register_globals` PHP setting by unsetting
 	 * all global variables except for the default super globals (GPCS, etc),
 	 * which is a [potential security hole.][ref-wikibooks]
-	 *
+	 * 
 	 * This is called automatically by [Kohana::init] if `register_globals` is
 	 * on.
-	 *
-	 *
-	 * [ref-wikibooks]: http://en.wikibooks.org/wiki/PHP_Programming/Register_Globals
-	 *
+	 * 
+	 * [ref-wikibooks]: http://wikibooks.org/wiki/PHP_Programming/Register_Globals
+	 * 
 	 * @return  void
 	 */
 	public static function globals()
@@ -399,7 +402,7 @@ class Kohana_Core {
 		if (isset($_REQUEST['GLOBALS']) OR isset($_FILES['GLOBALS']))
 		{
 			// Prevent malicious GLOBALS overload attack
-			echo "Global variable overload attack detected! Request aborted.\n";
+			echo 'Global variable overload, attack detected! Request aborted.'.PHP_EOL;
 
 			// Exit with an error status
 			exit(1);
@@ -409,17 +412,10 @@ class Kohana_Core {
 		$global_variables = array_keys($GLOBALS);
 
 		// Remove the standard global variables from the list
-		$global_variables = array_diff($global_variables, array(
-			'_COOKIE',
-			'_ENV',
-			'_GET',
-			'_FILES',
-			'_POST',
-			'_REQUEST',
-			'_SERVER',
-			'_SESSION',
-			'GLOBALS',
-		));
+		$global_variables = array_diff(
+			$global_variables, 
+			array('_COOKIE', '_ENV', '_GET', '_FILES', '_POST', '_REQUEST', '_SERVER', '_SESSION', 'GLOBALS')
+		);
 
 		foreach ($global_variables as $name)
 		{
@@ -436,10 +432,11 @@ class Kohana_Core {
 	 *
 	 * @param   mixed   $value  any variable
 	 * @return  mixed   sanitized variable
+	 * @uses    Arr::is_array
 	 */
 	public static function sanitize($value)
 	{
-		if (is_array($value) OR is_object($value))
+		if (Arr::is_array($value))
 		{
 			foreach ($value as $key => $val)
 			{
@@ -492,9 +489,8 @@ class Kohana_Core {
 	public static function auto_load($class, $directory = 'classes')
 	{
 		// Transform the class name according to PSR-0
-		$class     = ltrim($class, '\\');
-		$file      = '';
-		$namespace = '';
+		$class = ltrim($class, '\\');
+		$file  = $namespace = '';
 
 		if ($last_namespace_position = strripos($class, '\\'))
 		{
@@ -576,10 +572,10 @@ class Kohana_Core {
 			else
 			{
 				// This module is invalid, remove it
-				throw new Kohana_Exception('Attempted to load an invalid or missing module \':module\' at \':path\'', array(
-					':module' => $name,
-					':path'   => Debug::path($path),
-				));
+				throw new Kohana_Exception(
+					'Attempted to load an invalid or missing module `:module` at `:path`', 
+					array(':module' => $name, ':path' => Debug::path($path))
+				);
 			}
 		}
 
@@ -639,12 +635,12 @@ class Kohana_Core {
 	 *     // Returns an array of all the "mimes" configuration files
 	 *     Kohana::find_file('config', 'mimes');
 	 *
-	 * @param   string  $dir    directory name (views, i18n, classes, extensions, etc.)
-	 * @param   string  $file   filename with subdirectory
-	 * @param   string  $ext    extension to search for
-	 * @param   boolean $array  return an array of files?
-	 * @return  array   a list of files when $array is TRUE
-	 * @return  string  single file path
+	 * @param   string       $dir    directory name (views, i18n, classes, extensions, etc.)
+	 * @param   string       $file   filename with subdirectory
+	 * @param   string|null  $ext    extension to search for
+	 * @param   boolean      $array  return an array of files?
+	 * @return  array        a list of files when $array is TRUE
+	 * @return  string       single file path
 	 */
 	public static function find_file($dir, $file, $ext = NULL, $array = FALSE)
 	{
@@ -656,7 +652,7 @@ class Kohana_Core {
 		elseif ($ext)
 		{
 			// Prefix the extension with a period
-			$ext = ".{$ext}";
+			$ext = '.'.$ext;
 		}
 		else
 		{
@@ -975,9 +971,13 @@ class Kohana_Core {
 	}
 
 	/**
-	 * PHP error handler, converts all errors into ErrorExceptions. This handler
-	 * respects error_reporting settings.
+	 * PHP error handler, converts all errors into ErrorExceptions. 
+	 * This handler respects error_reporting settings.
 	 *
+	 * @param   integer       $code
+	 * @param   string        $error
+	 * @param   string|null   $file
+	 * @param   integer|null  $line
 	 * @throws  ErrorException
 	 * @return  TRUE
 	 */
@@ -996,7 +996,7 @@ class Kohana_Core {
 
 	/**
 	 * Catches errors that are not caught by the error handler, such as E_PARSE.
-	 *
+	 * 
 	 * @uses    Kohana_Exception::handler
 	 * @return  void
 	 */
@@ -1022,10 +1022,15 @@ class Kohana_Core {
 			Kohana_Exception::handler($e);
 		}
 
-		if (Kohana::$errors AND $error = error_get_last() AND in_array($error['type'], Kohana::$shutdown_errors))
+		$error = error_get_last();
+
+		if (Kohana::$errors AND is_array($error) AND in_array($error['type'], Kohana::$shutdown_errors))
 		{
-			// Clean the output buffer
-			ob_get_level() AND ob_clean();
+			if (ob_get_level() > 0)
+			{
+				// Clean the output buffer
+				ob_clean();
+			}
 
 			// Fake an exception for nice debugging
 			Kohana_Exception::handler(new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']));
@@ -1033,16 +1038,6 @@ class Kohana_Core {
 			// Shutdown now to avoid a "death loop"
 			exit(1);
 		}
-	}
-
-	/**
-	 * Generates a version string based on the variables defined above.
-	 *
-	 * @return string
-	 */
-	public static function version()
-	{
-		return 'Kohana Framework '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
 	}
 
 }
