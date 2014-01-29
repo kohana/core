@@ -232,7 +232,7 @@ class Kohana_View {
 			/**
 			 * Display the exception message.
 			 *
-			 * We use this method here because it's impossible to throw and
+			 * We use this method here because it's impossible to throw an
 			 * exception from __toString().
 			 */
 			$error_response = Kohana_exception::_handler($e);
