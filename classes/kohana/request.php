@@ -905,7 +905,6 @@ class Kohana_Request implements HTTP_Request {
 	 *
 	 *     echo URL::site($this->request->uri(), $protocol);
 	 *
-	 * @param   array    $params    URI parameters
 	 * @param   mixed    $protocol  protocol string or Request object
 	 * @return  string
 	 * @since   3.0.7
@@ -913,10 +912,15 @@ class Kohana_Request implements HTTP_Request {
 	 */
 	public function url($protocol = NULL)
 	{
-		// Create a URI with the current route and convert it to a URL
+		if ($this->is_external())
+		{
+			// If it's an external request return the URI
+			return $this->uri();
+		}
+
+		// Create a URI with the current route, convert to a URL and returns
 		return URL::site($this->uri(), $protocol);
 	}
-
 	/**
 	 * Retrieves a value from the route parameters.
 	 *
