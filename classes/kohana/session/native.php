@@ -36,7 +36,7 @@ class Kohana_Session_Native extends Session {
 		 * see http://www.php.net/manual/en/session.configuration.php#ini.session.cookie-domain
 		 * 
 		 * set to Cookie::$domain if available, otherwise default to ini setting
-		 * /
+		 */
 		$session_cookie_domain = empty(Cookie::$domain)
 		    ? ini_get('session.cookie_domain')
 		    : Cookie::$domain;
