@@ -513,7 +513,7 @@ class Kohana_Text {
 	 * @return  string
 	 * @since   3.0.8
 	 */
-	public static function number($number)
+	public static function number($number, $separator = ' and ')
 	{
 		// The number must always be an integer
 		$number = (int) $number;
@@ -575,7 +575,7 @@ class Kohana_Text {
 
 		if (isset($and))
 		{
-			$text .= ' and '.$and;
+			$text .= $separator.$and;
 		}
 
 		return $text;

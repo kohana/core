@@ -441,6 +441,8 @@ class Kohana_TextTest extends Unittest_TestCase
 			array('fourty-two', 42),
 			array('five million, six hundred and thirty-two', 5000632),
 			array('five million, six hundred and thirty', 5000630),
+			array('five million, six hundred thirty-two', 5000632, ' '),
+			array('five million, six hundred thirty', 5000630, ' '),
 			array('nine hundred million', 900000000),
 			array('thirty-seven thousand', 37000),
 			array('one thousand and twenty-four', 1024),
@@ -453,9 +455,9 @@ class Kohana_TextTest extends Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_number
 	 */
-	public function test_number($expected, $number)
+	public function test_number($expected, $number, $separator = ' and ')
 	{
-		$this->assertSame($expected, Text::number($number));
+		$this->assertSame($expected, Text::number($number, $separator));
 	}
 
 	/**
