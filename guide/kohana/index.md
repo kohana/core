@@ -20,4 +20,4 @@ We are working very hard to provide complete documentation. To help improve the 
 
 ## Unofficial Documentation
 
-If you are having trouble finding an answer here, have a look through the [unofficial wiki](http://kerkness.ca/wiki/doku.php). Your answer may also be found by searching the [forum](http://forum.kohanaphp.com/) or [stackoverflow](http://stackoverflow.com/questions/tagged/kohana) followed by asking your question on either.  Additionally, you can chat with the community of developers on the freenode [#kohana](irc://irc.freenode.net/kohana) IRC channel.  
+If you are having trouble finding an answer here, have a look through the [unofficial wiki](http://kerkness.ca/wiki/doku.php). Your answer may also be found by searching the [forum](http://forum.kohanaframework.org/) or [stackoverflow](http://stackoverflow.com/questions/tagged/kohana) followed by asking your question on either.  Additionally, you can chat with the community of developers on the freenode [#kohana](irc://irc.freenode.net/kohana) IRC channel.  

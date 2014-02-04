@@ -456,6 +456,11 @@ class Kohana_Route {
 	 */
 	public function uri(array $params = NULL)
 	{
+		if ($params)
+		{
+			$params = array_map('rawurlencode', $params);
+		}
+
 		// Start with the routed URI
 		$uri = $this->_uri;
 

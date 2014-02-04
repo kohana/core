@@ -587,20 +587,23 @@ class Kohana_Text {
 	 *
 	 *     echo Text::widont($text);
 	 *
+	 * regex courtesy of the Typogrify project
+	 * @link http://code.google.com/p/typogrify/
+	 *
 	 * @param   string  $str    text to remove widows from
 	 * @return  string
 	 */
 	public static function widont($str)
 	{
-		$str = rtrim($str);
-		$space = strrpos($str, ' ');
-
-		if ($space !== FALSE)
-		{
-			$str = substr($str, 0, $space).'&nbsp;'.substr($str, $space + 1);
-		}
-
-		return $str;
+ 		$widont_regex = "
+			((?:</?(?:a|em|span|strong|i|b)[^>]*>)|[^<>\s]) # must be proceeded by an approved inline opening or closing tag or a nontag/nonspace
+			\s+                                             # the space to replace
+			([^<>\s]+                                       # must be flollowed by non-tag non-space characters
+			\s*                                             # optional white space!
+			(</(a|em|span|strong|i|b)>\s*)*                 # optional closing inline tags with optional white space after each
+			((</(p|h[1-6]|li|dt|dd)>)|$))                   # end with a closing p, h1-6, li or the end of the string
+		";
+		return preg_replace($widont_regex, '&nbsp;$2', $str);
 	}
 
 } // End text
