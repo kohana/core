@@ -57,6 +57,22 @@ class Kohana_Num {
 	);
 
 	/**
+	 * @var  array  Valid si prefixes => power of 10 that defines the unit's size
+	 */
+	public static $si_prefixes = array
+	(
+		'B'   => 0,
+		'KB'  => 3,
+		'MB'  => 6,
+		'GB'  => 9,
+		'TB'  => 12,
+		'PB'  => 15,
+		'EB'  => 18,
+		'ZB'  => 21,
+		'YB'  => 24,
+	);
+
+	/**
 	 * Returns the English ordinal suffix (th, st, nd, etc) of a number.
 	 *
 	 *     echo 2, Num::ordinal(2);   // "2nd"
@@ -202,7 +218,7 @@ class Kohana_Num {
 	 * @param   string  $bytes  file size in SB format
 	 * @return  float
 	 */
-	public static function bytes($size)
+	public static function bytes($size, $si = TRUE)
 	{
 		// Prepare the size
 		$size = trim( (string) $size);
@@ -225,8 +241,16 @@ class Kohana_Num {
 		// Find the actual unit, assume B if no unit specified
 		$unit = Arr::get($matches, 2, 'B');
 
-		// Convert the size into bytes
-		$bytes = $size * pow(2, Num::$byte_units[$unit]);
+		if(array_key_exists($unit, Num::$si_prefixes) AND $si === TRUE)
+		{
+			// Convert the size into bytes using SI prefixes (decimal)
+			$bytes = $size * pow(10, Num::$si_prefixes[$unit]);
+		}
+		else
+		{
+			// Convert the size into bytes using IEC prefixes (binary)
+			$bytes = $size * pow(2, Num::$byte_units[$unit]);
+		}
 
 		return $bytes;
 	}
