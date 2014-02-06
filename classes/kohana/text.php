@@ -595,15 +595,16 @@ class Kohana_Text {
 	 */
 	public static function widont($str)
 	{
- 		$widont_regex = "
+		// use '%' as delimiter and 'x' as modifier 
+ 		$widont_regex = "%
 			((?:</?(?:a|em|span|strong|i|b)[^>]*>)|[^<>\s]) # must be proceeded by an approved inline opening or closing tag or a nontag/nonspace
 			\s+                                             # the space to replace
 			([^<>\s]+                                       # must be flollowed by non-tag non-space characters
 			\s*                                             # optional white space!
 			(</(a|em|span|strong|i|b)>\s*)*                 # optional closing inline tags with optional white space after each
 			((</(p|h[1-6]|li|dt|dd)>)|$))                   # end with a closing p, h1-6, li or the end of the string
-		";
-		return preg_replace($widont_regex, '&nbsp;$2', $str);
+		%x";
+		return preg_replace($widont_regex, '$1&nbsp;$2', $str);
 	}
 
 } // End text
