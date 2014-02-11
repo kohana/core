@@ -252,7 +252,7 @@ One method you might use frequently is the shortcut [Request::uri] which is the 
     
 Or if within a view, the preferable method is:
 
-    Request::instance()->uri(array('action' => 'view', 'id' => $user_id));
+    Request::current()->uri(array('action' => 'view', 'id' => $user_id));
 
 TODO: examples of using html::anchor in addition to the above examples
 
