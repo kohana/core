@@ -236,7 +236,7 @@ class Kohana_Text {
 	 * Uppercase words that are not separated by spaces, using a custom
 	 * delimiter or the default.
 	 *
-	 *      $str = Text::ucfirst('content-type'); // returns "Content-Type"
+	 *      $str = Text::ucfirst('content-type'); // returns "Content-Type" 
 	 *
 	 * @param   string  $string     string to transform
 	 * @param   string  $delimiter  delimiter to use
@@ -611,7 +611,7 @@ class Kohana_Text {
 	 */
 	public static function widont($str)
 	{
-		// use '%' as delimiter and 'x' as modifier
+		// use '%' as delimiter and 'x' as modifier 
  		$widont_regex = "%
 			((?:</?(?:a|em|span|strong|i|b)[^>]*>)|[^<>\s]) # must be proceeded by an approved inline opening or closing tag or a nontag/nonspace
 			\s+                                             # the space to replace
