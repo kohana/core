@@ -235,8 +235,8 @@ class Kohana_Text {
 	/**
 	 * Uppercase words that are not separated by spaces, using a custom
 	 * delimiter or the default.
-	 * 
-	 *      $str = Text::ucfirst('content-type'); // returns "Content-Type" 
+	 *
+	 *      $str = Text::ucfirst('content-type'); // returns "Content-Type"
 	 *
 	 * @param   string  $string     string to transform
 	 * @param   string  $delimiter  delimiter to use
@@ -269,6 +269,9 @@ class Kohana_Text {
 	 *         'frick' => '#####',
 	 *     ));
 	 *
+	 * If argument $replacement is a single character, it will be used to replace
+	 * the characters in the badword, otherwise it will replace the badword completely
+	 *
 	 * @param   string  $str                    phrase to replace words in
 	 * @param   array   $badwords               words to replace
 	 * @param   string  $replacement            replacement string
@@ -293,12 +296,25 @@ class Kohana_Text {
 
 		$regex = '!'.$regex.'!ui';
 
+		// if $replacement is a single character: replace each of the characters of the badword with $replacement
 		if (UTF8::strlen($replacement) == 1)
 		{
-			$regex .= 'e';
-			return preg_replace($regex, 'str_repeat($replacement, UTF8::strlen(\'$1\'))', $str);
+			// issue #4819: preg_replace_callback mainly for 5.5.0, where preg_replace with /e modifier is depricated
+			if (version_compare(PHP_VERSION, '5.5.0') >= 0)
+			{
+				return preg_replace_callback($regex, function($matches) use ($replacement) {
+					return str_repeat($replacement, UTF8::strlen($matches[1]));
+				}, $str);
+			}
+			// we can't have anonymous functions for PHP 5.2, so we keep using preg_replace with /e modifier
+			else
+			{
+				$regex .= 'e';
+				return preg_replace($regex, 'str_repeat($replacement, UTF8::strlen(\'$1\'))', $str);
+			}
 		}
 
+		// if $replacement is not a single character, fully replace the badword with $replacement
 		return preg_replace($regex, $replacement, $str);
 	}
 
@@ -595,7 +611,7 @@ class Kohana_Text {
 	 */
 	public static function widont($str)
 	{
-		// use '%' as delimiter and 'x' as modifier 
+		// use '%' as delimiter and 'x' as modifier
  		$widont_regex = "%
 			((?:</?(?:a|em|span|strong|i|b)[^>]*>)|[^<>\s]) # must be proceeded by an approved inline opening or closing tag or a nontag/nonspace
 			\s+                                             # the space to replace
