@@ -48,6 +48,17 @@ class Kohana_Text {
 	);
 
 	/**
+	 * Temporarily stores the string to replace badwords while censoring
+	 * This is part of an ugly hack to support both PHP 5.2 and PHP 5.5
+	 * Used in the functions censor and _censor_preg_replace_callback
+	 * @see issue #4819: http://dev.kohanaframework.org/issues/4819
+	 * It is preferable not to mess with this variable.
+	 *
+	 * @var string replacement character/string for badwords while censoring
+	 */
+	protected static $_temp_badwords_replacement = NULL;
+
+	/**
 	 * Limits a phrase to a given number of words.
 	 *
 	 *     $text = Text::limit_words($text);
@@ -235,8 +246,8 @@ class Kohana_Text {
 	/**
 	 * Uppercase words that are not separated by spaces, using a custom
 	 * delimiter or the default.
-	 * 
-	 *      $str = Text::ucfirst('content-type'); // returns "Content-Type" 
+	 *
+	 *      $str = Text::ucfirst('content-type'); // returns "Content-Type"
 	 *
 	 * @param   string  $string     string to transform
 	 * @param   string  $delimiter  delimiter to use
@@ -269,12 +280,16 @@ class Kohana_Text {
 	 *         'frick' => '#####',
 	 *     ));
 	 *
+	 * If argument $replacement is a single character, it will be used to replace
+	 * the characters in the badword, otherwise it will replace the badword completely
+	 *
 	 * @param   string  $str                    phrase to replace words in
 	 * @param   array   $badwords               words to replace
 	 * @param   string  $replacement            replacement string
 	 * @param   boolean $replace_partial_words  replace words across word boundaries (space, period, etc)
 	 * @return  string
 	 * @uses    UTF8::strlen
+	 * @uses Text::_censor_preg_replace_callback callback for preg_replace_callback
 	 */
 	public static function censor($str, $badwords, $replacement = '#', $replace_partial_words = TRUE)
 	{
@@ -295,11 +310,21 @@ class Kohana_Text {
 
 		if (UTF8::strlen($replacement) == 1)
 		{
-			$regex .= 'e';
-			return preg_replace($regex, 'str_repeat($replacement, UTF8::strlen(\'$1\'))', $str);
+			static::$_temp_badwords_replacement = $replacement;
+			return preg_replace_callback($regex, 'Text::_censor_preg_replace_callback', $str);
 		}
 
 		return preg_replace($regex, $replacement, $str);
+	}
+
+	/**
+	 * helper callback function for Text::censor's preg_replace_callback
+	 *
+	 * @param array $matches
+	 * @return string
+	 */
+	protected static function _censor_preg_replace_callback($matches) {
+		return str_repeat(static::$_temp_badwords_replacement, UTF8::strlen($matches[1]));
 	}
 
 	/**
@@ -595,7 +620,7 @@ class Kohana_Text {
 	 */
 	public static function widont($str)
 	{
-		// use '%' as delimiter and 'x' as modifier 
+		// use '%' as delimiter and 'x' as modifier
  		$widont_regex = "%
 			((?:</?(?:a|em|span|strong|i|b)[^>]*>)|[^<>\s]) # must be proceeded by an approved inline opening or closing tag or a nontag/nonspace
 			\s+                                             # the space to replace
