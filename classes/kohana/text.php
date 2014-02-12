@@ -235,7 +235,7 @@ class Kohana_Text {
 	/**
 	 * Uppercase words that are not separated by spaces, using a custom
 	 * delimiter or the default.
-	 *
+	 * 
 	 *      $str = Text::ucfirst('content-type'); // returns "Content-Type" 
 	 *
 	 * @param   string  $string     string to transform
