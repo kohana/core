@@ -335,7 +335,14 @@ class Kohana_RequestTest extends Unittest_TestCase
 			'Kohana::$is_cli'    => $is_cli,
 		));
 
-		$this->assertEquals(Request::factory($uri)->url($protocol), $expected);
+		// issue #3967: inject the route so that we don't conflict with the application's default route
+		$route = new Route('(<controller>(/<action>))');
+		$route->defaults(array(
+			'controller' => 'welcome',
+			'action'     => 'index',
+		));
+
+		$this->assertEquals(Request::factory($uri, NULL, array($route))->url($protocol), $expected);
 	}
 
 	/**
@@ -436,8 +443,15 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function provider_uri_only_trimed_on_internal()
 	{
+		// issue #3967: inject the route so that we don't conflict with the application's default route
+		$route = new Route('(<controller>(/<action>))');
+		$route->defaults(array(
+			'controller' => 'welcome',
+			'action'     => 'index',
+		));
+
 		$old_request = Request::$initial;
-		Request::$initial = new Request(TRUE);
+		Request::$initial = new Request(TRUE, NULL, array($route));
 
 		$result = array(
 			array(
