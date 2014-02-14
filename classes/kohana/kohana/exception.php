@@ -89,6 +89,25 @@ class Kohana_Kohana_Exception extends Exception {
 	{
 		try
 		{
+			/*
+			 * 
+			 * We are registering our shutdown function again.
+			 * By re-registering our shutdown function, we are
+			 * basically asking PHP to run the shutdown function
+			 * twice before exiting.
+			 * 
+			 * The $shutdown_for_exception_registered is needed
+			 * to ensure that we are not re-registering our shutdown
+			 * function more than once.
+			 * 
+			 * @see issue #3931
+			 */
+			static $shutdown_for_exception_registered = FALSE;
+			if (!$shutdown_for_exception_registered) {
+				register_shutdown_function(array('Kohana', 'shutdown_handler'));
+				$shutdown_for_exception_registered = TRUE;
+			}
+			
 			// Get the exception information
 			$type    = get_class($e);
 			$code    = $e->getCode();
@@ -146,7 +165,7 @@ class Kohana_Kohana_Exception extends Exception {
 				// Just display the text of the exception
 				echo "\n{$error}\n";
 
-				exit(1);
+				return TRUE;
 			}
 
 			if ( ! headers_sent())
@@ -162,7 +181,7 @@ class Kohana_Kohana_Exception extends Exception {
 				// Just display the text of the exception
 				echo "\n{$error}\n";
 
-				exit(1);
+				return TRUE;
 			}
 
 			// Start an output buffer
@@ -183,7 +202,7 @@ class Kohana_Kohana_Exception extends Exception {
 			// Display the contents of the output buffer
 			echo ob_get_clean();
 
-			exit(1);
+			return TRUE;
 		}
 		catch (Exception $e)
 		{
@@ -193,8 +212,8 @@ class Kohana_Kohana_Exception extends Exception {
 			// Display the exception text
 			echo Kohana_Exception::text($e), "\n";
 
-			// Exit with an error status
-			exit(1);
+			// return
+			return TRUE;
 		}
 	}
 

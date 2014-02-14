@@ -972,6 +972,25 @@ class Kohana_Core {
 	 */
 	public static function shutdown_handler()
 	{
+		/*
+		 * $shutdown_handler_visited is a static local function
+		 * that will test if this function is already passed
+		 * through by PHP runtime.
+		 * 
+		 * If it is passed through already, we should exit with
+		 * an error status.
+		 * 
+		 * The second registration occurs inside Kohana's default
+		 * exception handler.
+		 * 
+		 * @see issue #3931
+		 */
+		static $shutdown_handler_visited = FALSE;
+		if ($shutdown_handler_visited) {
+			exit(1);
+		}
+		$shutdown_handler_visited = TRUE;
+		
 		if ( ! Kohana::$_init)
 		{
 			// Do not execute when not active
