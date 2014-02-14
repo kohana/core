@@ -970,8 +970,23 @@ class Kohana_Core {
 	 *
 	 * @return  void
 	 */
-	public static function shutdown_handler()
+	public static function shutdown_handler($error_status = 0)
 	{
+		/*
+		 * if we have an $error_status, exit with error
+		 * 
+		 * Please note, however, the fact that PHP does not offer a
+		 * native way to UNregister a shutdown function.
+		 * 
+		 * This means that, this shutdown_handler function will run
+		 * in full, because we have registered it in Kohana::init()
+		 * without errors
+		 * 
+		 */
+		if ($error_status) {
+			exit($error_status);
+		}
+		
 		if ( ! Kohana::$_init)
 		{
 			// Do not execute when not active

@@ -89,6 +89,20 @@ class Kohana_Kohana_Exception extends Exception {
 	{
 		try
 		{
+			/*
+			 * We are re-registering our shutdown function, this time
+			 * with an error status of 1.
+			 * 
+			 * Please note that we have already registered our shutdown
+			 * function without error status in Kohana::init().
+			 * 
+			 * basically, we are making sure that we are shutting down
+			 * properly, and then shutting down with an error status.
+			 * 
+			 * @see issue #3931
+			 */
+			register_shutdown_function(array('Kohana', 'shutdown_handler'), 1);
+			
 			// Get the exception information
 			$type    = get_class($e);
 			$code    = $e->getCode();
@@ -146,7 +160,7 @@ class Kohana_Kohana_Exception extends Exception {
 				// Just display the text of the exception
 				echo "\n{$error}\n";
 
-				exit(1);
+				return TRUE;
 			}
 
 			if ( ! headers_sent())
@@ -162,7 +176,7 @@ class Kohana_Kohana_Exception extends Exception {
 				// Just display the text of the exception
 				echo "\n{$error}\n";
 
-				exit(1);
+				return TRUE;
 			}
 
 			// Start an output buffer
@@ -183,7 +197,7 @@ class Kohana_Kohana_Exception extends Exception {
 			// Display the contents of the output buffer
 			echo ob_get_clean();
 
-			exit(1);
+			return TRUE;
 		}
 		catch (Exception $e)
 		{
@@ -193,8 +207,8 @@ class Kohana_Kohana_Exception extends Exception {
 			// Display the exception text
 			echo Kohana_Exception::text($e), "\n";
 
-			// Exit with an error status
-			exit(1);
+			// return
+			return TRUE;
 		}
 	}
 
