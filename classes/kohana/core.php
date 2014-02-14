@@ -137,6 +137,11 @@ class Kohana_Core {
 	public static $config;
 
 	/**
+	 * @var  boolean  Did Kohana handle an unhandled exception? Used to exit with proper error codes
+	 */
+	public static $exception_handled = FALSE;
+
+	/**
 	 * @var  boolean  Has [Kohana::init] been called?
 	 */
 	protected static $_init = FALSE;
@@ -1007,6 +1012,11 @@ class Kohana_Core {
 			call_user_func($handler, new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']));
 
 			// Shutdown now to avoid a "death loop"
+			exit(1);
+		}
+		
+		// issue #3931: if Kohana handled an exception, exit with proper error code
+		if (Kohana::$exception_handled) {
 			exit(1);
 		}
 	}
