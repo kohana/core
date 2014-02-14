@@ -89,6 +89,9 @@ class Kohana_Kohana_Exception extends Exception {
 	{
 		try
 		{
+			// Kohana is handling an exception
+			Kohana::$exception_handled = TRUE;
+
 			// Get the exception information
 			$type    = get_class($e);
 			$code    = $e->getCode();
@@ -146,7 +149,7 @@ class Kohana_Kohana_Exception extends Exception {
 				// Just display the text of the exception
 				echo "\n{$error}\n";
 
-				exit(1);
+				return TRUE;
 			}
 
 			if ( ! headers_sent())
@@ -162,7 +165,7 @@ class Kohana_Kohana_Exception extends Exception {
 				// Just display the text of the exception
 				echo "\n{$error}\n";
 
-				exit(1);
+				return TRUE;
 			}
 
 			// Start an output buffer
@@ -183,7 +186,7 @@ class Kohana_Kohana_Exception extends Exception {
 			// Display the contents of the output buffer
 			echo ob_get_clean();
 
-			exit(1);
+			return TRUE;
 		}
 		catch (Exception $e)
 		{
@@ -193,8 +196,8 @@ class Kohana_Kohana_Exception extends Exception {
 			// Display the exception text
 			echo Kohana_Exception::text($e), "\n";
 
-			// Exit with an error status
-			exit(1);
+			// return
+			return TRUE;
 		}
 	}
 
