@@ -973,7 +973,7 @@ class Kohana_Core {
 	public static function shutdown_handler()
 	{
 		/*
-		 * $shutdown_handler_visited is a static local function
+		 * $shutdown_handler_visited is a static function variable
 		 * that will test if this function is already passed
 		 * through by PHP runtime.
 		 * 
