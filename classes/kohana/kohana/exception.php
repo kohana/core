@@ -80,7 +80,11 @@ class Kohana_Kohana_Exception extends Exception {
 	/**
 	 * Inline exception handler, displays the error message, source of the
 	 * exception, and the stack trace of the error.
-	 *
+	 * 
+	 * Re-registers Kohana::shutdown_handler to make the PHP engine
+	 * run the shutdown twice. We'll be exit(1)-ing from there.
+	 * @see issue #3931
+	 * 
 	 * @uses    Kohana_Exception::text
 	 * @param   Exception   $e
 	 * @return  boolean
@@ -89,24 +93,7 @@ class Kohana_Kohana_Exception extends Exception {
 	{
 		try
 		{
-			/*
-			 * 
-			 * We are registering our shutdown function again.
-			 * By re-registering our shutdown function, we are
-			 * basically asking PHP to run the shutdown function
-			 * twice before exiting.
-			 * 
-			 * The $shutdown_for_exception_registered is needed
-			 * to ensure that we are not re-registering our shutdown
-			 * function more than once.
-			 * 
-			 * @see issue #3931
-			 */
-			static $shutdown_for_exception_registered = FALSE;
-			if (!$shutdown_for_exception_registered) {
-				register_shutdown_function(array('Kohana', 'shutdown_handler'));
-				$shutdown_for_exception_registered = TRUE;
-			}
+			register_shutdown_function(array('Kohana', 'shutdown_handler'));
 			
 			// Get the exception information
 			$type    = get_class($e);
