@@ -151,7 +151,7 @@ class Kohana_Encrypt {
 				}
 				else
 				{
-					// Use the system random number generator
+					// Uses the C function php_rand() which is the same as rand()
 					Encrypt::$_rand = MCRYPT_RAND;
 				}
 			}
@@ -162,6 +162,9 @@ class Kohana_Encrypt {
 			// The system random number generator must always be seeded each
 			// time it is used, or it will not produce true random results
 			mt_srand();
+			// This is useless: mt_srand() doesn't affect rand(), and rand()
+			// is extremely predicatable.
+			user_error("No suitable random number generator installed.", E_USER_NOTICE);
 		}
 
 		// Create a random initialization vector of the proper size for the current cipher
