@@ -969,7 +969,7 @@ class Kohana_Core {
 	 * Catches errors that are not caught by the error handler, such as E_PARSE.
 	 * 
 	 * In case of an exception, the Kohana exception handler registers
-	 * this shutdown_handler twice. We'll count the number of visits to
+	 * this shutdown_handler again. We'll count the number of visits to
 	 * this function using a local static function variable, and exit(1)
 	 * on the second visit.
 	 * @see issue #3931
@@ -980,7 +980,8 @@ class Kohana_Core {
 	{
 		// test if we have already shutdown, if TRUE, exit(1)
 		static $shutdown_handler_visited = FALSE;
-		if ($shutdown_handler_visited) {
+		if ($shutdown_handler_visited)
+		{
 			exit(1);
 		}
 		$shutdown_handler_visited = TRUE;
