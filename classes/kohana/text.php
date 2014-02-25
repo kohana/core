@@ -269,6 +269,9 @@ class Kohana_Text {
 	 *         'frick' => '#####',
 	 *     ));
 	 *
+	 * If argument $replacement is a single character, it will be used to replace
+	 * the characters in the badword, otherwise it will replace the badword completely
+	 *
 	 * @param   string  $str                    phrase to replace words in
 	 * @param   array   $badwords               words to replace
 	 * @param   string  $replacement            replacement string
@@ -293,12 +296,16 @@ class Kohana_Text {
 
 		$regex = '!'.$regex.'!ui';
 
+		// if $replacement is a single character: replace each of the characters of the badword with $replacement
 		if (UTF8::strlen($replacement) == 1)
 		{
-			$regex .= 'e';
-			return preg_replace($regex, 'str_repeat($replacement, UTF8::strlen(\'$1\'))', $str);
+			// issue #4819: use preg_replace_callback, preg_replace with /e modifier is depricated for PHP 5.5.0
+			$callback = create_function('$matches', 'return str_repeat("' . $replacement . '", UTF8::strlen($matches[1]));');
+
+			return preg_replace_callback($regex, $callback, $str);
 		}
 
+		// if $replacement is not a single character, fully replace the badword with $replacement
 		return preg_replace($regex, $replacement, $str);
 	}
 
