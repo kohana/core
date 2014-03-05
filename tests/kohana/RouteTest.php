@@ -733,7 +733,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 				),
 				'article_name',
 				'Article name with special chars \\ ##',
-				'blog/article/Article%20name%20with%20special%20chars%20%5C%20%23%23'
+				'blog/article/Article%20name%20with%20special%20chars%20\\%20%23%23'
 			)
 		);
 	}
