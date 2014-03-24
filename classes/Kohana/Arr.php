@@ -5,18 +5,21 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2012 Kohana Team
+ * @copyright  (c) 2007-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Arr {
+abstract class Kohana_Arr {
 
 	/**
-	 * @var  string  default delimiter for path()
+	 * @var  string  Default delimiter for [Arr::path()]
 	 */
 	public static $delimiter = '.';
 
 	/**
 	 * Tests if an array is associative or not.
+	 * 
+	 * [!!] The method works correctly only when the keys start from scratch and go in order:
+	 * good "array(0 => $a, 1 => $b, 2 => 3)", bad "array(0 => $a, 2 => 3, 3 => $b)".
 	 *
 	 *     // Returns TRUE
 	 *     Arr::is_assoc(array('username' => 'john.doe'));
@@ -24,7 +27,7 @@ class Kohana_Arr {
 	 *     // Returns FALSE
 	 *     Arr::is_assoc('foo', 'bar');
 	 *
-	 * @param   array   $array  array to check
+	 * @param   array   $array  Array to check
 	 * @return  boolean
 	 */
 	public static function is_assoc(array $array)
@@ -315,14 +318,20 @@ class Kohana_Arr {
 	 *     // Get all of the "id" values from a result
 	 *     $ids = Arr::pluck($result, 'id');
 	 *
-	 * [!!] A list of arrays is an array that contains arrays, eg: array(array $a, array $b, array $c, ...)
+	 * [!!] A list of arrays is an array that contains arrays, 
+	 * eg: array(array $a, array $b, array $c, ...)
 	 *
-	 * @param   array   $array  list of arrays to check
-	 * @param   string  $key    key to pluck
+	 * @param   array   $array  List of arrays to check
+	 * @param   string  $key    Key to pluck
 	 * @return  array
 	 */
 	public static function pluck($array, $key)
 	{
+		if (version_compare(PHP_VERSION, '5.5.0', >= 0))
+		{
+			return array_column($array, $key);
+		}
+	
 		$values = array();
 
 		foreach ($array as $row)
@@ -348,7 +357,7 @@ class Kohana_Arr {
 	 * @param   mixed   $val    array value
 	 * @return  array
 	 */
-	public static function unshift( array & $array, $key, $val)
+	public static function unshift(array & $array, $key, $val)
 	{
 		$array = array_reverse($array, TRUE);
 		$array[$key] = $val;
@@ -365,14 +374,14 @@ class Kohana_Arr {
 	 *     $array = Arr::map('strip_tags', $array);
 	 *
 	 *     // Apply $this->filter to every element in the array
-	 *     $array = Arr::map(array(array($this,'filter')), $array);
+	 *     $array = Arr::map(array(array($this, 'filter')), $array);
 	 *
 	 *     // Apply strip_tags and $this->filter to every element
-	 *     $array = Arr::map(array('strip_tags',array($this,'filter')), $array);
+	 *     $array = Arr::map(array('strip_tags', array($this, 'filter')), $array);
 	 *
-	 * [!!] Because you can pass an array of callbacks, if you wish to use an array-form callback
-	 * you must nest it in an additional array as above. Calling Arr::map(array($this,'filter'), $array)
-	 * will cause an error.
+	 * [!!] Because you can pass an array of callbacks, if you wish to use 
+	 * an array-form callback you must nest it in an additional array as above. 
+	 * Calling Arr::map(array($this, 'filter'), $array) will cause an error.
 	 * [!!] Unlike `array_map`, this method requires a callback and will only map
 	 * a single array.
 	 *
@@ -623,23 +632,23 @@ class Kohana_Arr {
 	}
 
 	/**
-	 * Count the number of elements in an array or a Countable object.
+	 * Count the number of elements in an array or a [Countable](http://php.net/countable) object.
 	 *
-	 * @param   mixed  $array Array or instance of Countable
-	 * @param   int    $mode  Mode passed to the count function
-	 * @throws  Kohana_Exception
+	 * @param   mixed  $array      Array or instance of Countable
+	 * @param   bool   $recursive  Whether to use recursively count the number?
 	 * @return  integer
+	 * @throws  Kohana_Exception
 	 */
-	public static function count($array, $mode = COUNT_NORMAL)
+	public static function count($array, $recursive = FALSE)
 	{
-		if (is_array($array) OR $array instanceof Countable)
+		if (is_array($array) OR (is_object($array) AND $array instanceof Countable))
 		{
-			return count($array, $mode);
+			return count($array, $recursive ? COUNT_RECURSIVE : COUNT_NORMAL);
 		}
 
 		throw new Kohana_Exception(
 			"Parameter 1 for Arr::count() must be array or object of type Countable, :type given.",
-			array(":type" => is_object($array) ? get_class($array) : gettype($array))
+			array(":type" => Debug::type($array))
 		);
 	}
 
