@@ -16,6 +16,35 @@ abstract class Kohana_Arr {
 	public static $delimiter = '.';
 
 	/**
+	 * Test if a value is an array with an additional check for array-like objects.
+	 *
+	 *     // Returns TRUE
+	 *     Arr::is_array(array());
+	 *     Arr::is_array(new ArrayObject);
+	 *
+	 *     // Returns FALSE
+	 *     Arr::is_array(FALSE);
+	 *     Arr::is_array('not an array!');
+	 *     Arr::is_array(Database::instance());
+	 *
+	 * @param   mixed   $value  Value to check
+	 * @return  boolean
+	 */
+	public static function is_array($value)
+	{
+		if (is_array($value))
+		{
+			// Definitely an array
+			return TRUE;
+		}
+		else
+		{
+			// Possibly a Traversable object, functionally the same as an array
+			return (is_object($value) AND $value instanceof Traversable);
+		}
+	}
+
+	/**
 	 * Tests if an array is associative or not.
 	 * 
 	 * [!!] The method works correctly only when the keys start from scratch and go in order:
@@ -41,32 +70,24 @@ abstract class Kohana_Arr {
 	}
 
 	/**
-	 * Test if a value is an array with an additional check for array-like objects.
+	 * Count the number of elements in an array or a [Countable](http://php.net/countable) object.
 	 *
-	 *     // Returns TRUE
-	 *     Arr::is_array(array());
-	 *     Arr::is_array(new ArrayObject);
-	 *
-	 *     // Returns FALSE
-	 *     Arr::is_array(FALSE);
-	 *     Arr::is_array('not an array!');
-	 *     Arr::is_array(Database::instance());
-	 *
-	 * @param   mixed   $value  value to check
-	 * @return  boolean
+	 * @param   mixed  $array      Array or instance of Countable
+	 * @param   bool   $recursive  Whether to use recursively count the number?
+	 * @return  integer
+	 * @throws  Kohana_Exception
 	 */
-	public static function is_array($value)
+	public static function count($array, $recursive = FALSE)
 	{
-		if (is_array($value))
+		if (is_array($array) OR (is_object($array) AND $array instanceof Countable))
 		{
-			// Definitely an array
-			return TRUE;
+			return count($array, $recursive ? COUNT_RECURSIVE : COUNT_NORMAL);
 		}
-		else
-		{
-			// Possibly a Traversable object, functionally the same as an array
-			return (is_object($value) AND $value instanceof Traversable);
-		}
+
+		throw new Kohana_Exception(
+			"Parameter 1 for Arr::count() must be array or object of type Countable, :type given.",
+			array(":type" => Debug::type($array))
+		);
 	}
 
 	/**
@@ -83,10 +104,10 @@ abstract class Kohana_Arr {
 	 *     // Using an array of keys
 	 *     $colors = Arr::path($array, array('theme', '*', 'color'));
 	 *
-	 * @param   array   $array      array to search
-	 * @param   mixed   $path       key path string (delimiter separated) or array of keys
-	 * @param   mixed   $default    default value if the path is not set
-	 * @param   string  $delimiter  key path delimiter
+	 * @param   array   $array      Array to search
+	 * @param   mixed   $path       Key path string (delimiter separated) or array of keys
+	 * @param   mixed   $default    Default value if the path is not set
+	 * @param   string  $delimiter  Key path delimiter
 	 * @return  mixed
 	 */
 	public static function path($array, $path, $default = NULL, $delimiter = NULL)
@@ -196,11 +217,11 @@ abstract class Kohana_Arr {
 	/**
 	* Set a value on an array by path.
 	*
-	* @see Arr::path()
-	* @param array   $array     Array to update
-	* @param string  $path      Path
-	* @param mixed   $value     Value to set
-	* @param string  $delimiter Path delimiter
+	* @see    Arr::path()
+	* @param  array   $array      Array to update
+	* @param  string  $path       Path
+	* @param  mixed   $value      Value to set
+	* @param  string  $delimiter  Path delimiter
 	*/
 	public static function set_path( & $array, $path, $value, $delimiter = NULL)
 	{
@@ -247,8 +268,8 @@ abstract class Kohana_Arr {
 	 *     // Fill an array with values 5, 10, 15, 20
 	 *     $values = Arr::range(5, 20);
 	 *
-	 * @param   integer $step   stepping
-	 * @param   integer $max    ending number
+	 * @param   integer  $step  Stepping
+	 * @param   integer  $max   Ending number
 	 * @return  array
 	 */
 	public static function range($step = 10, $max = 100)
@@ -275,9 +296,9 @@ abstract class Kohana_Arr {
 	 *     // Get the value "sorting" from $_GET, if it exists
 	 *     $sorting = Arr::get($_GET, 'sorting');
 	 *
-	 * @param   array   $array      array to extract from
-	 * @param   string  $key        key name
-	 * @param   mixed   $default    default value
+	 * @param   array   $array    Array to extract from
+	 * @param   string  $key      Key name
+	 * @param   mixed   $default  Default value
 	 * @return  mixed
 	 */
 	public static function get($array, $key, $default = NULL)
@@ -289,21 +310,22 @@ abstract class Kohana_Arr {
 	 * Retrieves multiple paths from an array. If the path does not exist in the
 	 * array, the default value will be added instead.
 	 *
-	 *     // Get the values "username", "password" from $_POST
-	 *     $auth = Arr::extract($_POST, array('username', 'password'));
+	 *     // Get the values "username", "password" from $user_data
+	 *     $auth = Arr::extract($user_data, array('username', 'password'));
 	 *
 	 *     // Get the value "level1.level2a" from $data
-	 *     $data = array('level1' => array('level2a' => 'value 1', 'level2b' => 'value 2'));
+	 *     $data = array('level1' => array('level2a' => 'value1', 'level2b' => 'value2'));
 	 *     Arr::extract($data, array('level1.level2a', 'password'));
 	 *
-	 * @param   array  $array    array to extract paths from
-	 * @param   array  $paths    list of path
-	 * @param   mixed  $default  default value
+	 * @param   array  $array    Array to extract paths from
+	 * @param   array  $paths    List of path
+	 * @param   mixed  $default  Default value
 	 * @return  array
 	 */
 	public static function extract($array, array $paths, $default = NULL)
 	{
 		$found = array();
+
 		foreach ($paths as $path)
 		{
 			Arr::set_path($found, $path, Arr::path($array, $path, $default));
@@ -352,9 +374,9 @@ abstract class Kohana_Arr {
 	 *     // Add an empty value to the start of a select list
 	 *     Arr::unshift($array, 'none', 'Select a value');
 	 *
-	 * @param   array   $array  array to modify
-	 * @param   string  $key    array key name
-	 * @param   mixed   $val    array value
+	 * @param   array   $array  Array to modify
+	 * @param   string  $key    Array key name
+	 * @param   mixed   $val    Array value
 	 * @return  array
 	 */
 	public static function unshift(array & $array, $key, $val)
@@ -367,8 +389,8 @@ abstract class Kohana_Arr {
 	}
 
 	/**
-	 * Recursive version of [array_map](http://php.net/array_map), applies one or more
-	 * callbacks to all elements in an array, including sub-arrays.
+	 * Recursive version of [array_map](http://php.net/array_map), applies one or
+	 * more callbacks to all elements in an array, including sub-arrays.
 	 *
 	 *     // Apply "strip_tags" to every element in the array
 	 *     $array = Arr::map('strip_tags', $array);
@@ -379,15 +401,15 @@ abstract class Kohana_Arr {
 	 *     // Apply strip_tags and $this->filter to every element
 	 *     $array = Arr::map(array('strip_tags', array($this, 'filter')), $array);
 	 *
-	 * [!!] Because you can pass an array of callbacks, if you wish to use 
+	 * [!!] Because you can pass an array of callbacks, if you wish to use
 	 * an array-form callback you must nest it in an additional array as above. 
 	 * Calling Arr::map(array($this, 'filter'), $array) will cause an error.
 	 * [!!] Unlike `array_map`, this method requires a callback and will only map
 	 * a single array.
 	 *
-	 * @param   mixed   $callbacks  array of callbacks to apply to every element in the array
-	 * @param   array   $array      array to map
-	 * @param   array   $keys       array of keys to apply to
+	 * @param   mixed   $callbacks  Array of callbacks to apply to every element in the array
+	 * @param   array   $array      Array to map
+	 * @param   array   $keys       Array of keys to apply to
 	 * @return  array
 	 */
 	public static function map($callbacks, $array, $keys = NULL)
@@ -422,7 +444,7 @@ abstract class Kohana_Arr {
 	 * overwrite previous values with the same key. Values in an indexed array
 	 * are appended, but only when they do not already exist in the result.
 	 *
-	 * Note that this does not work the same as [array_merge_recursive](http://php.net/array_merge_recursive)!
+	 * [!!] This does not work the same as [array_merge_recursive](http://php.net/array_merge_recursive)!
 	 *
 	 *     $john = array('name' => 'john', 'children' => array('fred', 'paul', 'sally', 'jane'));
 	 *     $mary = array('name' => 'mary', 'children' => array('jane'));
@@ -433,8 +455,8 @@ abstract class Kohana_Arr {
 	 *     // The output of $john will now be:
 	 *     array('name' => 'mary', 'children' => array('fred', 'paul', 'sally', 'jane'))
 	 *
-	 * @param   array  $array1      initial array
-	 * @param   array  $array2,...  array to merge
+	 * @param   array  $array1      Initial array
+	 * @param   array  $array2,...  Array to merge
 	 * @return  array
 	 */
 	public static function merge($array1, $array2)
@@ -443,7 +465,8 @@ abstract class Kohana_Arr {
 		{
 			foreach ($array2 as $key => $value)
 			{
-				if (is_array($value)
+				if (
+					is_array($value)
 					AND isset($array1[$key])
 					AND is_array($array1[$key])
 				)
@@ -475,7 +498,8 @@ abstract class Kohana_Arr {
 				{
 					foreach ($array2 as $key => $value)
 					{
-						if (is_array($value)
+						if (
+							is_array($value)
 							AND isset($array1[$key])
 							AND is_array($array1[$key])
 						)
@@ -517,8 +541,8 @@ abstract class Kohana_Arr {
 	 *     // The output of $array will now be:
 	 *     array('name' => 'jack', 'mood' => 'happy', 'food' => 'tacos')
 	 *
-	 * @param   array   $array1 master array
-	 * @param   array   $array2 input arrays that will overwrite existing values
+	 * @param   array  $array1  Master array
+	 * @param   array  $array2  Input arrays that will overwrite existing values
 	 * @return  array
 	 */
 	public static function overwrite($array1, $array2)
@@ -544,7 +568,8 @@ abstract class Kohana_Arr {
 
 	/**
 	 * Creates a callable function and parameter list from a string representation.
-	 * Note that this function does not validate the callback string.
+	 * 
+	 * [!!] This does not validate the callback string.
 	 *
 	 *     // Get the callback function and parameters
 	 *     list($func, $params) = Arr::callback('Foo::bar(apple,orange)');
@@ -552,8 +577,8 @@ abstract class Kohana_Arr {
 	 *     // Get the result of the callback
 	 *     $result = call_user_func_array($func, $params);
 	 *
-	 * @param   string  $str    callback string
-	 * @return  array   function, params
+	 * @param   string  $str  Callback string
+	 * @return  array   Function, params
 	 */
 	public static function callback($str)
 	{
@@ -601,7 +626,7 @@ abstract class Kohana_Arr {
 	 *
 	 * [!!] The keys of array values will be discarded.
 	 *
-	 * @param   array   $array  array to flatten
+	 * @param   array  $array  Array to flatten
 	 * @return  array
 	 * @since   3.0.6
 	 */
@@ -632,24 +657,49 @@ abstract class Kohana_Arr {
 	}
 
 	/**
-	 * Count the number of elements in an array or a [Countable](http://php.net/countable) object.
-	 *
-	 * @param   mixed  $array      Array or instance of Countable
-	 * @param   bool   $recursive  Whether to use recursively count the number?
-	 * @return  integer
-	 * @throws  Kohana_Exception
+	 * Rotates 2D array clockwise.
+	 * 
+	 *     $array = array(
+	 *         array('file' => 'a.png', 'size' => 14152, 'type' => 'image/png'),
+	 *         array('file' => 'b.gif', 'size' => 39631, 'type' => 'image/gif')
+	 *     );
+	 * 
+	 *     // Turns 2x3 array into 3x2 array
+	 *     $array = Arr::rotate($array);
+	 * 
+	 *     // Rotated array:
+	 *     array(
+	 *         'file' => array('a.png', 'b.gif'),
+	 *         'size' => array(14152, 39631),
+	 *         'type' => array('image/png', 'image/gif')
+	 *     );
+	 *     
+	 * @param   array    $array      Array to rotate
+	 * @param   boolean  $keep_keys  Keep the keys in the new rotated array    
+	 * @return  array
+	 * @throws  Kohana_Exception  If some sub values is not array
 	 */
-	public static function count($array, $recursive = FALSE)
+	public static function rotate($array, $keep_keys = TRUE)
 	{
-		if (is_array($array) OR (is_object($array) AND $array instanceof Countable))
+		$new_array = array();
+
+		foreach ($array as $key => $value)
 		{
-			return count($array, $recursive ? COUNT_RECURSIVE : COUNT_NORMAL);
+			if (Arr::count($value) > 0)
+			{
+				if ( ! $keep_keys)
+				{
+					$value = array_values($value);
+				}
+
+				foreach ($value as $sub_key => $sub_value)
+				{
+					$new_array[$sub_key][$key] = $sub_value;
+				}
+			}
 		}
 
-		throw new Kohana_Exception(
-			"Parameter 1 for Arr::count() must be array or object of type Countable, :type given.",
-			array(":type" => Debug::type($array))
-		);
+		return $new_array;
 	}
 
 }
