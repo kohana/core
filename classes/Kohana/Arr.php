@@ -327,7 +327,7 @@ abstract class Kohana_Arr {
 	 */
 	public static function pluck($array, $key)
 	{
-		if (version_compare(PHP_VERSION, '5.5.0', >= 0))
+		if (version_compare(PHP_VERSION, '5.5.0') >= 0)
 		{
 			return array_column($array, $key);
 		}
