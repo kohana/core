@@ -141,7 +141,7 @@ abstract class Kohana_UTF8 {
 	{
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -169,7 +169,7 @@ abstract class Kohana_UTF8 {
 
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -200,7 +200,7 @@ abstract class Kohana_UTF8 {
 
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -231,7 +231,7 @@ abstract class Kohana_UTF8 {
 
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -264,7 +264,7 @@ abstract class Kohana_UTF8 {
 
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -290,7 +290,7 @@ abstract class Kohana_UTF8 {
 	{
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -319,7 +319,7 @@ abstract class Kohana_UTF8 {
 
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -346,7 +346,7 @@ abstract class Kohana_UTF8 {
 
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -369,7 +369,7 @@ abstract class Kohana_UTF8 {
 	{
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -392,7 +392,7 @@ abstract class Kohana_UTF8 {
 	{
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -418,7 +418,7 @@ abstract class Kohana_UTF8 {
 	{
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -447,7 +447,7 @@ abstract class Kohana_UTF8 {
 	{
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -471,7 +471,7 @@ abstract class Kohana_UTF8 {
 	{
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -497,7 +497,7 @@ abstract class Kohana_UTF8 {
 	{
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -523,7 +523,7 @@ abstract class Kohana_UTF8 {
 	{
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -549,7 +549,7 @@ abstract class Kohana_UTF8 {
 	{
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -573,7 +573,7 @@ abstract class Kohana_UTF8 {
 	{
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -596,7 +596,7 @@ abstract class Kohana_UTF8 {
 	{
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -620,7 +620,7 @@ abstract class Kohana_UTF8 {
 	{
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -644,7 +644,7 @@ abstract class Kohana_UTF8 {
 	{
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -668,7 +668,7 @@ abstract class Kohana_UTF8 {
 	{
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -691,7 +691,7 @@ abstract class Kohana_UTF8 {
 	{
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -720,7 +720,7 @@ abstract class Kohana_UTF8 {
 	{
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
@@ -750,7 +750,7 @@ abstract class Kohana_UTF8 {
 	{
 		if ( ! isset(UTF8::$called[__FUNCTION__]))
 		{
-			require_once Kohana::find_file('utf8', __FUNCTION__);
+			require Kohana::find_file('utf8', __FUNCTION__);
 			// Function has been called
 			UTF8::$called[__FUNCTION__] = TRUE;
 		}
