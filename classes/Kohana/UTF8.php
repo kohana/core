@@ -39,7 +39,7 @@ abstract class Kohana_UTF8 {
 	 * @param  string $function
 	 * @return void
 	 */
-	public static function load($function)
+	protected static function _load($function)
 	{
 		if ( ! isset(UTF8::$called[$function]))
 		{
@@ -156,7 +156,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function transliterate_to_ascii($str, $case = 0)
 	{
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _transliterate_to_ascii($str, $case);
 	}
@@ -177,7 +177,7 @@ abstract class Kohana_UTF8 {
 		if (UTF8::$server_utf8)
 			return mb_strlen($str, Kohana::$charset);
 
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _strlen($str);
 	}
@@ -201,7 +201,7 @@ abstract class Kohana_UTF8 {
 		if (UTF8::$server_utf8)
 			return mb_strpos($str, $search, $offset, Kohana::$charset);
 
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _strpos($str, $search, $offset);
 	}
@@ -225,7 +225,7 @@ abstract class Kohana_UTF8 {
 		if (UTF8::$server_utf8)
 			return mb_strrpos($str, $search, $offset, Kohana::$charset);
 
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _strrpos($str, $search, $offset);
 	}
@@ -253,7 +253,7 @@ abstract class Kohana_UTF8 {
 				: mb_substr($str, $offset, $length, Kohana::$charset);
 		}
 
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _substr($str, $offset, $length);
 	}
@@ -274,7 +274,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function substr_replace($str, $replacement, $offset, $length = NULL)
 	{
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _substr_replace($str, $replacement, $offset, $length);
 	}
@@ -296,7 +296,7 @@ abstract class Kohana_UTF8 {
 		if (UTF8::$server_utf8)
 			return mb_strtolower($str, Kohana::$charset);
 
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _strtolower($str);
 	}
@@ -316,7 +316,7 @@ abstract class Kohana_UTF8 {
 		if (UTF8::$server_utf8)
 			return mb_strtoupper($str, Kohana::$charset);
 
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _strtoupper($str);
 	}
@@ -334,7 +334,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function ucfirst($str)
 	{
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _ucfirst($str);
 	}
@@ -352,7 +352,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function ucwords($str)
 	{
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _ucwords($str);
 	}
@@ -373,7 +373,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function strcasecmp($str1, $str2)
 	{
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _strcasecmp($str1, $str2);
 	}
@@ -397,7 +397,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function str_ireplace($search, $replace, $str, & $count = NULL)
 	{
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _str_ireplace($search, $replace, $str, $count);
 	}
@@ -416,7 +416,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function stristr($str, $search)
 	{
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _stristr($str, $search);
 	}
@@ -437,7 +437,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function strspn($str, $mask, $offset = NULL, $length = NULL)
 	{
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _strspn($str, $mask, $offset, $length);
 	}
@@ -458,7 +458,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function strcspn($str, $mask, $offset = NULL, $length = NULL)
 	{
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _strcspn($str, $mask, $offset, $length);
 	}
@@ -479,7 +479,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function str_pad($str, $final_str_length, $pad_str = ' ', $pad_type = STR_PAD_RIGHT)
 	{
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _str_pad($str, $final_str_length, $pad_str, $pad_type);
 	}
@@ -498,7 +498,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function str_split($str, $split_length = 1)
 	{
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _str_split($str, $split_length);
 	}
@@ -516,7 +516,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function strrev($str)
 	{
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _strrev($str);
 	}
@@ -535,7 +535,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function trim($str, $charlist = NULL)
 	{
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _trim($str, $charlist);
 	}
@@ -554,7 +554,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function ltrim($str, $charlist = NULL)
 	{
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _ltrim($str, $charlist);
 	}
@@ -573,7 +573,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function rtrim($str, $charlist = NULL)
 	{
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _rtrim($str, $charlist);
 	}
@@ -591,7 +591,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function ord($chr)
 	{
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _ord($chr);
 	}
@@ -615,7 +615,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function to_unicode($str)
 	{
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _to_unicode($str);
 	}
@@ -640,7 +640,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function from_unicode($arr)
 	{
-		static::load(__FUNCTION__);
+		UTF8::_load(__FUNCTION__);
 
 		return _from_unicode($arr);
 	}
