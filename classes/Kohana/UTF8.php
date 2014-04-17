@@ -26,7 +26,7 @@ abstract class Kohana_UTF8 {
 	/**
 	 * @var  bool  Does the server support UTF-8 natively?
 	 */
-	public static $server_utf8 = NULL;
+	public static $server_utf8;
 
 	/**
 	 * @var  array  List of called methods that have had their required file included.
@@ -175,9 +175,7 @@ abstract class Kohana_UTF8 {
 	public static function strlen($str)
 	{
 		if (UTF8::$server_utf8)
-		{
 			return mb_strlen($str, Kohana::$charset);
-		}
 
 		static::load(__FUNCTION__);
 
@@ -201,9 +199,7 @@ abstract class Kohana_UTF8 {
 	public static function strpos($str, $search, $offset = 0)
 	{
 		if (UTF8::$server_utf8)
-		{
 			return mb_strpos($str, $search, $offset, Kohana::$charset);
-		}
 
 		static::load(__FUNCTION__);
 
@@ -227,9 +223,7 @@ abstract class Kohana_UTF8 {
 	public static function strrpos($str, $search, $offset = 0)
 	{
 		if (UTF8::$server_utf8)
-		{
 			return mb_strrpos($str, $search, $offset, Kohana::$charset);
-		}
 
 		static::load(__FUNCTION__);
 
@@ -651,10 +645,4 @@ abstract class Kohana_UTF8 {
 		return _from_unicode($arr);
 	}
 
-}
-
-if (UTF8::$server_utf8 === NULL)
-{
-	// Determine if this server supports UTF-8 natively
-	UTF8::$server_utf8 = extension_loaded('mbstring');
 }
