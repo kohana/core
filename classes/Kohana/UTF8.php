@@ -34,20 +34,43 @@ abstract class Kohana_UTF8 {
 	public static $called = array();
 
 	/**
-	 * Includes function files (once)
+	 * Check extension [mbstring](http://php.net/mbstring)
+	 * and initialize [UTF8::$server_utf8].
 	 *
-	 * @param  string $function
-	 * @return void
+	 * @return bool
+	 */
+	public static function native_utf8()
+	{
+		if ( ! is_bool(UTF8::$server_utf8))
+		{
+			// Determine if this server supports UTF-8 natively
+			UTF8::$server_utf8 = extension_loaded('mbstring');
+		}
+
+		return UTF8::$server_utf8;
+	}
+
+	/**
+	 * Include once file with "utf8" function.
+	 *
+	 * @param   string  $function  Function name
+	 * @return  bool
+	 * @uses    Kohana::find_file
 	 */
 	protected static function _load($function)
 	{
 		if ( ! isset(UTF8::$called[$function]))
 		{
-			require Kohana::find_file('utf8', $function);
+			if ($file = Kohana::find_file('utf8', $function))
+			{
+				require_once $file;
+			}
 
-			// Function has been called
-			UTF8::$called[$function] = TRUE;
+			// Set loading status of function
+			UTF8::$called[$function] = ! empty($file);
 		}
+
+		return UTF8::$called[$function];
 	}
 
 	/**
@@ -58,13 +81,14 @@ abstract class Kohana_UTF8 {
 	 *     UTF8::clean($_GET); // Clean GET data
 	 *
 	 * @param   mixed   $var      Variable to clean
-	 * @param   string  $charset  Character set, defaults to Kohana::$charset
+	 * @param   string  $charset  Character set, defaults to [Kohana::$charset]
 	 * @return  mixed
 	 * @uses    Kohana::$charset
+	 * @uses    Arr::is_array
 	 */
-	public static function clean($var, $charset = NULL)
+	public static function clean($var, $charset = '')
 	{
-		if ($charset === NULL)
+		if (empty($charset))
 		{
 			// Use the application character set
 			$charset = Kohana::$charset;
@@ -83,7 +107,7 @@ abstract class Kohana_UTF8 {
 			// Remove control characters
 			$var = UTF8::strip_ascii_ctrl($var);
 
-			if ( ! UTF8::is_ascii($var) AND UTF8::$server_utf8)
+			if (UTF8::native_utf8() AND ! UTF8::is_ascii($var))
 			{
 				// Disable notices
 				$error_reporting = error_reporting(~E_NOTICE);
@@ -104,13 +128,16 @@ abstract class Kohana_UTF8 {
 	 *
 	 *     $ascii = UTF8::is_ascii($str);
 	 *
-	 * @param   mixed  $str  String or array of strings to check
+	 * @param   mixed  $str  String or array (or traversable object) of strings to check
 	 * @return  bool
+	 * @uses    Arr::is_array
 	 */
 	public static function is_ascii($str)
 	{
-		if (is_array($str))
+		if (Arr::is_array($str))
 		{
+			// Convert object into array
+			settype($str, 'array');
 			$str = implode($str);
 		}
 
@@ -174,7 +201,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function strlen($str)
 	{
-		if (UTF8::$server_utf8)
+		if (UTF8::native_utf8())
 			return mb_strlen($str, Kohana::$charset);
 
 		UTF8::_load(__FUNCTION__);
@@ -198,7 +225,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function strpos($str, $search, $offset = 0)
 	{
-		if (UTF8::$server_utf8)
+		if (UTF8::native_utf8())
 			return mb_strpos($str, $search, $offset, Kohana::$charset);
 
 		UTF8::_load(__FUNCTION__);
@@ -222,7 +249,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function strrpos($str, $search, $offset = 0)
 	{
-		if (UTF8::$server_utf8)
+		if (UTF8::native_utf8())
 			return mb_strrpos($str, $search, $offset, Kohana::$charset);
 
 		UTF8::_load(__FUNCTION__);
@@ -246,7 +273,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function substr($str, $offset, $length = NULL)
 	{
-		if (UTF8::$server_utf8)
+		if (UTF8::native_utf8())
 		{
 			return $length === NULL
 				? mb_substr($str, $offset, mb_strlen($str), Kohana::$charset)
@@ -293,7 +320,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function strtolower($str)
 	{
-		if (UTF8::$server_utf8)
+		if (UTF8::native_utf8())
 			return mb_strtolower($str, Kohana::$charset);
 
 		UTF8::_load(__FUNCTION__);
@@ -313,7 +340,7 @@ abstract class Kohana_UTF8 {
 	 */
 	public static function strtoupper($str)
 	{
-		if (UTF8::$server_utf8)
+		if (UTF8::native_utf8())
 			return mb_strtoupper($str, Kohana::$charset);
 
 		UTF8::_load(__FUNCTION__);
@@ -346,7 +373,7 @@ abstract class Kohana_UTF8 {
 	 *     $str = UTF8::ucwords($str);
 	 *
 	 * @author  Harry Fuecks <hfuecks@gmail.com>
-	 * @param   string  $str  mixed case string
+	 * @param   string  $str  Mixed case string
 	 * @return  string
 	 * @uses    Kohana::find_file
 	 */
@@ -369,7 +396,6 @@ abstract class Kohana_UTF8 {
 	 * @return  int  Less than 0 if str1 is less than str2
 	 * @return  int  Greater than 0 if str1 is greater than str2
 	 * @return  int  0 if they are equal
-	 * @uses    Kohana::find_file
 	 */
 	public static function strcasecmp($str1, $str2)
 	{
@@ -393,7 +419,6 @@ abstract class Kohana_UTF8 {
 	 * @param   integer       $count    Number of matched and replaced needles will be returned via this parameter which is passed by reference
 	 * @return  string  If the input was a string
 	 * @return  array   If the input was an array
-	 * @uses    Kohana::find_file
 	 */
 	public static function str_ireplace($search, $replace, $str, & $count = NULL)
 	{
@@ -412,7 +437,6 @@ abstract class Kohana_UTF8 {
 	 * @param   string  $str     Input string
 	 * @param   string  $search  Needle
 	 * @return  string|bool  Matched substring if found, FALSE if the substring was not found
-	 * @uses    Kohana::find_file
 	 */
 	public static function stristr($str, $search)
 	{
@@ -433,7 +457,6 @@ abstract class Kohana_UTF8 {
 	 * @param   int     $offset  Start position of the string to examine
 	 * @param   int     $length  Length of the string to examine
 	 * @return  int  Length of the initial segment that contains characters in the mask
-	 * @uses    Kohana::find_file
 	 */
 	public static function strspn($str, $mask, $offset = NULL, $length = NULL)
 	{
@@ -454,7 +477,6 @@ abstract class Kohana_UTF8 {
 	 * @param   int     $offset  Start position of the string to examine
 	 * @param   int     $length  Length of the string to examine
 	 * @return  int  Length of the initial segment that contains characters not in the mask
-	 * @uses    Kohana::find_file
 	 */
 	public static function strcspn($str, $mask, $offset = NULL, $length = NULL)
 	{
@@ -473,9 +495,8 @@ abstract class Kohana_UTF8 {
 	 * @param   string  $str               Input string
 	 * @param   int     $final_str_length  Desired string length after padding
 	 * @param   string  $pad_str           String to use as padding
-	 * @param   string  $pad_type          Padding type: STR_PAD_RIGHT, STR_PAD_LEFT, or STR_PAD_BOTH
+	 * @param   string  $pad_type          Padding type: STR_PAD_RIGHT, STR_PAD_LEFT, STR_PAD_BOTH
 	 * @return  string
-	 * @uses    Kohana::find_file
 	 */
 	public static function str_pad($str, $final_str_length, $pad_str = ' ', $pad_type = STR_PAD_RIGHT)
 	{
@@ -494,7 +515,6 @@ abstract class Kohana_UTF8 {
 	 * @param   string  $str           Input string
 	 * @param   int     $split_length  Maximum length of each chunk
 	 * @return  array
-	 * @uses    Kohana::find_file
 	 */
 	public static function str_split($str, $split_length = 1)
 	{
@@ -512,7 +532,6 @@ abstract class Kohana_UTF8 {
 	 * @author  Harry Fuecks <hfuecks@gmail.com>
 	 * @param   string  $str  String to be reversed
 	 * @return  string
-	 * @uses    Kohana::find_file
 	 */
 	public static function strrev($str)
 	{
@@ -531,7 +550,6 @@ abstract class Kohana_UTF8 {
 	 * @param   string  $str       Input string
 	 * @param   string  $charlist  String of characters to remove
 	 * @return  string
-	 * @uses    Kohana::find_file
 	 */
 	public static function trim($str, $charlist = NULL)
 	{
@@ -550,7 +568,6 @@ abstract class Kohana_UTF8 {
 	 * @param   string  $str       Input string
 	 * @param   string  $charlist  String of characters to remove
 	 * @return  string
-	 * @uses    Kohana::find_file
 	 */
 	public static function ltrim($str, $charlist = NULL)
 	{
@@ -569,7 +586,6 @@ abstract class Kohana_UTF8 {
 	 * @param   string  $str       Input string
 	 * @param   string  $charlist  String of characters to remove
 	 * @return  string
-	 * @uses    Kohana::find_file
 	 */
 	public static function rtrim($str, $charlist = NULL)
 	{
@@ -587,7 +603,6 @@ abstract class Kohana_UTF8 {
 	 * @author  Harry Fuecks <hfuecks@gmail.com>
 	 * @param   string  $chr  UTF-8 encoded character
 	 * @return  int
-	 * @uses    Kohana::find_file
 	 */
 	public static function ord($chr)
 	{
@@ -611,7 +626,6 @@ abstract class Kohana_UTF8 {
 	 *
 	 * @param   string  $str  UTF-8 encoded string
 	 * @return  array|bool  Unicode code points, FALSE if the string is invalid
-	 * @uses    Kohana::find_file
 	 */
 	public static function to_unicode($str)
 	{
@@ -625,7 +639,7 @@ abstract class Kohana_UTF8 {
 	 * Astral planes are supported i.e. the ints in the input can be > 0xFFFF.
 	 * Occurrences of the BOM are ignored. Surrogates are not allowed.
 	 *
-	 *     $str = UTF8::to_unicode($array);
+	 *     $str = UTF8::from_unicode($array);
 	 *
 	 * The Original Code is Mozilla Communicator client code.
 	 * The Initial Developer of the Original Code is Netscape Communications Corporation.
@@ -636,7 +650,6 @@ abstract class Kohana_UTF8 {
 	 * @param   array   $str  Unicode code points representing a string
 	 * @return  string  utf8  String of characters
 	 * @return  bool  FALSE if a code point cannot be found
-	 * @uses    Kohana::find_file
 	 */
 	public static function from_unicode($arr)
 	{
