@@ -495,7 +495,7 @@ abstract class Kohana_UTF8 {
 	 * @param   string  $str               Input string
 	 * @param   int     $final_str_length  Desired string length after padding
 	 * @param   string  $pad_str           String to use as padding
-	 * @param   string  $pad_type          Padding type: STR_PAD_RIGHT, STR_PAD_LEFT or STR_PAD_BOTH
+	 * @param   string  $pad_type          Padding type: STR_PAD_RIGHT, STR_PAD_LEFT, STR_PAD_BOTH
 	 * @return  string
 	 */
 	public static function str_pad($str, $final_str_length, $pad_str = ' ', $pad_type = STR_PAD_RIGHT)
