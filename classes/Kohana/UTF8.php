@@ -54,18 +54,23 @@ abstract class Kohana_UTF8 {
 	 * Include once file with "utf8" function.
 	 *
 	 * @param   string  $function  Function name
-	 * @return  void
+	 * @return  bool
 	 * @uses    Kohana::find_file
 	 */
 	protected static function _load($function)
 	{
 		if ( ! isset(UTF8::$called[$function]))
 		{
-			require_once Kohana::find_file('utf8', $function);
+			if ($file = Kohana::find_file('utf8', $function))
+			{
+				require_once $file;
+			}
 
-			// Function has been called
-			UTF8::$called[$function] = TRUE;
+			// Set loading status of function
+			UTF8::$called[$function] = ! empty($file);
 		}
+
+		return UTF8::$called[$function];
 	}
 
 	/**
@@ -634,7 +639,7 @@ abstract class Kohana_UTF8 {
 	 * Astral planes are supported i.e. the ints in the input can be > 0xFFFF.
 	 * Occurrences of the BOM are ignored. Surrogates are not allowed.
 	 *
-	 *     $str = UTF8::to_unicode($array);
+	 *     $str = UTF8::from_unicode($array);
 	 *
 	 * The Original Code is Mozilla Communicator client code.
 	 * The Initial Developer of the Original Code is Netscape Communications Corporation.
