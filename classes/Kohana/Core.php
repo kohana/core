@@ -10,14 +10,14 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2012 Kohana Team
+ * @copyright  (c) 2008-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Core {
+abstract class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.3.1';
-	const CODENAME = 'peregrinus';
+	const VERSION  = '3.3.4';
+	const CODENAME = 'bridge';
 
 	// Common environment type constants for consistency and convenience
 	const PRODUCTION  = 10;
@@ -42,7 +42,7 @@ class Kohana_Core {
 	public static $is_windows = FALSE;
 
 	/**
-	 * @var  boolean  True if [magic quotes](http://php.net/manual/en/security.magicquotes.php) is enabled.
+	 * @var  boolean  True if [magic quotes](http://php.net/security.magicquotes) is enabled.
 	 */
 	public static $magic_quotes = FALSE;
 
@@ -87,22 +87,34 @@ class Kohana_Core {
 	public static $cache_dir;
 
 	/**
-	 * @var  integer  Default lifetime for caching, in seconds, used by [Kohana::cache]. Set by [Kohana::init]
+	 * Default lifetime for caching, in seconds, 
+	 * used by [Kohana::cache]. Set by [Kohana::init].
+	 *
+	 * @var  integer
 	 */
 	public static $cache_life = 60;
 
 	/**
-	 * @var  boolean  Whether to use internal caching for [Kohana::find_file], does not apply to [Kohana::cache]. Set by [Kohana::init]
+	 * Whether to use internal caching for [Kohana::find_file],
+	 * does not apply to [Kohana::cache]. Set by [Kohana::init].
+	 *
+	 * @var  boolean
 	 */
 	public static $caching = FALSE;
 
 	/**
-	 * @var  boolean  Whether to enable [profiling](kohana/profiling). Set by [Kohana::init]
+	 * Whether to enable [profiling](kohana/profiling).
+	 * Set by [Kohana::init].
+	 *
+	 * @var  boolean
 	 */
 	public static $profiling = TRUE;
 
 	/**
-	 * @var  boolean  Enable Kohana catching and displaying PHP errors and exceptions. Set by [Kohana::init]
+	 * Enable Kohana catching and displaying PHP errors and exceptions.
+	 * Set by [Kohana::init].
+	 *
+	 * @var  boolean
 	 */
 	public static $errors = TRUE;
 
@@ -147,7 +159,10 @@ class Kohana_Core {
 	protected static $_files = array();
 
 	/**
-	 * @var  boolean  Has the file path cache changed during this execution?  Used internally when when caching is true in [Kohana::init]
+	 * Has the file path cache changed during this execution?
+	 * Used internally when when caching is true in [Kohana::init].
+	 *
+	 * @var  boolean
 	 */
 	protected static $_files_changed = FALSE;
 
@@ -259,8 +274,10 @@ class Kohana_Core {
 				}
 				catch (Exception $e)
 				{
-					throw new Kohana_Exception('Could not create cache directory :dir',
-						array(':dir' => Debug::path($settings['cache_dir'])));
+					throw new Kohana_Exception(
+						'Could not create cache directory :dir',
+						array(':dir' => Debug::path($settings['cache_dir']))
+					);
 				}
 			}
 
@@ -275,8 +292,10 @@ class Kohana_Core {
 
 		if ( ! is_writable(Kohana::$cache_dir))
 		{
-			throw new Kohana_Exception('Directory :dir must be writable',
-				array(':dir' => Debug::path(Kohana::$cache_dir)));
+			throw new Kohana_Exception(
+				'Directory :dir must be writable',
+				array(':dir' => Debug::path(Kohana::$cache_dir))
+			);
 		}
 
 		if (isset($settings['cache_life']))
@@ -384,11 +403,10 @@ class Kohana_Core {
 	/**
 	 * Reverts the effects of the `register_globals` PHP setting by unsetting
 	 * all global variables except for the default super globals (GPCS, etc),
-	 * which is a [potential security hole.][ref-wikibooks]
+	 * which is a [potential security hole][ref-wikibooks].
 	 *
 	 * This is called automatically by [Kohana::init] if `register_globals` is
 	 * on.
-	 *
 	 *
 	 * [ref-wikibooks]: http://en.wikibooks.org/wiki/PHP_Programming/Register_Globals
 	 *
@@ -399,7 +417,7 @@ class Kohana_Core {
 		if (isset($_REQUEST['GLOBALS']) OR isset($_FILES['GLOBALS']))
 		{
 			// Prevent malicious GLOBALS overload attack
-			echo "Global variable overload attack detected! Request aborted.\n";
+			echo 'Global variable overload attack detected! Request aborted.'.PHP_EOL;
 
 			// Exit with an error status
 			exit(1);
@@ -409,17 +427,20 @@ class Kohana_Core {
 		$global_variables = array_keys($GLOBALS);
 
 		// Remove the standard global variables from the list
-		$global_variables = array_diff($global_variables, array(
-			'_COOKIE',
-			'_ENV',
-			'_GET',
-			'_FILES',
-			'_POST',
-			'_REQUEST',
-			'_SERVER',
-			'_SESSION',
-			'GLOBALS',
-		));
+		$global_variables = array_diff(
+			$global_variables, 
+			array(
+				'_COOKIE',
+				'_ENV',
+				'_GET',
+				'_FILES',
+				'_POST',
+				'_REQUEST',
+				'_SERVER',
+				'_SESSION',
+				'GLOBALS'
+			)
+		);
 
 		foreach ($global_variables as $name)
 		{
@@ -488,13 +509,13 @@ class Kohana_Core {
 	 * @param   string  $class      Class name
 	 * @param   string  $directory  Directory to load from
 	 * @return  boolean
+	 * @uses    Kohana_Statical
 	 */
 	public static function auto_load($class, $directory = 'classes')
 	{
 		// Transform the class name according to PSR-0
-		$class     = ltrim($class, '\\');
-		$file      = '';
-		$namespace = '';
+		$class = ltrim($class, '\\');
+		$file = $namespace = '';
 
 		if ($last_namespace_position = strripos($class, '\\'))
 		{
@@ -509,6 +530,12 @@ class Kohana_Core {
 		{
 			// Load the class file
 			require $path;
+
+			// Initialize properties (analogue __construct() for static classes)
+			if ($class instanceof Kohana_Statical)
+			{
+				$class::initialize();
+			}
 
 			// Class has been found
 			return TRUE;
@@ -576,10 +603,10 @@ class Kohana_Core {
 			else
 			{
 				// This module is invalid, remove it
-				throw new Kohana_Exception('Attempted to load an invalid or missing module \':module\' at \':path\'', array(
-					':module' => $name,
-					':path'   => Debug::path($path),
-				));
+				throw new Kohana_Exception(
+					'Attempted to load an invalid or missing module \':module\' at \':path\'', 
+					array(':module' => $name, ':path' => Debug::path($path))
+				);
 			}
 		}
 
@@ -975,8 +1002,10 @@ class Kohana_Core {
 	}
 
 	/**
-	 * PHP error handler, converts all errors into ErrorExceptions. This handler
-	 * respects error_reporting settings.
+	 * PHP error handler, converts all errors into ErrorException. 
+	 * This handler respects [error_reporting][ref-error-reporting] settings.
+	 *
+	 * [ref-error-reporting]: http://php.net/function.error-reporting
 	 *
 	 * @throws  ErrorException
 	 * @return  TRUE
@@ -1028,7 +1057,8 @@ class Kohana_Core {
 			ob_get_level() AND ob_clean();
 
 			// Fake an exception for nice debugging
-			Kohana_Exception::handler(new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']));
+			$exception = new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']);
+			Kohana_Exception::handler($exception);
 
 			// Shutdown now to avoid a "death loop"
 			exit(1);
