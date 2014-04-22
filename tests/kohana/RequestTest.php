@@ -301,6 +301,12 @@ class Kohana_RequestTest extends Unittest_TestCase
 				TRUE,
 				'http://localhost/kohana/foo'
 			),
+			array(
+				'http://www.google.com',
+				'http',
+				TRUE,
+				'http://www.google.com'
+			),
 		);
 	}
 
@@ -310,10 +316,10 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_url
 	 * @covers Request::url
-	 * @param string $route the route to use
-	 * @param array $params params to pass to route::uri
-	 * @param string $protocol the protocol to use
-	 * @param array $expected The string we expect
+	 * @param string $uri the uri to use
+	 * @param mixed $protocol the protocol to use (string or Request object)
+	 * @param bool $is_cli whether the call is from CLI or not
+	 * @param string $expected The url string we expect
 	 */
 	public function test_url($uri, $protocol, $is_cli, $expected)
 	{
@@ -329,7 +335,14 @@ class Kohana_RequestTest extends Unittest_TestCase
 			'Kohana::$is_cli'    => $is_cli,
 		));
 
-		$this->assertEquals(Request::factory($uri)->url($protocol), $expected);
+		// issue #3967: inject the route so that we don't conflict with the application's default route
+		$route = new Route('(<controller>(/<action>))');
+		$route->defaults(array(
+			'controller' => 'welcome',
+			'action'     => 'index',
+		));
+
+		$this->assertEquals(Request::factory($uri, NULL, array($route))->url($protocol), $expected);
 	}
 
 	/**
@@ -430,8 +443,15 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function provider_uri_only_trimed_on_internal()
 	{
+		// issue #3967: inject the route so that we don't conflict with the application's default route
+		$route = new Route('(<controller>(/<action>))');
+		$route->defaults(array(
+			'controller' => 'welcome',
+			'action'     => 'index',
+		));
+
 		$old_request = Request::$initial;
-		Request::$initial = new Request(TRUE);
+		Request::$initial = new Request(TRUE, NULL, array($route));
 
 		$result = array(
 			array(

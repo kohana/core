@@ -58,6 +58,15 @@ Alternatively it is possible to set a specific client to an individual Request.
         ->client(new Request_Client_Stream)
         ->execute();
 
+## Generating URIs
+
+In Kohana 3.1, you could generate URIs by passing parameters to the `Request::uri` method. In Kohana 3.2 [Request::uri]
+just returns the URI of the current route. URIs can **NOT** be generated using the `Request::uri` method anymore.
+
+Instead, you should generate your URIs by passing your parameters to the [Route::uri] method.
+
+For more information, please read the section about [creating URLs and links using routes](routing#creating-urls-and-links-using-routes).
+
 ## HTTP cache control
 
 Kohana 3.1 introduced HTTP cache control, providing RFC 2616 fully compliant transparent caching of responses. Kohana 3.2 builds on this moving all caching logic out of `Request_Client` into `HTTP_Cache`.

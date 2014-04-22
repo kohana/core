@@ -384,9 +384,90 @@ class Kohana_TextTest extends Unittest_TestCase
 	{
 		return array
 			(
-				array('No gain, no&nbsp;pain', 'No gain, no pain'),
-				array("spaces?what'rethey?", "spaces?what'rethey?"),
-				array('', ''),
+				// A very simple widont test
+				array(
+					'A very simple&nbsp;test',
+					'A very simple test',
+				),
+				// Single word items shouldn't be changed
+				array(
+					'Test',
+					'Test',
+				),
+				// Single word after single space shouldn't be changed either
+				array(
+					' Test',
+					' Test',
+				),
+				// Single word with HTML all around
+				array(
+					'<ul><li><p>Test</p></li><ul>',
+					'<ul><li><p>Test</p></li><ul>',
+				),
+				// Single word after single space with HTML all around
+				array(
+					'<ul><li><p> Test</p></li><ul>',
+					'<ul><li><p> Test</p></li><ul>',
+				),
+				// Widont with more than one paragraph
+				array(
+					'<p>In a couple of&nbsp;paragraphs</p><p>paragraph&nbsp;two</p>',
+					'<p>In a couple of paragraphs</p><p>paragraph two</p>',
+				),
+				// a link inside a heading
+				array(
+					'<h1><a href="#">In a link inside a&nbsp;heading </a></h1>',
+					'<h1><a href="#">In a link inside a heading </a></h1>',
+				),
+				// a link followed by text
+				array(
+					'<h1><a href="#">In a link</a> followed by other&nbsp;text</h1>',
+					'<h1><a href="#">In a link</a> followed by other text</h1>',
+				),
+				// empty html, with no text inside
+				array(
+					'<h1><a href="#"></a></h1>',
+					'<h1><a href="#"></a></h1>',
+				),
+				// apparently, we don't love DIVs
+				array(
+					'<div>Divs get no love!</div>',
+					'<div>Divs get no love!</div>',
+				),
+				// we don't love PREs, either
+				array(
+					'<pre>Neither do PREs</pre>',
+					'<pre>Neither do PREs</pre>',
+				),
+				// but we love DIVs with paragraphs
+				array(
+					'<div><p>But divs with paragraphs&nbsp;do!</p></div>',
+					'<div><p>But divs with paragraphs do!</p></div>',
+				),
+				array(
+					'No gain, no&nbsp;pain',
+					'No gain, no pain',
+				),
+				array(
+					"spaces?what'rethey?",
+					"spaces?what'rethey?",
+				),
+			/*
+			 * // @issue 3499, with HTML at the end
+			 * array(
+			 * 		'with HTML at the end &nbsp;<strong>Kohana</strong>',
+			 * 		'with HTML at the end <strong>Kohana</strong>',
+			 * 	),
+			 * 	// @issue 3499, with HTML with attributes at the end
+			 * 	array(
+			 * 		'with HTML at the end:&nbsp;<a href="#" title="Kohana">Kohana</a>',
+			 * 		'with HTML at the end: <a href="#" title="Kohana">Kohana</a>',
+			 * 	),
+			 */
+				array(
+					'',
+					'',
+				),
 			);
 	}
 

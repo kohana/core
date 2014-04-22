@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
  * [Request_Client_External] Curl driver performs external requests using the
- * php-curl extention. This is the default driver for all external requests.
+ * php-curl extension. This is the default driver for all external requests.
  * 
  * @package    Kohana
  * @category   Base
@@ -33,7 +33,10 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 		// if using a request other than POST. PUT does support this method
 		// and DOES NOT require writing data to disk before putting it, if
 		// reading the PHP docs you may have got that impression. SdF
-		$options[CURLOPT_POSTFIELDS] = $request->body();
+		// This will also add a Content-Type: application/x-www-form-urlencoded header unless you override it
+		if ($body = $request->body()) {
+			$options[CURLOPT_POSTFIELDS] = $body;
+		}
 
 		// Process headers
 		if ($headers = $request->headers())
@@ -111,7 +114,7 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 
 	/**
 	 * Sets the appropriate curl request options. Uses the responding options
-	 * for POST and PUT, uses CURLOPT_CUSTOMREQUEST otherwise
+	 * for POST, uses CURLOPT_CUSTOMREQUEST otherwise
 	 * @param Request $request
 	 * @param array $options
 	 * @return array
@@ -121,9 +124,6 @@ class Kohana_Request_Client_Curl extends Request_Client_External {
 		switch ($request->method()) {
 			case Request::POST:
 				$options[CURLOPT_POST] = TRUE;
-				break;
-			case Request::PUT:
-				$options[CURLOPT_PUT] = TRUE;
 				break;
 			default:
 				$options[CURLOPT_CUSTOMREQUEST] = $request->method();

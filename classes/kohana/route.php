@@ -294,7 +294,7 @@ class Kohana_Route {
 	 * can be a valid callback or anonymous function (php 5.3+). If you use a
 	 * callback or anonymous function, your method should return an array
 	 * containing the proper keys for the route. If you want the route to be
-	 * "reversable", you need pass the route string as the third parameter.
+	 * "reversible", you need pass the route string as the third parameter.
 	 *
 	 *     $route = new Route(function($uri)
 	 *     {
@@ -456,6 +456,14 @@ class Kohana_Route {
 	 */
 	public function uri(array $params = NULL)
 	{
+		if ($params)
+		{
+			// @issue #4079 rawurlencode parameters
+			$params = array_map('rawurlencode', $params);
+			// decode slashes back, see Apache docs about AllowEncodedSlashes and AcceptPathInfo
+			$params = str_replace(array('%2F', '%5C'), array('/', '\\'), $params);
+		}
+
 		// Start with the routed URI
 		$uri = $this->_uri;
 

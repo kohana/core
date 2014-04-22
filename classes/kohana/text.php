@@ -239,7 +239,7 @@ class Kohana_Text {
 	 *      $str = Text::ucfirst('content-type'); // returns "Content-Type" 
 	 *
 	 * @param   string  $string     string to transform
-	 * @param   string  $delimiter  delemiter to use
+	 * @param   string  $delimiter  delimiter to use
 	 * @return  string
 	 */
 	public static function ucfirst($string, $delimiter = '-')
@@ -269,10 +269,13 @@ class Kohana_Text {
 	 *         'frick' => '#####',
 	 *     ));
 	 *
+	 * If argument $replacement is a single character, it will be used to replace
+	 * the characters in the badword, otherwise it will replace the badword completely
+	 *
 	 * @param   string  $str                    phrase to replace words in
 	 * @param   array   $badwords               words to replace
 	 * @param   string  $replacement            replacement string
-	 * @param   boolean $replace_partial_words  replace words across word boundries (space, period, etc)
+	 * @param   boolean $replace_partial_words  replace words across word boundaries (space, period, etc)
 	 * @return  string
 	 * @uses    UTF8::strlen
 	 */
@@ -293,12 +296,16 @@ class Kohana_Text {
 
 		$regex = '!'.$regex.'!ui';
 
+		// if $replacement is a single character: replace each of the characters of the badword with $replacement
 		if (UTF8::strlen($replacement) == 1)
 		{
-			$regex .= 'e';
-			return preg_replace($regex, 'str_repeat($replacement, UTF8::strlen(\'$1\'))', $str);
+			// issue #4819: use preg_replace_callback, preg_replace with /e modifier is depricated for PHP 5.5.0
+			$callback = create_function('$matches', 'return str_repeat("' . $replacement . '", UTF8::strlen($matches[1]));');
+
+			return preg_replace_callback($regex, $callback, $str);
 		}
 
+		// if $replacement is not a single character, fully replace the badword with $replacement
 		return preg_replace($regex, $replacement, $str);
 	}
 
@@ -531,7 +538,7 @@ class Kohana_Text {
 		{
 			if ($number / $unit >= 1)
 			{
-				// $value = the number of times the number is divisble by unit
+				// $value = the number of times the number is divisible by unit
 				$number -= $unit * ($value = (int) floor($number / $unit));
 				// Temporary var for textifying the current unit
 				$item = '';
@@ -587,20 +594,24 @@ class Kohana_Text {
 	 *
 	 *     echo Text::widont($text);
 	 *
+	 * regex courtesy of the Typogrify project
+	 * @link http://code.google.com/p/typogrify/
+	 *
 	 * @param   string  $str    text to remove widows from
 	 * @return  string
 	 */
 	public static function widont($str)
 	{
-		$str = rtrim($str);
-		$space = strrpos($str, ' ');
-
-		if ($space !== FALSE)
-		{
-			$str = substr($str, 0, $space).'&nbsp;'.substr($str, $space + 1);
-		}
-
-		return $str;
+		// use '%' as delimiter and 'x' as modifier 
+ 		$widont_regex = "%
+			((?:</?(?:a|em|span|strong|i|b)[^>]*>)|[^<>\s]) # must be proceeded by an approved inline opening or closing tag or a nontag/nonspace
+			\s+                                             # the space to replace
+			([^<>\s]+                                       # must be flollowed by non-tag non-space characters
+			\s*                                             # optional white space!
+			(</(a|em|span|strong|i|b)>\s*)*                 # optional closing inline tags with optional white space after each
+			((</(p|h[1-6]|li|dt|dd)>)|$))                   # end with a closing p, h1-6, li or the end of the string
+		%x";
+		return preg_replace($widont_regex, '$1&nbsp;$2', $str);
 	}
 
 } // End text

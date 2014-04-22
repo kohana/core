@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * A HTTP Reponse specific interface that adds the methods required
+ * A HTTP Response specific interface that adds the methods required
  * by HTTP responses. Over and above [Kohana_HTTP_Interaction], this
  * interface provides status.
  *
@@ -9,7 +9,7 @@
  * @author     Kohana Team
  * @since      3.1.0
  * @copyright  (c) 2008-2012 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
 interface Kohana_HTTP_Response extends HTTP_Message {
 

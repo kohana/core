@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
  * [Request_Client_External] HTTP driver performs external requests using the
- * php-http extention. To use this driver, ensure the following is completed
+ * php-http extension. To use this driver, ensure the following is completed
  * before executing an external request- ideally in the application bootstrap.
  * 
  * @example

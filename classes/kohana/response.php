@@ -8,7 +8,7 @@
  * @category   Base
  * @author     Kohana Team
  * @copyright  (c) 2008-2012 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  * @since      3.1.0
  */
 class Kohana_Response implements HTTP_Response {
@@ -445,8 +445,8 @@ class Kohana_Response implements HTTP_Response {
 
 			if ( ! isset($mime))
 			{
-				// Get the mime type
-				$mime = File::mime($download);
+				// Get the mime type from the extension of the download file
+				$mime = File::mime_by_ext(pathinfo($download, PATHINFO_EXTENSION));
 			}
 
 			// Open the file for reading

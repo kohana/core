@@ -327,7 +327,7 @@ class Kohana_Core {
 		}
 
 		// Determine if the extremely evil magic quotes are enabled
-		Kohana::$magic_quotes = version_compare(PHP_VERSION, '5.4') < 0 AND get_magic_quotes_gpc();
+		Kohana::$magic_quotes = (version_compare(PHP_VERSION, '5.4') < 0 AND get_magic_quotes_gpc());
 
 		// Sanitize all request variables
 		$_GET    = Kohana::sanitize($_GET);
@@ -388,7 +388,7 @@ class Kohana_Core {
 
 	/**
 	 * Reverts the effects of the `register_globals` PHP setting by unsetting
-	 * all global varibles except for the default super globals (GPCS, etc),
+	 * all global variables except for the default super globals (GPCS, etc),
 	 * which is a [potential security hole.][ref-wikibooks]
 	 *
 	 * This is called automatically by [Kohana::init] if `register_globals` is
@@ -898,7 +898,7 @@ class Kohana_Core {
 	}
 
 	/**
-	 * Get a message from a file. Messages are arbitary strings that are stored
+	 * Get a message from a file. Messages are arbitrary strings that are stored
 	 * in the `messages/` directory and reference by a key. Translation is not
 	 * performed on the returned values.  See [message files](kohana/files/messages)
 	 * for more information.
@@ -967,17 +967,36 @@ class Kohana_Core {
 
 	/**
 	 * Catches errors that are not caught by the error handler, such as E_PARSE.
+	 * 
+	 * In case of an exception, the Kohana exception handler registers
+	 * this shutdown_handler again. We'll count the number of visits to
+	 * this function using a local static function variable, and exit(1)
+	 * on the second visit.
+	 * @see issue #3931
 	 *
-	 * @uses    Kohana_Exception::handler
 	 * @return  void
 	 */
 	public static function shutdown_handler()
 	{
+		// test if we have already shutdown, if TRUE, exit(1)
+		static $shutdown_handler_visited = FALSE;
+		if ($shutdown_handler_visited)
+		{
+			exit(1);
+		}
+		$shutdown_handler_visited = TRUE;
+		
 		if ( ! Kohana::$_init)
 		{
 			// Do not execute when not active
 			return;
 		}
+
+		// Retrieve the current exception handler
+		$handler = set_exception_handler(array('Kohana_Exception', 'handler'));
+
+		// Restore it back to it's previous state
+		restore_exception_handler();
 
 		try
 		{
@@ -990,7 +1009,7 @@ class Kohana_Core {
 		catch (Exception $e)
 		{
 			// Pass the exception to the handler
-			Kohana_Exception::handler($e);
+			call_user_func($handler, $e);
 		}
 
 		if (Kohana::$errors AND $error = error_get_last() AND in_array($error['type'], Kohana::$shutdown_errors))
@@ -999,7 +1018,7 @@ class Kohana_Core {
 			ob_get_level() and ob_clean();
 
 			// Fake an exception for nice debugging
-			Kohana_Exception::handler(new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']));
+			call_user_func($handler, new ErrorException($error['message'], $error['type'], 0, $error['file'], $error['line']));
 
 			// Shutdown now to avoid a "death loop"
 			exit(1);
