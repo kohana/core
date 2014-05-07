@@ -8,7 +8,7 @@
  * @package Kohana
  * @author  Kohana Team
  * @copyright  (c) 2008-2012 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @license    http://kohanaframework.org/license
  */
 interface Kohana_Config_Writer extends Kohana_Config_Source
 {

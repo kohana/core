@@ -35,7 +35,7 @@ $application_cols = array('min', 'max', 'average', 'current');
 				<div>
 					<div class="value"><?php echo number_format($stats[$key]['time'], 6) ?> <abbr title="seconds">s</abbr></div>
 					<?php if ($key === 'total'): ?>
-						<div class="graph" style="left: <?php echo max(0, 100 - $stats[$key]['time'] / $group_stats[$group]['max']['time'] * 100) ?>%"></div>
+						<div class="graph" style="left: <?php echo $group_stats[$group]['max']['time'] ? max(0, 100 - $stats[$key]['time'] / $group_stats[$group]['max']['time'] * 100) : '0' ?>%"></div>
 					<?php endif ?>
 				</div>
 			</td>
@@ -47,7 +47,7 @@ $application_cols = array('min', 'max', 'average', 'current');
 				<div>
 					<div class="value"><?php echo number_format($stats[$key]['memory'] / 1024, 4) ?> <abbr title="kilobyte">kB</abbr></div>
 					<?php if ($key === 'total'): ?>
-						<div class="graph" style="left: <?php echo max(0, 100 - $stats[$key]['memory'] / $group_stats[$group]['max']['memory'] * 100) ?>%"></div>
+						<div class="graph" style="left: <?php echo $group_stats[$group]['max']['memory'] ? max(0, 100 - $stats[$key]['memory'] / $group_stats[$group]['max']['memory'] * 100) : '0' ?>%"></div>
 					<?php endif ?>
 				</div>
 			</td>

@@ -16,7 +16,7 @@ Every application follows the same flow:
 		* Includes each module's `init.php` file, if it exists. 
 	    * The `init.php` file can perform additional environment setup, including adding routes.
 	10. [Route::set] is called multiple times to define the [application routes](routing).
-	11. [Request::instance] is called to start processing the request.
+	11. [Request::factory] is called to start processing the request.
 		1. Checks each route that has been set until a match is found.
 		2. Creates the controller instance and passes the request to it.
 		3. Calls the [Controller::before] method.
