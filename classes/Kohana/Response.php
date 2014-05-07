@@ -1,15 +1,14 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Response wrapper. Created as the result of any [Request] execution
- * or utility method (i.e. Redirect). Implements standard HTTP
+ * or utility method (i.e. redirect). Implements standard HTTP
  * response format.
  *
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2012 Kohana Team
- * @license    http://kohanaphp.com/license
- * @since      3.1.0
+ * @copyright  (c) 2008-2014 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Response implements HTTP_Response {
 
@@ -23,7 +22,7 @@ class Kohana_Response implements HTTP_Response {
 	 *      // Create a new response with headers
 	 *      $response = Response::factory(array('status' => 200));
 	 *
-	 * @param   array    $config Setup the response object
+	 * @param   array  $config  Setup the response object
 	 * @return  Response
 	 */
 	public static function factory(array $config = array())
@@ -31,7 +30,9 @@ class Kohana_Response implements HTTP_Response {
 		return new Response($config);
 	}
 
-	// HTTP status codes and messages
+	/**
+	 * @var  array  HTTP status codes and messages
+	 */ 
 	public static $messages = array(
 		// Informational 1xx
 		100 => 'Continue',
@@ -87,7 +88,7 @@ class Kohana_Response implements HTTP_Response {
 	);
 
 	/**
-	 * @var  integer     The response http status
+	 * @var  integer  The response HTTP status
 	 */
 	protected $_status = 200;
 
@@ -97,43 +98,47 @@ class Kohana_Response implements HTTP_Response {
 	protected $_header;
 
 	/**
-	 * @var  string      The response body
+	 * @var  string  The response body
 	 */
 	protected $_body = '';
 
 	/**
-	 * @var  array       Cookies to be returned in the response
+	 * @var  array  Cookies to be returned in the response
 	 */
 	protected $_cookies = array();
 
 	/**
-	 * @var  string      The response protocol
+	 * @var  string  The response protocol
 	 */
 	protected $_protocol;
 
 	/**
 	 * Sets up the response object
 	 *
-	 * @param   array $config Setup the response object
+	 * @param   array  $config  Setup the response object
 	 * @return  void
 	 */
 	public function __construct(array $config = array())
 	{
 		$this->_header = new HTTP_Header;
 
+		if (isset($config['_header']))
+		{
+			$this->headers($config['_header']);
+			unset($config['_header']);
+		}
+
 		foreach ($config as $key => $value)
 		{
 			if (property_exists($this, $key))
 			{
-				if ($key == '_header')
-				{
-					$this->headers($value);
-				}
-				else
-				{
-					$this->$key = $value;
-				}
+				$this->$key = $value;
 			}
+		}
+
+		if (!$this->_protocol)
+		{
+			$this->_protocol = HTTP::$protocol;
 		}
 	}
 
@@ -162,10 +167,9 @@ class Kohana_Response implements HTTP_Response {
 	}
 
 	/**
-	 * Gets or sets the HTTP protocol. The standard protocol to use
-	 * is `HTTP/1.1`.
+	 * Gets or sets the HTTP protocol.
 	 *
-	 * @param   string   $protocol Protocol to set to the request/response
+	 * @param   string  $protocol  Protocol to set to the request/response
 	 * @return  mixed
 	 */
 	public function protocol($protocol = NULL)
@@ -174,11 +178,6 @@ class Kohana_Response implements HTTP_Response {
 		{
 			$this->_protocol = strtoupper($protocol);
 			return $this;
-		}
-
-		if ($this->_protocol === NULL)
-		{
-			$this->_protocol = HTTP::$protocol;
 		}
 
 		return $this->_protocol;
@@ -194,12 +193,13 @@ class Kohana_Response implements HTTP_Response {
 	 *      // Get the current status
 	 *      $status = $response->status();
 	 *
-	 * @param   integer  $status Status to set to this response
+	 * @param   integer  $status  Status to set to this response
 	 * @return  mixed
+	 * @throws  Kohana_Exception
 	 */
-	public function status($status = NULL)
+	public function status($status = 0)
 	{
-		if ($status === NULL)
+		if ($status === 0)
 		{
 			return $this->_status;
 		}
@@ -210,7 +210,10 @@ class Kohana_Response implements HTTP_Response {
 		}
 		else
 		{
-			throw new Kohana_Exception(__METHOD__.' unknown status value : :value', array(':value' => $status));
+			throw new Kohana_Exception
+				':method: unknown status value: :value',
+				array(':method' => __METHOD__, ':value' => $status)
+			);
 		}
 	}
 
@@ -231,9 +234,9 @@ class Kohana_Response implements HTTP_Response {
 	 *       // Set multiple headers
 	 *       $response->headers(array('Content-Type' => 'text/html', 'Cache-Control' => 'no-cache'));
 	 *
-	 * @param mixed $key
-	 * @param string $value
-	 * @return mixed
+	 * @param   mixed   $key
+	 * @param   string  $value
+	 * @return  mixed
 	 */
 	public function headers($key = NULL, $value = NULL)
 	{
@@ -241,7 +244,7 @@ class Kohana_Response implements HTTP_Response {
 		{
 			return $this->_header;
 		}
-		elseif (is_array($key))
+		elseif (Arr::is_array($key))
 		{
 			$this->_header->exchangeArray($key);
 			return $this;
@@ -258,14 +261,13 @@ class Kohana_Response implements HTTP_Response {
 	}
 
 	/**
-	 * Returns the length of the body for use with
-	 * content header
+	 * Returns the length of the body for use with content header
 	 *
 	 * @return  integer
 	 */
 	public function content_length()
 	{
-		return strlen($this->body());
+		return UTF8::strlen($this->_body);
 	}
 
 	/**
@@ -280,11 +282,9 @@ class Kohana_Response implements HTTP_Response {
 	 *          'expiration' => 12352234
 	 *     ));
 	 *
-	 * @param   mixed   $key    cookie name, or array of cookie values
-	 * @param   string  $value  value to set to cookie
-	 * @return  string
-	 * @return  void
-	 * @return  [Response]
+	 * @param   mixed   $key    Cookie name, or array of cookie values
+	 * @param   string  $value  Value to set to cookie
+	 * @return  mixed
 	 */
 	public function cookie($key = NULL, $value = NULL)
 	{
@@ -574,11 +574,7 @@ class Kohana_Response implements HTTP_Response {
 	}
 
 	/**
-	 * Renders the HTTP_Interaction to a string, producing
-	 *
-	 *  - Protocol
-	 *  - Headers
-	 *  - Body
+	 * Renders to a string, producing: protocol, headers, body.
 	 *
 	 * @return  string
 	 */
@@ -602,7 +598,7 @@ class Kohana_Response implements HTTP_Response {
 		// Prepare cookies
 		if ($this->_cookies)
 		{
-			if (extension_loaded('http'))
+			if (function_exists('http_build_cookie'))
 			{
 				$this->_header['set-cookie'] = http_build_cookie($this->_cookies);
 			}
@@ -630,11 +626,10 @@ class Kohana_Response implements HTTP_Response {
 	}
 
 	/**
-	 * Generate ETag
-	 * Generates an ETag from the response ready to be returned
+	 * Generates an ETag from the response ready to be returned.
 	 *
-	 * @throws Request_Exception
-	 * @return String Generated ETag
+	 * @throws  Request_Exception
+	 * @return  string  Generated ETag
 	 */
 	public function generate_etag()
 	{
