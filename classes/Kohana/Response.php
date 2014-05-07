@@ -244,14 +244,14 @@ class Kohana_Response implements HTTP_Response {
 		{
 			return $this->_header;
 		}
-		elseif (Arr::is_array($key))
+		elseif (is_array($key))
 		{
 			$this->_header->exchangeArray($key);
 			return $this;
 		}
 		elseif ($value === NULL)
 		{
-			return Arr::get($this->_header, $key);
+			return $this->_header->offsetGet($value);
 		}
 		else
 		{
