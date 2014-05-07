@@ -16,8 +16,8 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.2.2';
-	const CODENAME = 'hypoleucos';
+	const VERSION  = '3.2.3.1';
+	const CODENAME = 'turdus';
 
 	// Common environment type constants for consistency and convenience
 	const PRODUCTION  = 10;
