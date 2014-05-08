@@ -400,7 +400,7 @@ abstract class Kohana_Response implements HTTP_Response {
 			$options['delete'] = FALSE;
 
 			// Get the content size
-			$size = UTF8::strlen($this->_body);
+			$size = $this->content_length();
 
 			// Create a temporary file to hold the current response
 			$file = tmpfile();
