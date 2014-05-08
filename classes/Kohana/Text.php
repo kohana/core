@@ -649,7 +649,10 @@ class Kohana_Text {
 					// Set the browser name
 					$info['browser'] = $name;
 
-					if (preg_match('#'.preg_quote($search).'[^0-9.]*+([0-9.][0-9.a-z]*)#i', Request::$user_agent, $matches))
+					// Uses another pattern for detect IE >= 11 ("Trident/7.0; rv:11.0") 
+					$pattern = $search == 'Trident' ? '.*rv:([0-9.a-z]*)' : '[^0-9.]*+([0-9.a-z]*)';
+
+					if (preg_match('#'.preg_quote($search).$pattern.'#i', $agent, $matches))
 					{
 						// Set the version number
 						$info['version'] = $matches[1];
