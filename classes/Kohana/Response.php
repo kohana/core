@@ -1,8 +1,7 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Response wrapper. Created as the result of any [Request] execution
- * or utility method (i.e. redirect). Implements standard HTTP
- * response format.
+ * or utility method (i.e. redirect). Implements standard HTTP response format.
  *
  * @package    Kohana
  * @category   Base
@@ -10,17 +9,17 @@
  * @copyright  (c) 2008-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Response implements HTTP_Response {
+abstract class Kohana_Response implements HTTP_Response {
 
 	/**
 	 * Factory method to create a new [Response]. Pass properties
 	 * in using an associative array.
 	 *
-	 *      // Create a new response
-	 *      $response = Response::factory();
+	 *     // Create a new response
+	 *     $response = Response::factory();
 	 *
-	 *      // Create a new response with headers
-	 *      $response = Response::factory(array('status' => 200));
+	 *     // Create a new response with headers
+	 *     $response = Response::factory(array('status' => 200));
 	 *
 	 * @param   array  $config  Setup the response object
 	 * @return  Response
@@ -186,12 +185,11 @@ class Kohana_Response implements HTTP_Response {
 	/**
 	 * Sets or gets the HTTP status from this response.
 	 *
-	 *      // Set the HTTP status to 404 Not Found
-	 *      $response = Response::factory()
-	 *              ->status(404);
+	 *     // Set the HTTP status to 404 Not Found
+	 *     $response = Response::factory()->status(404);
 	 *
-	 *      // Get the current status
-	 *      $status = $response->status();
+	 *     // Get the current status
+	 *     $status = $response->status();
 	 *
 	 * @param   integer  $status  Status to set to this response
 	 * @return  mixed
@@ -210,7 +208,7 @@ class Kohana_Response implements HTTP_Response {
 		}
 		else
 		{
-			throw new Kohana_Exception
+			throw new Kohana_Exception(
 				':method: unknown status value: :value',
 				array(':method' => __METHOD__, ':value' => $status)
 			);
@@ -222,17 +220,17 @@ class Kohana_Response implements HTTP_Response {
 	 * of response methods. If chaining isn't required, direct
 	 * access to the property should be used instead.
 	 *
-	 *       // Get a header
-	 *       $accept = $response->headers('Content-Type');
+	 *      // Get a header
+	 *      $accept = $response->headers('Content-Type');
 	 *
-	 *       // Set a header
-	 *       $response->headers('Content-Type', 'text/html');
+	 *      // Set a header
+	 *      $response->headers('Content-Type', 'text/html');
 	 *
-	 *       // Get all headers
-	 *       $headers = $response->headers();
+	 *      // Get all headers
+	 *      $headers = $response->headers();
 	 *
-	 *       // Set multiple headers
-	 *       $response->headers(array('Content-Type' => 'text/html', 'Cache-Control' => 'no-cache'));
+	 *      // Set multiple headers
+	 *      $response->headers(array('Content-Type' => 'text/html', 'Cache-Control' => 'no-cache'));
 	 *
 	 * @param   mixed   $key
 	 * @param   string  $value
@@ -253,11 +251,9 @@ class Kohana_Response implements HTTP_Response {
 		{
 			return $this->_header->offsetGet($value);
 		}
-		else
-		{
-			$this->_header[$key] = $value;
-			return $this;
-		}
+
+		$this->_header[$key] = $value;
+		return $this;
 	}
 
 	/**
@@ -278,8 +274,8 @@ class Kohana_Response implements HTTP_Response {
 	 *
 	 *     // Set a cookie to the response
 	 *     $response->cookie('session', array(
-	 *          'value' => $value,
-	 *          'expiration' => 12352234
+	 *         'value' => $value,
+	 *         'expiration' => 12352234
 	 *     ));
 	 *
 	 * @param   mixed   $key    Cookie name, or array of cookie values
@@ -359,16 +355,17 @@ class Kohana_Response implements HTTP_Response {
 	}
 
 	/**
-	 * Send file download as the response. All execution will be halted when
-	 * this method is called! Use TRUE for the filename to send the current
-	 * response as the file content. The third parameter allows the following
-	 * options to be set:
+	 * Send file download as the response.
+	 * Use TRUE for the filename to send the current response as the file content.
+	 * The third parameter allows the following options to be set:
 	 *
 	 * Type      | Option    | Description                        | Default Value
 	 * ----------|-----------|------------------------------------|--------------
 	 * `boolean` | inline    | Display inline instead of download | `FALSE`
 	 * `string`  | mime_type | Manual mime type                   | Automatic
 	 * `boolean` | delete    | Delete the file after sending      | `FALSE`
+	 *
+	 * [!!] No further processing can be done after this method is called!
 	 *
 	 * Download a file that already exists:
 	 *
@@ -379,55 +376,37 @@ class Kohana_Response implements HTTP_Response {
 	 *     $request->response($content);
 	 *     $request->send_file(TRUE, $filename);
 	 *
-	 * [!!] No further processing can be done after this method is called!
-	 *
-	 * @param   string  $filename  Filename with path, or TRUE for the current response
-	 * @param   string  $download  Downloaded file name
-	 * @param   array   $options   Additional options
+	 * @param   string|bool  $filename  Filename with path, or TRUE for the current response
+	 * @param   string       $download  Downloaded file name
+	 * @param   array        $options   Additional options
 	 * @return  void
 	 * @throws  Kohana_Exception
 	 * @uses    File::mime_by_ext
-	 * @uses    File::mime
-	 * @uses    Request::send_headers
+	 * @uses    UTF8::strlen
 	 */
-	public function send_file($filename, $download = NULL, array $options = array())
+	public function send_file($filename = TRUE, $download = NULL, array $options = array())
 	{
-		if (isset($options['mime_type']))
-		{
-			// The mime-type has been manually set
-			$mime = $options['mime_type'];
-		}
-
 		if ($filename === TRUE)
 		{
 			if (empty($download))
 			{
-				throw new Kohana_Exception('Download name must be provided for streaming files');
+				throw new Kohana_Exception(
+					':method: download name must be provided for streaming files',
+					array(':method' => __METHOD__)
+				);
 			}
 
 			// Temporary files will automatically be deleted
 			$options['delete'] = FALSE;
 
-			if ( ! isset($mime))
-			{
-				// Guess the mime using the file extension
-				$mime = File::mime_by_ext(pathinfo($download, PATHINFO_EXTENSION));
-			}
-
-			// Force the data to be rendered if
-			$file_data = (string) $this->_body;
-
 			// Get the content size
-			$size = strlen($file_data);
+			$size = UTF8::strlen($this->_body);
 
 			// Create a temporary file to hold the current response
 			$file = tmpfile();
 
 			// Write the current response into the file
-			fwrite($file, $file_data);
-
-			// File data is no longer needed
-			unset($file_data);
+			fwrite($file, $this->_body);
 		}
 		else
 		{
@@ -442,12 +421,6 @@ class Kohana_Response implements HTTP_Response {
 
 			// Get the file size
 			$size = filesize($filename);
-
-			if ( ! isset($mime))
-			{
-				// Get the mime type from the extension of the download file
-				$mime = File::mime_by_ext(pathinfo($download, PATHINFO_EXTENSION));
-			}
 
 			// Open the file for reading
 			$file = fopen($filename, 'rb');
@@ -467,11 +440,11 @@ class Kohana_Response implements HTTP_Response {
 		// Calculate byte range to download.
 		list($start, $end) = $this->_calculate_byte_range($size);
 
-		if (isset($options['resumable']) AND $options['resumable'])
+		if (isset($options['resumable']))
 		{
 			if ($start > 0 OR $end < ($size - 1))
 			{
-				// Partial Content
+				// Partial content
 				$this->_status = 206;
 			}
 
@@ -480,23 +453,34 @@ class Kohana_Response implements HTTP_Response {
 			$this->_header['accept-ranges'] = 'bytes';
 		}
 
+		if (isset($options['mime_type']))
+		{
+			// The mime-type has been manually set
+			$mime = $options['mime_type'];
+		}
+		else
+		{
+			// Guess the mime using the file extension
+			$mime = File::mime_by_ext(pathinfo($download, PATHINFO_EXTENSION));
+		}
+
 		// Set the headers for a download
 		$this->_header['content-disposition'] = $disposition.'; filename="'.$download.'"';
 		$this->_header['content-type']        = $mime;
 		$this->_header['content-length']      = (string) ($end - $start + 1);
 
-		if (Request::user_agent('browser') === 'Internet Explorer')
+		if (Request::user_agent('browser') == 'Internet Explorer')
 		{
 			// Naturally, IE does not act like a real browser...
 			if (Request::initial()->secure())
 			{
-				// http://support.microsoft.com/kb/316431
+				// @link http://support.microsoft.com/kb/316431
 				$this->_header['pragma'] = $this->_header['cache-control'] = 'public';
 			}
 
 			if (version_compare(Request::user_agent('version'), '8.0') >= 0)
 			{
-				// http://ajaxian.com/archives/ie-8-security
+				// @link http://ajaxian.com/archives/ie-8-security
 				$this->_header['x-content-type-options'] = 'nosniff';
 			}
 		}
@@ -504,13 +488,13 @@ class Kohana_Response implements HTTP_Response {
 		// Send all headers now
 		$this->send_headers();
 
-	        // Flush all output buffers
-	        $levels = ob_get_level();
-	        while ($levels)
-	        {
-	            ob_end_flush();
-	            $levels--;
-	        }
+		// Flush all output buffers
+		$levels = ob_get_level();
+		while ($levels)
+		{
+			ob_end_flush();
+			$levels--;
+		}
 
 		// Manually stop execution
 		ignore_user_abort(TRUE);
@@ -526,8 +510,14 @@ class Kohana_Response implements HTTP_Response {
 
 		fseek($file, $start);
 
-		while (connection_aborted() == 0 AND ! feof($file) AND ($pos = ftell($file)) <= $end)
+		while ( ! connection_aborted() AND ! feof($file))
 		{
+			$pos = ftell($file);
+			if ($pos > $end)
+			{
+				break;
+			}
+            
 			if ($pos + $block > $end)
 			{
 				// Don't read past the buffer.
@@ -560,7 +550,6 @@ class Kohana_Response implements HTTP_Response {
 				{
 					// Add this exception to the log and check write
 					Kohana::$log->add(Log::ERROR, $error)->write();
-						
 				}
 
 				// Do NOT display the exception, it will corrupt the output!
@@ -625,14 +614,17 @@ class Kohana_Response implements HTTP_Response {
 	/**
 	 * Generates an ETag from the response ready to be returned.
 	 *
-	 * @throws  Request_Exception
 	 * @return  string  Generated ETag
+	 * @throws  Request_Exception
 	 */
 	public function generate_etag()
 	{
-	    if ($this->_body === '')
+	    if (empty($this->_body))
 		{
-			throw new Request_Exception('No response yet associated with request - cannot auto generate resource ETag');
+			throw new Request_Exception(
+				':method: no response yet associated with request - cannot auto generate resource ETag',
+				array(':method' => __METHOD__)
+			);
 		}
 
 		// Generate a unique hash for the response
@@ -640,11 +632,10 @@ class Kohana_Response implements HTTP_Response {
 	}
 
 	/**
-	 * Parse the byte ranges from the HTTP_RANGE header used for
-	 * resumable downloads.
+	 * Parse the byte ranges from the HTTP_RANGE header used for resumable downloads.
 	 *
-	 * @link   http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
-	 * @return array|FALSE
+	 * @return  array|bool
+	 * @link    http://w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35
 	 */
 	protected function _parse_byte_range()
 	{
@@ -653,8 +644,13 @@ class Kohana_Response implements HTTP_Response {
 			return FALSE;
 		}
 
-		// TODO, speed this up with the use of string functions.
-		preg_match_all('/(-?[0-9]++(?:-(?![0-9]++))?)(?:-?([0-9]++))?/', $_SERVER['HTTP_RANGE'], $matches, PREG_SET_ORDER);
+		// @todo Speed up with the use of string functions.
+		preg_match_all(
+			'/(-?[0-9]++(?:-(?![0-9]++))?)(?:-?([0-9]++))?/',
+			$_SERVER['HTTP_RANGE'],
+			$matches,
+			PREG_SET_ORDER
+		);
 
 		return $matches[0];
 	}
