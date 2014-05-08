@@ -587,7 +587,7 @@ class Kohana_Response implements HTTP_Response {
 		}
 
 		// Set the content length
-		$this->headers('content-length', (string) $this->content_length());
+		$this->_header['content-length'] = $this->content_length();
 
 		// If Kohana expose, set the user-agent
 		if (Kohana::$expose)
@@ -609,8 +609,7 @@ class Kohana_Response implements HTTP_Response {
 				// Parse each
 				foreach ($this->_cookies as $key => $value)
 				{
-					$string = $key.'='.$value['value'].'; expires='.date('l, d M Y H:i:s T', $value['expiration']);
-					$cookies[] = $string;
+					$cookies[] = $key.'='.$value['value'].'; expires='.date(DATE_COOKIE, $value['expiration']);
 				}
 
 				// Create the cookie string
