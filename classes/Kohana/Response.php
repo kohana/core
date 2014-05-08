@@ -381,18 +381,18 @@ class Kohana_Response implements HTTP_Response {
 	 *
 	 * [!!] No further processing can be done after this method is called!
 	 *
-	 * @param   string  $filename   filename with path, or TRUE for the current response
-	 * @param   string  $download   downloaded file name
-	 * @param   array   $options    additional options
+	 * @param   string  $filename  Filename with path, or TRUE for the current response
+	 * @param   string  $download  Downloaded file name
+	 * @param   array   $options   Additional options
 	 * @return  void
 	 * @throws  Kohana_Exception
 	 * @uses    File::mime_by_ext
 	 * @uses    File::mime
 	 * @uses    Request::send_headers
 	 */
-	public function send_file($filename, $download = NULL, array $options = NULL)
+	public function send_file($filename, $download = NULL, array $options = array())
 	{
-		if ( ! empty($options['mime_type']))
+		if (isset($options['mime_type']))
 		{
 			// The mime-type has been manually set
 			$mime = $options['mime_type'];
@@ -455,18 +455,19 @@ class Kohana_Response implements HTTP_Response {
 
 		if ( ! is_resource($file))
 		{
-			throw new Kohana_Exception('Could not read file to send: :file', array(
-				':file' => $download,
-			));
+			throw new Kohana_Exception(
+				':method: Could not read file to send: :file', 
+				array(':method' => __METHOD__, ':file' => $download)
+			);
 		}
 
 		// Inline or download?
-		$disposition = empty($options['inline']) ? 'attachment' : 'inline';
+		$disposition = isset($options['inline']) ? 'attachment' : 'inline';
 
 		// Calculate byte range to download.
 		list($start, $end) = $this->_calculate_byte_range($size);
 
-		if ( ! empty($options['resumable']))
+		if (isset($options['resumable']))
 		{
 			if ($start > 0 OR $end < ($size - 1))
 			{
@@ -482,7 +483,7 @@ class Kohana_Response implements HTTP_Response {
 		// Set the headers for a download
 		$this->_header['content-disposition'] = $disposition.'; filename="'.$download.'"';
 		$this->_header['content-type']        = $mime;
-		$this->_header['content-length']      = (string) (($end - $start) + 1);
+		$this->_header['content-length']      = (string) ($end - $start + 1);
 
 		if (Request::user_agent('browser') === 'Internet Explorer')
 		{
@@ -503,11 +504,13 @@ class Kohana_Response implements HTTP_Response {
 		// Send all headers now
 		$this->send_headers();
 
-		while (ob_get_level())
-		{
-			// Flush all output buffers
-			ob_end_flush();
-		}
+	        // Flush all output buffers
+	        $levels = ob_get_level();
+	        while ($levels)
+	        {
+	            ob_end_flush();
+	            $levels--;
+	        }
 
 		// Manually stop execution
 		ignore_user_abort(TRUE);
@@ -544,7 +547,7 @@ class Kohana_Response implements HTTP_Response {
 		// Close the file
 		fclose($file);
 
-		if ( ! empty($options['delete']))
+		if (isset($options['delete']))
 		{
 			try
 			{
