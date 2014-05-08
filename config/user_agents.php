@@ -49,6 +49,7 @@ return array(
 		'Opera'             => 'Opera',
 		'MSIE'              => 'Internet Explorer',
 		'Internet Explorer' => 'Internet Explorer',
+		'Trident'           => 'Internet Explorer', // >= 8
 		'Shiira'            => 'Shiira',
 		'Firefox'           => 'Firefox',
 		'Chimera'           => 'Chimera',
@@ -100,10 +101,12 @@ return array(
 		'facebookexternalhit' => 'Facebook',
 		'slurp'               => 'Inktomi Slurp',
 		'yahoo'               => 'Yahoo',
-		'askjeeves'           => 'AskJeeves',
+		'jeeves'              => 'Ask Jeeves',
 		'fastcrawler'         => 'FastCrawler',
 		'infoseek'            => 'InfoSeek Robot 1.0',
 		'lycos'               => 'Lycos',
+		'ia_archiver'         => 'Alexa',
+		'yandex'              => 'Yandex',
 	),
 
 );
