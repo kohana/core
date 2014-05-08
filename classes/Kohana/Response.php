@@ -411,7 +411,7 @@ class Kohana_Response implements HTTP_Response {
 			if ( ! isset($mime))
 			{
 				// Guess the mime using the file extension
-				$mime = File::mime_by_ext(strtolower(pathinfo($download, PATHINFO_EXTENSION)));
+				$mime = File::mime_by_ext(pathinfo($download, PATHINFO_EXTENSION));
 			}
 
 			// Force the data to be rendered if
@@ -462,12 +462,12 @@ class Kohana_Response implements HTTP_Response {
 		}
 
 		// Inline or download?
-		$disposition = isset($options['inline']) ? 'attachment' : 'inline';
+		$disposition = isset($options['inline']) ? 'inline' : 'attachment';
 
 		// Calculate byte range to download.
 		list($start, $end) = $this->_calculate_byte_range($size);
 
-		if (isset($options['resumable']))
+		if (isset($options['resumable']) AND $options['resumable'])
 		{
 			if ($start > 0 OR $end < ($size - 1))
 			{
@@ -488,13 +488,13 @@ class Kohana_Response implements HTTP_Response {
 		if (Request::user_agent('browser') === 'Internet Explorer')
 		{
 			// Naturally, IE does not act like a real browser...
-			if (Request::$initial->secure())
+			if (Request::initial()->secure())
 			{
 				// http://support.microsoft.com/kb/316431
 				$this->_header['pragma'] = $this->_header['cache-control'] = 'public';
 			}
 
-			if (version_compare(Request::user_agent('version'), '8.0', '>='))
+			if (version_compare(Request::user_agent('version'), '8.0') >= 0)
 			{
 				// http://ajaxian.com/archives/ie-8-security
 				$this->_header['x-content-type-options'] = 'nosniff';
@@ -521,16 +521,13 @@ class Kohana_Response implements HTTP_Response {
 			set_time_limit(0);
 		}
 
-		// Send data in 16kb blocks
-		$block = 1024 * 16;
+		// Send data in 16kb (1024*16) blocks
+		$block = 16384;
 
 		fseek($file, $start);
 
-		while ( ! feof($file) AND ($pos = ftell($file)) <= $end)
+		while (connection_aborted() == 0 AND ! feof($file) AND ($pos = ftell($file)) <= $end)
 		{
-			if (connection_aborted())
-				break;
-
 			if ($pos + $block > $end)
 			{
 				// Don't read past the buffer.
@@ -547,7 +544,7 @@ class Kohana_Response implements HTTP_Response {
 		// Close the file
 		fclose($file);
 
-		if (isset($options['delete']))
+		if (isset($options['delete']) AND $options['delete'])
 		{
 			try
 			{
@@ -559,13 +556,11 @@ class Kohana_Response implements HTTP_Response {
 				// Create a text version of the exception
 				$error = Kohana_Exception::text($e);
 
-				if (is_object(Kohana::$log))
+				if (Kohana::$log instanceof Log)
 				{
-					// Add this exception to the log
-					Kohana::$log->add(Log::ERROR, $error);
-
-					// Make sure the logs are written
-					Kohana::$log->write();
+					// Add this exception to the log and check write
+					Kohana::$log->add(Log::ERROR, $error)->write();
+						
 				}
 
 				// Do NOT display the exception, it will corrupt the output!
