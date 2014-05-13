@@ -70,8 +70,9 @@ class Kohana_Cookie {
 		{
 			// Separate the salt and the value
 			list ($hash, $value) = explode('~', $cookie, 2);
-
-			if (Cookie::salt($key, $value) === $hash)
+			$expected = Cookie::salt($key, $value);
+			
+			if (Cookie::compare($expected, $hash))
 			{
 				// Cookie signature is valid
 				return $value;
@@ -82,6 +83,20 @@ class Kohana_Cookie {
 		}
 
 		return $default;
+	}
+	
+	/**
+	 * Compare two hashes in a time-invariant manner.
+	 * Prevents cryptographic side-channel attacks (timing attacks, specifically)
+	 */
+	public static function compare($a, $b) 
+	{
+		$diff = strlen($a) ^ strlen($b);
+		for($i = 0; $i < strlen($a) && $i < strlen($b); $i++)
+		{
+			$diff |= ord($a[$i]) ^ ord($b[$i]);
+		}
+		return $diff === 0; 
 	}
 
 	/**
