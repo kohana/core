@@ -85,6 +85,30 @@ class Kohana_I18n {
 	}
 
 	/**
+	* Get and set the source language.
+	*
+	*     // Get the current source language
+	*     $lang = I18n::source();
+	*
+	*     // Change the current source language to Spanish
+	*     I18n::source('es-es');
+	*
+	* @param   string  $lang   new language setting
+	* @return  string
+	* @since   3.3.2
+	*/
+	public static function source($source = NULL)
+	{
+	       if ($source)
+	       {
+		       // Normalize the language
+		       I18n::$source = strtolower(str_replace(array(' ', '_'), '-', $source));
+	       }
+
+	       return I18n::$source;
+	}
+	
+	/**
 	 * Returns the translation table for a given language.
 	 *
 	 *     // Get all defined Spanish messages
@@ -152,8 +176,13 @@ if ( ! function_exists('__'))
 	 * @param   string  $lang   source language
 	 * @return  string
 	 */
-	function __($string, array $values = NULL, $lang = 'en-us')
+	function __($string, array $values = NULL, $lang = null)
 	{
+		if (!$lang)
+		{
+			$lang = I18n::$source;
+		}
+
 		if ($lang !== I18n::$lang)
 		{
 			// The message and target languages are different
