@@ -71,7 +71,7 @@ class Kohana_Cookie {
 			// Separate the salt and the value
 			list ($hash, $value) = explode('~', $cookie, 2);
 
-			if (Cookie::salt($key, $value) === $hash)
+			if (Security::slow_equals(Cookie::salt($key, $value), $hash))
 			{
 				// Cookie signature is valid
 				return $value;
