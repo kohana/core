@@ -456,9 +456,20 @@ class Kohana_Request implements HTTP_Request {
 	 */
 	public static function process(Request $request, $routes = NULL)
 	{
+		// Preroute routines
+		// 
+		// Get the URI from the Request
+		$uri = trim($request->uri(), '/');
+
+		$params = NULL;
+		if (($uri    = Route::preroute_exec($uri, $params)) === FALSE)
+		{
+		    return NULL;
+		}
+		$request->uri($uri);
+
 		// Load routes
 		$routes = (empty($routes)) ? Route::all() : $routes;
-		$params = NULL;
 
 		foreach ($routes as $name => $route)
 		{

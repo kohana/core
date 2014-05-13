@@ -75,6 +75,11 @@ class Kohana_Route {
 	protected static $_routes = array();
 
 	/**
+	 * @var  array  route filters
+	 */
+	protected static $_preroutes = array();
+		
+	/**
 	 * Stores a named route and returns it. The "action" will always be set to
 	 * "index" if it is not defined.
 	 *
@@ -479,7 +484,103 @@ class Kohana_Route {
 
 		return $params;
 	}
+	
+	/**
+	 * Preroute to be run before route matching:
+	 *
+	 * @throws  Kohana_Exception
+	 * @param   string  $name           route name
+	 * @param   string  $uri            URI pattern
+	 * @param   array   $regex          regex patterns for route keys
+	 * @param   array   $callback   callback string, array, or closure
+	 * @return  $this
+	 */
+	public static function preroute($name, $segment, $regex, $callback, array $defaults = NULL)
+	{
+		$preroute = array();
+		$preroute['name'] = $name;
+		if (!empty($segment))
+		{
+			$preroute['segment'] = $segment;
+		}
 
+		if (!empty($regex))
+		{
+			$preroute['regex'] = $regex;
+		}
+
+		if (!is_callable($callback))
+		{
+			throw new Kohana_Exception('Invalid preroute::callback specified');
+		}
+
+		$preroute['callback'] = $callback;
+
+		$preroute['defaults'] = $defaults;
+
+		// Store the compiled regex locally
+		$preroute['route_regex'] = Route::compile($segment, $regex);
+		$preroute['route_regex'] = str_replace('$', '', $preroute['route_regex']);
+
+		self::$_preroutes[$name] = $preroute;
+	}
+
+	/**
+	 * Preroute matching to be run before route matching:
+	 *
+	 * @throws  Kohana_Exception
+	 * @param   array   $callback   callback string, array, or closure
+	 * @return  $this
+	 */
+	public static function preroute_exec($uri, &$params)
+	{
+		if (count(self::$_preroutes) == 0)
+		{
+			return $uri;
+		}
+
+		$original_uri = $uri;
+
+		foreach (self::$_preroutes as $preroute)
+		{
+			if (!preg_match($preroute['route_regex'], $uri, $matches))
+			{
+				continue;
+			}
+
+			$params = $preroute['defaults'];
+
+			foreach ($matches as $key => $value)
+			{
+				if (is_int($key))
+				{
+					// Skip all unnamed keys
+					continue;
+				}
+
+				// Set the value for all matched keys
+				$params[$key] = $value;
+			}
+
+			call_user_func($preroute['callback'], $params);
+
+			if (mb_strlen($uri) == mb_strlen($matches[0]))
+			{
+				$uri = '';
+			}
+			else
+			{
+				$uri = mb_substr($uri, mb_strlen($matches[0]));
+			}
+		}
+
+		if ($uri != $original_uri AND $uri != '' AND mb_substr($uri, 0, 1) != '/')
+		{
+			return FALSE;
+		}
+		return $uri;
+	}
+	
 	/**
 	 * Returns whether this route is an external route
 	 * to a remote controller.
@@ -509,6 +610,17 @@ class Kohana_Route {
 	 */
 	public function uri(array $params = NULL)
 	{
+		if (is_array($params))
+		{
+			foreach ($params as $key => $value)
+			{
+				if ($value == '')
+				{
+					unset($params[$key]);
+				}
+			}
+		}
+
 		$defaults = $this->_defaults;
 
 		/**
