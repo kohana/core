@@ -3,6 +3,7 @@
 return array(
 
 	'platform' => array(
+		'windows nt 6.3' => 'Windows 8.1',
 		'windows nt 6.2' => 'Windows 8',
 		'windows nt 6.1' => 'Windows 7',
 		'windows nt 6.0' => 'Windows Vista',
@@ -49,6 +50,7 @@ return array(
 		'Opera'             => 'Opera',
 		'MSIE'              => 'Internet Explorer',
 		'Internet Explorer' => 'Internet Explorer',
+		'Trident'           => 'Internet Explorer', // must be checked before Mozilla
 		'Shiira'            => 'Shiira',
 		'Firefox'           => 'Firefox',
 		'Chimera'           => 'Chimera',
@@ -107,3 +109,4 @@ return array(
 	),
 
 );
+
