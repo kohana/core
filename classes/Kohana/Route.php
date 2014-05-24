@@ -397,9 +397,8 @@ class Kohana_Route {
 	}
 
 	/**
-	 * Tests if the route matches a given Request. A successful match will return
-	 * all of the routed parameters as an array. A failed match will return
-	 * boolean FALSE.
+	 * Tests if the route matches a given [Request]. A successful match will return
+	 * all of the routed parameters as an array. A failed match will return FALSE.
 	 *
 	 *     // Params: controller = users, action = edit, id = 10
 	 *     $params = $route->matches(Request::factory('users/edit/10'));
@@ -411,9 +410,8 @@ class Kohana_Route {
 	 *         // Parse the parameters
 	 *     }
 	 *
-	 * @param   Request $request  Request object to match
-	 * @return  array             on success
-	 * @return  FALSE             on failure
+	 * @param   Request  $request  Request object to match
+	 * @return  array|bool  An array on success or FALSE
 	 */
 	public function matches(Request $request)
 	{
@@ -454,7 +452,8 @@ class Kohana_Route {
 		if ( ! empty($params['directory']))
 		{
 			// PSR-0: Replace underscores with spaces, run ucwords, then replace underscore
-			$params['directory'] = str_replace(' ', '_', ucwords(str_replace('_', ' ', $params['directory'])));
+            		$separators = array('/' => '/ ', '\\' => '\\ ', '_' => '_ ');
+        		 $params['directory'] = strtr(ucwords(strtr($params['directory'], $separators)), array_flip($separators));
 		}
 
 		if ($this->_filters)
