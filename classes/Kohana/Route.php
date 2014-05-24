@@ -453,7 +453,7 @@ class Kohana_Route {
 		{
 			// PSR-0: Replace underscores with spaces, run ucwords, then replace underscore
             		$separators = array('/' => '/ ', '\\' => '\\ ', '_' => '_ ');
-        		 $params['directory'] = strtr(ucwords(strtr($params['directory'], $separators)), array_flip($separators));
+        		$params['directory'] = strtr(ucwords(strtr($params['directory'], $separators)), array_flip($separators));
 		}
 
 		if ($this->_filters)
