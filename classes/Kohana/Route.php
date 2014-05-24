@@ -451,7 +451,7 @@ class Kohana_Route {
 
 		if ( ! empty($params['directory']))
 		{
-			// PSR-0: Replace underscores with spaces, run ucwords, then replace underscore
+			// PSR-0: Make first character of directory names uppercase
             		$separators = array('/' => '/ ', '\\' => '\\ ', '_' => '_ ');
         		$params['directory'] = strtr(ucwords(strtr($params['directory'], $separators)), array_flip($separators));
 		}
