@@ -78,7 +78,7 @@ class Kohana_Route {
 	 * @var  array  route filters
 	 */
 	protected static $_preroutes = array();
-		
+
 	/**
 	 * Stores a named route and returns it. The "action" will always be set to
 	 * "index" if it is not defined.
@@ -484,34 +484,39 @@ class Kohana_Route {
 
 		return $params;
 	}
-	
+
 	/**
 	 * Preroute to be run before route matching:
 	 *
 	 * @throws  Kohana_Exception
 	 * @param   string  $name           route name
-	 * @param   string  $uri            URI pattern
+	 * @param   string  $segment        URI pattern
 	 * @param   array   $regex          regex patterns for route keys
-	 * @param   array   $callback   callback string, array, or closure
+	 * @param   array   $callback       callback string
+	 * @param   array   $defaults       array of default values
+	 * @param   array   $purge          purge uri if the parameters are identical to the default values
 	 * @return  $this
 	 */
-	public static function preroute($name, $segment, $regex, $callback, array $defaults = NULL)
+	public static function preroute($name, $segment, $regex, $callback, array $defaults = NULL, $purge = TRUE)
 	{
-		$preroute = array();
-		$preroute['name'] = $name;
-		if (!empty($segment))
+		$preroute = array(
+		    'name' => $name,
+		    'purge' => $purge,
+		);
+
+		if ( ! empty($segment))
 		{
 			$preroute['segment'] = $segment;
 		}
 
-		if (!empty($regex))
+		if ( ! empty($regex))
 		{
 			$preroute['regex'] = $regex;
 		}
 
-		if (!is_callable($callback))
+		if ( ! is_string($callback))
 		{
-			throw new Kohana_Exception('Invalid preroute::callback specified');
+			throw new Kohana_Exception('Invalid preroute::with the function body of callback specified ');
 		}
 
 		$preroute['callback'] = $callback;
@@ -529,21 +534,21 @@ class Kohana_Route {
 	 * Preroute matching to be run before route matching:
 	 *
 	 * @throws  Kohana_Exception
-	 * @param   array   $callback   callback string, array, or closure
+	 * @param   array   $uri      URI of the request
+	 * @param   array   $params   An array of params to pass to the request
 	 * @return  $this
 	 */
 	public static function preroute_exec($uri, &$params)
 	{
+		// If we not have preroutes do nothing
 		if (count(self::$_preroutes) == 0)
-		{
 			return $uri;
-		}
 
 		$original_uri = $uri;
 
 		foreach (self::$_preroutes as $preroute)
 		{
-			if (!preg_match($preroute['route_regex'], $uri, $matches))
+			if ( ! preg_match($preroute['route_regex'], $uri, $matches))
 			{
 				continue;
 			}
@@ -562,8 +567,10 @@ class Kohana_Route {
 				$params[$key] = $value;
 			}
 
-			call_user_func($preroute['callback'], $params);
+			$callback = create_function('$params', $preroute['callback']);
+			call_user_func($callback, $params);
 
+			// Removing matches from the uri
 			if (mb_strlen($uri) == mb_strlen($matches[0]))
 			{
 				$uri = '';
@@ -574,13 +581,16 @@ class Kohana_Route {
 			}
 		}
 
+		// We need slash after preroutes:
+		// /en/news - work, /ennews don't work
 		if ($uri != $original_uri AND $uri != '' AND mb_substr($uri, 0, 1) != '/')
 		{
 			return FALSE;
 		}
+		
 		return $uri;
 	}
-	
+
 	/**
 	 * Returns whether this route is an external route
 	 * to a remote controller.
