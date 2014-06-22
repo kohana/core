@@ -295,8 +295,14 @@ class Kohana_Text {
 
 		if (UTF8::strlen($replacement) == 1)
 		{
-			$regex .= 'e';
-			return preg_replace($regex, 'str_repeat($replacement, UTF8::strlen(\'$1\'))', $str);
+			preg_match($regex, $str, $matches);
+
+			foreach ($matches as $match)
+			{
+				$str = preg_replace($regex, str_repeat($replacement, UTF8::strlen($match)), $str);
+			}
+
+			return $str;
 		}
 
 		return preg_replace($regex, $replacement, $str);
