@@ -219,7 +219,7 @@ class Kohana_HTML {
 		$attributes['rel'] = empty($attributes['rel']) ? 'stylesheet' : $attributes['rel'];
 
 		// Set the stylesheet type
-		$attributes['type'] = 'text/css';
+		$attributes['type'] = empty($attributes['type']) ? 'text/css' : $attributes['type'];
 
 		return '<link'.HTML::attributes($attributes).' />';
 	}
