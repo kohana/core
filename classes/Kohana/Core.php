@@ -139,7 +139,7 @@ class Kohana_Core {
 	/**
 	 * @var  array   Include paths that are used to find files
 	 */
-	protected static $_paths = array(APPPATH, SYSPATH);
+	protected static $_paths = array(SYSPATH, APPPATH);
 
 	/**
 	 * @var  array   File path cache, used when caching is true in [Kohana::init]
@@ -563,8 +563,8 @@ class Kohana_Core {
 			return Kohana::$_modules;
 		}
 
-		// Start a new list of include paths, APPPATH first
-		$paths = array(APPPATH);
+		// Start a new list of include paths, SYSPATH first
+		$paths = [SYSPATH];
 
 		foreach ($modules as $name => $path)
 		{
@@ -583,8 +583,8 @@ class Kohana_Core {
 			}
 		}
 
-		// Finish the include paths by adding SYSPATH
-		$paths[] = SYSPATH;
+		// Finish the include paths by adding APPPATH
+		$paths[] = APPPATH;
 
 		// Set the new include paths
 		Kohana::$_paths = $paths;
@@ -681,13 +681,10 @@ class Kohana_Core {
 
 		if ($array OR $dir === 'config' OR $dir === 'i18n' OR $dir === 'messages')
 		{
-			// Include paths must be searched in reverse
-			$paths = array_reverse(Kohana::$_paths);
-
 			// Array of files that have been found
 			$found = array();
 
-			foreach ($paths as $dir)
+			foreach (Kohana::$_paths as $dir)
 			{
 				if (is_file($dir.$path))
 				{
