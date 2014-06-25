@@ -134,12 +134,7 @@ class Kohana_Core {
 	/**
 	 * @var  array   Currently active modules
 	 */
-	protected static $_modules = array();
-
-	/**
-	 * @var  array   Include paths that are used to find files
-	 */
-	protected static $_paths = array(SYSPATH, APPPATH);
+	protected static $_modules = ['_core' => SYSPATH, '_application' => APPPATH];
 
 	/**
 	 * @var  array   File path cache, used when caching is true in [Kohana::init]
@@ -370,8 +365,8 @@ class Kohana_Core {
 			Kohana::$log = Kohana::$config = NULL;
 
 			// Reset internal storage
-			Kohana::$_modules = Kohana::$_files = array();
-			Kohana::$_paths   = array(APPPATH, SYSPATH);
+			Kohana::$_modules = ['_core' => SYSPATH, '_application' => APPPATH];
+			Kohana::$_files = [];
 
 			// Reset file cache status
 			Kohana::$_files_changed = FALSE;
@@ -563,15 +558,15 @@ class Kohana_Core {
 			return Kohana::$_modules;
 		}
 
-		// Start a new list of include paths, SYSPATH first
-		$paths = [SYSPATH];
+		// Prepend core module and append application module
+		$modules = array_merge(['_core' => SYSPATH], $modules, ['_application' => APPPATH]);
 
 		foreach ($modules as $name => $path)
 		{
 			if (is_dir($path))
 			{
-				// Add the module to include paths
-				$paths[] = $modules[$name] = realpath($path).DIRECTORY_SEPARATOR;
+				// Filter module path
+				$modules[$name] = realpath($path).DIRECTORY_SEPARATOR;
 			}
 			else
 			{
@@ -582,12 +577,6 @@ class Kohana_Core {
 				));
 			}
 		}
-
-		// Finish the include paths by adding APPPATH
-		$paths[] = APPPATH;
-
-		// Set the new include paths
-		Kohana::$_paths = $paths;
 
 		// Set the current module list
 		Kohana::$_modules = $modules;
@@ -614,7 +603,7 @@ class Kohana_Core {
 	 */
 	public static function include_paths()
 	{
-		return Kohana::$_paths;
+		return array_values(Kohana::$_modules);
 	}
 
 	/**
@@ -684,7 +673,7 @@ class Kohana_Core {
 			// Array of files that have been found
 			$found = array();
 
-			foreach (Kohana::$_paths as $dir)
+			foreach (Kohana::$_modules as $dir)
 			{
 				if (is_file($dir.$path))
 				{
@@ -698,7 +687,7 @@ class Kohana_Core {
 			// The file has not been found yet
 			$found = FALSE;
 
-			foreach (Kohana::$_paths as $dir)
+			foreach (Kohana::$_modules as $dir)
 			{
 				if (is_file($dir.$path))
 				{
@@ -752,7 +741,7 @@ class Kohana_Core {
 		if ($paths === NULL)
 		{
 			// Use the default paths
-			$paths = Kohana::$_paths;
+			$paths = Kohana::$_modules;
 		}
 
 		// Create an array for the files
