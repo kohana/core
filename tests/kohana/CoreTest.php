@@ -377,10 +377,10 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 		// We must have at least 2 items in include paths (APP / SYS)
 		$this->assertGreaterThan(2, count($include_paths));
-		// Make sure said paths are in the include paths
-		// And make sure they're in the correct positions
-		$this->assertSame(APPPATH, reset($include_paths));
-		$this->assertSame(SYSPATH, end($include_paths));
+		
+		// Make sure said paths are in the include paths and in correct order
+		$this->assertSame(SYSPATH, reset($include_paths));
+		$this->assertSame(APPPATH, end($include_paths));
 
 		foreach ($modules as $module)
 		{
