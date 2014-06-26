@@ -324,7 +324,6 @@ class Kohana_CoreTest extends Unittest_TestCase
 	/**
 	 * Tests Kohana::include_paths()
 	 *
-	 * The include paths must contain the apppath and syspath
 	 * @test
 	 * @covers Kohana::include_paths
 	 */
@@ -333,15 +332,10 @@ class Kohana_CoreTest extends Unittest_TestCase
 		$include_paths = Kohana::include_paths();
 		$modules       = Kohana::modules();
 
+		// Check include paths is of type array
 		$this->assertInternalType('array', $include_paths);
 
-		// We must have at least 2 items in include paths (APP / SYS)
-		$this->assertGreaterThan(2, count($include_paths));
-		
-		// Make sure said paths are in the include paths and in correct order
-		$this->assertSame(SYSPATH, reset($include_paths));
-		$this->assertSame(APPPATH, end($include_paths));
-
+		// Check include paths correspond to enabled modules
 		foreach ($modules as $module)
 		{
 			$this->assertContains($module, $include_paths);
