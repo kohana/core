@@ -42,11 +42,6 @@ class Kohana_Core {
 	public static $is_windows = FALSE;
 
 	/**
-	 * @var  boolean  True if [magic quotes](http://php.net/manual/en/security.magicquotes.php) is enabled.
-	 */
-	public static $magic_quotes = FALSE;
-
-	/**
 	 * @var  boolean  TRUE if PHP safe mode is on
 	 */
 	public static $safe_mode = FALSE;
@@ -149,7 +144,7 @@ class Kohana_Core {
 	/**
 	 * Initializes the environment:
 	 *
-	 * - Disables register_globals and magic_quotes_gpc
+	 * - Disables register_globals
 	 * - Determines the current environment
 	 * - Set global settings
 	 * - Sanitizes GET, POST, and COOKIE variables
@@ -316,9 +311,6 @@ class Kohana_Core {
 			Kohana::$index_file = trim($settings['index_file'], '/');
 		}
 
-		// Determine if the extremely evil magic quotes are enabled
-		Kohana::$magic_quotes = (bool) get_magic_quotes_gpc();
-
 		// Sanitize all request variables
 		$_GET    = Kohana::sanitize($_GET);
 		$_POST   = Kohana::sanitize($_POST);
@@ -426,7 +418,6 @@ class Kohana_Core {
 	/**
 	 * Recursively sanitizes an input variable:
 	 *
-	 * - Strips slashes if magic quotes are enabled
 	 * - Normalizes all newlines to LF
 	 *
 	 * @param   mixed   $value  any variable
@@ -444,12 +435,6 @@ class Kohana_Core {
 		}
 		elseif (is_string($value))
 		{
-			if (Kohana::$magic_quotes === TRUE)
-			{
-				// Remove slashes added by magic quotes
-				$value = stripslashes($value);
-			}
-
 			if (strpos($value, "\r") !== FALSE)
 			{
 				// Standardize newlines
