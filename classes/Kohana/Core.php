@@ -552,49 +552,45 @@ class Kohana_Core {
 	 */
 	public static function modules(array $modules = NULL)
 	{
-		if ($modules === NULL)
+		// If modules array has been passed
+		if ($modules !== NULL)
 		{
-			// Not changing modules, just return the current set
-			return Kohana::$_modules;
-		}
+			// Prepend core module and append application module
+			$modules = array_merge(['_core' => SYSPATH], $modules, ['_application' => APPPATH]);
 
-		// Prepend core module and append application module
-		$modules = array_merge(['_core' => SYSPATH], $modules, ['_application' => APPPATH]);
-
-		foreach ($modules as $name => $path)
-		{
-			if (is_dir($path))
+			foreach ($modules as $name => $path)
 			{
+				// If module directory doesn't exist
+				if ( ! is_dir($path))
+				{
+					// Throw an error
+					throw new Kohana_Exception('Attempted to load an invalid or missing module \':module\' at \':path\'', array(
+						':module' => $name,
+						':path'   => Debug::path($path),
+					));
+				}
+
 				// Filter module path
 				$modules[$name] = realpath($path).DIRECTORY_SEPARATOR;
+
+				// If module init file exists
+				$init_path = $path.'init'.EXT;
+
+				if (is_file($init_path))
+				{
+					// Include the module initialization file
+					require_once $init_path;
+				}
 			}
-			else
-			{
-				// This module is invalid, remove it
-				throw new Kohana_Exception('Attempted to load an invalid or missing module \':module\' at \':path\'', array(
-					':module' => $name,
-					':path'   => Debug::path($path),
-				));
-			}
+
+			// Set the new module list
+			Kohana::$_modules = $modules;
 		}
 
-		// Set the current module list
-		Kohana::$_modules = $modules;
-
-		foreach (Kohana::$_modules as $path)
-		{
-			$init = $path.'init'.EXT;
-
-			if (is_file($init))
-			{
-				// Include the module initialization file once
-				require_once $init;
-			}
-		}
-
+		// Return enabled modules
 		return Kohana::$_modules;
 	}
-
+	
 	/**
 	 * Returns the the currently active include paths, including the
 	 * application, system, and each module's path.
