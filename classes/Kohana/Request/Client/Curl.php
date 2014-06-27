@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 /**
  * [Request_Client_External] Curl driver performs external requests using the
  * php-curl extention. This is the default driver for all external requests.

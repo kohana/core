@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 /**
  * Kohana exception class. Translates exceptions using the [I18n] class.
  *

@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 /**
  * The Kohana_HTTP_Header class provides an Object-Orientated interface
  * to HTTP headers. This can parse header arrays returned from the
