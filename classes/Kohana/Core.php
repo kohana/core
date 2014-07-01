@@ -679,6 +679,12 @@ class Kohana_Core {
 			$benchmark = Profiler::start('Kohana', __FUNCTION__);
 		}
 
+		$paths = Kohana::$_paths;
+	        $paths = array_slice(Kohana::$_paths, 1, -1);
+	        $paths = array_reverse($paths);
+	        array_unshift($paths, APPPATH);
+	        $paths[] = SYSPATH;
+
 		if ($array OR $dir === 'config' OR $dir === 'i18n' OR $dir === 'messages')
 		{
 			// Include paths must be searched in reverse
@@ -701,7 +707,7 @@ class Kohana_Core {
 			// The file has not been found yet
 			$found = FALSE;
 
-			foreach (Kohana::$_paths as $dir)
+			foreach ($paths as $dir)
 			{
 				if (is_file($dir.$path))
 				{
