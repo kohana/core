@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 /**
  * Contains the most low-level helpers methods in Kohana:
  *
@@ -25,9 +25,6 @@ class Kohana_Core {
 	const TESTING     = 30;
 	const DEVELOPMENT = 40;
 
-	// Security check that is added to all generated PHP files
-	const FILE_SECURITY = '<?php defined(\'SYSPATH\') OR die(\'No direct script access.\');';
-
 	// Format of cache files: header, cache name, and data
 	const FILE_CACHE = ":header \n\n// :name\n\n:data\n";
 
@@ -40,16 +37,6 @@ class Kohana_Core {
 	 * @var  boolean  True if Kohana is running on windows
 	 */
 	public static $is_windows = FALSE;
-
-	/**
-	 * @var  boolean  True if [magic quotes](http://php.net/manual/en/security.magicquotes.php) is enabled.
-	 */
-	public static $magic_quotes = FALSE;
-
-	/**
-	 * @var  boolean  TRUE if PHP safe mode is on
-	 */
-	public static $safe_mode = FALSE;
 
 	/**
 	 * @var  string
@@ -134,12 +121,7 @@ class Kohana_Core {
 	/**
 	 * @var  array   Currently active modules
 	 */
-	protected static $_modules = array();
-
-	/**
-	 * @var  array   Include paths that are used to find files
-	 */
-	protected static $_paths = array(APPPATH, SYSPATH);
+	protected static $_modules = [];
 
 	/**
 	 * @var  array   File path cache, used when caching is true in [Kohana::init]
@@ -154,7 +136,6 @@ class Kohana_Core {
 	/**
 	 * Initializes the environment:
 	 *
-	 * - Disables register_globals and magic_quotes_gpc
 	 * - Determines the current environment
 	 * - Set global settings
 	 * - Sanitizes GET, POST, and COOKIE variables
@@ -167,7 +148,7 @@ class Kohana_Core {
 	 * `string`  | base_url   | The base URL for your application.  This should be the *relative* path from your DOCROOT to your `index.php` file, in other words, if Kohana is in a subfolder, set this to the subfolder name, otherwise leave it as the default.  **The leading slash is required**, trailing slash is optional.   | `"/"`
 	 * `string`  | index_file | The name of the [front controller](http://en.wikipedia.org/wiki/Front_Controller_pattern).  This is used by Kohana to generate relative urls like [HTML::anchor()] and [URL::base()]. This is usually `index.php`.  To [remove index.php from your urls](tutorials/clean-urls), set this to `FALSE`. | `"index.php"`
 	 * `string`  | charset    | Character set used for all input and output    | `"utf-8"`
-	 * `string`  | cache_dir  | Kohana's cache directory.  Used by [Kohana::cache] for simple internal caching, like [Fragments](kohana/fragments) and **\[caching database queries](this should link somewhere)**.  This has nothing to do with the [Cache module](cache). | `APPPATH."cache"`
+	 * `string`  | cache_dir  | Kohana's cache directory.  Used by [Kohana::cache] for simple internal caching, like [Fragments](kohana/fragments) and **\[caching database queries](this should link somewhere)**.  This has nothing to do with the [Cache module](cache). | `"cache"`
 	 * `integer` | cache_life | Lifetime, in seconds, of items cached by [Kohana::cache]         | `60`
 	 * `boolean` | errors     | Should Kohana catch PHP errors and uncaught Exceptions and show the `error_view`. See [Error Handling](kohana/errors) for more info. <br /> <br /> Recommended setting: `TRUE` while developing, `FALSE` on production servers. | `TRUE`
 	 * `boolean` | profile    | Whether to enable the [Profiler](kohana/profiling). <br /> <br />Recommended setting: `TRUE` while developing, `FALSE` on production servers. | `TRUE`
@@ -228,12 +209,6 @@ class Kohana_Core {
 		// Enable the Kohana shutdown handler, which catches E_FATAL errors.
 		register_shutdown_function(array('Kohana', 'shutdown_handler'));
 
-		if (ini_get('register_globals'))
-		{
-			// Reverse the effects of register_globals
-			Kohana::globals();
-		}
-
 		if (isset($settings['expose']))
 		{
 			Kohana::$expose = (bool) $settings['expose'];
@@ -241,9 +216,6 @@ class Kohana_Core {
 
 		// Determine if we are running in a Windows environment
 		Kohana::$is_windows = (DIRECTORY_SEPARATOR === '\\');
-
-		// Determine if we are running in safe mode
-		Kohana::$safe_mode = (bool) ini_get('safe_mode');
 
 		if (isset($settings['cache_dir']))
 		{
@@ -270,7 +242,7 @@ class Kohana_Core {
 		else
 		{
 			// Use the default cache directory
-			Kohana::$cache_dir = APPPATH.'cache';
+			Kohana::$cache_dir = 'cache';
 		}
 
 		if ( ! is_writable(Kohana::$cache_dir))
@@ -321,9 +293,6 @@ class Kohana_Core {
 			Kohana::$index_file = trim($settings['index_file'], '/');
 		}
 
-		// Determine if the extremely evil magic quotes are enabled
-		Kohana::$magic_quotes = (bool) get_magic_quotes_gpc();
-
 		// Sanitize all request variables
 		$_GET    = Kohana::sanitize($_GET);
 		$_POST   = Kohana::sanitize($_POST);
@@ -370,8 +339,8 @@ class Kohana_Core {
 			Kohana::$log = Kohana::$config = NULL;
 
 			// Reset internal storage
-			Kohana::$_modules = Kohana::$_files = array();
-			Kohana::$_paths   = array(APPPATH, SYSPATH);
+			Kohana::$_modules = [];
+			Kohana::$_files = [];
 
 			// Reset file cache status
 			Kohana::$_files_changed = FALSE;
@@ -382,56 +351,8 @@ class Kohana_Core {
 	}
 
 	/**
-	 * Reverts the effects of the `register_globals` PHP setting by unsetting
-	 * all global variables except for the default super globals (GPCS, etc),
-	 * which is a [potential security hole.][ref-wikibooks]
-	 *
-	 * This is called automatically by [Kohana::init] if `register_globals` is
-	 * on.
-	 *
-	 *
-	 * [ref-wikibooks]: http://en.wikibooks.org/wiki/PHP_Programming/Register_Globals
-	 *
-	 * @return  void
-	 */
-	public static function globals()
-	{
-		if (isset($_REQUEST['GLOBALS']) OR isset($_FILES['GLOBALS']))
-		{
-			// Prevent malicious GLOBALS overload attack
-			echo "Global variable overload attack detected! Request aborted.\n";
-
-			// Exit with an error status
-			exit(1);
-		}
-
-		// Get the variable names of all globals
-		$global_variables = array_keys($GLOBALS);
-
-		// Remove the standard global variables from the list
-		$global_variables = array_diff($global_variables, array(
-			'_COOKIE',
-			'_ENV',
-			'_GET',
-			'_FILES',
-			'_POST',
-			'_REQUEST',
-			'_SERVER',
-			'_SESSION',
-			'GLOBALS',
-		));
-
-		foreach ($global_variables as $name)
-		{
-			// Unset the global variable, effectively disabling register_globals
-			unset($GLOBALS[$name]);
-		}
-	}
-
-	/**
 	 * Recursively sanitizes an input variable:
 	 *
-	 * - Strips slashes if magic quotes are enabled
 	 * - Normalizes all newlines to LF
 	 *
 	 * @param   mixed   $value  any variable
@@ -449,12 +370,6 @@ class Kohana_Core {
 		}
 		elseif (is_string($value))
 		{
-			if (Kohana::$magic_quotes === TRUE)
-			{
-				// Remove slashes added by magic quotes
-				$value = stripslashes($value);
-			}
-
 			if (strpos($value, "\r") !== FALSE)
 			{
 				// Standardize newlines
@@ -557,55 +472,45 @@ class Kohana_Core {
 	 */
 	public static function modules(array $modules = NULL)
 	{
-		if ($modules === NULL)
+		// If modules array has been passed
+		if ($modules !== NULL)
 		{
-			// Not changing modules, just return the current set
-			return Kohana::$_modules;
-		}
-
-		// Start a new list of include paths, APPPATH first
-		$paths = array(APPPATH);
-
-		foreach ($modules as $name => $path)
-		{
-			if (is_dir($path))
+			// Reset enabled modules
+			Kohana::$_modules = [];
+			
+			foreach ($modules as $name => $path)
 			{
-				// Add the module to include paths
-				$paths[] = $modules[$name] = realpath($path).DIRECTORY_SEPARATOR;
-			}
-			else
-			{
-				// This module is invalid, remove it
-				throw new Kohana_Exception('Attempted to load an invalid or missing module \':module\' at \':path\'', array(
-					':module' => $name,
-					':path'   => Debug::path($path),
-				));
-			}
-		}
+				// If module directory doesn't exist
+				if ( ! is_dir($path))
+				{
+					// Throw an error
+					throw new Kohana_Exception('Attempted to load an invalid or missing module \':module\' at \':path\'', array(
+						':module' => $name,
+						':path'   => Debug::path($path),
+					));
+				}
+				
+				// Get resolved, absolute path
+				$path = realpath($path).DIRECTORY_SEPARATOR;
+				
+				// Enable module
+				Kohana::$_modules[$name] = $path;
+				
+				// If module init file exists
+				$init_path = $path.'init'.EXT;
 
-		// Finish the include paths by adding SYSPATH
-		$paths[] = SYSPATH;
-
-		// Set the new include paths
-		Kohana::$_paths = $paths;
-
-		// Set the current module list
-		Kohana::$_modules = $modules;
-
-		foreach (Kohana::$_modules as $path)
-		{
-			$init = $path.'init'.EXT;
-
-			if (is_file($init))
-			{
-				// Include the module initialization file once
-				require_once $init;
+				if (is_file($init_path))
+				{
+					// Include the module initialization file
+					require_once $init_path;
+				}
 			}
 		}
 
+		// Return enabled modules
 		return Kohana::$_modules;
 	}
-
+	
 	/**
 	 * Returns the the currently active include paths, including the
 	 * application, system, and each module's path.
@@ -614,7 +519,7 @@ class Kohana_Core {
 	 */
 	public static function include_paths()
 	{
-		return Kohana::$_paths;
+		return array_values(Kohana::$_modules);
 	}
 
 	/**
@@ -681,13 +586,10 @@ class Kohana_Core {
 
 		if ($array OR $dir === 'config' OR $dir === 'i18n' OR $dir === 'messages')
 		{
-			// Include paths must be searched in reverse
-			$paths = array_reverse(Kohana::$_paths);
-
 			// Array of files that have been found
 			$found = array();
 
-			foreach ($paths as $dir)
+			foreach (Kohana::$_modules as $dir)
 			{
 				if (is_file($dir.$path))
 				{
@@ -701,7 +603,7 @@ class Kohana_Core {
 			// The file has not been found yet
 			$found = FALSE;
 
-			foreach (Kohana::$_paths as $dir)
+			foreach (Kohana::$_modules as $dir)
 			{
 				if (is_file($dir.$path))
 				{
@@ -755,7 +657,7 @@ class Kohana_Core {
 		if ($paths === NULL)
 		{
 			// Use the default paths
-			$paths = Kohana::$_paths;
+			$paths = Kohana::$_modules;
 		}
 
 		// Create an array for the files

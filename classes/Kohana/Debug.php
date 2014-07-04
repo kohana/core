@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 /**
  * Contains debugging and dumping tools.
  *
@@ -247,36 +247,41 @@ class Kohana_Debug {
 	}
 
 	/**
-	 * Removes application, system, modpath, or docroot from a filename,
-	 * replacing them with the plain text equivalents. Useful for debugging
-	 * when you want to display a shorter path.
+	 * Shortens a path by replacing the begining snippet with a textual alias.
+	 * Path aliases used are: enabled modules, MODPATH, and DOCROOT.
 	 *
-	 *     // Displays SYSPATH/classes/kohana.php
-	 *     echo Debug::path(Kohana::find_file('classes', 'kohana'));
+	 *     // Returns {module:core}/classes/Kohana.php
+	 *     Debug::path(Kohana::find_file('classes', 'Kohana'));
 	 *
-	 * @param   string  $file   path to debug
-	 * @return  string
+	 * @param string $path Path to shorten
+	 * @return string The shortened path
 	 */
-	public static function path($file)
+	public static function path($path)
 	{
-		if (strpos($file, APPPATH) === 0)
+		$alias_paths = [];
+		
+		// Add enabled modules to alias paths
+		foreach (Kohana::modules() as $module_name => $module_path)
 		{
-			$file = 'APPPATH'.DIRECTORY_SEPARATOR.substr($file, strlen(APPPATH));
+			$alias_paths['module:'.$module_name] = $module_path;
 		}
-		elseif (strpos($file, SYSPATH) === 0)
+		
+		// Add MODPATH and DOCROOT to alias paths
+		$alias_paths = $alias_paths + ['MODPATH' => MODPATH, 'DOCROOT' => DOCROOT];
+		
+		// Search for alias paths at the beginning of path
+		foreach ($alias_paths as $alias_name => $alias_path)
 		{
-			$file = 'SYSPATH'.DIRECTORY_SEPARATOR.substr($file, strlen(SYSPATH));
-		}
-		elseif (strpos($file, MODPATH) === 0)
-		{
-			$file = 'MODPATH'.DIRECTORY_SEPARATOR.substr($file, strlen(MODPATH));
-		}
-		elseif (strpos($file, DOCROOT) === 0)
-		{
-			$file = 'DOCROOT'.DIRECTORY_SEPARATOR.substr($file, strlen(DOCROOT));
+			// If match was found
+			if (strpos($path, $alias_path) === 0)
+			{
+				// Replace path snippet with alias
+				$path = '{'.$alias_name.'}'.DIRECTORY_SEPARATOR.substr($path, strlen($alias_path));
+				break;
+			}
 		}
 
-		return $file;
+		return $path;
 	}
 
 	/**

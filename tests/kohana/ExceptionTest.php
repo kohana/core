@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('Kohana bootstrap needs to be included before tests run');
+<?php
 
 /**
  * Tests Kohana Exception Class
@@ -79,7 +79,7 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 	public function provider_text()
 	{
 		return array(
-			array(new Kohana_Exception('foobar'), $this->dirSeparator('Kohana_Exception [ 0 ]: foobar ~ SYSPATH/tests/kohana/ExceptionTest.php [ '.__LINE__.' ]')),
+			array(new Kohana_Exception('foobar'), $this->dirSeparator('Kohana_Exception [ 0 ]: foobar ~ {module:core}/tests/kohana/ExceptionTest.php [ '.__LINE__.' ]')),
 		);
 	}
 

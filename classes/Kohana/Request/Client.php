@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 /**
  * Request Client. Processes a [Request] and handles [HTTP_Caching] if
  * available. Will usually return a [Response] object as a result of the

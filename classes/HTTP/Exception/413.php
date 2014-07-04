@@ -1,3 +1,3 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 
 class HTTP_Exception_413 extends Kohana_HTTP_Exception_413 {}

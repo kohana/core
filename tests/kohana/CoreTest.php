@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('Kohana bootstrap needs to be included before tests run');
+<?php
 
 /**
  * Tests Kohana Core
@@ -31,7 +31,6 @@ class Kohana_CoreTest extends Unittest_TestCase
 			array('foo', 'foo'),
 			array("foo\r\nbar", "foo\nbar"),
 			array("foo\rbar", "foo\nbar"),
-			array("Is your name O\'reilly?", "Is your name O'reilly?")
 		);
 	}
 
@@ -46,8 +45,6 @@ class Kohana_CoreTest extends Unittest_TestCase
 	 */
 	public function test_sanitize($value, $result)
 	{
-		$this->setEnvironment(array('Kohana::$magic_quotes' => TRUE));
-
 		$this->assertSame($result, Kohana::sanitize($value));
 	}
 
@@ -97,43 +94,6 @@ class Kohana_CoreTest extends Unittest_TestCase
 		$this->assertGreaterThan(3, count($files));
 
 		$this->assertSame(array(), Kohana::list_files('geshmuck'));
-	}
-
-	/**
-	 * Tests Kohana::globals()
-	 *
-	 * @test
-	 * @covers Kohana::globals
-	 */
-	public function test_globals_removes_user_def_globals()
-	{
-		// Store the globals
-		$temp_globals = array(
-			'cookie' => $_COOKIE,
-			'get' => $_GET,
-			'files' => $_FILES,
-			'post' => $_POST,
-			'request' => $_REQUEST,
-			'server' => $_SERVER,
-			'session' => $_SESSION,
-			'globals' => $GLOBALS,
-		);
-
-		$GLOBALS = array('hackers' => 'foobar','name' => array('','',''), '_POST' => array());
-
-		Kohana::globals();
-
-		$this->assertEquals(array('_POST' => array()), $GLOBALS);
-
-		// Reset the globals for other tests
-		$_COOKIE = $temp_globals['cookie'];
-		$_GET = $temp_globals['get'];
-		$_FILES = $temp_globals['files'];
-		$_POST = $temp_globals['post'];
-		$_REQUEST = $temp_globals['request'];
-		$_SERVER = $temp_globals['server'];
-		$_SESSION = $temp_globals['session'];
-		$GLOBALS = $temp_globals['globals'];
 	}
 
 	/**
@@ -364,7 +324,6 @@ class Kohana_CoreTest extends Unittest_TestCase
 	/**
 	 * Tests Kohana::include_paths()
 	 *
-	 * The include paths must contain the apppath and syspath
 	 * @test
 	 * @covers Kohana::include_paths
 	 */
@@ -373,15 +332,10 @@ class Kohana_CoreTest extends Unittest_TestCase
 		$include_paths = Kohana::include_paths();
 		$modules       = Kohana::modules();
 
+		// Check include paths is of type array
 		$this->assertInternalType('array', $include_paths);
 
-		// We must have at least 2 items in include paths (APP / SYS)
-		$this->assertGreaterThan(2, count($include_paths));
-		// Make sure said paths are in the include paths
-		// And make sure they're in the correct positions
-		$this->assertSame(APPPATH, reset($include_paths));
-		$this->assertSame(SYSPATH, end($include_paths));
-
+		// Check include paths correspond to enabled modules
 		foreach ($modules as $module)
 		{
 			$this->assertContains($module, $include_paths);
