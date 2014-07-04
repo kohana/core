@@ -475,6 +475,9 @@ class Kohana_Core {
 		// If modules array has been passed
 		if ($modules !== NULL)
 		{
+			// Reset enabled modules
+			Kohana::$_modules = [];
+			
 			foreach ($modules as $name => $path)
 			{
 				// If module directory doesn't exist
@@ -486,10 +489,13 @@ class Kohana_Core {
 						':path'   => Debug::path($path),
 					));
 				}
-
-				// Filter module path
-				$modules[$name] = realpath($path).DIRECTORY_SEPARATOR;
-
+				
+				// Get resolved, absolute path
+				$path = realpath($path).DIRECTORY_SEPARATOR;
+				
+				// Enable module
+				Kohana::$_modules[$name] = $path;
+				
 				// If module init file exists
 				$init_path = $path.'init'.EXT;
 
@@ -499,9 +505,6 @@ class Kohana_Core {
 					require_once $init_path;
 				}
 			}
-
-			// Set the new module list
-			Kohana::$_modules = $modules;
 		}
 
 		// Return enabled modules
