@@ -216,6 +216,14 @@ class Kohana_Kohana_Exception extends Exception {
 						{
 							$frame['type'] = '??';
 						}
+						elseif ($frame['type'] == 'static')
+						{
+							$frame['type'] = '::';
+						}
+						elseif ($frame['type'] == 'dynamic')
+						{
+							$frame['type'] = '->';
+						}
 
 						// XDebug also has a different name for the parameters array
 						if (isset($frame['params']) AND ! isset($frame['args']))
