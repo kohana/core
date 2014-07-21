@@ -42,11 +42,6 @@ class Kohana_Core {
 	public static $is_windows = FALSE;
 
 	/**
-	 * @var  boolean  TRUE if PHP safe mode is on
-	 */
-	public static $safe_mode = FALSE;
-
-	/**
 	 * @var  string
 	 */
 	public static $content_type = 'text/html';
@@ -236,9 +231,6 @@ class Kohana_Core {
 
 		// Determine if we are running in a Windows environment
 		Kohana::$is_windows = (DIRECTORY_SEPARATOR === '\\');
-
-		// Determine if we are running in safe mode
-		Kohana::$safe_mode = (bool) ini_get('safe_mode');
 
 		if (isset($settings['cache_dir']))
 		{
