@@ -31,7 +31,6 @@ class Kohana_CoreTest extends Unittest_TestCase
 			array('foo', 'foo'),
 			array("foo\r\nbar", "foo\nbar"),
 			array("foo\rbar", "foo\nbar"),
-			array("Is your name O\'reilly?", "Is your name O'reilly?")
 		);
 	}
 
@@ -46,8 +45,6 @@ class Kohana_CoreTest extends Unittest_TestCase
 	 */
 	public function test_sanitize($value, $result)
 	{
-		$this->setEnvironment(array('Kohana::$magic_quotes' => TRUE));
-
 		$this->assertSame($result, Kohana::sanitize($value));
 	}
 
