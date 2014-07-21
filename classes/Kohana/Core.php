@@ -144,7 +144,6 @@ class Kohana_Core {
 	/**
 	 * Initializes the environment:
 	 *
-	 * - Disables register_globals
 	 * - Determines the current environment
 	 * - Set global settings
 	 * - Sanitizes GET, POST, and COOKIE variables
@@ -167,7 +166,6 @@ class Kohana_Core {
 	 * @throws  Kohana_Exception
 	 * @param   array   $settings   Array of settings.  See above.
 	 * @return  void
-	 * @uses    Kohana::globals
 	 * @uses    Kohana::sanitize
 	 * @uses    Kohana::cache
 	 * @uses    Profiler
@@ -217,12 +215,6 @@ class Kohana_Core {
 
 		// Enable the Kohana shutdown handler, which catches E_FATAL errors.
 		register_shutdown_function(array('Kohana', 'shutdown_handler'));
-
-		if (ini_get('register_globals'))
-		{
-			// Reverse the effects of register_globals
-			Kohana::globals();
-		}
 
 		if (isset($settings['expose']))
 		{
@@ -362,53 +354,6 @@ class Kohana_Core {
 
 			// Kohana is no longer initialized
 			Kohana::$_init = FALSE;
-		}
-	}
-
-	/**
-	 * Reverts the effects of the `register_globals` PHP setting by unsetting
-	 * all global variables except for the default super globals (GPCS, etc),
-	 * which is a [potential security hole.][ref-wikibooks]
-	 *
-	 * This is called automatically by [Kohana::init] if `register_globals` is
-	 * on.
-	 *
-	 *
-	 * [ref-wikibooks]: http://en.wikibooks.org/wiki/PHP_Programming/Register_Globals
-	 *
-	 * @return  void
-	 */
-	public static function globals()
-	{
-		if (isset($_REQUEST['GLOBALS']) OR isset($_FILES['GLOBALS']))
-		{
-			// Prevent malicious GLOBALS overload attack
-			echo "Global variable overload attack detected! Request aborted.\n";
-
-			// Exit with an error status
-			exit(1);
-		}
-
-		// Get the variable names of all globals
-		$global_variables = array_keys($GLOBALS);
-
-		// Remove the standard global variables from the list
-		$global_variables = array_diff($global_variables, array(
-			'_COOKIE',
-			'_ENV',
-			'_GET',
-			'_FILES',
-			'_POST',
-			'_REQUEST',
-			'_SERVER',
-			'_SESSION',
-			'GLOBALS',
-		));
-
-		foreach ($global_variables as $name)
-		{
-			// Unset the global variable, effectively disabling register_globals
-			unset($GLOBALS[$name]);
 		}
 	}
 
