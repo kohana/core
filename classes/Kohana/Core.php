@@ -134,7 +134,7 @@ class Kohana_Core {
 	/**
 	 * @var  array   Currently active modules
 	 */
-	protected static $_modules = ['application' => APPPATH, 'core' => SYSPATH];
+	protected static $_modules = [];
 
 	/**
 	 * @var  array   File path cache, used when caching is true in [Kohana::init]
@@ -365,7 +365,7 @@ class Kohana_Core {
 			Kohana::$log = Kohana::$config = NULL;
 
 			// Reset internal storage
-			Kohana::$_modules = ['application' => APPPATH, 'core' => SYSPATH];
+			Kohana::$_modules = [];
 			Kohana::$_files = [];
 
 			// Reset file cache status
@@ -574,9 +574,6 @@ class Kohana_Core {
 				));
 			}
 		}
-
-		// Prepend application module and append core module
-		$modules = array_merge(['application' => APPPATH], $modules, ['core' => SYSPATH]);
 
 		// Set the current module list
 		Kohana::$_modules = $modules;
