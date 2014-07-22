@@ -360,32 +360,5 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 		$this->assertArrayHasKey('unittest', $modules);
 	}
-
-	/**
-	 * Tests Kohana::include_paths()
-	 *
-	 * The include paths must contain the apppath and syspath
-	 * @test
-	 * @covers Kohana::include_paths
-	 */
-	public function test_include_paths()
-	{
-		$include_paths = Kohana::include_paths();
-		$modules       = Kohana::modules();
-
-		$this->assertInternalType('array', $include_paths);
-
-		// We must have at least 2 items in include paths (APP / SYS)
-		$this->assertGreaterThan(2, count($include_paths));
-		// Make sure said paths are in the include paths
-		// And make sure they're in the correct positions
-		$this->assertSame(APPPATH, reset($include_paths));
-		$this->assertSame(SYSPATH, end($include_paths));
-
-		foreach ($modules as $module)
-		{
-			$this->assertContains($module, $include_paths);
-		}
-	}
 }
 
