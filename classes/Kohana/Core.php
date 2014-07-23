@@ -552,44 +552,46 @@ class Kohana_Core {
 	 */
 	public static function modules(array $modules = NULL)
 	{
-		if ($modules === NULL)
+		// If modules array has been passed
+		if ($modules !== NULL)
 		{
-			// Not changing modules, just return the current set
-			return Kohana::$_modules;
+			// Reverse modules before loading
+			$modules = array_reverse($modules);
+			
+			// Reset enabled modules
+			Kohana::$_modules = [];
+			
+			foreach ($modules as $name => $path)
+ 			{
+				// If module directory doesn't exist
+				if ( ! is_dir($path))
+				{
+					// Throw an error
+					throw new Kohana_Exception('Attempted to load an invalid or missing module \':module\' at \':path\'', [
+						':module' => $name,
+						':path'   => Debug::path($path),
+					]);
+				}
+				
+				// Get resolved, absolute path
+				$path = realpath($path).DIRECTORY_SEPARATOR;
+				
+				// Enable module
+				Kohana::$_modules[$name] = $path;
+				
+				// If module init file exists
+				$init_path = $path.'init'.EXT;
+				
+				if (is_file($init_path))
+				{
+					// Include the module initialization file
+					require_once $init_path;
+				}
+			}
 		}
 
-		foreach ($modules as $name => $path)
-		{
-			if (is_dir($path))
-			{
-				// Add the module to include paths
-				$modules[$name] = realpath($path).DIRECTORY_SEPARATOR;
-			}
-			else
-			{
-				// This module is invalid, remove it
-				throw new Kohana_Exception('Attempted to load an invalid or missing module \':module\' at \':path\'', array(
-					':module' => $name,
-					':path'   => Debug::path($path),
-				));
-			}
-		}
-
-		// Set the current module list
-		Kohana::$_modules = $modules;
-
-		foreach (Kohana::$_modules as $path)
-		{
-			$init = $path.'init'.EXT;
-
-			if (is_file($init))
-			{
-				// Include the module initialization file once
-				require_once $init;
-			}
-		}
-
-		return Kohana::$_modules;
+		// Return enabled modules in reverse order
+		return array_reverse(Kohana::$_modules);
 	}
 
 	/**
@@ -656,13 +658,10 @@ class Kohana_Core {
 
 		if ($array OR $dir === 'config' OR $dir === 'i18n' OR $dir === 'messages')
 		{
-			// Include paths must be searched in reverse
-			$paths = array_reverse(Kohana::$_modules);
-
 			// Array of files that have been found
 			$found = array();
 
-			foreach ($paths as $dir)
+			foreach (Kohana::$_modules as $dir)
 			{
 				if (is_file($dir.$path))
 				{
