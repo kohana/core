@@ -31,7 +31,6 @@ class Kohana_CoreTest extends Unittest_TestCase
 			array('foo', 'foo'),
 			array("foo\r\nbar", "foo\nbar"),
 			array("foo\rbar", "foo\nbar"),
-			array("Is your name O\'reilly?", "Is your name O'reilly?")
 		);
 	}
 
@@ -46,8 +45,6 @@ class Kohana_CoreTest extends Unittest_TestCase
 	 */
 	public function test_sanitize($value, $result)
 	{
-		$this->setEnvironment(array('Kohana::$magic_quotes' => TRUE));
-
 		$this->assertSame($result, Kohana::sanitize($value));
 	}
 
@@ -97,43 +94,6 @@ class Kohana_CoreTest extends Unittest_TestCase
 		$this->assertGreaterThan(3, count($files));
 
 		$this->assertSame(array(), Kohana::list_files('geshmuck'));
-	}
-
-	/**
-	 * Tests Kohana::globals()
-	 *
-	 * @test
-	 * @covers Kohana::globals
-	 */
-	public function test_globals_removes_user_def_globals()
-	{
-		// Store the globals
-		$temp_globals = array(
-			'cookie' => $_COOKIE,
-			'get' => $_GET,
-			'files' => $_FILES,
-			'post' => $_POST,
-			'request' => $_REQUEST,
-			'server' => $_SERVER,
-			'session' => $_SESSION,
-			'globals' => $GLOBALS,
-		);
-
-		$GLOBALS = array('hackers' => 'foobar','name' => array('','',''), '_POST' => array());
-
-		Kohana::globals();
-
-		$this->assertEquals(array('_POST' => array()), $GLOBALS);
-
-		// Reset the globals for other tests
-		$_COOKIE = $temp_globals['cookie'];
-		$_GET = $temp_globals['get'];
-		$_FILES = $temp_globals['files'];
-		$_POST = $temp_globals['post'];
-		$_REQUEST = $temp_globals['request'];
-		$_SERVER = $temp_globals['server'];
-		$_SESSION = $temp_globals['session'];
-		$GLOBALS = $temp_globals['globals'];
 	}
 
 	/**
