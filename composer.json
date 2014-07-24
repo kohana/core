@@ -19,7 +19,7 @@
 		"source":   "http://github.com/kohana/core"
 	},
 	"require": {
-		"php":        ">=5.3.3"
+		"php":        ">=5.4.0"
 	},
 	"suggest": {
 		"ext-http":   "*",
