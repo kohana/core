@@ -233,20 +233,27 @@ class Kohana_Text {
 	}
 
 	/**
-	 * Uppercase words that are not separated by spaces, using a custom
-	 * delimiter or the default.
-	 *
-	 *      $str = Text::ucfirst('content-type'); // returns "Content-Type"
-	 *
-	 * @param   string  $string     string to transform
-	 * @param   string  $delimiter  delimiter to use
-	 * @return  string
-	 */
-	public static function ucfirst($string, $delimiter = '-')
-	{
-		// Put the keys back the Case-Convention expected
-		return implode($delimiter, array_map('ucfirst', explode($delimiter, $string)));
-	}
+   * Uppercase words that are not separated by spaces, using a custom
+   * delimiter or the default.
+   *
+   *      $str = Text::ucfirst('content-type'); // returns "Content-Type"
+   *
+   * @param   string  $string     string to transform
+   * @param   string  $delimiter  delimiter to use
+   * @param   string  $encoding   character encoding
+   * @return  string
+   */
+  static function ucfirst($string, $delimiter = '-', $encoding = 'UTF-8')
+  {
+    // Put the keys back the Case-Convention expected
+    $array = explode($delimiter, $string);
+    return implode($delimiter,
+      array_map(create_function('$word, $encoding',
+      'return mb_strtoupper(mb_substr($word, 0, 1, $encoding), $encoding) . mb_strtolower(mb_substr($word, 1, mb_strlen($word), $encoding), $encoding);'),
+      $array, array_fill(0, count($array), $encoding)
+      )
+    );
+  }
 
 	/**
 	 * Reduces multiple slashes in a string to single slashes.
