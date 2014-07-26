@@ -241,7 +241,7 @@ class Kohana_Text {
    * @param   string  $string     string to transform
    * @param   string  $delimiter  delimiter to use
    * @param   string  $encoding   character encoding
-   * @return  string
+   * @return  string 
    */
   static function ucfirst($string, $delimiter = '-', $encoding = 'UTF-8')
   {
