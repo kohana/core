@@ -243,7 +243,7 @@ class Kohana_Text {
 	* @param   string  $encoding   character encoding
 	* @return  string 
 	*/
-	static function ucfirst($string, $delimiter = '-', $encoding = 'UTF-8')
+	public static function ucfirst($string, $delimiter = '-', $encoding = 'UTF-8')
 	{
 		// Explode string
 		$array = explode($delimiter, $string);
