@@ -251,10 +251,10 @@ class Kohana_Text {
 		// Put the keys back the Case-Convention expected
 		return implode($delimiter,
 			array_map(
-				create_function(
-					'$word, $encoding',
-					'return mb_strtoupper(mb_substr($word, 0, 1, $encoding), $encoding) . mb_strtolower(mb_substr($word, 1, mb_strlen($word), $encoding), $encoding);'
-					),
+				function($word, $encoding)
+				{
+				  return mb_strtoupper(mb_substr($word, 0, 1, $encoding), $encoding) . mb_strtolower(mb_substr($word, 1, mb_strlen($word), $encoding), $encoding);
+				},
 			$array,
 			array_fill(0, count($array), $encoding)
 			)
