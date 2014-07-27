@@ -240,23 +240,21 @@ class Kohana_Text {
 	*
 	* @param   string  $string     string to transform
 	* @param   string  $delimiter  delimiter to use
-	* @param   string  $encoding   character encoding
 	* @return  string 
+	* @uses    UTF8::substr
+	* @uses    UTF8::strtoupper
+	* @uses    UTF8::strlen
 	*/
-	public static function ucfirst($string, $delimiter = '-', $encoding = 'UTF-8')
+	public static function ucfirst($string, $delimiter = '-')
 	{
-		// Explode string
-		$array = explode($delimiter, $string);
-		
 		// Put the keys back the Case-Convention expected
 		return implode($delimiter,
 			array_map(
-				function($word, $encoding)
+				function($word)
 				{
-				  return mb_strtoupper(mb_substr($word, 0, 1, $encoding), $encoding) . mb_strtolower(mb_substr($word, 1, mb_strlen($word), $encoding), $encoding);
+				  return UTF8::strtoupper(UTF8::substr($word, 0, 1)) . UTF8::strtolower(UTF8::substr($word, 1, UTF8::strlen($word)));
 				},
-			$array,
-			array_fill(0, count($array), $encoding)
+			explode($delimiter, $string)
 			)
 		);
 	}
