@@ -649,11 +649,41 @@ class Kohana_TextTest extends Unittest_TestCase
 	public function provider_readable_list()
 	{
 		return array(
-			array('Tom, Dick and Harry',
-				array('Tom', 'Dick', 'Harry')
+			array(
+				'Tom, Dick, and Harry',
+				array('Tom', 'Dick', 'Harry'),
+				'and',
+				TRUE
 			),
-			array('1, 2 and 3',
-				array(1, 2, 3)
+			array(
+				'Tom, Dick and Harry',
+				array('Tom', 'Dick', 'Harry'),
+				'and',
+				FALSE
+			),
+			array(
+				'1, 2, and 3',
+				array(1, 2, 3),
+				'and',
+				TRUE,
+			),
+			array(
+				'1, 2 and 3',
+				array(1, 2, 3),
+				'and',
+				FALSE
+			),
+			array(
+				'Tom, Dick & Harry',
+				array('Tom', 'Dick', 'Harry'),
+				'&',
+				FALSE
+			),
+			array(
+				'1, 2, & 3',
+				array(1, 2, 3),
+				'&',
+				TRUE
 			)
 		);
 	}
@@ -686,9 +716,9 @@ class Kohana_TextTest extends Unittest_TestCase
 	 * @dataProvider  provider_readable_list
 	 * @covers        Text::readable_list
 	 */
-	public function test_readable_list($expected, $words)
+	public function test_readable_list($expected, $words, $conjunction, $serial_comma)
 	{
-		$this->assertSame($expected, Text::readable_list($words));
+		$this->assertSame($expected, Text::readable_list($words, $conjunction, $serial_comma));
 	}
 
 	/**

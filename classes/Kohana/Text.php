@@ -706,12 +706,12 @@ class Kohana_Text {
 			// Check that the word isn't an array itself.
 			if (is_array($word))
 			{
-				throw new InvalidArgumentException('The array must only have one dimension.');
+				throw new Kohana_Exception('The array must only have one dimension.');
 			}
 			// Check that the value of the word is appropriate.
 			elseif ( ! is_string($word) AND ! is_int($word) AND ! (is_object($word) AND method_exists($word, '__toString')))
 			{
-				throw new InvalidArgumentException('Array values must be either strings or integers.');
+				throw new Kohana_Exception('Array values must be either strings or integers.');
 			}
 		}
 
