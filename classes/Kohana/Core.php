@@ -127,11 +127,6 @@ class Kohana_Core {
 	protected static $_modules = array();
 
 	/**
-	 * @var  array   Include paths that are used to find files
-	 */
-	protected static $_paths = [];
-
-	/**
 	 * @var  array   File path cache, used when caching is true in [Kohana::init]
 	 */
 	protected static $_files = array();
@@ -347,7 +342,6 @@ class Kohana_Core {
 
 			// Reset internal storage
 			Kohana::$_modules = Kohana::$_files = array();
-			Kohana::$_paths   = [];
 
 			// Reset file cache status
 			Kohana::$_files_changed = FALSE;
@@ -502,9 +496,6 @@ class Kohana_Core {
 			}
 		}
 
-		// Set the new include paths
-		Kohana::$_paths = array_values($modules);
-
 		// Set the current module list
 		Kohana::$_modules = $modules;
 
@@ -530,7 +521,7 @@ class Kohana_Core {
 	 */
 	public static function include_paths()
 	{
-		return Kohana::$_paths;
+		return array_values(Kohana::$_modules);
 	}
 
 	/**
@@ -598,7 +589,7 @@ class Kohana_Core {
 		if ($array OR $dir === 'config' OR $dir === 'i18n' OR $dir === 'messages')
 		{
 			// Include paths must be searched in reverse
-			$paths = array_reverse(Kohana::$_paths);
+			$paths = array_reverse(Kohana::$_modules);
 
 			// Array of files that have been found
 			$found = array();
@@ -617,7 +608,7 @@ class Kohana_Core {
 			// The file has not been found yet
 			$found = FALSE;
 
-			foreach (Kohana::$_paths as $dir)
+			foreach (Kohana::$_modules as $dir)
 			{
 				if (is_file($dir.$path))
 				{
@@ -671,7 +662,7 @@ class Kohana_Core {
 		if ($paths === NULL)
 		{
 			// Use the default paths
-			$paths = Kohana::$_paths;
+			$paths = Kohana::$_modules;
 		}
 
 		// Create an array for the files
