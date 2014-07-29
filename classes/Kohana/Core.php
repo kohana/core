@@ -129,7 +129,7 @@ class Kohana_Core {
 	/**
 	 * @var  array   Include paths that are used to find files
 	 */
-	protected static $_paths = array(APPPATH, SYSPATH);
+	protected static $_paths = [];
 
 	/**
 	 * @var  array   File path cache, used when caching is true in [Kohana::init]
@@ -347,7 +347,7 @@ class Kohana_Core {
 
 			// Reset internal storage
 			Kohana::$_modules = Kohana::$_files = array();
-			Kohana::$_paths   = array(APPPATH, SYSPATH);
+			Kohana::$_paths   = [];
 
 			// Reset file cache status
 			Kohana::$_files_changed = FALSE;
@@ -485,15 +485,12 @@ class Kohana_Core {
 			return Kohana::$_modules;
 		}
 
-		// Start a new list of include paths, APPPATH first
-		$paths = array(APPPATH);
-
 		foreach ($modules as $name => $path)
 		{
 			if (is_dir($path))
 			{
-				// Add the module to include paths
-				$paths[] = $modules[$name] = realpath($path).DIRECTORY_SEPARATOR;
+				// Get absolute path to module
+				$modules[$name] = realpath($path).DIRECTORY_SEPARATOR;
 			}
 			else
 			{
@@ -505,11 +502,8 @@ class Kohana_Core {
 			}
 		}
 
-		// Finish the include paths by adding SYSPATH
-		$paths[] = SYSPATH;
-
 		// Set the new include paths
-		Kohana::$_paths = $paths;
+		Kohana::$_paths = array_values($modules);
 
 		// Set the current module list
 		Kohana::$_modules = $modules;
