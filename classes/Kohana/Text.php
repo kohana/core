@@ -233,19 +233,30 @@ class Kohana_Text {
 	}
 
 	/**
-	 * Uppercase words that are not separated by spaces, using a custom
-	 * delimiter or the default.
-	 *
-	 *      $str = Text::ucfirst('content-type'); // returns "Content-Type"
-	 *
-	 * @param   string  $string     string to transform
-	 * @param   string  $delimiter  delimiter to use
-	 * @return  string
-	 */
+	* Uppercase words that are not separated by spaces, using a custom
+	* delimiter or the default.
+	*
+	*      $str = Text::ucfirst('content-type'); // returns "Content-Type"
+	*
+	* @param   string  $string     string to transform
+	* @param   string  $delimiter  delimiter to use
+	* @return  string 
+	* @uses    UTF8::substr
+	* @uses    UTF8::strtoupper
+	* @uses    UTF8::strlen
+	*/
 	public static function ucfirst($string, $delimiter = '-')
 	{
 		// Put the keys back the Case-Convention expected
-		return implode($delimiter, array_map('ucfirst', explode($delimiter, $string)));
+		return implode($delimiter,
+			array_map(
+				function($word)
+				{
+				  return UTF8::strtoupper(UTF8::substr($word, 0, 1)) . UTF8::strtolower(UTF8::substr($word, 1, UTF8::strlen($word)));
+				},
+			explode($delimiter, $string)
+			)
+		);
 	}
 
 	/**
