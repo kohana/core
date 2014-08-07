@@ -10,7 +10,7 @@ The default Kohana classes, and many extensions, use this definition so that alm
 
 For instance, if you wanted to create method that sets encrypted cookies using the [Encrypt] class, you would create a file at `APPPATH/classes/Cookie.php` that extends Kohana_Cookie, and adds your functions:
 
-    <?php defined('SYSPATH') OR die('No direct script access.');
+    <?php
 
     class Cookie extends Kohana_Cookie {
 
