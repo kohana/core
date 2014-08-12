@@ -279,7 +279,13 @@ class Kohana_Arr {
 	 */
 	public static function get($array, $key, $default = NULL)
 	{
-		return isset($array[$key]) ? $array[$key] : $default;
+		if ($array instanceof ArrayObject) {
+			// This is a workaround for inconsistent implementation of isset between PHP and HHVM
+			// See https://github.com/facebook/hhvm/issues/3437
+			return $array->offsetExists($key) ? $array->offsetGet($key) : $default;
+		} else {
+			return isset($array[$key]) ? $array[$key] : $default;
+		}
 	}
 
 	/**
