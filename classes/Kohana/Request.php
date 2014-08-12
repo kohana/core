@@ -740,7 +740,6 @@ class Kohana_Request implements HTTP_Request {
 	 *
 	 *     echo URL::site($this->request->uri(), $protocol);
 	 *
-	 * @param   array    $params    URI parameters
 	 * @param   mixed    $protocol  protocol string or Request object
 	 * @return  string
 	 * @since   3.0.7

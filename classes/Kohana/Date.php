@@ -592,10 +592,10 @@ class Kohana_Date {
 		$tz   = new DateTimeZone($timezone ? $timezone : date_default_timezone_get());
 		$time = new DateTime($datetime_str, $tz);
 
-		if ($time->getTimeZone()->getName() !== $tz->getName())
-		{
-			$time->setTimeZone($tz);
-		}
+		// Convert the time back to the expected timezone if required (in case the datetime_str provided a timezone,
+		// offset or unix timestamp. This also ensures that the timezone reported by the object is correct on HHVM
+		// (see https://github.com/facebook/hhvm/issues/2302).
+		$time->setTimeZone($tz);
 
 		return $time->format($timestamp_format);
 	}
