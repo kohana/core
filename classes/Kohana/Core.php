@@ -496,18 +496,29 @@ class Kohana_Core {
 		// Set the current module list
 		Kohana::$_modules = $modules;
 
+		return Kohana::$_modules;
+	}
+	
+	/**
+	 * Initializes the enabled modules.
+	 * 
+	 * @return void
+	 */
+	public static function init_modules()
+	{
+		// For each enabled module
 		foreach (Kohana::$_modules as $path)
 		{
-			$init = $path.'init'.EXT;
+			// Get init file path
+			$init_path = $path.'init'.EXT;
 
-			if (is_file($init))
+			// If init file exists in module
+			if (is_file($init_path))
 			{
-				// Include the module initialization file once
-				require_once $init;
+				// Include the init file
+				require_once $init_path;
 			}
 		}
-
-		return Kohana::$_modules;
 	}
 
 	/**
