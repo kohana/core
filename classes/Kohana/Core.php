@@ -307,7 +307,7 @@ class Kohana_Core {
 		}
 
 		// Load the config if one doesn't already exist
-		if ( ! Kohana::$config instanceof Config)
+		if ( ! Kohana::$config instanceof Kohana_Config)
 		{
 			Kohana::$config = new Config;
 		}
