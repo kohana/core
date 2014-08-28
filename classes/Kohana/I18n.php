@@ -6,6 +6,8 @@
  * Typically this class would never be used directly, but used via the __()
  * function, which loads the message and replaces parameters:
  *
+ * the __() function is declared in the Kohana official bootstrap
+ *
  *     // Display a translated message
  *     echo __('Hello, world');
  *

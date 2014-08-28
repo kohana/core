@@ -32,5 +32,5 @@ This will look in the `messages/forms/contact.php` for the `[foobar][bar]` key:
 
 ## Notes
 
- * Don't use __() in your messages files, as these files can be cached and will not work properly.
+ * Don't use `__()` or `I18n::translate` in your messages files, as these files can be cached and will not work properly.
  * Messages are merged by the cascading file system, not overwritten like classes and views.
