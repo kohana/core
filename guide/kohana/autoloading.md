@@ -14,7 +14,7 @@ Classes are loaded via the [Kohana::auto_load] method, which makes a simple conv
 2. Any underscore characters in the class name are converted to slashes
 2. The filename must match the case of the class
 
-When calling a class that has not been loaded (eg: `Session_Cookie`), Kohana will search the filesystem using [Kohana::find_file] for a file named `classes/Session/Cookie.php`.
+When calling a class that has not been loaded, for example `Session_Cookie`, Kohana will search the filesystem using [Kohana::find_file] for a file named `classes/Session/Cookie.php`.
 
 If your classes do not follow this convention, they cannot be autoloaded by Kohana.  You will have to manually included your files, or add your own [autoload function.](http://us3.php.net/manual/en/function.spl-autoload-register.php)
 
@@ -35,7 +35,7 @@ You can easily gain access to other libraries if they include an autoloader.  Fo
 
 #### Download and install the Zend Framework files
 
-- [Download the latest Zend Framework files](http://framework.zend.com/download/latest).
+- [Download the latest Zend Framework files](http://framework.zend.com/downloads/latest).
 - Create a `vendor` directory at `application/vendor`. This keeps third party software separate from your application classes.
 - Move the decompressed Zend folder containing Zend Framework to `application/vendor/Zend`.
 

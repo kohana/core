@@ -55,18 +55,20 @@ You can also have a controller extend another controller to share common things,
 
 Every controller has the `$this->request` property which is the [Request] object that called the controller.  You can use this to get information about the current request, as well as set the response body via `$this->response->body($ouput)`.
 
-Here is a partial list of the properties and methods available to `$this->request`.  These can also be accessed via `Request::instance()`, but `$this->request` is provided as a shortcut.  See the [Request] class for more information on any of these. 
+Here is a partial list of the properties and methods available to `$this->request`.  These can also be accessed via `Request::initial()`, but `$this->request` is provided as a shortcut.  See the [Request] class for more information on any of these. 
 
 Property/method | What it does
 --- | ---
-[$this->request->route()](../api/Request#property:route) | The [Route] that matched the current request url
-[$this->request->directory()](../api/Request#property:directory), <br /> [$this->request->controller](../api/Request#property:controller), <br /> [$this->request->action](../api/Request#property:action) | The directory, controller and action that matched for the current route
-[$this->request->param()](../api/Request#param) | Any other params defined in your route
+[$this->request->_route](../../guide-api/Request#property:_route) | [Route] that matched the current request url
+[$this->request->_directory](../../guide-api/Request#property:_directory), <br /> [$this->request->_controller](../../guide-api/Request#property:_controller), <br /> [$this->request->_action](../../guide-api/Request#property:_action) | The directory, controller and action that matched for the current route
+[$this->request->param()](../../guide-api/Request#param) | Any other params defined in your route
 
 ## $this->response
-[$this->response->body()](../api/Response#property:body) | The content to return for this request
-[$this->response->status()](../api/Response#property:status) | The HTTP status for the request (200, 404, 500, etc.)
-[$this->response->headers()](../api/Response#property:headers) | The HTTP headers to return with the response
+Property/method | What it does
+--- | ---
+[$this->response->_body](../../guide-api/Response#property:_body) | The content to return for this request
+[$this->response->_status](../../guide-api/Response#property:_status) | The HTTP status for the request (200, 404, 500, etc.)
+[$this->response->_header](../../guide-api/Response#property:_header) | The HTTP headers to return with the response
 
 
 ## Actions

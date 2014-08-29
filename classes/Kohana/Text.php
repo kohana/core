@@ -608,12 +608,12 @@ class Kohana_Text {
 	 * Returns information about the client user agent.
 	 *
 	 *     // Returns "Chrome" when using Google Chrome
-	 *     $browser = Text::user_agent('browser');
+	 *     $browser = Text::user_agent(Request::$user_agent, 'browser');
 	 *
 	 * Multiple values can be returned at once by using an array:
 	 *
 	 *     // Get the browser and platform with a single call
-	 *     $info = Text::user_agent(array('browser', 'platform'));
+	 *     $info = Text::user_agent(Request::$user_agent, array('browser', 'platform'));
 	 *
 	 * When using an array for the value, an associative array will be returned.
 	 *

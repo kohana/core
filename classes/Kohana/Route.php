@@ -5,7 +5,7 @@
  * and a route. Routes may also contain keys which can be used to set the
  * controller, action, and parameters.
  *
- * Each <key> will be translated to a regular expression using a default
+ * Each `<key>` will be translated to a regular expression using a default
  * regular expression pattern. You can override the default pattern by providing
  * a pattern for the key:
  *
@@ -142,6 +142,7 @@ class Kohana_Route {
 	 * Saves or loads the route cache. If your routes will remain the same for
 	 * a long period of time, use this to reload the routes from the cache
 	 * rather than redefining them on every page load.
+	 * By default the $cache_life is set by [Kohana::init] in APPPATH/bootstrap.php
 	 *
 	 *     if ( ! Route::cache())
 	 *     {
@@ -306,7 +307,7 @@ class Kohana_Route {
 	 * @param   string  $uri    route URI pattern
 	 * @param   array   $regex  key patterns
 	 * @return  void
-	 * @uses    Route::_compile
+	 * @uses    Route::compile
 	 */
 	public function __construct($uri = NULL, $regex = NULL)
 	{

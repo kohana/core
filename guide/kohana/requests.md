@@ -51,7 +51,7 @@ You can use this to scrape HTML from a remote site, or make a REST call to a thi
 
 ## Executing Requests
 
-To execute a request, use the `execute()` method on it. This will give you a [response](responses) object.
+To execute a request, use the `execute()` method on it. This will give you a [response] object.
 
 	$request = Request::factory('welcome');
 	$response = $request->execute();
@@ -145,6 +145,6 @@ You can easily alter this behaviour by configuring your own 'Location' header ca
 
 You can cache requests for fast execution by passing a cache instance in as the second parameter of factory:
 
-	$request = Request::factory('welcome', array('cache'=>Cache::instance()));
+	$request = Request::factory('welcome', array('cache'=>HTTP_Cache::factory( Cache::instance() )));
 
 TODO

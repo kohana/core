@@ -38,12 +38,9 @@ class Kohana_Request implements HTTP_Request {
 
 	/**
 	 * Creates a new request object for the given URI. New requests should be
-	 * created using the [Request::instance] or [Request::factory] methods.
+	 * created using this method.
 	 *
 	 *     $request = Request::factory($uri);
-	 *
-	 * If $cache parameter is set, the response for the request will attempt to
-	 * be retrieved from the cache.
 	 *
 	 * @param   string  $uri              URI of the request
 	 * @param   array   $client_params    An array of params to pass to the request client
@@ -631,12 +628,9 @@ class Kohana_Request implements HTTP_Request {
 
 	/**
 	 * Creates a new request object for the given URI. New requests should be
-	 * created using the [Request::instance] or [Request::factory] methods.
+	 * created using the [Request::factory] method.
 	 *
 	 *     $request = new Request($uri);
-	 *
-	 * If $cache parameter is set, the response for the request will attempt to
-	 * be retrieved from the cache.
 	 *
 	 * @param   string  $uri              URI of the request
 	 * @param   array   $client_params    Array of params to pass to the request client
@@ -927,8 +921,8 @@ class Kohana_Request implements HTTP_Request {
 	 * @return  Response
 	 * @throws  Request_Exception
 	 * @throws  HTTP_Exception_404
-	 * @uses    [Kohana::$profiling]
-	 * @uses    [Profiler]
+	 * @uses    Kohana::$profiling
+	 * @uses    Profiler
 	 */
 	public function execute()
 	{

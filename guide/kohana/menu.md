@@ -2,7 +2,10 @@
 
 - [Installation](install)
 - Getting Started
-   - [Conventions and Style](conventions)
+   - [Request Flow](flow)
+   - [Bootstrap](bootstrap)
+   - [Conventions](conventions)
+   - [Routing](routing)
    - [Model View Controller](mvc)
       - [Controllers](mvc/controllers)
       - [Models](mvc/models)
@@ -12,14 +15,12 @@
       - [Config Files](files/config)
       - [Translation Files](files/i18n)
       - [Message Files](files/messages)
-   - [Configuration](config)
-   - [Request Flow](flow)
-   - [Bootstrap](bootstrap)
    - [Modules](modules)
-   - [Routing](routing)
+   - [Configuration](config)
    - [Error Handling](errors)
    - [Tips & Common Mistakes](tips)
    - [Upgrading from v3.2](upgrading)
+   - [Coding Style](codingstyle)
 - Basic Usage
    - [Debugging](debugging)
    - [Loading Classes](autoloading)
