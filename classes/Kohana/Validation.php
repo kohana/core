@@ -499,12 +499,12 @@ class Kohana_Validation implements ArrayAccess {
 				if (is_string($translate))
 				{
 					// Translate the label using the specified language
-					$label = __($label, NULL, $translate);
+					$label = I18n::translate($label, NULL, $translate);
 				}
 				else
 				{
 					// Translate the label
-					$label = __($label);
+					$label = I18n::translate($label);
 				}
 			}
 
@@ -546,12 +546,12 @@ class Kohana_Validation implements ArrayAccess {
 							if (is_string($translate))
 							{
 								// Translate the value using the specified language
-								$value = __($value, NULL, $translate);
+								$value = I18n::translate($value, NULL, $translate);
 							}
 							else
 							{
 								// Translate the value
-								$value = __($value);
+								$value = I18n::translate($value);
 							}
 						}
 					}
@@ -588,12 +588,12 @@ class Kohana_Validation implements ArrayAccess {
 				if (is_string($translate))
 				{
 					// Translate the message using specified language
-					$message = __($message, $values, $translate);
+					$message = I18n::translate($message, $values, $translate);
 				}
 				else
 				{
 					// Translate the message using the default language
-					$message = __($message, $values);
+					$message = I18n::translate($message, $values);
 				}
 			}
 			else
