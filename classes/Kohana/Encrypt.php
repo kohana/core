@@ -151,7 +151,7 @@ class Kohana_Encrypt {
 				}
 				else
 				{
-					// Use the system random number generator
+					// Use an insecure random number generator
 					Encrypt::$_rand = MCRYPT_RAND;
 				}
 			}
@@ -159,13 +159,12 @@ class Kohana_Encrypt {
 
 		if (Encrypt::$_rand === MCRYPT_RAND)
 		{
-			// The system random number generator must always be seeded each
-			// time it is used, or it will not produce true random results
-			mt_srand();
+			$iv = $this->userlandRNG($this->_iv_size);
 		}
-
-		// Create a random initialization vector of the proper size for the current cipher
-		$iv = mcrypt_create_iv($this->_iv_size, Encrypt::$_rand);
+		else {
+			// Create a random initialization vector of the proper size for the current cipher
+			$iv = mcrypt_create_iv($this->_iv_size, Encrypt::$_rand);
+		}
 
 		// Encrypt the data using the configured options and generated iv
 		$data = mcrypt_encrypt($this->_cipher, $this->_key, $data, $this->_mode, $iv);
@@ -210,4 +209,44 @@ class Kohana_Encrypt {
 		return rtrim(mcrypt_decrypt($this->_cipher, $this->_key, $data, $this->_mode, $iv), "\0");
 	}
 
+
+	/**
+	 * Because rand() provides at most 32 bits (4 bytes) of entropy, let's reseed after 4
+	 * bytes of random output. This should only be called if MCRYPT_DEV_URANDOM isn't available.
+	 * 
+	 * @param integer $length
+	 * @return string
+	 */
+	private function userlandRNG($length)
+	{
+		// Sanity check
+		if (defined('MCRYPT_DEV_URANDOM'))
+		{
+			return mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
+		}
+		elseif (defined('MCRYPT_DEV_RANDOM'))
+		{
+			return mcrypt_create_iv($length, MCRYPT_DEV_RANDOM);
+		}
+		// Okay, let's do this dirty deed
+		$buffer = '';
+		for ($i = 0; $i < $length; $i++)
+		{
+			if ($i % 4 === 3)
+			{
+				// reseed!
+				$start = rand(0,36);
+				$rseed = hexdec(
+					substr(
+						sha1(microtime(true) . uniqid('', true)),
+						$start,
+						8
+					)
+				);
+				mt_srand($rseed);
+			}
+			$buffer .= chr(mt_rand(0, 255));
+                }
+                returb $buffer;
+	}
 }
