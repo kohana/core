@@ -649,7 +649,7 @@ class Kohana_Text {
 					// Set the browser name
 					$info['browser'] = $name;
 
-					if (preg_match('#'.preg_quote($search).'[^0-9.]*+([0-9.][0-9.a-z]*)#i', Request::$user_agent, $matches))
+					if (preg_match('#'.preg_quote($search).'[^0-9.]*+([0-9.][0-9.a-z]*)#i', $agent, $matches))
 					{
 						// Set the version number
 						$info['version'] = $matches[1];
