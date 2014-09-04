@@ -1,4 +1,9 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
+/**
+ * @see Text::user_agent
+ * array keys are used to search and match for occurances in the "User-Agent" header string
+ * search and matching are done in case-insensitive manner
+ */
 
 return array(
 
@@ -104,9 +109,8 @@ return array(
 		'fastcrawler'         => 'FastCrawler',
 		'infoseek'            => 'InfoSeek Robot 1.0',
 		'lycos'               => 'Lycos',
-		'bing'                => 'bingbot',
-		'googlewp'            => 'Google Web Preview', //Google Search Instant preview
-		'googlemobil'         => 'Googlebot-Mobile',
+		'bingbot'             => 'Bing',
+		'google web preview'  => 'Google Search Instant Preview', // https://sites.google.com/site/webmasterhelpforum/en/faq-instant-previews
 	),
 
 );
