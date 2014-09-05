@@ -78,7 +78,7 @@ class Kohana_Log_File extends Log_Writer {
 		if ( ! file_exists($filename))
 		{
 			// Create the log file
-			file_put_contents($filename, '');
+			file_put_contents($filename, '<?php exit; ?>'.PHP_EOL.PHP_EOL);
 
 			// Allow anyone to write to log files
 			chmod($filename, 0666);
