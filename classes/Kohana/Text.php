@@ -608,15 +608,16 @@ class Kohana_Text {
 	 * Returns information about the client user agent.
 	 *
 	 *     // Returns "Chrome" when using Google Chrome
-	 *     $browser = Text::user_agent('browser');
+	 *     $browser = Text::user_agent($agent, 'browser');
 	 *
 	 * Multiple values can be returned at once by using an array:
 	 *
 	 *     // Get the browser and platform with a single call
-	 *     $info = Text::user_agent(array('browser', 'platform'));
+	 *     $info = Text::user_agent($agent, array('browser', 'platform'));
 	 *
 	 * When using an array for the value, an associative array will be returned.
 	 *
+	 * @param   string  $agent  user_agent
 	 * @param   mixed   $value  array or string to return: browser, version, robot, mobile, platform
 	 * @return  mixed   requested information, FALSE if nothing is found
 	 * @uses    Kohana::$config
@@ -650,7 +651,7 @@ class Kohana_Text {
 					// Set the browser name
 					$info['browser'] = $name;
 
-					if (preg_match('#'.preg_quote($search).'[^0-9.]*+([0-9.][0-9.a-z]*)#i', Request::$user_agent, $matches))
+					if (preg_match('#'.preg_quote($search).'[^0-9.]*+([0-9.][0-9.a-z]*)#i', $agent, $matches))
 					{
 						// Set the version number
 						$info['version'] = $matches[1];
