@@ -129,7 +129,7 @@ class Kohana_Encrypt {
 	 */
 	public function encode($data)
 	{
-		// Set the rand type if it has not already been set// Set the rand type if it has not already been set
+		// Set the rand type if it has not already been set
 		if (Encrypt::$_rand === NULL)
 		{
 		    Encrypt::$_rand = MCRYPT_DEV_URANDOM;
