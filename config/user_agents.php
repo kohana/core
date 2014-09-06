@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 /**
  * @see Text::user_agent
  * array keys are used to search and match for occurances in the "User-Agent" header string

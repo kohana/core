@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 /**
  * Log writer abstract class. All [Log] writers must extend this class.
  *
