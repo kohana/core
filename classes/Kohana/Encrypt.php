@@ -130,38 +130,14 @@ class Kohana_Encrypt {
 	public function encode($data)
 	{
 		// Set the rand type if it has not already been set
-		if (Encrypt::$_rand === NULL)
+		if ((Encrypt::$_rand === NULL) OR (Encrypt::$_rand === MCRYPT_RAND))
 		{
-			if (Kohana::$is_windows)
-			{
-				// Windows only supports the system random number generator
-				Encrypt::$_rand = MCRYPT_RAND;
-			}
-			else
-			{
-				if (defined('MCRYPT_DEV_URANDOM'))
-				{
-					// Use /dev/urandom
-					Encrypt::$_rand = MCRYPT_DEV_URANDOM;
-				}
-				elseif (defined('MCRYPT_DEV_RANDOM'))
-				{
-					// Use /dev/random
-					Encrypt::$_rand = MCRYPT_DEV_RANDOM;
-				}
-				else
-				{
-					// Use the system random number generator
-					Encrypt::$_rand = MCRYPT_RAND;
-				}
-			}
+			Encrypt::$_rand = MCRYPT_DEV_URANDOM;
 		}
-
-		if (Encrypt::$_rand === MCRYPT_RAND)
+		// Do not allow insecure random number generator
+		if ((Encrypt::$_rand !== MCRYPT_DEV_URANDOM) AND (Encrypt::$_rand !== MCRYPT_DEV_RANDOM))
 		{
-			// The system random number generator must always be seeded each
-			// time it is used, or it will not produce true random results
-			mt_srand();
+			throw new Kohana_Exception("Insecure random number generator chosen");
 		}
 
 		// Create a random initialization vector of the proper size for the current cipher
