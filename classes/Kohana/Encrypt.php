@@ -134,11 +134,6 @@ class Kohana_Encrypt {
 		{
 			Encrypt::$_rand = MCRYPT_DEV_URANDOM;
 		}
-		// Do not allow insecure random number generator
-		if ((Encrypt::$_rand !== MCRYPT_DEV_URANDOM) AND (Encrypt::$_rand !== MCRYPT_DEV_RANDOM))
-		{
-			throw new Kohana_Exception("Insecure random number generator chosen");
-		}
 
 		// Create a random initialization vector of the proper size for the current cipher
 		$iv = mcrypt_create_iv($this->_iv_size, Encrypt::$_rand);
