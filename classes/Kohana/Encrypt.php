@@ -129,14 +129,8 @@ class Kohana_Encrypt {
 	 */
 	public function encode($data)
 	{
-		// Set the rand type if it has not already been set
-		if ((Encrypt::$_rand === NULL) OR (Encrypt::$_rand === MCRYPT_RAND))
-		{
-			Encrypt::$_rand = MCRYPT_DEV_URANDOM;
-		}
-
 		// Create a random initialization vector of the proper size for the current cipher
-		$iv = mcrypt_create_iv($this->_iv_size, Encrypt::$_rand);
+		$iv = mcrypt_create_iv($this->_iv_size, MCRYPT_DEV_URANDOM);
 
 		// Encrypt the data using the configured options and generated iv
 		$data = mcrypt_encrypt($this->_cipher, $this->_key, $data, $this->_mode, $iv);
