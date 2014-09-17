@@ -197,6 +197,13 @@ class Kohana_HTMLTest extends Unittest_TestCase
 				'https',
 				TRUE
 			),
+			array(
+				'<link type="text/css" href="//google.com/style.css" rel="stylesheet" />',
+				'//google.com/style.css',
+				array(),
+				NULL,
+				FALSE
+			),
 		);
 	}
 
