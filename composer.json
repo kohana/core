@@ -21,12 +21,19 @@
 	"require": {
 		"php":        ">=5.3.3"
 	},
+	"require-dev": {
+		"kohana/unittest":     "3.3.*@dev",
+		"kohana/koharness":    "*@dev"
+	},
 	"suggest": {
 		"ext-http":   "*",
 		"ext-curl":   "*",
 		"ext-mcrypt": "*"
 	},
 	"extra": {
+		"installer-paths": {
+			"vendor/{$vendor}/{$name}": ["type:kohana-module"]
+		},
 		"branch-alias": {
 			"dev-3.3/develop":  "3.3.x-dev",
 			"dev-3.4/develop":  "3.4.x-dev"
