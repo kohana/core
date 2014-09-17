@@ -117,6 +117,10 @@ class Kohana_HTMLTest extends Unittest_TestCase
 				'https',
 				FALSE
 			),
+			array(
+				'<script type="text/javascript" src="//google.com/script.js"></script>',
+				'//google.com/script.js',
+			),
 
 		);
 	}
