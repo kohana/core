@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Kohana v3.x: Activity</title>
+  <link href="http://dev.kohanaframework.org/projects/kohana3/activity.atom" rel="self"/>
+  <link href="http://dev.kohanaframework.org/projects/kohana3/activity" rel="alternate"/>
+  <id>http://dev.kohanaframework.org/</id>
+  <icon>http://dev.kohanaframework.org/favicon.ico?1392677580</icon>
+  <updated>2014-08-28T01:52:12Z</updated>
+  <author>
+    <name>Kohana Development</name>
+  </author>
+  <generator uri="http://www.redmine.org/">
+Redmine  </generator>
+  <entry>
+    <title>Proposals (Political/Workflow) #4839 (New)</title>
+    <link href="http://dev.kohanaframework.org/issues/4839" rel="alternate"/>
+    <id>http://dev.kohanaframework.org/issues/4839</id>
+    <updated>2014-08-28T01:52:12Z</updated>
+    <author>
+      <name>Guillaume Poirier-Morency</name>
+      <email>guillaumepoiriermorency@gmail.com</email>
+    </author>
+    <content type="html">
+&lt;p&gt;I have a prototype here &lt;a class="external" href="https://github.com/arteymix/kohana-makefile"&gt;https://github.com/arteymix/kohana-makefile&lt;/a&gt;&lt;/p&gt;
+
+
+	&lt;p&gt;The tool is very useful for settings permissions and running tests.&lt;/p&gt;
+
+
+	&lt;p&gt;I think we should consider having a good make tool in the sample application for the 3.4.*.&lt;/p&gt;    </content>
+  </entry>
+  <entry>
+    <title>Proposals (Political/Workflow) #4782</title>
+    <link href="http://dev.kohanaframework.org/issues/4782#change-17279" rel="alternate"/>
+    <id>http://dev.kohanaframework.org/issues/4782#change-17279</id>
+    <updated>2014-08-28T01:44:26Z</updated>
+    <author>
+      <name>Guillaume Poirier-Morency</name>
+      <email>guillaumepoiriermorency@gmail.com</email>
+    </author>
+    <content type="html">
+&lt;p&gt;Moving to composer is a nice idea. This will allow Kohana modules to define a wide range of dependencies.&lt;/p&gt;
+
+
+	&lt;p&gt;Although, I think that modules designed specifically for Kohana should end in modules and external libraries in application/vendor. This makes a clear dinsinction between what gets autoloaded by the CFS and what gets loaded by composer. Technically, we add "vendor-dir": "application/vendor" in "config" in composer.json.&lt;/p&gt;
+
+
+	&lt;p&gt;Then, only add a line after the modules loading in bootstrap.php&lt;/p&gt;
+
+
+&lt;pre&gt;
+// Autoloading composer packages
+require Kohana::find_file('vendor', 'autoload');
+&lt;/pre&gt;
+
+	&lt;p&gt;This is pretty much what I do right now. This doesn't break anything and allow a full access to composer.&lt;/p&gt;    </content>
+  </entry>
+</feed>
