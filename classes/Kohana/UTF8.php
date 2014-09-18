@@ -70,13 +70,7 @@ class Kohana_UTF8 {
 
 			if ( ! UTF8::is_ascii($var))
 			{
-				// Disable notices
-				$error_reporting = error_reporting(~E_NOTICE);
-
 				$var = mb_convert_encoding($var, $charset, $charset);
-
-				// Turn notices back on
-				error_reporting($error_reporting);
 			}
 		}
 
