@@ -95,6 +95,9 @@ class Kohana_Kohana_Exception extends Exception {
 
 		// Register the closure
 		register_shutdown_function($shutdown_exit1);
+
+		// Return
+		return TRUE;
 	}
 
 	/**
