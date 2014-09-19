@@ -88,7 +88,13 @@ class Kohana_Kohana_Exception extends Exception {
 		// Send the response to the browser
 		echo $response->send_headers()->body();
 
-		exit(1);
+		// Shutdown closure
+		$shutdown_exit1 = function() {
+			exit(1);
+		};
+
+		// Register the closure
+		register_shutdown_function($shutdown_exit1);
 	}
 
 	/**
