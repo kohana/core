@@ -15,10 +15,4 @@ script:
   - cd /tmp/koharness && ./vendor/bin/phpunit --bootstrap=modules/unittest/bootstrap.php modules/unittest/tests.php
 
 notifications:
-  irc:
-    channels:
-      - "irc.freenode.org#kohana"
-    template:
-      - "%{repository}/%{branch} (%{commit}) - %{author}: %{message}"
-      - "Build details: %{build_url}"
   email: false
