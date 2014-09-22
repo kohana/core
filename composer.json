@@ -1,4 +1,5 @@
 {
+    "_readme":     "NOTE: see readme for COMPOSER_ROOT_VERSION instructions if you have dependency issues",
 	"name":        "kohana/core",
 	"description": "Core system classes for the Kohana application framework",
 	"homepage":    "http://kohanaframework.org",

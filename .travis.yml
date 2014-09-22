@@ -8,7 +8,7 @@ php:
   - hhvm
 
 before_script:
-  - composer install --prefer-dist
+  - COMPOSER_ROOT_VERSION=3.3.x-dev composer install --prefer-dist
   - vendor/bin/koharness
 
 script:
