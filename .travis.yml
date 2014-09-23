@@ -1,0 +1,18 @@
+language: php
+
+php:
+  - 5.3
+  - 5.4
+  - 5.5
+  - 5.6
+  - hhvm
+
+before_script:
+  - COMPOSER_ROOT_VERSION=3.3.x-dev composer install --prefer-dist
+  - vendor/bin/koharness
+
+script:
+  - cd /tmp/koharness && ./vendor/bin/phpunit --bootstrap=modules/unittest/bootstrap.php modules/unittest/tests.php
+
+notifications:
+  email: false

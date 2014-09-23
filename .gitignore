@@ -1,2 +1,5 @@
 *~
 *.swp
+/composer.lock
+/vendor
+/koharness_bootstrap.php

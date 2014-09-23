@@ -296,7 +296,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 	{
 		return array(
 			array(array(), array()),
-			array(array('unittest' => MODPATH.'unittest'), array('unittest' => $this->dirSeparator(MODPATH.'unittest/'))),
+			array(array('module' => __DIR__), array('module' => $this->dirSeparator(__DIR__.'/'))),
 		);
 	}
 
