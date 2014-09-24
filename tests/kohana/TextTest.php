@@ -639,4 +639,111 @@ class Kohana_TextTest extends Unittest_TestCase
 
 	}
 
+
+	public function provider_user_agents()
+	{
+		return array(
+			array(
+				"Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36",
+				array(
+					'browser' => 'Chrome',
+					'version' => '37.0.2049.0',
+					'platform' => "Windows 8.1"
+				)
+			),
+			array(
+				"Mozilla/5.0 (Macintosh; U; Mac OS X 10_6_1; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/ Safari/530.5",
+				array(
+					'browser' => 'Chrome',
+					'version' => '530.5',
+					'platform' => "Mac OS X"
+				)
+			),
+			array(
+				"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/537.13+ (KHTML, like Gecko) Version/5.1.7 Safari/534.57.2",
+				array(
+					'browser' => 'Safari',
+					'version' => '534.57.2',
+					'platform' => 'Mac OS X'
+				)
+			),
+			array(
+				"Lynx/2.8.8dev.3 libwww-FM/2.14 SSL-MM/1.4.1",
+				array(
+					'browser' => 'Lynx',
+					'version' => '2.8.8dev.3',
+					'platform' => false
+				)
+			)
+		);
+	}
+
+	/**
+	 * Tests Text::user_agent
+	 *
+	 * @dataProvider provider_user_agents
+	 * @group current
+	 */
+	public function test_user_agent_returns_correct_browser($userAgent, $expectedData)
+	{
+		$browser = Text::user_agent($userAgent, 'browser');
+
+		$this->assertEquals($expectedData['browser'], $browser);
+	}
+
+	/**
+	 * Tests Text::user_agent
+	 *
+	 * @dataProvider provider_user_agents
+	 * @test
+	 */
+	public function test_user_agent_returns_correct_version($userAgent, $expectedData)
+	{
+		$version = Text::user_agent($userAgent, 'version');
+
+		$this->assertEquals($expectedData['version'], $version);
+	}
+
+	/**
+	 * Tests Text::user_agent
+	 * @test
+	 */
+	public function test_user_agent_recognizes_robots()
+	{
+		$bot = Text::user_agent('Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)', 'robot');
+
+		$this->assertEquals('Googlebot', $bot);
+	}
+
+	/**
+	 * Tests Text::user_agent
+	 *
+	 * @dataProvider provider_user_agents
+	 * @test
+	 */
+	public function test_user_agent_returns_correct_platform($userAgent, $expectedData)
+	{
+		$platform = Text::user_agent($userAgent, 'platform');
+
+		$this->assertEquals($expectedData['platform'], $platform);
+	}
+
+
+	/**
+	 * Tests Text::user_agent
+	 * @test
+	 */
+	public function test_user_agent_accepts_array()
+	{
+		$agent_info = Text::user_agent(
+		    'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 '.
+		    '(KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36',
+		    array('browser', 'version', 'platform'));
+
+		$this->assertArrayHasKey('browser', $agent_info);
+		$this->assertArrayHasKey('version', $agent_info);
+		$this->assertArrayHasKey('platform', $agent_info);
+
+	}
+
 }
