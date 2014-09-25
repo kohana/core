@@ -70,7 +70,17 @@ class Kohana_UTF8 {
 
 			if ( ! UTF8::is_ascii($var))
 			{
+				// Temporarily save the mb_substitute_character() value into a variable
+				$mb_substitute_character = mb_substitute_character();
+
+				// Disable substituting illegal characters with the default '?' character
+				mb_substitute_character('none');
+
+				// convert encoding, this is expensive, used when $var is not ASCII
 				$var = mb_convert_encoding($var, $charset, $charset);
+
+				// Reset mb_substitute_character() value back to the original setting
+				mb_substitute_character($mb_substitute_character);
 			}
 		}
 
