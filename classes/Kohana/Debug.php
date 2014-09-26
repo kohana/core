@@ -133,8 +133,8 @@ class Kohana_Debug {
 
 			if ($marker === NULL)
 			{
-				// Make a unique marker
-				$marker = uniqid("\x00");
+				// Make a unique marker - force it to be alphanumeric so that it is always treated as a string array key
+				$marker = uniqid("\x00")."x";
 			}
 
 			if (empty($var))
