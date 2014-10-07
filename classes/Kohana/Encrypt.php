@@ -164,8 +164,8 @@ class Kohana_Encrypt {
 			mt_srand();
 		}
 
-		// Create a random initialization vector of the proper size for the current cipher
-		$iv = mcrypt_create_iv($this->_iv_size, Encrypt::$_rand);
+		// Get an initialization vector
+		$iv = $this->_create_iv();
 
 		// Encrypt the data using the configured options and generated iv
 		$data = mcrypt_encrypt($this->_cipher, $this->_key, $data, $this->_mode, $iv);
@@ -210,4 +210,13 @@ class Kohana_Encrypt {
 		return rtrim(mcrypt_decrypt($this->_cipher, $this->_key, $data, $this->_mode, $iv), "\0");
 	}
 
+	/**
+	 * Proxy for the mcrypt_create_iv function - to allow mocking and testing against KAT vectors
+	 *
+	 * @return string the initialization vector or FALSE on error
+	 */
+	protected function _create_iv() {
+		// Create a random initialization vector of the proper size for the current cipher
+		return mcrypt_create_iv($this->_iv_size, Encrypt::$_rand);
+	}
 }
