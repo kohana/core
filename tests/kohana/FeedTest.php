@@ -25,7 +25,8 @@ class Kohana_FeedTest extends Unittest_TestCase
 	{
 		return array(
 			// $source, $expected
-			array('http://dev.kohanaframework.org/projects/kohana3/activity.atom', 15),
+			array(realpath(__DIR__.'/../test_data/feeds/activity.atom'), array('Proposals (Political/Workflow) #4839 (New)', 'Proposals (Political/Workflow) #4782')),
+			array(realpath(__DIR__.'/../test_data/feeds/example.rss20'), array('Example entry')),
 		);
 	}
 
@@ -38,11 +39,15 @@ class Kohana_FeedTest extends Unittest_TestCase
 	 * @param string  $source   URL to test
 	 * @param integer $expected Count of items
 	 */
-	public function test_parse($source, $expected)
+	public function test_parse($source, $expected_titles)
 	{
-		$this->markTestSkipped('We don\'t go to the internet for tests.');
+		$titles = array();
+		foreach (Feed::parse($source) as $item)
+		{
+			$titles[] = $item['title'];
+		}
 
-		$this->assertEquals($expected, count(Feed::parse($source)));
+		$this->assertSame($expected_titles, $titles);
 	}
 
 	/**

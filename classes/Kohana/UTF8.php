@@ -521,7 +521,7 @@ abstract class Kohana_UTF8 {
 	public static function strrev($str)
 	{
 		UTF8::_load(__FUNCTION__);
-
+		
 		return _strrev($str);
 	}
 
