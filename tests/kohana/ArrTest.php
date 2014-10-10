@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('Kohana bootstrap needs to be included before tests run');
+<?php
 
 /**
  * Tests the Arr lib that's shipped with kohana
@@ -694,5 +694,88 @@ class Kohana_ArrTest extends Unittest_TestCase
 			$expected,
 			Arr::flatten($source)
 		);
+	}
+
+	/**
+	 * Provides test data for test_count_valid.
+	 * 
+	 * @return array Test Data.
+	 */
+	public function provider_count_valid()
+	{
+		return array(
+			array(
+				array(
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+				),
+				10,
+			),
+			array(
+				array(),
+				0,
+			),
+			array(
+				new ArrayObject(
+					array(
+						1, 2, 3, 4, 5
+					)
+				),
+				5,
+			),
+			array(
+				array(
+					"foo" => "bar"
+				),
+				1
+			)
+		);
+	}
+
+	/**
+	 * @test
+	 * @dataProvider provider_count_valid
+	 */
+	public function test_count_valid($source, $expected)
+	{
+		$this->assertSame(
+			$expected,
+			Arr::count($source)
+		);
+	}
+
+	/**
+	 * Provides test data for test_count_invalid.
+	 * 
+	 * @return array Test Data.
+	 */
+	public function provider_count_invalid()
+	{
+		return array(
+			array(
+				"string",
+			),
+			array(
+				false,
+			),
+			array(
+				true,
+			),
+			array(
+				null,
+			),
+			array(
+				0.01,
+			),
+		);
+	}
+
+	/**
+	 * @test
+	 * @dataProvider provider_count_invalid
+	 * @expectedException Kohana_Exception
+	 */
+	public function test_count_invalid($source)
+	{
+		Arr::count($source);
 	}
 }

@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 /**
  * Form helper class. Unless otherwise noted, all generated HTML will be made
  * safe using the [HTML::chars] method. This prevents against simple XSS
@@ -28,7 +28,7 @@ class Kohana_Form {
 	 * @param   mixed   $action     form action, defaults to the current request URI, or [Request] class to use
 	 * @param   array   $attributes html attributes
 	 * @return  string
-	 * @uses    Request::instance
+	 * @uses    Request
 	 * @uses    URL::site
 	 * @uses    HTML::attributes
 	 */

@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 /**
  * Number helper class. Provides additional formatting methods that for working
  * with numbers.
@@ -54,6 +54,22 @@ class Kohana_Num {
 		'Yi'  => 80,
 		'YB'  => 80,
 		'YiB' => 80,
+	);
+
+	/**
+	 * @var  array  SI looking prefixes
+	 */
+	public static $si_prefixes = array
+	(
+		'B'   => 0,
+		'KB'  => 3,
+		'MB'  => 6,
+		'GB'  => 9,
+		'TB'  => 12,
+		'PB'  => 15,
+		'EB'  => 18,
+		'ZB'  => 21,
+		'YB'  => 24,
 	);
 
 	/**
@@ -197,12 +213,16 @@ class Kohana_Num {
 	 *     echo Num::bytes('200K');  // 204800
 	 *     echo Num::bytes('5MiB');  // 5242880
 	 *     echo Num::bytes('1000');  // 1000
-	 *     echo Num::bytes('2.5GB'); // 2684354560
+	 *     echo Num::bytes('2.5GB', FALSE); // 2684354560
+	 *     echo Num::bytes('2.5GB'); // 2500000000
+	 *     echo Num::bytes('2.5GiB'); // 2684354560
 	 *
-	 * @param   string  $bytes  file size in SB format
+	 * @param   string  $size  file size in SB format
+	 * @param   bool  $si Use SI prefixes
 	 * @return  float
+	 * @throws Kohana_Exception
 	 */
-	public static function bytes($size)
+	public static function bytes($size, $si = TRUE)
 	{
 		// Prepare the size
 		$size = trim( (string) $size);
@@ -225,8 +245,16 @@ class Kohana_Num {
 		// Find the actual unit, assume B if no unit specified
 		$unit = Arr::get($matches, 2, 'B');
 
-		// Convert the size into bytes
-		$bytes = $size * pow(2, Num::$byte_units[$unit]);
+		if(array_key_exists($unit, Num::$si_prefixes) AND $si === TRUE)
+		{
+			// Convert the size into bytes using SI prefixes (decimal)
+			$bytes = $size * pow(10, Num::$si_prefixes[$unit]);
+		}
+		else
+		{
+			// Convert the size into bytes
+			$bytes = $size * pow(2, Num::$byte_units[$unit]);
+		}
 
 		return $bytes;
 	}

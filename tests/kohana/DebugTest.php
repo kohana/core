@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('Kohana bootstrap needs to be included before tests run');
+<?php
 
 /**
  * Tests Kohana Core
@@ -13,11 +13,39 @@
  * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2012 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2014 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_DebugTest extends Unittest_TestCase
 {
+
+	/**
+	 * Provides test data for test_type()
+	 *
+	 * @return array
+	 */
+	public function provider_type()
+	{
+		return array(
+			array('foo', 'string'),
+			array(FALSE, 'boolean'),
+			array(new stdClass, 'stdClass'),
+		);
+	}
+
+	/**
+	 * Tests Debug::type()
+	 *
+	 * @test
+	 * @dataProvider provider_type
+	 * @covers Debug::type
+	 * @param boolean $thing    The thing to return type of
+	 * @param boolean $expected Output of Debug::type
+	 */
+	public function test_type($var, $expected)
+	{
+		$this->assertEquals($expected, Debug::type($var));
+	}
 
 	/**
 	 * Provides test data for test_debug()

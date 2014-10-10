@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 
 /**
  * Interface for config writers
@@ -7,8 +7,8 @@
  *
  * @package Kohana
  * @author  Kohana Team
- * @copyright  (c) 2008-2012 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2014 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 interface Kohana_Config_Writer extends Kohana_Config_Source
 {

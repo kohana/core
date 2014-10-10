@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('Kohana bootstrap needs to be included before tests run');
+<?php
 
 /**
  * Tests Num
@@ -52,7 +52,10 @@ class Kohana_NumTest extends Unittest_TestCase
 			array(204800.0, '200K'),
 			array(5242880.0, '5MiB'),
 			array(1000.0, 1000),
-			array(2684354560.0, '2.5GB'),
+			array(2684354560.0, '2.5GB', FALSE),
+			array(2684354560.0, '2.5GiB', FALSE),
+			array(2684354560.0, '2.5GiB', TRUE),
+			array(2500000000.0, '2.5GB'),
 		);
 	}
 	
@@ -65,9 +68,9 @@ class Kohana_NumTest extends Unittest_TestCase
 	 * @param integer Expected Value
 	 * @param string  Input value
 	 */
-	public function test_bytes($expected, $size)
+	public function test_bytes($expected, $size, $si = TRUE)
 	{
-		$this->assertSame($expected, Num::bytes($size));
+		$this->assertSame($expected, Num::bytes($size, $si));
 	}
 	
 	/**

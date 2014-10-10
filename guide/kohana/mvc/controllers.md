@@ -55,7 +55,7 @@ You can also have a controller extend another controller to share common things,
 
 Every controller has the `$this->request` property which is the [Request] object that called the controller.  You can use this to get information about the current request, as well as set the response body via `$this->response->body($ouput)`.
 
-Here is a partial list of the properties and methods available to `$this->request`.  These can also be accessed via `Request::instance()`, but `$this->request` is provided as a shortcut.  See the [Request] class for more information on any of these. 
+Here is a partial list of the properties and methods available to `$this->request`. See the [Request] class for more information on any of these.
 
 Property/method | What it does
 --- | ---

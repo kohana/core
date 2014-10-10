@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('Kohana bootstrap needs to be included before tests run');
+<?php
 
 /**
  * Tests the kohana text class (Kohana_Text)
@@ -386,9 +386,90 @@ class Kohana_TextTest extends Unittest_TestCase
 	{
 		return array
 			(
-				array('No gain, no&nbsp;pain', 'No gain, no pain'),
-				array("spaces?what'rethey?", "spaces?what'rethey?"),
-				array('', ''),
+				// A very simple widont test
+				array(
+					'A very simple&nbsp;test',
+					'A very simple test',
+				),
+				// Single word items shouldn't be changed
+				array(
+					'Test',
+					'Test',
+				),
+				// Single word after single space shouldn't be changed either
+				array(
+					' Test',
+					' Test',
+				),
+				// Single word with HTML all around
+				array(
+					'<ul><li><p>Test</p></li><ul>',
+					'<ul><li><p>Test</p></li><ul>',
+				),
+				// Single word after single space with HTML all around
+				array(
+					'<ul><li><p> Test</p></li><ul>',
+					'<ul><li><p> Test</p></li><ul>',
+				),
+				// Widont with more than one paragraph
+				array(
+					'<p>In a couple of&nbsp;paragraphs</p><p>paragraph&nbsp;two</p>',
+					'<p>In a couple of paragraphs</p><p>paragraph two</p>',
+				),
+				// a link inside a heading
+				array(
+					'<h1><a href="#">In a link inside a&nbsp;heading </a></h1>',
+					'<h1><a href="#">In a link inside a heading </a></h1>',
+				),
+				// a link followed by text
+				array(
+					'<h1><a href="#">In a link</a> followed by other&nbsp;text</h1>',
+					'<h1><a href="#">In a link</a> followed by other text</h1>',
+				),
+				// empty html, with no text inside
+				array(
+					'<h1><a href="#"></a></h1>',
+					'<h1><a href="#"></a></h1>',
+				),
+				// apparently, we don't love DIVs
+				array(
+					'<div>Divs get no love!</div>',
+					'<div>Divs get no love!</div>',
+				),
+				// we don't love PREs, either
+				array(
+					'<pre>Neither do PREs</pre>',
+					'<pre>Neither do PREs</pre>',
+				),
+				// but we love DIVs with paragraphs
+				array(
+					'<div><p>But divs with paragraphs&nbsp;do!</p></div>',
+					'<div><p>But divs with paragraphs do!</p></div>',
+				),
+				array(
+					'No gain, no&nbsp;pain',
+					'No gain, no pain',
+				),
+				array(
+					"spaces?what'rethey?",
+					"spaces?what'rethey?",
+				),
+			/*
+			 * // @issue 3499, with HTML at the end
+			 * array(
+			 * 		'with HTML at the end &nbsp;<strong>Kohana</strong>',
+			 * 		'with HTML at the end <strong>Kohana</strong>',
+			 * 	),
+			 * 	// @issue 3499, with HTML with attributes at the end
+			 * 	array(
+			 * 		'with HTML at the end:&nbsp;<a href="#" title="Kohana">Kohana</a>',
+			 * 		'with HTML at the end: <a href="#" title="Kohana">Kohana</a>',
+			 * 	),
+			 */
+				array(
+					'',
+					'',
+				),
 			);
 	}
 
@@ -441,6 +522,8 @@ class Kohana_TextTest extends Unittest_TestCase
 			array('fourty-two', 42),
 			array('five million, six hundred and thirty-two', 5000632),
 			array('five million, six hundred and thirty', 5000630),
+			array('five million, six hundred thirty-two', 5000632, ' '),
+			array('five million, six hundred thirty', 5000630, ' '),
 			array('nine hundred million', 900000000),
 			array('thirty-seven thousand', 37000),
 			array('one thousand and twenty-four', 1024),
@@ -453,9 +536,9 @@ class Kohana_TextTest extends Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_number
 	 */
-	public function test_number($expected, $number)
+	public function test_number($expected, $number, $separator = ' and ')
 	{
-		$this->assertSame($expected, Text::number($number));
+		$this->assertSame($expected, Text::number($number, $separator));
 	}
 
 	/**
@@ -637,6 +720,206 @@ class Kohana_TextTest extends Unittest_TestCase
 			$this->assertContains('&#109;&#097;&#105;&#108;&#116;&#111;&#058;'.$email, $linked_text);
 		}
 
+	}
+
+
+	public function provider_user_agents()
+	{
+		return array(
+			array(
+				"Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36",
+				array(
+					'browser' => 'Chrome',
+					'version' => '37.0.2049.0',
+					'platform' => "Windows 8.1"
+				)
+			),
+			array(
+				"Mozilla/5.0 (Macintosh; U; Mac OS X 10_6_1; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/ Safari/530.5",
+				array(
+					'browser' => 'Chrome',
+					'version' => '530.5',
+					'platform' => "Mac OS X"
+				)
+			),
+			array(
+				"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/537.13+ (KHTML, like Gecko) Version/5.1.7 Safari/534.57.2",
+				array(
+					'browser' => 'Safari',
+					'version' => '534.57.2',
+					'platform' => 'Mac OS X'
+				)
+			),
+			array(
+				"Lynx/2.8.8dev.3 libwww-FM/2.14 SSL-MM/1.4.1",
+				array(
+					'browser' => 'Lynx',
+					'version' => '2.8.8dev.3',
+					'platform' => false
+				)
+			)
+		);
+	}
+
+	/**
+	 * Tests Text::user_agent
+	 *
+	 * @dataProvider provider_user_agents
+	 * @group current
+	 */
+	public function test_user_agent_returns_correct_browser($userAgent, $expectedData)
+	{
+		$browser = Text::user_agent($userAgent, 'browser');
+
+		$this->assertEquals($expectedData['browser'], $browser);
+	}
+
+	/**
+	 * Tests Text::user_agent
+	 *
+	 * @dataProvider provider_user_agents
+	 * @test
+	 */
+	public function test_user_agent_returns_correct_version($userAgent, $expectedData)
+	{
+		$version = Text::user_agent($userAgent, 'version');
+
+		$this->assertEquals($expectedData['version'], $version);
+	}
+
+	/**
+	 * Tests Text::user_agent
+	 * @test
+	 */
+	public function test_user_agent_recognizes_robots()
+	{
+		$bot = Text::user_agent('Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)', 'robot');
+
+		$this->assertEquals('Googlebot', $bot);
+	}
+
+	/**
+	 * Tests Text::user_agent
+	 *
+	 * @dataProvider provider_user_agents
+	 * @test
+	 */
+	public function test_user_agent_returns_correct_platform($userAgent, $expectedData)
+	{
+		$platform = Text::user_agent($userAgent, 'platform');
+
+		$this->assertEquals($expectedData['platform'], $platform);
+	}
+
+
+	/**
+	 * Tests Text::user_agent
+	 * @test
+	 */
+	public function test_user_agent_accepts_array()
+	{
+		$agent_info = Text::user_agent(
+		    'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 '.
+		    '(KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36',
+		    array('browser', 'version', 'platform'));
+
+		$this->assertArrayHasKey('browser', $agent_info);
+		$this->assertArrayHasKey('version', $agent_info);
+		$this->assertArrayHasKey('platform', $agent_info);
+
+	}
+
+	/**
+	 * Provides test data for test_readable_list.
+	 *
+	 * @return array
+	 */
+	public function provider_readable_list()
+	{
+		return array(
+			array(
+				'Tom, Dick, and Harry',
+				array('Tom', 'Dick', 'Harry'),
+				'and',
+				TRUE
+			),
+			array(
+				'Tom, Dick and Harry',
+				array('Tom', 'Dick', 'Harry'),
+				'and',
+				FALSE
+			),
+			array(
+				'1, 2, and 3',
+				array(1, 2, 3),
+				'and',
+				TRUE,
+			),
+			array(
+				'1, 2 and 3',
+				array(1, 2, 3),
+				'and',
+				FALSE
+			),
+			array(
+				'Tom, Dick & Harry',
+				array('Tom', 'Dick', 'Harry'),
+				'&',
+				FALSE
+			),
+			array(
+				'1, 2, & 3',
+				array(1, 2, 3),
+				'&',
+				TRUE
+			)
+		);
+	}
+
+	/**
+	 * Provides test data for test_readable_list_throws_exception_with_unexpected_data_types.
+	 *
+	 * @return array
+	 */
+	public function provider_readable_list_throws_exception_with_unexpected_data_types()
+	{
+		return array(
+			array(
+				array(TRUE, FALSE, TRUE)
+			),
+			array(
+				array(
+					array('Values'),
+					array('In'),
+					array('Arrays')
+				)
+			)
+		);
+	}
+
+	/**
+	 * Tests Text::readable_list().
+	 *
+	 * @test
+	 * @dataProvider  provider_readable_list
+	 * @covers        Text::readable_list
+	 */
+	public function test_readable_list($expected, $words, $conjunction, $serial_comma)
+	{
+		$this->assertSame($expected, Text::readable_list($words, $conjunction, $serial_comma));
+	}
+
+	/**
+	 * Tests Text::readable_list().
+	 *
+	 * @test
+	 * @dataProvider       provider_readable_list_throws_exception_with_unexpected_data_types
+	 * @expectedException  Kohana_Exception
+	 * @covers             Text::readable_list
+	 */
+	public function test_readable_list_throws_exception_with_unexpected_data_types($words)
+	{
+		Text::readable_list($words);
 	}
 
 }

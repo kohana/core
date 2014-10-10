@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 /**
  * Response wrapper. Created as the result of any [Request] execution
  * or utility method (i.e. Redirect). Implements standard HTTP
@@ -7,8 +7,8 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2012 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2014 Kohana Team
+ * @license    http://kohanaframework.org/license
  * @since      3.1.0
  */
 class Kohana_Response implements HTTP_Response {
@@ -512,11 +512,8 @@ class Kohana_Response implements HTTP_Response {
 		// Manually stop execution
 		ignore_user_abort(TRUE);
 
-		if ( ! Kohana::$safe_mode)
-		{
-			// Keep the script running forever
-			set_time_limit(0);
-		}
+		// Keep the script running forever
+		set_time_limit(0);
 
 		// Send data in 16kb blocks
 		$block = 1024 * 16;

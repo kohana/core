@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 /**
  * Kohana exception class. Translates exceptions using the [I18n] class.
  *
@@ -50,7 +50,7 @@ class Kohana_Kohana_Exception extends Exception {
 	public function __construct($message = "", array $variables = NULL, $code = 0, Exception $previous = NULL)
 	{
 		// Set the message
-		$message = __($message, $variables);
+		$message = I18n::translate($message, $variables);
 
 		// Pass the message and integer code to the parent
 		parent::__construct($message, (int) $code, $previous);
@@ -215,6 +215,16 @@ class Kohana_Kohana_Exception extends Exception {
 						if ( ! isset($frame['type']))
 						{
 							$frame['type'] = '??';
+						}
+
+						// Xdebug returns the words 'dynamic' and 'static' instead of using '->' and '::' symbols
+						if ('dynamic' === $frame['type'])
+						{
+							$frame['type'] = '->';
+						}
+						elseif ('static' === $frame['type'])
+						{
+							$frame['type'] = '::';
 						}
 
 						// XDebug also has a different name for the parameters array

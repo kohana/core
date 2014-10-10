@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 /**
  * Security helper class.
  *
@@ -81,8 +81,29 @@ class Kohana_Security {
 	 */
 	public static function check($token)
 	{
-		return Security::token() === $token;
+		return Security::slow_equals(Security::token(), $token);
 	}
+	
+	
+	
+	/**
+	 * Compare two hashes in a time-invariant manner.
+	 * Prevents cryptographic side-channel attacks (timing attacks, specifically)
+	 * 
+	 * @param string $a cryptographic hash
+	 * @param string $b cryptographic hash
+	 * @return boolean
+	 */
+	public static function slow_equals($a, $b) 
+	{
+		$diff = strlen($a) ^ strlen($b);
+		for($i = 0; $i < strlen($a) AND $i < strlen($b); $i++)
+		{
+			$diff |= ord($a[$i]) ^ ord($b[$i]);
+		}
+		return $diff === 0; 
+	}
+
 
 	/**
 	 * Remove image tags from a string.

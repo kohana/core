@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('Kohana bootstrap needs to be included before tests run');
+<?php
 
 /**
  * Unit tests for response class
@@ -169,27 +169,6 @@ class Kohana_ResponseTest extends Unittest_TestCase
 
 		$this->assertSame('bar', $cookie['value']);
 		$this->assertSame(Cookie::$expiration, $cookie['expiration']);
-	}
-
-	/**
-	 * Tests that the headers are not sent by PHP in CLI mode
-	 *
-	 * @return void
-	 */
-	public function test_send_headers_cli()
-	{
-		if (headers_sent())
-		{
-			$this->markTestSkipped('Cannot test this feature as headers have already been sent!');
-		}
-
-		$content_type = 'application/json';
-		$response = new Response;
-		$response->headers('content-type', $content_type)
-			->send_headers();
-
-		$this->assertFalse(headers_sent());
-
 	}
 
 	/**

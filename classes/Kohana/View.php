@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 /**
  * Acts as an object wrapper for HTML pages with embedded PHP, called "views".
  * Variables can be assigned with the view object and referenced locally within
@@ -232,7 +232,7 @@ class Kohana_View {
 			/**
 			 * Display the exception message.
 			 *
-			 * We use this method here because it's impossible to throw and
+			 * We use this method here because it's impossible to throw an
 			 * exception from __toString().
 			 */
 			$error_response = Kohana_Exception::_handler($e);

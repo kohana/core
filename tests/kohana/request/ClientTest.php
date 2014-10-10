@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('Kohana bootstrap needs to be included before tests run');
+<?php
 
 /**
  * Unit tests for generic Request_Client class
@@ -174,6 +174,29 @@ class Kohana_Request_ClientTest extends Unittest_TestCase
 		$this->assertEquals('follow', $headers['x-follow-with-value']);
 		$this->assertFalse(isset($headers['x-not-in-follow']), 'X-Not-In-Follow should not be passed to next request');
 	}
+
+	/**
+	 * Tests that the follow_headers are only added to a redirect request if they were present in the original
+	 *
+	 * @ticket 4790
+	 */
+	public function test_follow_does_not_add_extra_headers()
+	{
+		$response = Request::factory(
+			            $this->_dummy_redirect_uri(301),
+			            array(
+			                 'follow' => TRUE,
+			                 'follow_headers' => array('Authorization')
+			            ))
+		            ->headers(array())
+		            ->execute();
+
+		$data = json_decode($response->body(),TRUE);
+		$headers = $data['rq_headers'];
+
+		$this->assertArrayNotHasKey('authorization', $headers, 'Empty headers should not be added when following redirects');
+	}
+
 
 	/**
 	 * Provider for test_follows_with_strict_method

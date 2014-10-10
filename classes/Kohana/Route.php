@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 /**
  * Routes are used to determine the controller and action for a requested URI.
  * Every route generates a regular expression which is used to match a URI
@@ -509,6 +509,14 @@ class Kohana_Route {
 	 */
 	public function uri(array $params = NULL)
 	{
+		if ($params)
+		{
+			// @issue #4079 rawurlencode parameters
+			$params = array_map('rawurlencode', $params);
+			// decode slashes back, see Apache docs about AllowEncodedSlashes and AcceptPathInfo
+			$params = str_replace(array('%2F', '%5C'), array('/', '\\'), $params);
+		}
+
 		$defaults = $this->_defaults;
 
 		/**

@@ -1,14 +1,25 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 /**
  * Contains debugging and dumping tools.
  *
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2012 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2014 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Debug {
+
+	/**
+	 * Returns the type of a variable
+	 *
+	 * @param   mixed   $var
+	 * @return  string  Class name or type, if not an object
+	 */
+	public static function type($var)
+	{
+		return is_object($var) ? get_class($var) : gettype($var);
+	}
 
 	/**
 	 * Returns an HTML string of debugging information about any number of
@@ -133,8 +144,8 @@ class Kohana_Debug {
 
 			if ($marker === NULL)
 			{
-				// Make a unique marker
-				$marker = uniqid("\x00");
+				// Make a unique marker - force it to be alphanumeric so that it is always treated as a string array key
+				$marker = uniqid("\x00")."x";
 			}
 
 			if (empty($var))
