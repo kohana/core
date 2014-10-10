@@ -1,5 +1,10 @@
 # Kohana PHP Framework - core
 
+| ver   | Stable                                                                                                                       | Develop                                                                                                                        |
+|-------|------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| 3.3.x | [![Build Status - 3.3/master](https://travis-ci.org/kohana/core.svg?branch=3.3%2Fmaster)](https://travis-ci.org/kohana/core) | [![Build Status - 3.3/develop](https://travis-ci.org/kohana/core.svg?branch=3.3%2Fdevelop)](https://travis-ci.org/kohana/core) |
+| 3.4.x | [![Build Status - 3.4/master](https://travis-ci.org/kohana/core.svg?branch=3.4%2Fmaster)](https://travis-ci.org/kohana/core) | [![Build Status - 3.4/develop](https://travis-ci.org/kohana/core.svg?branch=3.4%2Fdevelop)](https://travis-ci.org/kohana/core) |
+
 This is the core package for the [Kohana](http://kohanaframework.org/) object oriented HMVC framework built using PHP5.
 It aims to be swift, secure, and small.
 
