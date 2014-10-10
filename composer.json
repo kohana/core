@@ -23,7 +23,7 @@
 		"php":        ">=5.4.0"
 	},
 	"require-dev": {
-		"kohana/unittest":     "3.3.*@dev",
+		"kohana/unittest":     "3.4.*@dev",
 		"kohana/koharness":    "*@dev"
 	},
 	"suggest": {
