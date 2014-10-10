@@ -673,4 +673,48 @@ class Kohana_ValidationTest extends Unittest_TestCase
 		$this->assertSame($errors, $validation->errors('validation'));
 	}
 
+	/**
+	 * Provides test data for test_rule_label_regex
+	 *
+	 * @return array
+	 */
+	public function provider_rule_label_regex()
+	{
+		// $data, $field, $rules, $expected
+		return array(
+			array(
+				array(
+					'email1' => '',
+				),
+				'email1',
+				array(
+					array(
+						'not_empty'
+					)
+				),
+				array(
+					'email1' => 'email1 must not be empty'
+				),
+			)
+		);
+	}
+
+	/**
+	 * http://dev.kohanaframework.org/issues/4201
+	 *
+	 * @test
+	 * @ticket 4201
+	 * @covers Validation::rule
+	 * @dataProvider provider_rule_label_regex
+	 */
+	public function test_rule_label_regex($data, $field, $rules, $expected)
+	{
+		$validation = Validation::factory($data)->rules($field, $rules);
+
+		$validation->check();
+
+		$errors = $validation->errors('');
+
+		$this->assertSame($errors, $expected);
+	}
 }

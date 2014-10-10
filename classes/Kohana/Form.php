@@ -28,7 +28,7 @@ class Kohana_Form {
 	 * @param   mixed   $action     form action, defaults to the current request URI, or [Request] class to use
 	 * @param   array   $attributes html attributes
 	 * @return  string
-	 * @uses    Request::instance
+	 * @uses    Request
 	 * @uses    URL::site
 	 * @uses    HTML::attributes
 	 */

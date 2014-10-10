@@ -207,7 +207,7 @@ class Kohana_HTML {
 	 */
 	public static function style($file, array $attributes = NULL, $protocol = NULL, $index = FALSE)
 	{
-		if (strpos($file, '://') === FALSE)
+		if (strpos($file, '://') === FALSE AND strpos($file, '//') !== 0)
 		{
 			// Add the base URL
 			$file = URL::site($file, $protocol, $index);
@@ -240,7 +240,7 @@ class Kohana_HTML {
 	 */
 	public static function script($file, array $attributes = NULL, $protocol = NULL, $index = FALSE)
 	{
-		if (strpos($file, '://') === FALSE)
+		if (strpos($file, '://') === FALSE AND strpos($file, '//') !== 0)
 		{
 			// Add the base URL
 			$file = URL::site($file, $protocol, $index);
