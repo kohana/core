@@ -388,6 +388,219 @@ class Kohana_EncryptTest extends Unittest_TestCase
 		$this->assertSame($expected, $actual);
 	}
 
+	/**
+	 * Provider for test_encode_decode, test_consecutive_encode_different_results
+	 *
+	 * @return array of $key, $mode, $cipher, $txt_plain
+	 */
+	public function provider_encode_decode()
+	{
+		return array(
+			array(
+				// key
+				"Some super secret key",
+				// mode
+				MCRYPT_MODE_NOFB,
+				// cypher
+				MCRYPT_RIJNDAEL_128,
+				// txt_plain
+				"The quick brown fox jumps over the lazy dog",
+			),
+			array(
+				// key
+				"De finibus bonorum et malorum",
+				// mode
+				MCRYPT_MODE_NOFB,
+				// cypher
+				MCRYPT_RIJNDAEL_128,
+				// txt_plain
+				"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+			),
+		);
+	}
+
+	/**
+	 * @param type $key Encryption Key
+	 * @param type $mode Encryption Mode
+	 * @param type $cipher Encryption Cipher
+	 * @param type $txt_plain Plain text to encode and then decode back
+	 *
+	 * @dataProvider provider_encode_decode
+	 * @covers Encrypt::encode
+	 * @covers Encrypt::decode
+	 */
+	public function test_encode_decode($key, $mode, $cipher, $txt_plain)
+	{
+		// initialize, encode
+		$e = new Encrypt($key, $mode, $cipher);
+		$txt_encoded = $e->encode($txt_plain);
+
+		// prepare data
+		$expected = $txt_plain;
+		$actual = $e->decode($txt_encoded);
+
+		// assert
+		$this->assertSame($expected, $actual);
+	}
+
+	/**
+	 * Provider for test_decode_invalid_data
+	 *
+	 * @return array of $key, $mode, $cipher, $txt_invalid_encoded
+	 */
+	public function provider_decode_invalid_data()
+	{
+		return array(
+			array(
+				// key
+				"Some super secret key",
+				// mode
+				MCRYPT_MODE_NOFB,
+				// cypher
+				MCRYPT_RIJNDAEL_128,
+				// txt_invalid_encoded
+				".:This data is not a valid base 64 string:.",
+			),
+			array(
+				// key
+				"Some super secret key",
+				// mode
+				MCRYPT_MODE_NOFB,
+				// cypher
+				MCRYPT_RIJNDAEL_128,
+				// txt_invalid_encoded
+				base64_encode("too short"),
+			),
+		);
+	}
+
+	/**
+	 * Tests for decode when the string is not valid base64,
+	 * or is too short to contain a valid IV
+	 *
+	 * @param type $key
+	 * @param type $mode
+	 * @param type $cipher
+	 * @param type $txt_encoded
+	 *
+	 * @dataProvider provider_decode_invalid_data
+	 */
+	public function test_decode_invalid_data($key, $mode, $cipher, $txt_invalid_encoded)
+	{
+		// initialize
+		$e = new Encrypt($key, $mode, $cipher);
+
+		// assert
+		$this->AssertFalse($e->decode($txt_invalid_encoded));
+	}
+
+	/**
+	 * @param type $key Encryption Key
+	 * @param type $mode Encryption Mode
+	 * @param type $cipher Encryption Cipher
+	 * @param type $txt_plain Plain text to encode and then decode back
+	 *
+	 * @dataProvider provider_encode_decode
+	 * @covers Encrypt::encode
+	 */
+	public function test_consecutive_encode_produce_different_results($key, $mode, $cipher, $txt_plain)
+	{
+		// initialize, encode twice
+		$e = new Encrypt($key, $mode, $cipher);
+		$txt_encoded_first = $e->encode($txt_plain);
+		$txt_encoded_second = $e->encode($txt_plain);
+
+		// assert
+		$this->assertNotEquals($txt_encoded_first, $txt_encoded_second);
+	}
+
+	/**
+	 * @expectedException Kohana_Exception
+	 * @expectedExceptionMessage No encryption key is defined in the encryption configuration group
+	 */
+	public function test_instance_throw_exception_when_no_key_provided()
+	{
+		Encrypt::instance();
+	}
+
+	/**
+	 * Provider for test_instance_returns_singleton
+	 *
+	 * @return array of $instance_name, $missing_config
+	 */
+	public function provider_instance_returns_singleton()
+	{
+		return array(
+			array(
+				'default',
+				array(
+					'key' => 'trwQwVXX96TIJoKxyBHB9AJkwAOHixuV1ENZmIWyanI0j1zNgSVvqywy044Agaj',
+				)
+			),
+			array(
+				'blowfish',
+				array(
+					'key' => '7bZJJkmNrelj5NaKoY6h6rMSRSmeUlJuTeOd5HHka5XknyMX4uGSfeVolTz4IYy',
+					'cipher' => MCRYPT_BLOWFISH,
+					'mode' => MCRYPT_MODE_ECB,
+				)
+			),
+			array(
+				'tripledes',
+				array(
+					'key' => 'a9hcSLRvA3LkFc7EJgxXIKQuz1ec91J7P6WNq1IaxMZp4CTj5m31gZLARLxI1jD',
+					'cipher' => MCRYPT_3DES,
+					'mode' => MCRYPT_MODE_CBC,
+				)
+			),
+		);
+	}
+
+	/**
+	 * Test to multiple calls to the instance() method returns same instance
+	 * also test if the instances are appropriately configured.
+	 *
+	 * @param string $instance_name instance name
+	 * @param array $config_array array of config variables missing from config
+	 *
+	 * @dataProvider provider_instance_returns_singleton
+	 */
+	public function test_instance_returns_singleton($instance_name, array $config_array)
+	{
+		// load config
+		$config = Kohana::$config->load('encrypt');
+		// if instance name is NULL the config group should be the default
+		$config_group = $instance_name ? : Encrypt::$default;
+		// if config group does not exists, create
+		if (!array_key_exists($config_group, $config))
+		{
+			$config[$config_group] = array();
+		}
+		// fill in the missing config variables
+		$config[$config_group] = $config[$config_group] + $config_array;
+
+		// call instance twice
+		$e = Encrypt::instance($instance_name);
+		$e2 = Encrypt::instance($instance_name);
+
+		// assert instances
+		$this->assertInstanceOf('Encrypt', $e);
+		$this->assertInstanceOf('Encrypt', $e2);
+		$this->assertSame($e, $e2);
+
+		// test if instances are well configured
+		// prepare expected variables
+		$expected_cipher = $config[$config_group]['cipher'];
+		$expected_mode = $config[$config_group]['mode'];
+		$expected_key_size = mcrypt_get_key_size($expected_cipher, $expected_mode);
+		$expected_key = substr($config[$config_group]['key'], 0, $expected_key_size);
+
+		// assert
+		$this->assertSame($expected_key, $e->_key);
+		$this->assertSame($config[$config_group]['cipher'], $e->_cipher);
+		$this->assertSame($config[$config_group]['mode'], $e->_mode);
+	}
+
 }
 
 /**
