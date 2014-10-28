@@ -597,8 +597,8 @@ class Kohana_EncryptTest extends Unittest_TestCase
 
 		// assert
 		$this->assertSame($expected_key, $e->_key);
-		$this->assertSame($config[$config_group]['cipher'], $e->_cipher);
-		$this->assertSame($config[$config_group]['mode'], $e->_mode);
+		$this->assertSame($expected_cipher, $e->_cipher);
+		$this->assertSame($expected_mode, $e->_mode);
 	}
 
 }
