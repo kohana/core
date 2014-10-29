@@ -41,6 +41,26 @@ class Kohana_Encrypt {
 	protected static $_rand;
 
 	/**
+	 * @var string Encryption key
+	 */
+	protected $_key;
+
+	/**
+	 * @var string mcrypt mode
+	 */
+	protected $_mode;
+
+	/**
+	 * @var string mcrypt cipher
+	 */
+	protected $_cipher;
+
+	/**
+	 * @var int the size of the Initialization Vector (IV) in bytes
+	 */
+	protected $_iv_size;
+	
+	/**
 	 * Returns a singleton instance of Encrypt. An encryption key must be
 	 * provided in your "encrypt" configuration file.
 	 *

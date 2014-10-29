@@ -664,9 +664,24 @@ class Kohana_EncryptTest extends Unittest_TestCase
 		$expected_key = substr($config[$config_group]['key'], 0, $expected_key_size);
 
 		// assert
-		$this->assertSame($expected_key, $e->_key);
-		$this->assertSame($expected_cipher, $e->_cipher);
-		$this->assertSame($expected_mode, $e->_mode);
+		$this->assertSameProtectedProperty($expected_key, $e, '_key');
+		$this->assertSameProtectedProperty($expected_cipher, $e, '_cipher');
+		$this->assertSameProtectedProperty($expected_mode, $e, '_mode');
+	}
+
+	/**
+	 * Helper method to test for private/protected properties
+	 *
+	 * @param mixed $expect Expected value
+	 * @param mixed $object object that holds the private/protected property
+	 * @param string $name the name of the private/protected property
+	 */
+	protected function assertSameProtectedProperty($expect, $object, $name)
+	{
+		$refl = new ReflectionClass($object);
+		$property = $refl->getProperty($name);
+		$property->setAccessible(TRUE);
+		$this->assertSame($expect, $property->getValue($object));
 	}
 
 }
