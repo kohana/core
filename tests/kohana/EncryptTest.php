@@ -514,6 +514,75 @@ class Kohana_EncryptTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Provider for test_key_normalization
+	 *
+	 * @return array of $key, $iv, $mode, $cipher, $txt_plain
+	 */
+	public function provider_key_normalization()
+	{
+		return array(
+			array(
+				// key
+				"Some super secret key",
+				// IV
+				pack("H*", "2fe2b333ceda8f98f4a99b40d2cd34a8"),
+				// mode
+				MCRYPT_MODE_NOFB,
+				// cypher
+				MCRYPT_RIJNDAEL_128,
+				// txt_plain
+				"The quick brown fox jumps over the lazy dog",
+			),
+			array(
+				// key
+				"De finibus bonorum et malorum",
+				// IV
+				pack("H*", "2fe2b333ceda8f98f4a99b40d2cd34a8"),
+				// mode
+				MCRYPT_MODE_NOFB,
+				// cypher
+				MCRYPT_RIJNDAEL_128,
+				// txt_plain
+				"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+			),
+		);
+	}
+
+	/**
+	 * Test if key normalization logic behaves well
+	 * Encrypt::_normalize_key was ment for PHP > 5.6.0
+	 *
+	 * We are testing our key normalization only against lower versions of PHP
+	 * (PHP < 5.6.0) to see if it matches the internal key padding those
+	 * PHP versions already have
+	 *
+	 * @param type $key Encryption Key
+	 * @param type $mode Encryption Mode
+	 * @param type $cipher Encryption Cipher
+	 * @param type $txt_plain Plain text to encode and then decode back
+	 *
+	 * @dataProvider provider_key_normalization
+	 * @covers Encrypt::_normalize_key
+	 */
+	public function test_key_normalization($key, $iv, $mode, $cipher, $txt_plain)
+	{
+        if (version_compare(PHP_VERSION, '5.6.0', '>='))
+		{
+            $this->markTestSkipped('Starting from PHP 5.6.0, mcrypt does not pad encryption keys with null bytes.');
+        }
+
+		// initialize, encode twice
+		$e1 = new Kohana_EncryptTest_IvStubbed($key, $iv, $mode, $cipher);
+		$e2 = new Kohana_EncryptTest_KeyNormalized($key, $iv, $mode, $cipher);
+
+		$txt_encoded_1 = $e1->encode($txt_plain);
+		$txt_encoded_2 = $e2->encode($txt_plain);
+
+		// assert
+		$this->assertSame($txt_encoded_1, $txt_encoded_2);
+	}
+
+	/**
 	 * @expectedException Kohana_Exception
 	 * @expectedExceptionMessage No encryption key is defined in the encryption configuration group
 	 */
@@ -635,3 +704,29 @@ class Kohana_EncryptTest_IvStubbed extends Encrypt
 	}
 
 }
+
+/**
+ * Class Kohana_EncryptTest_KeyNormalized wraps the Encrypt class to mock out
+ * the actual mcrypt_create_iv calls for unit testing, as well as to always
+ * normalize keys
+ */
+class Kohana_EncryptTest_KeyNormalized extends Kohana_EncryptTest_IvStubbed
+{
+
+	/**
+	 * override constructor to force key normalization
+	 *
+	 * @param   string  $key    encryption key
+	 * @param   string  $mode   mcrypt mode
+	 * @param   string  $cipher mcrypt cipher
+	 */
+	public function __construct($key, $iv, $mode, $cipher)
+	{
+		parent::__construct($key, $iv, $mode, $cipher);
+
+		$this->_key = $this->_normalize_key($this->_key, $this->_cipher, $this->_mode);
+	}
+
+
+}
+

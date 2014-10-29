@@ -105,6 +105,10 @@ class Kohana_Encrypt {
 			// Shorten the key to the maximum size
 			$key = substr($key, 0, $size);
 		}
+		else if (version_compare(PHP_VERSION, '5.6.0', '>='))
+		{
+			$key = $this->_normalize_key($key, $cipher, $mode);
+		}
 
 		// Store the key, mode, and cipher
 		$this->_key    = $key;
@@ -215,8 +219,38 @@ class Kohana_Encrypt {
 	 *
 	 * @return string the initialization vector or FALSE on error
 	 */
-	protected function _create_iv() {
+	protected function _create_iv()
+	{
 		// Create a random initialization vector of the proper size for the current cipher
 		return mcrypt_create_iv($this->_iv_size, Encrypt::$_rand);
 	}
+
+	/**
+	 * Normalize key for PHP 5.6 for backwards compatibility
+	 *
+	 * This method is a shim to make PHP 5.6 behave in a B/C way for
+	 * legacy key padding when shorter-than-supported keys are used
+	 *
+	 * @param   string  $key    encryption key
+	 * @param   string  $cipher mcrypt cipher
+	 * @param   string  $mode   mcrypt mode
+	 */
+	protected function _normalize_key($key, $cipher, $mode)
+	{
+		// open the cipher
+		$td = mcrypt_module_open($cipher, '', $mode, '');
+
+		// loop through the supported key sizes
+		foreach (mcrypt_enc_get_supported_key_sizes($td) as $supported) {
+			// if key is short, needs padding
+			if (strlen($key) <= $supported)
+			{
+				return str_pad($key, $supported, "\0");
+			}
+		}
+
+		// at this point key must be greater than max supported size, shorten it
+		return substr($key, 0, mcrypt_get_key_size($cipher, $mode));
+	}
+
 }
