@@ -566,10 +566,10 @@ class Kohana_EncryptTest extends Unittest_TestCase
 	 */
 	public function test_key_normalization($key, $iv, $mode, $cipher, $txt_plain)
 	{
-        if (version_compare(PHP_VERSION, '5.6.0', '>='))
+		if (version_compare(PHP_VERSION, '5.6.0', '>='))
 		{
-            $this->markTestSkipped('Starting from PHP 5.6.0, mcrypt does not pad encryption keys with null bytes.');
-        }
+			$this->markTestSkipped('Starting from PHP 5.6.0, mcrypt does not pad encryption keys with null bytes.');
+		}
 
 		// initialize, encode twice
 		$e1 = new Kohana_EncryptTest_IvStubbed($key, $iv, $mode, $cipher);
