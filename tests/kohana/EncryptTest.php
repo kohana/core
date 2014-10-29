@@ -199,8 +199,7 @@ class Kohana_EncryptTest extends Unittest_TestCase
 	public function test_encode($mode, $cipher, $key, $iv, $txt_plain, $txt_encoded)
 	{
 		// initialize
-		$e = new Kohana_EncryptTest_TestableEncrypt($key, $mode, $cipher);
-		$e->_iv = $iv;
+		$e = new Kohana_EncryptTest_IvStubbed($key, $iv, $mode, $cipher);
 
 		// prepare data
 		$expected = base64_encode($iv . $txt_encoded);
@@ -604,11 +603,26 @@ class Kohana_EncryptTest extends Unittest_TestCase
 }
 
 /**
- * Class Kohana_EncryptTest_TestableEncrypt wraps the Encrypt class to mock out
+ * Class Kohana_EncryptTest_IvStubbed wraps the Encrypt class to mock out
  * the actual mcrypt_create_iv calls for unit testing.
  */
-class Kohana_EncryptTest_TestableEncrypt extends Encrypt
+class Kohana_EncryptTest_IvStubbed extends Encrypt
 {
+
+	/**
+	 * override constructor to force class use known IVs
+	 *
+	 * @param   string  $key    encryption key
+	 * @param   string  $iv     feed a known IV
+	 * @param   string  $mode   mcrypt mode
+	 * @param   string  $cipher mcrypt cipher
+	 */
+	public function __construct($key, $iv, $mode, $cipher)
+	{
+		parent::__construct($key, $mode, $cipher);
+
+		$this->_iv = $iv;
+	}
 
 	/**
 	 * Fake a random initialization vector by returning a known one
