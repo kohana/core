@@ -48,6 +48,25 @@ class Kohana_Text {
 	);
 
 	/**
+	 * Interpolates context values into the message placeholders.
+	 *
+	 * @param string $message
+	 * @param array $context
+	 * @return string
+	 */
+	public static function interpolate($message, array $context = array())
+	{
+		// build a replacement array with braces around the context keys
+		$replace = array();
+		foreach ($context as $key => $val) {
+			$replace['{' . $key . '}'] = $val;
+		}
+
+		// interpolate replacement values into the message and return
+		return strtr($message, $replace);
+	}
+
+	/**
 	 * Limits a phrase to a given number of words.
 	 *
 	 *     $text = Text::limit_words($text);
