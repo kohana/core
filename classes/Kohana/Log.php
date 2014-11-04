@@ -219,7 +219,15 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Logger {
 			}
 		}
 	}
-
+	
+	/**
+	 * Logs with an arbitrary level.
+	 *
+	 * @param  mixed  $level    level of message
+	 * @param  string $message  message body
+	 * @param  array  $context  values to replace in the message
+	 * @return Log
+	 */
 	public function log($level, $message, array $context = [])
 	{
 		if ($context)
