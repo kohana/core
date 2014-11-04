@@ -25,24 +25,9 @@ abstract class Kohana_Log_Writer {
 	public static $timezone;
 
 	/**
-	 * Numeric log level to string lookup table.
-	 * @var array
-	 */
-	protected $_log_levels = array(
-		LOG_EMERG   => 'EMERGENCY',
-		LOG_ALERT   => 'ALERT',
-		LOG_CRIT    => 'CRITICAL',
-		LOG_ERR     => 'ERROR',
-		LOG_WARNING => 'WARNING',
-		LOG_NOTICE  => 'NOTICE',
-		LOG_INFO    => 'INFO',
-		LOG_DEBUG   => 'DEBUG',
-	);
-
-	/**
 	 * @var  int  Level to use for stack traces
 	 */
-	public static $strace_level = LOG_DEBUG;
+	public static $strace_level = \Psr\Log\LogLevel::DEBUG;
 
 	/**
 	 * Write an array of messages.
@@ -76,15 +61,15 @@ abstract class Kohana_Log_Writer {
 	public function format_message(array $message, $format = "time --- level: body in file:line")
 	{
 		$message['time'] = Date::formatted_time('@'.$message['time'], Log_Writer::$timestamp, Log_Writer::$timezone, TRUE);
-		$message['level'] = $this->_log_levels[$message['level']];
+		$message['level'] = strtoupper($message['level']);
 
 		$string = strtr($format, array_filter($message, 'is_scalar'));
 
-		if (isset($message['additional']['exception']))
+		if (isset($message['exception']))
 		{
 			// Re-use as much as possible, just resetting the body to the trace
-			$message['body'] = $message['additional']['exception']->getTraceAsString();
-			$message['level'] = $this->_log_levels[Log_Writer::$strace_level];
+			$message['body'] = $message['exception']->getTraceAsString();
+			$message['level'] = strtoupper(Log_Writer::$strace_level);
 
 			$string .= PHP_EOL.strtr($format, array_filter($message, 'is_scalar'));
 		}

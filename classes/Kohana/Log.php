@@ -10,7 +10,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Log {
+class Kohana_Log extends Psr\Log\AbstractLogger implements Logger {
 
 	// Log message levels - Windows users see PHP Bug #18090
 	const EMERGENCY = LOG_EMERG;    // 0
@@ -21,6 +21,21 @@ class Kohana_Log {
 	const NOTICE    = LOG_NOTICE;   // 5
 	const INFO      = LOG_INFO;     // 6
 	const DEBUG     = LOG_DEBUG;    // 7
+
+	/**
+	 * Numeric log level to string lookup table.
+	 * @var array
+	 */
+	protected $_log_levels = array(
+		LOG_EMERG   => \Psr\Log\LogLevel::EMERGENCY,
+		LOG_ALERT   => \Psr\Log\LogLevel::ALERT,
+		LOG_CRIT    => \Psr\Log\LogLevel::CRITICAL,
+		LOG_ERR     => \Psr\Log\LogLevel::ERROR,
+		LOG_WARNING => \Psr\Log\LogLevel::WARNING,
+		LOG_NOTICE  => \Psr\Log\LogLevel::NOTICE,
+		LOG_INFO    => \Psr\Log\LogLevel::INFO,
+		LOG_DEBUG   => \Psr\Log\LogLevel::DEBUG,
+	);
 
 	/**
 	 * @var  boolean  immediately write when logs are added
@@ -114,67 +129,47 @@ class Kohana_Log {
 	 *         ':user' => $username,
 	 *     ));
 	 *
+	 * @deprecated since version 3.4 in favor of Log::log
 	 * @param   string  $level       level of message
 	 * @param   string  $message     message body
-	 * @param   array   $values      values to replace in the message
+	 * @param   array   $context      values to replace in the message
 	 * @param   array   $additional  additional custom parameters to supply to the log writer
 	 * @return  Log
 	 */
-	public function add($level, $message, array $values = NULL, array $additional = NULL)
+	public function add($level, $message, array $context = NULL, array $additional = NULL)
 	{
-		if ($values)
-		{
-			// Insert the values into the message
-			$message = strtr($message, $values);
-		}
+		/**
+		 * normalize all parameters for PSR-3 compliance and
+		 * in favor of Log::log method parameters
+		 */
 
-		// Grab a copy of the trace
-		if (isset($additional['exception']))
+		// $level should be one of the \Psr\Log\LogLevel constants
+		$level = $this->_log_levels[$level];
+
+		// $context should always be an array
+		if ($context === NULL)
 		{
-			$trace = $additional['exception']->getTrace();
+			$context = array();
 		}
 		else
 		{
-			// Older php version don't have 'DEBUG_BACKTRACE_IGNORE_ARGS', so manually remove the args from the backtrace
-			if ( ! defined('DEBUG_BACKTRACE_IGNORE_ARGS'))
-			{
-				$trace = array_map(function ($item) {
-					unset($item['args']);
-					return $item;
-				}, array_slice(debug_backtrace(FALSE), 1));
+			// build a replacement array with braces around the context keys
+			$replace = array();
+			foreach (array_keys($context) as $key) {
+				$replace[$key] = '{' . $key . '}';
 			}
-			else
-			{
-				$trace = array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), 1);
-			}
+			// wrap variable names in message into braces
+			$message = strtr($message, $replace);
 		}
 
-		if ($additional == NULL)
+		// exceptions should go into $context, no more $additional parameter
+		if (isset($additional['exception']))
 		{
-			$additional = array();
+			$context['exception'] = $additional['exception'];
 		}
 
-		// Create a new message
-		$this->_messages[] = array
-		(
-			'time'       => time(),
-			'level'      => $level,
-			'body'       => $message,
-			'trace'      => $trace,
-			'file'       => isset($trace[0]['file']) ? $trace[0]['file'] : NULL,
-			'line'       => isset($trace[0]['line']) ? $trace[0]['line'] : NULL,
-			'class'      => isset($trace[0]['class']) ? $trace[0]['class'] : NULL,
-			'function'   => isset($trace[0]['function']) ? $trace[0]['function'] : NULL,
-			'additional' => $additional,
-		);
-
-		if (Log::$write_on_add)
-		{
-			// Write logs as they are added
-			$this->write();
-		}
-
-		return $this;
+		// use Log::log to process
+		return $this->log($level, $message, $context);
 	}
 
 	/**
@@ -223,6 +218,62 @@ class Kohana_Log {
 				$writer['object']->write($filtered);
 			}
 		}
+	}
+
+	public function log($level, $message, array $context = [])
+	{
+		if ($context)
+		{
+			// Insert the values into the message
+			$message = Text::interpolate($message, $context);
+		}
+
+		// Grab a copy of the trace and sanitize $context['exception']
+		if (
+		  isset($context['exception']) AND
+		  is_object($context['exception']) AND
+		  $context['exception'] instanceof Exception
+		)
+		{
+			$trace = $context['exception']->getTrace();
+		}
+		else
+		{
+			$trace = array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), 1);
+
+			// sanitize $context['exception'] in order to not repeat
+			// the above if conditions elsewhere
+			$context['exception'] = FALSE;
+		}
+
+		// Create a new message
+		$message = array(
+			'time' => time(),
+			'level' => $level,
+			'body' => $message,
+			'trace' => $trace,
+			'file' => isset($trace[0]['file']) ? $trace[0]['file'] : NULL,
+			'line' => isset($trace[0]['line']) ? $trace[0]['line'] : NULL,
+			'class' => isset($trace[0]['class']) ? $trace[0]['class'] : NULL,
+			'function' => isset($trace[0]['function']) ? $trace[0]['function'] : NULL,
+		);
+
+		// add exception object to message, if available
+		if ($context['exception'])
+		{
+			$message['exception'] = $context['exception'];
+		}
+
+		// add it to the local message array
+		$this->_messages[] = $message;
+
+		if (Log::$write_on_add)
+		{
+			// Write logs as they are added
+			$this->write();
+		}
+
+		return $this;
 	}
 
 }
