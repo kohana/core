@@ -556,10 +556,13 @@ class Kohana_Response implements HTTP_Response {
 				if (is_object(Kohana::$log))
 				{
 					// Add this exception to the log
-					Kohana::$log->add(Log::ERROR, $error);
+					Kohana::$log->error($error);
 
-					// Make sure the logs are written
-					Kohana::$log->write();
+					if (Kohana::$log instanceof Logger)
+					{
+						// Make sure the logs are written
+						Kohana::$log->write();
+					}
 				}
 
 				// Do NOT display the exception, it will corrupt the output!
