@@ -305,7 +305,7 @@ class Kohana_Core {
 		$_COOKIE = Kohana::sanitize($_COOKIE);
 
 		// Load the logger if one doesn't already exist
-		if ( ! Kohana::$log instanceof Log)
+		if ( ! Kohana::$log instanceof Psr\Log\LoggerInterface)
 		{
 			Kohana::$log = Log::instance();
 		}
