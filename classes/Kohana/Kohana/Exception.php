@@ -134,10 +134,10 @@ class Kohana_Kohana_Exception extends Exception {
 	 *
 	 * @uses    Kohana_Exception::text
 	 * @param   Exception  $e
-	 * @param   int        $level
+	 * @param   string        $level
 	 * @return  void
 	 */
-	public static function log(Exception $e, $level = Log::EMERGENCY)
+	public static function log(Exception $e, $level = \Psr\Log\LogLevel::EMERGENCY)
 	{
 		if (is_object(Kohana::$log))
 		{
@@ -145,10 +145,13 @@ class Kohana_Kohana_Exception extends Exception {
 			$error = Kohana_Exception::text($e);
 
 			// Add this exception to the log
-			Kohana::$log->add($level, $error, NULL, array('exception' => $e));
+			Kohana::$log->log($level, $error, array('exception' => $e));
 
-			// Make sure the logs are written
-			Kohana::$log->write();
+			if (Kohana::$log instanceof Logger)
+			{
+				// Make sure the logs are written
+				Kohana::$log->write();
+			}
 		}
 	}
 
