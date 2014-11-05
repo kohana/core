@@ -241,6 +241,9 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Logger {
 			throw new Psr\Log\InvalidArgumentException('Undefined level "' . $level . '"');
 		}
 
+		// cast $message to string in compliance with PSR-3
+		$message = (string) $message;
+
 		if ($context)
 		{
 			// Insert the values into the message
