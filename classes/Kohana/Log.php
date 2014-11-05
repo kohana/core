@@ -130,7 +130,7 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Logger {
 	 *     ));
 	 *
 	 * @deprecated since version 3.4 in favor of Log::log
-	 * @param   string  $level       level of message
+	 * @param   mixed  $level       level of message
 	 * @param   string  $message     message body
 	 * @param   array   $context      values to replace in the message
 	 * @param   array   $additional  additional custom parameters to supply to the log writer
@@ -220,6 +220,16 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Logger {
 	/**
 	 * Logs with an arbitrary level.
 	 *
+	 * Adds a message to the log. Replacement values must be passed in to be
+	 * replaced using Text::interpolate
+	 *
+	 *     $log->log(\Psr\Log\LogLevel::INFO, 'You look good, today.');
+	 *
+	 *     $log->log(Log::ERROR, 'Could not locate user: {username}', array(
+	 *         'username' => $username,
+	 *     ));
+	 *
+	 * @uses   Text::interpolate Inserts the replacement values into the message
 	 * @param  mixed  $level    level of message
 	 * @param  string $message  message body
 	 * @param  array  $context  values to replace in the message
@@ -263,8 +273,8 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Logger {
 		{
 			$trace = array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), 1);
 
-			// sanitize $context['exception'] in order to not repeat
-			// the above if conditions elsewhere
+			// set $context['exception'] to FALSE in order to not repeat
+			// the above if conditions again elsewhere
 			$context['exception'] = FALSE;
 		}
 
