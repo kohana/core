@@ -143,9 +143,6 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Logger {
 		 * in favor of Log::log method parameters
 		 */
 
-		// $level should be one of the \Psr\Log\LogLevel constants
-		$level = $this->_log_levels[$level];
-
 		// $context should always be an array
 		if ($context === NULL)
 		{
@@ -230,6 +227,20 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Logger {
 	 */
 	public function log($level, $message, array $context = [])
 	{
+		// check if level is available
+		if (is_int($level) AND array_key_exists($level, $this->_log_levels))
+		{
+			$level = $this->_log_levels[$level];
+		}
+		else if (is_string($level) AND in_array(strtolower($level), $this->_log_levels))
+		{
+			$level = strtolower($level);
+		}
+		else
+		{
+			throw new Psr\Log\InvalidArgumentException('Undefined level "' . $level . '"');
+		}
+
 		if ($context)
 		{
 			// Insert the values into the message
