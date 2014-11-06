@@ -36,9 +36,12 @@ class Kohana_Encrypt {
 	public static $instances = array();
 
 	/**
-	 * @var  string  OS-dependent RAND type to use
+	 * @var  string  RAND type to use
+	 *
+	 * Only MCRYPT_DEV_URANDOM and MCRYPT_DEV_RANDOM are considered safe.
+	 * Using MCRYPT_RAND will silently revert to MCRYPT_DEV_URANDOM
 	 */
-	protected static $_rand;
+	protected static $_rand = MCRYPT_DEV_URANDOM;
 
 	/**
 	 * @var string Encryption key
