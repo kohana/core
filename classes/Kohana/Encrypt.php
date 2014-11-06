@@ -153,41 +153,6 @@ class Kohana_Encrypt {
 	 */
 	public function encode($data)
 	{
-		// Set the rand type if it has not already been set
-		if (Encrypt::$_rand === NULL)
-		{
-			if (Kohana::$is_windows)
-			{
-				// Windows only supports the system random number generator
-				Encrypt::$_rand = MCRYPT_RAND;
-			}
-			else
-			{
-				if (defined('MCRYPT_DEV_URANDOM'))
-				{
-					// Use /dev/urandom
-					Encrypt::$_rand = MCRYPT_DEV_URANDOM;
-				}
-				elseif (defined('MCRYPT_DEV_RANDOM'))
-				{
-					// Use /dev/random
-					Encrypt::$_rand = MCRYPT_DEV_RANDOM;
-				}
-				else
-				{
-					// Use the system random number generator
-					Encrypt::$_rand = MCRYPT_RAND;
-				}
-			}
-		}
-
-		if (Encrypt::$_rand === MCRYPT_RAND)
-		{
-			// The system random number generator must always be seeded each
-			// time it is used, or it will not produce true random results
-			mt_srand();
-		}
-
 		// Get an initialization vector
 		$iv = $this->_create_iv();
 
@@ -241,6 +206,17 @@ class Kohana_Encrypt {
 	 */
 	protected function _create_iv()
 	{
+		/*
+		 * Silently use MCRYPT_DEV_URANDOM when the chosen random number generator
+		 * is not one of those that are considered secure.
+		 *
+		 * Also sets Encrypt::$_rand to MCRYPT_DEV_URANDOM when it's not already set
+		 */
+		if ((Encrypt::$_rand !== MCRYPT_DEV_URANDOM) AND ( Encrypt::$_rand !== MCRYPT_DEV_RANDOM))
+		{
+			Encrypt::$_rand = MCRYPT_DEV_URANDOM;
+		}
+
 		// Create a random initialization vector of the proper size for the current cipher
 		return mcrypt_create_iv($this->_iv_size, Encrypt::$_rand);
 	}
