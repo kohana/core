@@ -216,6 +216,14 @@ class Kohana_Kohana_Exception extends Exception {
 						{
 							$frame['type'] = '??';
 						}
+						elseif ($frame['type'] == 'static')
+						{
+							$frame['type'] = '::';
+						}
+						elseif ($frame['type'] == 'dynamic')
+						{
+							$frame['type'] = '->';
+						}
 
 						// Xdebug returns the words 'dynamic' and 'static' instead of using '->' and '::' symbols
 						if ('dynamic' === $frame['type'])
