@@ -34,15 +34,15 @@ Kohana::init(array(
 ));
 ~~~
 
+ - Define a salt for the `Cookie` class.
+~~~
+Cookie::$salt = 'some-really-long-cookie-salt-here';
+~~~
+
  - Make sure the `application/cache` and `application/logs` directories are writable by the web server.
 ~~~
 sudo chmod -R a+rwx application/cache
 sudo chmod -R a+rwx application/logs
-~~~
-
- - Define a salt for the `Cookie` class.
-~~~
-Cookie::$salt = [really-long-cookie-salt-here]
 ~~~
 
 [!!] Make sure to use a unique salt for your application and never to share it. Take a look at the [Cookies](cookies) page for more information on how cookies work in Kohana. If you do not define a `Cookie::$salt` value, Kohana will throw an exception when it encounters any cookie on your domain.
