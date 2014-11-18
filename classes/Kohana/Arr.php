@@ -275,20 +275,22 @@ abstract class Kohana_Arr {
 	 *     // Get the value "sorting" from $_GET, if it exists
 	 *     $sorting = Arr::get($_GET, 'sorting');
 	 *
-	 * @param   array   $array      array to extract from
-	 * @param   string  $key        key name
-	 * @param   mixed   $default    default value
+	 * @param   array|ArrayAccess   $array      array to extract from
+	 * @param   int|string          $key        key name
+	 * @param   mixed               $default    default value
 	 * @return  mixed
 	 */
 	public static function get($array, $key, $default = NULL)
 	{
-		if ($array instanceof ArrayObject) {
-			// This is a workaround for inconsistent implementation of isset between PHP and HHVM
-			// See https://github.com/facebook/hhvm/issues/3437
-			return $array->offsetExists($key) ? $array->offsetGet($key) : $default;
-		} else {
-			return isset($array[$key]) ? $array[$key] : $default;
-		}
+		// using isset for performance reasons
+		if (isset($array[$key]))
+			return $array[$key];
+
+		if ($array instanceof ArrayAccess)
+			return $array->offsetExists($key) ? $array[$key] : $default;
+
+		if (is_array($array))
+			return array_key_exists($key, $array) ? $array[$key] : $default;
 	}
 
 	/**
