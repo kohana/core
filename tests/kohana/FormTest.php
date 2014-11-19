@@ -293,6 +293,9 @@ class Kohana_FormTest extends Unittest_TestCase
 			array('foo', array('bar' => array('foo' => 'bar')), 'foo', "<select name=\"foo\">\n<optgroup label=\"bar\">\n<option value=\"foo\" selected=\"selected\">bar</option>\n</optgroup>\n</select>"),
 			// #2286
 			array('foo', array('bar' => 'bar', 'unit' => 'test', 'foo' => 'foo'), array('bar', 'foo'), "<select name=\"foo\" multiple=\"multiple\">\n<option value=\"bar\" selected=\"selected\">bar</option>\n<option value=\"unit\">test</option>\n<option value=\"foo\" selected=\"selected\">foo</option>\n</select>"),
+		
+			// Testing prompt value
+                        array('foo', array('bar' => 'bar'), NULL, array('prompt' => 'Default'), "<select name=\"foo\">\n<option value=\"\">Default</option>\n<option value=\"bar\">bar</option>\n</select>"),
 		);
 	}
 
