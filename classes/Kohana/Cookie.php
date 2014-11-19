@@ -161,7 +161,7 @@ class Kohana_Cookie {
 		// Determine the user agent
 		$agent = isset($_SERVER['HTTP_USER_AGENT']) ? strtolower($_SERVER['HTTP_USER_AGENT']) : 'unknown';
 
-		return sha1($agent.$name.$value.Cookie::$salt);
+		return hash_hmac('sha1', $agent.$name.$value.Cookie::$salt, Cookie::$salt);
 	}
 
 	/**
