@@ -197,6 +197,30 @@ class Kohana_TextTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Provides test data for test_ucfirst
+	 *
+	 * @return array Test data
+	 */
+	public function provider_ucfirst()
+	{
+		return array(
+			array('Content-Type', 'content-type', '-'),
+			array('Բարեւ|Ձեզ', 'բարեւ|ձեզ', '|'),
+		);
+	}
+	
+	/**
+	 * Covers Text::ucfirst()
+	 *
+	 * @test
+	 * @dataProvider provider_ucfirst
+	 */
+	public function test_ucfirst($expected, $string, $delimiter)
+	{
+		$this->assertSame($expected, Text::ucfirst($string, $delimiter));
+	}
+
+	/**
 	 * Provides test data for test_reducde_slashes()
 	 *
 	 * @returns array Array of test data
