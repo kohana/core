@@ -248,15 +248,7 @@ class Kohana_Text {
 	public static function ucfirst($string, $delimiter = '-')
 	{
 		// Put the keys back the Case-Convention expected
-		return implode($delimiter,
-			array_map(
-				function($word)
-				{
-				  return UTF8::strtoupper(UTF8::substr($word, 0, 1)) . UTF8::strtolower(UTF8::substr($word, 1, UTF8::strlen($word)));
-				},
-			explode($delimiter, $string)
-			)
-		);
+		return implode($delimiter, array_map('UTF8::ucfirst', explode($delimiter, $string)));
 	}
 
 	/**
