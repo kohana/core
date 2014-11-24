@@ -240,10 +240,8 @@ class Kohana_Text {
 	*
 	* @param   string  $string     string to transform
 	* @param   string  $delimiter  delimiter to use
-	* @return  string 
-	* @uses    UTF8::substr
-	* @uses    UTF8::strtoupper
-	* @uses    UTF8::strlen
+	* @uses    UTF8::ucfirst
+	* @return  string
 	*/
 	public static function ucfirst($string, $delimiter = '-')
 	{
