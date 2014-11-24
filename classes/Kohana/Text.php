@@ -240,12 +240,13 @@ class Kohana_Text {
 	 *
 	 * @param   string  $string     string to transform
 	 * @param   string  $delimiter  delimiter to use
+	 * @uses    UTF8::ucfirst
 	 * @return  string
 	 */
 	public static function ucfirst($string, $delimiter = '-')
 	{
 		// Put the keys back the Case-Convention expected
-		return implode($delimiter, array_map('ucfirst', explode($delimiter, $string)));
+		return implode($delimiter, array_map('UTF8::ucfirst', explode($delimiter, $string)));
 	}
 
 	/**
