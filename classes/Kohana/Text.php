@@ -238,14 +238,24 @@ class Kohana_Text {
 	 *
 	 *      $str = Text::ucfirst('content-type'); // returns "Content-Type"
 	 *
-	 * @param   string  $string     string to transform
-	 * @param   string  $delimiter  delimiter to use
-	 * @return  string
+	 * @param string $string string to transform
+	 * @param string $delimiter delimiter to use
+	 * @return string
+	 * @uses UTF8::substr
+	 * @uses UTF8::strtoupper
+	 * @uses UTF8::strlen
 	 */
 	public static function ucfirst($string, $delimiter = '-')
 	{
+		// ucfirst closure with UTF-8 support
+		$utf8_ucfirst = function($word)
+		{
+			$first_char = UTF8::substr($word, 0, 1);
+			$remaining = UTF8::substr($word, 1, UTF8::strlen($word));
+			return UTF8::strtoupper($first_char) . UTF8::strtolower($remaining);
+		};
 		// Put the keys back the Case-Convention expected
-		return implode($delimiter, array_map('ucfirst', explode($delimiter, $string)));
+		return implode($delimiter, array_map($utf8_ucfirst, explode($delimiter, $string)));
 	}
 
 	/**
