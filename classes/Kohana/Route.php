@@ -351,6 +351,14 @@ class Kohana_Route {
 			return $this->_defaults;
 		}
 
+		if (isset($defaults['controller']) AND substr($defaults['controller'], 0, 1) === '\\')
+		{
+			if (isset($defaults['directory']))
+			{
+				throw new Kohana_Exception('Route directory should not be set when the controller is a FQCN.');
+			}
+		}
+
 		$this->_defaults = $defaults;
 
 		return $this;
