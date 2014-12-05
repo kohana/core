@@ -621,5 +621,43 @@ class Kohana_Arr {
 		}
 		return $flat;
 	}
+	
+	/**
+	 * Converts a multi-dimensial array to a single-dimensional array with keys converted
+	 * to dot separated paths.
+	 *
+	 *     $array = array('set' => array('one' => 'something'), 'two' => 'other');
+	 *
+	 *     // Flatten the array
+	 *     $array = Arr::get_paths($array);
+	 *
+	 *     // The array will now be
+	 *     array('set.one' => 'something', 'two' => 'other');
+	 *
+	 *
+	 * @param   array   $array  array to get paths from
+	 * @param   string  $parent parent key
+	 * @param   array   $delimiter delimiter for paths "." is default.
+	 * @return  array
+	 */
+	public static function get_paths($array, $parent = '', $delimiter = NULL){
+		 if ( ! $delimiter)
+		 {
+			$delimiter = Arr::$delimiter;
+		 }
+		
+		$paths = array();
+		foreach($array as $key => $val)
+		{
+			$parent_path = (!empty($parent)) ? $parent.$delimiter.$key : $key;
+			if(Arr::is_array($val))
+			{
+				$paths = array_merge($paths, Arr::get_paths($val, $parent_path));
+			}else{
+				$paths[$parent_path] = $val;	
+			}
+		}
+		return $paths;
+	}
 
 }
