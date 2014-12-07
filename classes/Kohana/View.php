@@ -272,18 +272,18 @@ class Kohana_View {
 	 *     // This value can be accessed as $foo within the view
 	 *     $view->set('foo', 'my value');
 	 *
-	 * You can also use an array to set several values at once:
+	 * You can also use an array or Traversable object to set several values at once:
 	 *
 	 *     // Create the values $food and $beverage in the view
 	 *     $view->set(array('food' => 'bread', 'beverage' => 'water'));
 	 *
-	 * @param   string  $key    variable name or an array of variables
-	 * @param   mixed   $value  value
+	 * @param   string|array|Traversable  $key    variable name or an array of variables
+	 * @param   mixed                     $value  value
 	 * @return  $this
 	 */
 	public function set($key, $value = NULL)
 	{
-		if (is_array($key))
+		if (is_array($key) || $key instanceof Traversable)
 		{
 			foreach ($key as $name => $value)
 			{
