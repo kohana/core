@@ -441,7 +441,7 @@ class Kohana_Route {
 
 		if ( ! empty($params['controller']))
 		{
-			if (strpos($params['controller'], '_') !== false)
+			if (strpos($params['controller'], '_') !== FALSE)
 			{
 				// PSR-0: Replace underscores with spaces, run ucwords, then replace underscore
 				$params['controller'] = str_replace(' ', '_', ucwords(str_replace('_', ' ', $params['controller'])));
