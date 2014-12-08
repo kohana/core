@@ -380,22 +380,27 @@ class Kohana_Route {
 	 *
 	 * [!!] Default parameters are added before filters are called!
 	 *
-	 * @param   callable  $callback  Callback (string, array, closure) or NULL to getting filters
-	 * @return  mixed
+	 * @param   callable  $callback  Callback (string, array, closure)
+	 * @return  $this
 	 */
-	public function filter(callable $callback = NULL)
+	public function filter(callable $callback)
 	{
-		if ($callback === NULL)
-		{
-			return $this->_filters;
-		}
-
 		if ( ! in_array($callback, $this->_filters))
 		{
 			$this->_filters[] = $callback;
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Gets all filters.
+	 * 
+	 * @return  array
+	 */
+	public function get_filters()
+	{
+		return $this->_filters;
 	}
 
 	/**
