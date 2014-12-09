@@ -40,6 +40,7 @@ class Kohana_View {
 	 * @param   string  $kohana_view_filename   filename
 	 * @param   array   $kohana_view_data       variables
 	 * @return  string
+	 * @throws  Exception
 	 */
 	protected static function capture($kohana_view_filename, array $kohana_view_data)
 	{
@@ -79,17 +80,25 @@ class Kohana_View {
 	 *
 	 *     View::set_global($name, $value);
 	 *
-	 * @param   string  $key    variable name or an array of variables
-	 * @param   mixed   $value  value
+	 * You can also use an array or Traversable object to set several values at once:
+	 *
+	 *     // Create the values $food and $beverage in the view
+	 *     View::set_global(array('food' => 'bread', 'beverage' => 'water'));
+	 *
+	 * [!!] Note: When setting with using Traversable object we're not attaching the whole object to the view,
+	 * i.e. the object's standard properties will not be available in the view context.
+	 *
+	 * @param   string|array|Traversable  $key    variable name or an array of variables
+	 * @param   mixed                     $value  value
 	 * @return  void
 	 */
 	public static function set_global($key, $value = NULL)
 	{
-		if (is_array($key))
+		if (is_array($key) OR $key instanceof Traversable)
 		{
-			foreach ($key as $key2 => $value)
+			foreach ($key as $name => $value)
 			{
-				View::$_global_data[$key2] = $value;
+				View::$_global_data[$name] = $value;
 			}
 		}
 		else
@@ -127,7 +136,6 @@ class Kohana_View {
 	 *
 	 * @param   string  $file   view filename
 	 * @param   array   $data   array of values
-	 * @return  void
 	 * @uses    View::set_filename
 	 */
 	public function __construct($file = NULL, array $data = NULL)
@@ -272,18 +280,21 @@ class Kohana_View {
 	 *     // This value can be accessed as $foo within the view
 	 *     $view->set('foo', 'my value');
 	 *
-	 * You can also use an array to set several values at once:
+	 * You can also use an array or Traversable object to set several values at once:
 	 *
 	 *     // Create the values $food and $beverage in the view
 	 *     $view->set(array('food' => 'bread', 'beverage' => 'water'));
 	 *
-	 * @param   string  $key    variable name or an array of variables
-	 * @param   mixed   $value  value
+	 * [!!] Note: When setting with using Traversable object we're not attaching the whole object to the view,
+	 * i.e. the object's standard properties will not be available in the view context.
+	 *
+	 * @param   string|array|Traversable  $key    variable name or an array of variables
+	 * @param   mixed                     $value  value
 	 * @return  $this
 	 */
 	public function set($key, $value = NULL)
 	{
-		if (is_array($key))
+		if (is_array($key) OR $key instanceof Traversable)
 		{
 			foreach ($key as $name => $value)
 			{
