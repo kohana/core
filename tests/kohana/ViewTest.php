@@ -99,13 +99,28 @@ class Kohana_ViewTest extends Unittest_TestCase
 	 * Tests that we can set using string, array or Traversable object
 	 *
 	 * @test
-	 * @dataProvider  provider_set
+	 * @dataProvider provider_set
 	 *
 	 * @return null
 	 */
 	public function test_set($data_key, $value, $test_key, $expected)
 	{
 		$view = View::factory()->set($data_key, $value);
+		$this->assertSame($expected, $view->$test_key);
+	}
+
+	/**
+	 * Tests that we can set global using string, array or Traversable object
+	 *
+	 * @test
+	 * @dataProvider provider_set
+	 *
+	 * @return null
+	 */
+	public function test_set_global($data_key, $value, $test_key, $expected)
+	{
+		$view = View::factory();
+		$view::set_global($data_key, $value);
 		$this->assertSame($expected, $view->$test_key);
 	}
 }
