@@ -67,44 +67,41 @@ You can also assign variables directly to the View object.  This is identical to
         $this->response->body($view);
 	}
 
-### Global Variables
+### Dealing With Global-like Variables
 
-An application may have several view files that need access to the same variables. For example, to display a page title in both the header of your template and in the body of the page content. You can create variables that are accessible in any view using the [View::set_global] and [View::bind_global] methods.
+An application may have several view files that need access to the same variable - for example, to display a
+page title in both the `<head>` and `<body>` of your content. You should track these variables and set them
+on the views that require them prior to rendering.
 
-    // Assign $page_title to all views
-    View::bind_global('page_title', $page_title);
+For example, you could do this with a controller property:
 
-If the application has three views that are rendered for the home page: `template`, `template/sidebar`, and `pages/home`. First, an abstract controller to create the template will be created:
-
-    abstract class Controller_Website extends Controller_Template {
-
-        public $page_title;
-
-        public function before()
-        {
-            parent::before();
-
-            // Make $page_title available to all views
-            View::bind_global('page_title', $this->page_title);
-
-            // Load $sidebar into the template as a view
-            $this->template->sidebar = View::factory('template/sidebar');
-        }
-
-    }
-
-Next, the home controller will extend `Controller_Website`:
-
-    class Controller_Home extends Controller_Website {
+    class Controller_Home extends Controller {
+        protected $page_title;
 
         public function action_index()
         {
             $this->page_title = 'Home';
-
-            $this->template->content = View::factory('pages/home');
+            $content = View::factory('pages/home', array('page_title' => $this->page_title));
+            $this->render_template($content);
         }
 
+        protected function render_template(View $content)
+        {
+            $template = View::factory('template', array('page_title' => $this->page_title));
+            $sidebar  = View::factory('template/sidebar', array('page_title' => $this->page_title));
+            $template->set('sidebar', $sidebar);
+            $template->set('content', $content);
+            $this->response->body($template->render());
+        }
     }
+
+If you have a small number of variables - such as page title and username - that may be required in
+lots of views it may be sensible to use a factory class or dependency injection container to store
+these variables and provide them to views as required.
+
+[!!] The [View::set_global] and [View::bind_global] methods are retained for backwards compatibility,
+     but are deprecated. We strongly advise against using them, as this creates global state with
+     potential to introduce hidden dependencies, variable naming conflicts and hard-to-debug problems.
 
 ## Views Within Views
 
