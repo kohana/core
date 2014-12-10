@@ -12,7 +12,10 @@
  */
 class Kohana_View {
 
-	// Array of global variables
+	/**
+	 * @param mixed[] Array of global variables
+	 * @deprecated
+	 */
 	protected static $_global_data = array();
 
 	/**
@@ -79,6 +82,9 @@ class Kohana_View {
 	 *
 	 *     View::set_global($name, $value);
 	 *
+	 * [!!] Use of global view variables is deprecated and strongly discouraged
+	 *
+	 * @deprecated in favour of setting relevant variables on each specific view
 	 * @param   string  $key    variable name or an array of variables
 	 * @param   mixed   $value  value
 	 * @return  void
@@ -104,6 +110,9 @@ class Kohana_View {
 	 *
 	 *     View::bind_global($key, $value);
 	 *
+	 * [!!] Use of global view variables is deprecated and strongly discouraged
+	 *
+	 * @deprecated in favour of setting relevant variables on each specific view
 	 * @param   string  $key    variable name
 	 * @param   mixed   $value  referenced variable
 	 * @return  void
