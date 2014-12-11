@@ -5,8 +5,8 @@
  * @package    Kohana
  * @category   Logging
  * @author     Kohana Team
- * @copyright  (c) 2008-2012 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2014 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 class Kohana_Log_StdOut extends Log_Writer {
 

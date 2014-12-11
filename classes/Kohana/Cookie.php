@@ -71,14 +71,14 @@ class Kohana_Cookie {
 			// Separate the salt and the value
 			list ($hash, $value) = explode('~', $cookie, 2);
 
-			if (Cookie::salt($key, $value) === $hash)
+			if (Security::slow_equals(Cookie::salt($key, $value), $hash))
 			{
 				// Cookie signature is valid
 				return $value;
 			}
 
 			// The cookie signature is invalid, delete it
-			Cookie::delete($key);
+			static::delete($key);
 		}
 
 		return $default;
@@ -88,33 +88,38 @@ class Kohana_Cookie {
 	 * Sets a signed cookie. Note that all cookie values must be strings and no
 	 * automatic serialization will be performed!
 	 *
+	 * [!!] By default, Cookie::$expiration is 0 - if you skip/pass NULL for the optional
+	 *      lifetime argument your cookies will expire immediately unless you have separately
+	 *      configured Cookie::$expiration.
+	 *
+	 *
 	 *     // Set the "theme" cookie
 	 *     Cookie::set('theme', 'red');
 	 *
 	 * @param   string  $name       name of cookie
 	 * @param   string  $value      value of cookie
-	 * @param   integer $expiration lifetime in seconds
+	 * @param   integer $lifetime   lifetime in seconds
 	 * @return  boolean
 	 * @uses    Cookie::salt
 	 */
-	public static function set($name, $value, $expiration = NULL)
+	public static function set($name, $value, $lifetime = NULL)
 	{
-		if ($expiration === NULL)
+		if ($lifetime === NULL)
 		{
 			// Use the default expiration
-			$expiration = Cookie::$expiration;
+			$lifetime = Cookie::$expiration;
 		}
 
-		if ($expiration !== 0)
+		if ($lifetime !== 0)
 		{
 			// The expiration is expected to be a UNIX timestamp
-			$expiration += time();
+			$lifetime += static::_time();
 		}
 
 		// Add the salt to the cookie value
 		$value = Cookie::salt($name, $value).'~'.$value;
 
-		return setcookie($name, $value, $expiration, Cookie::$path, Cookie::$domain, Cookie::$secure, Cookie::$httponly);
+		return static::_setcookie($name, $value, $lifetime, Cookie::$path, Cookie::$domain, Cookie::$secure, Cookie::$httponly);
 	}
 
 	/**
@@ -131,7 +136,7 @@ class Kohana_Cookie {
 		unset($_COOKIE[$name]);
 
 		// Nullify the cookie and make it expire
-		return setcookie($name, NULL, -86400, Cookie::$path, Cookie::$domain, Cookie::$secure, Cookie::$httponly);
+		return static::_setcookie($name, NULL, -86400, Cookie::$path, Cookie::$domain, Cookie::$secure, Cookie::$httponly);
 	}
 
 	/**
@@ -139,8 +144,10 @@ class Kohana_Cookie {
 	 *
 	 *     $salt = Cookie::salt('theme', 'red');
 	 *
-	 * @param   string  $name   name of cookie
-	 * @param   string  $value  value of cookie
+	 * @param   string $name name of cookie
+	 * @param   string $value value of cookie
+	 *
+	 * @throws Kohana_Exception if Cookie::$salt is not configured
 	 * @return  string
 	 */
 	public static function salt($name, $value)
@@ -154,7 +161,38 @@ class Kohana_Cookie {
 		// Determine the user agent
 		$agent = isset($_SERVER['HTTP_USER_AGENT']) ? strtolower($_SERVER['HTTP_USER_AGENT']) : 'unknown';
 
-		return sha1($agent.$name.$value.Cookie::$salt);
+		return hash_hmac('sha1', $agent.$name.$value.Cookie::$salt, Cookie::$salt);
+	}
+
+	/**
+	 * Proxy for the native setcookie function - to allow mocking in unit tests so that they do not fail when headers
+	 * have been sent.
+	 *
+	 * @param string  $name
+	 * @param string  $value
+	 * @param integer $expire
+	 * @param string  $path
+	 * @param string  $domain
+	 * @param boolean $secure
+	 * @param boolean $httponly
+	 *
+	 * @return bool
+	 * @see setcookie
+	 */
+	protected static function _setcookie($name, $value, $expire, $path, $domain, $secure, $httponly)
+	{
+		return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
+	}
+
+	/**
+	 * Proxy for the native time function - to allow mocking of time-related logic in unit tests
+	 *
+	 * @return int
+	 * @see    time
+	 */
+	protected static function _time()
+	{
+		return time();
 	}
 
 }

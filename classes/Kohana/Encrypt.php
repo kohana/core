@@ -36,10 +36,33 @@ class Kohana_Encrypt {
 	public static $instances = array();
 
 	/**
-	 * @var  string  OS-dependent RAND type to use
+	 * @var  string  RAND type to use
+	 *
+	 * Only MCRYPT_DEV_URANDOM and MCRYPT_DEV_RANDOM are considered safe.
+	 * Using MCRYPT_RAND will silently revert to MCRYPT_DEV_URANDOM
 	 */
-	protected static $_rand;
+	protected static $_rand = MCRYPT_DEV_URANDOM;
 
+	/**
+	 * @var string Encryption key
+	 */
+	protected $_key;
+
+	/**
+	 * @var string mcrypt mode
+	 */
+	protected $_mode;
+
+	/**
+	 * @var string mcrypt cipher
+	 */
+	protected $_cipher;
+
+	/**
+	 * @var int the size of the Initialization Vector (IV) in bytes
+	 */
+	protected $_iv_size;
+	
 	/**
 	 * Returns a singleton instance of Encrypt. An encryption key must be
 	 * provided in your "encrypt" configuration file.
@@ -105,6 +128,10 @@ class Kohana_Encrypt {
 			// Shorten the key to the maximum size
 			$key = substr($key, 0, $size);
 		}
+		else if (version_compare(PHP_VERSION, '5.6.0', '>='))
+		{
+			$key = $this->_normalize_key($key, $cipher, $mode);
+		}
 
 		// Store the key, mode, and cipher
 		$this->_key    = $key;
@@ -129,43 +156,8 @@ class Kohana_Encrypt {
 	 */
 	public function encode($data)
 	{
-		// Set the rand type if it has not already been set
-		if (Encrypt::$_rand === NULL)
-		{
-			if (Kohana::$is_windows)
-			{
-				// Windows only supports the system random number generator
-				Encrypt::$_rand = MCRYPT_RAND;
-			}
-			else
-			{
-				if (defined('MCRYPT_DEV_URANDOM'))
-				{
-					// Use /dev/urandom
-					Encrypt::$_rand = MCRYPT_DEV_URANDOM;
-				}
-				elseif (defined('MCRYPT_DEV_RANDOM'))
-				{
-					// Use /dev/random
-					Encrypt::$_rand = MCRYPT_DEV_RANDOM;
-				}
-				else
-				{
-					// Use the system random number generator
-					Encrypt::$_rand = MCRYPT_RAND;
-				}
-			}
-		}
-
-		if (Encrypt::$_rand === MCRYPT_RAND)
-		{
-			// The system random number generator must always be seeded each
-			// time it is used, or it will not produce true random results
-			mt_srand();
-		}
-
-		// Create a random initialization vector of the proper size for the current cipher
-		$iv = mcrypt_create_iv($this->_iv_size, Encrypt::$_rand);
+		// Get an initialization vector
+		$iv = $this->_create_iv();
 
 		// Encrypt the data using the configured options and generated iv
 		$data = mcrypt_encrypt($this->_cipher, $this->_key, $data, $this->_mode, $iv);
@@ -208,6 +200,56 @@ class Kohana_Encrypt {
 
 		// Return the decrypted data, trimming the \0 padding bytes from the end of the data
 		return rtrim(mcrypt_decrypt($this->_cipher, $this->_key, $data, $this->_mode, $iv), "\0");
+	}
+
+	/**
+	 * Proxy for the mcrypt_create_iv function - to allow mocking and testing against KAT vectors
+	 *
+	 * @return string the initialization vector or FALSE on error
+	 */
+	protected function _create_iv()
+	{
+		/*
+		 * Silently use MCRYPT_DEV_URANDOM when the chosen random number generator
+		 * is not one of those that are considered secure.
+		 *
+		 * Also sets Encrypt::$_rand to MCRYPT_DEV_URANDOM when it's not already set
+		 */
+		if ((Encrypt::$_rand !== MCRYPT_DEV_URANDOM) AND ( Encrypt::$_rand !== MCRYPT_DEV_RANDOM))
+		{
+			Encrypt::$_rand = MCRYPT_DEV_URANDOM;
+		}
+
+		// Create a random initialization vector of the proper size for the current cipher
+		return mcrypt_create_iv($this->_iv_size, Encrypt::$_rand);
+	}
+
+	/**
+	 * Normalize key for PHP 5.6 for backwards compatibility
+	 *
+	 * This method is a shim to make PHP 5.6 behave in a B/C way for
+	 * legacy key padding when shorter-than-supported keys are used
+	 *
+	 * @param   string  $key    encryption key
+	 * @param   string  $cipher mcrypt cipher
+	 * @param   string  $mode   mcrypt mode
+	 */
+	protected function _normalize_key($key, $cipher, $mode)
+	{
+		// open the cipher
+		$td = mcrypt_module_open($cipher, '', $mode, '');
+
+		// loop through the supported key sizes
+		foreach (mcrypt_enc_get_supported_key_sizes($td) as $supported) {
+			// if key is short, needs padding
+			if (strlen($key) <= $supported)
+			{
+				return str_pad($key, $supported, "\0");
+			}
+		}
+
+		// at this point key must be greater than max supported size, shorten it
+		return substr($key, 0, mcrypt_get_key_size($cipher, $mode));
 	}
 
 }

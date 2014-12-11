@@ -16,8 +16,8 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.3.2';
-	const CODENAME = 'dryocopus';
+	const VERSION  = '3.3.3';
+	const CODENAME = 'uluru';
 
 	// Common environment type constants for consistency and convenience
 	const PRODUCTION  = 10;
@@ -322,7 +322,7 @@ class Kohana_Core {
 		}
 
 		// Determine if the extremely evil magic quotes are enabled
-		Kohana::$magic_quotes = (version_compare(PHP_VERSION, '5.4') < 0 AND get_magic_quotes_gpc());
+		Kohana::$magic_quotes = get_magic_quotes_gpc();
 
 		// Sanitize all request variables
 		$_GET    = Kohana::sanitize($_GET);

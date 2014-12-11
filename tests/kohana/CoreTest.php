@@ -18,6 +18,32 @@
  */
 class Kohana_CoreTest extends Unittest_TestCase
 {
+	protected $old_modules = array();
+
+	/**
+	 * Captures the module list as it was before this test
+	 *
+	 * @return null
+	 */
+	// @codingStandardsIgnoreStart
+	public function setUp()
+	// @codingStandardsIgnoreEnd
+	{
+		parent::setUp();
+		$this->old_modules = Kohana::modules();
+	}
+
+	/**
+	 * Restores the module list
+	 *
+	 * @return null
+	 */
+	// @codingStandardsIgnoreStart
+	public function tearDown()
+	// @codingStandardsIgnoreEnd
+	{
+		Kohana::modules($this->old_modules);
+	}
 
 	/**
 	 * Provides test data for test_sanitize()
@@ -107,33 +133,15 @@ class Kohana_CoreTest extends Unittest_TestCase
 	 */
 	public function test_globals_removes_user_def_globals()
 	{
-		// Store the globals
-		$temp_globals = array(
-			'cookie' => $_COOKIE,
-			'get' => $_GET,
-			'files' => $_FILES,
-			'post' => $_POST,
-			'request' => $_REQUEST,
-			'server' => $_SERVER,
-			'session' => $_SESSION,
-			'globals' => $GLOBALS,
-		);
-
-		$GLOBALS = array('hackers' => 'foobar','name' => array('','',''), '_POST' => array());
+		$GLOBALS['hackers'] = 'foobar';
+		$GLOBALS['name'] = array('','','');
+		$GLOBALS['_POST'] = array();
 
 		Kohana::globals();
 
-		$this->assertEquals(array('_POST' => array()), $GLOBALS);
-
-		// Reset the globals for other tests
-		$_COOKIE = $temp_globals['cookie'];
-		$_GET = $temp_globals['get'];
-		$_FILES = $temp_globals['files'];
-		$_POST = $temp_globals['post'];
-		$_REQUEST = $temp_globals['request'];
-		$_SERVER = $temp_globals['server'];
-		$_SESSION = $temp_globals['session'];
-		$GLOBALS = $temp_globals['globals'];
+		$this->assertFalse(isset($GLOBALS['hackers']));
+		$this->assertFalse(isset($GLOBALS['name']));
+		$this->assertTrue(isset($GLOBALS['_POST']));
 	}
 
 	/**
@@ -175,35 +183,18 @@ class Kohana_CoreTest extends Unittest_TestCase
 	public function provider_message()
 	{
 		return array(
-			// $value, $result
-			array(':field must not be empty', 'validation', 'not_empty'),
-			array(
+			array('no_message_file', 'anything', 'default', 'default'),
+			array('no_message_file', NULL, 'anything', array()),
+			array('kohana_core_message_tests', 'bottom_only', 'anything', 'inherited bottom message'),
+			array('kohana_core_message_tests', 'cfs_replaced', 'anything', 'overriding cfs_replaced message'),
+			array('kohana_core_message_tests', 'top_only', 'anything', 'top only message'),
+			array('kohana_core_message_tests', 'missing', 'default', 'default'),
+			array('kohana_core_message_tests', NULL, 'anything',
 				array(
-					'alpha'         => ':field must contain only letters',
-					'alpha_dash'    => ':field must contain only numbers, letters and dashes',
-					'alpha_numeric' => ':field must contain only letters and numbers',
-					'color'         => ':field must be a color',
-					'credit_card'   => ':field must be a credit card number',
-					'date'          => ':field must be a date',
-					'decimal'       => ':field must be a decimal with :param2 places',
-					'digit'         => ':field must be a digit',
-					'email'         => ':field must be a email address',
-					'email_domain'  => ':field must contain a valid email domain',
-					'equals'        => ':field must equal :param2',
-					'exact_length'  => ':field must be exactly :param2 characters long',
-					'in_array'      => ':field must be one of the available options',
-					'ip'            => ':field must be an ip address',
-					'matches'       => ':field must be the same as :param2',
-					'min_length'    => ':field must be at least :param2 characters long',
-					'max_length'    => ':field must not exceed :param2 characters long',
-					'not_empty'     => ':field must not be empty',
-					'numeric'       => ':field must be numeric',
-					'phone'         => ':field must be a phone number',
-					'range'         => ':field must be within the range of :param2 to :param3',
-					'regex'         => ':field does not match the required format',
-					'url'           => ':field must be a url',
-				),
-				'validation', NULL,
+					'bottom_only'  => 'inherited bottom message',
+					'cfs_replaced' => 'overriding cfs_replaced message',
+					'top_only'     => 'top only message'
+				)
 			),
 		);
 	}
@@ -213,15 +204,18 @@ class Kohana_CoreTest extends Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_message
-	 * @covers Kohana::message
-	 * @param boolean $expected Output for Kohana::message
-	 * @param boolean $file     File to look in for Kohana::message
-	 * @param boolean $key      Key for Kohana::message
+	 * @covers       Kohana::message
+	 * @param string $file     to pass to Kohana::message
+	 * @param string $key      to pass to Kohana::message
+	 * @param string $default  to pass to Kohana::message
+	 * @param string $expected Output for Kohana::message
 	 */
-	public function test_message($expected, $file, $key)
+	public function test_message($file, $key, $default, $expected)
 	{
-		$this->markTestSkipped('This test is incredibly fragile and needs to be re-done');
-		$this->assertEquals($expected, Kohana::message($file, $key));
+		$test_path = realpath(dirname(__FILE__).'/../test_data/message_tests');
+		Kohana::modules(array('top' => "$test_path/top_module", 'bottom' => "$test_path/bottom_module"));
+
+		$this->assertEquals($expected, Kohana::message($file, $key, $default, $expected));
 	}
 
 	/**
@@ -314,7 +308,7 @@ class Kohana_CoreTest extends Unittest_TestCase
 	{
 		return array(
 			array(array(), array()),
-			array(array('unittest' => MODPATH.'unittest'), array('unittest' => $this->dirSeparator(MODPATH.'unittest/'))),
+			array(array('module' => __DIR__), array('module' => $this->dirSeparator(__DIR__.'/'))),
 		);
 	}
 

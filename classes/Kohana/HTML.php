@@ -126,9 +126,9 @@ class Kohana_HTML {
 					$attributes['target'] = '_blank';
 				}
 			}
-			elseif ($uri[0] !== '#')
+			elseif ($uri[0] !== '#' AND $uri[0] !== '?')
 			{
-				// Make the URI absolute for non-id anchors
+				// Make the URI absolute for non-fragment and non-query anchors
 				$uri = URL::site($uri, $protocol, $index);
 			}
 		}
@@ -206,7 +206,7 @@ class Kohana_HTML {
 	 */
 	public static function style($file, array $attributes = NULL, $protocol = NULL, $index = FALSE)
 	{
-		if (strpos($file, '://') === FALSE)
+		if (strpos($file, '://') === FALSE AND strpos($file, '//') !== 0)
 		{
 			// Add the base URL
 			$file = URL::site($file, $protocol, $index);
@@ -239,7 +239,7 @@ class Kohana_HTML {
 	 */
 	public static function script($file, array $attributes = NULL, $protocol = NULL, $index = FALSE)
 	{
-		if (strpos($file, '://') === FALSE)
+		if (strpos($file, '://') === FALSE AND strpos($file, '//') !== 0)
 		{
 			// Add the base URL
 			$file = URL::site($file, $protocol, $index);

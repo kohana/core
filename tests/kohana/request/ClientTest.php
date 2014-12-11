@@ -176,6 +176,29 @@ class Kohana_Request_ClientTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Tests that the follow_headers are only added to a redirect request if they were present in the original
+	 *
+	 * @ticket 4790
+	 */
+	public function test_follow_does_not_add_extra_headers()
+	{
+		$response = Request::factory(
+			            $this->_dummy_redirect_uri(301),
+			            array(
+			                 'follow' => TRUE,
+			                 'follow_headers' => array('Authorization')
+			            ))
+		            ->headers(array())
+		            ->execute();
+
+		$data = json_decode($response->body(),TRUE);
+		$headers = $data['rq_headers'];
+
+		$this->assertArrayNotHasKey('authorization', $headers, 'Empty headers should not be added when following redirects');
+	}
+
+
+	/**
 	 * Provider for test_follows_with_strict_method
 	 *
 	 * @return array

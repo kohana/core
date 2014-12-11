@@ -7,8 +7,8 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2012 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @copyright  (c) 2008-2014 Kohana Team
+ * @license    http://kohanaframework.org/license
  * @since      3.1.0
  */
 class Kohana_Response implements HTTP_Response {
