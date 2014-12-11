@@ -16,8 +16,8 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.3.2';
-	const CODENAME = 'dryocopus';
+	const VERSION  = '3.3.3';
+	const CODENAME = 'uluru';
 
 	// Common environment type constants for consistency and convenience
 	const PRODUCTION  = 10;
