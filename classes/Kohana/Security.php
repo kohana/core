@@ -10,7 +10,7 @@
  */
 class Kohana_Security {
 
-	// The length of the random length
+	// The length of the random string
 	const RANDOM_LENGTH = 16;
 
 	/**
@@ -41,7 +41,7 @@ class Kohana_Security {
 	 * If $n is not specified, Secure::RANDOM_LENGTH is assumed. It may be larger in future.
 	 *
 	 * @param   boolean $new     force a new token to be generated?
-	 * @param   integer $n       specifies the length of the random length
+	 * @param   integer $n       specifies the length of the random string
 	 * @param   bool    $padding
 	 * @return  string  The result may contain A-Z, a-z, 0-9, "-" and "_". "=" is also used if $padding is true.
 	 * @uses    Session::instance
