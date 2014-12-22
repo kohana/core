@@ -15,7 +15,7 @@ commercial, or personal project.
 
 See the [sample application repository](https://github.com/kohana/kohana) for full readme and contributing information.
 You will usually add `kohana/core` as a dependency in your own project's composer.json to install and work with this
-pacakge.
+package.
 
 ## Installation for development
 
