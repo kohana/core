@@ -147,7 +147,7 @@ class Kohana_Kohana_Exception extends Exception {
 			// Add this exception to the log
 			Kohana::$log->log($level, $error, array('exception' => $e));
 
-			if (Kohana::$log instanceof Logger)
+			if (Kohana::$log instanceof Kohana_Logger)
 			{
 				// Make sure the logs are written
 				Kohana::$log->write();
