@@ -558,7 +558,7 @@ class Kohana_Response implements HTTP_Response {
 					// Add this exception to the log
 					Kohana::$log->error($error);
 
-					if (Kohana::$log instanceof Logger)
+					if (Kohana::$log instanceof Kohana_Logger)
 					{
 						// Make sure the logs are written
 						Kohana::$log->write();

@@ -10,7 +10,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Log extends Psr\Log\AbstractLogger implements Logger {
+class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 
 	// Log message levels - Windows users see PHP Bug #18090
 	const EMERGENCY = LOG_EMERG;    // 0

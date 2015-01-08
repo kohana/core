@@ -376,7 +376,7 @@ abstract class Kohana_Session {
 			// Log & ignore all errors when a write fails
 			Kohana::$log->error(Kohana_Exception::text($e));
 
-			if (Kohana::$log instanceof Logger)
+			if (Kohana::$log instanceof Kohana_Logger)
 			{
 				// Make sure the logs are written
 				Kohana::$log->write();
