@@ -68,6 +68,8 @@ If a key in a route is optional (or not present in the route), you can provide a
 
 [!!] The `controller` and `action` key must always have a value, so they either need to be required in your route (not inside of parentheses) or have a default value provided.
 
+[!!] When using the `Fully Qualified Class Name` or `FQCN` for the `controller` you aren't allowed to set `directory`. The reason is that when using the `FQCN` the autoloader will look for the right location of the file.
+
 [!!] Kohana automatically converts controllers to follow the standard naming convention. For example /blog/view/123 would look for the controller Controller_Blog in classes/Controller/Blog.php and trigger the action_view() method on it.
 
 In the default route, all the keys are optional, and the controller and action are given a default.   If we called an empty url, the defaults would fill in and `Controller_Welcome::action_index()` would be called.  If we called `foobar` then only the default for action would be used, so it would call `Controller_Foobar::action_index()` and finally, if we called `foobar/baz` then neither default would be used and `Controller_Foobar::action_baz()` would be called.
@@ -79,6 +81,24 @@ You can also use defaults to set a key that isn't in the route at all.
 TODO: example of either using directory or controller where it isn't in the route, but set by defaults
 
 ### Directory
+
+### Selecting controllers by their FQCN
+
+You can also use the `Fully Qualified Class Name` to find the controller. It will enable you to store your controllers at the location of your choosing as long as the autoloader is able to find it.
+
+When using `FQCN` controllers the controllers will not use any prefixed or affixes so `\Acme\Module\Controller\Demo` will point to `class Demo {}` and `\Acme\Module\Controller\DemoController` will point to `class DemoController {}`. You will have full flexibility on how you name you classes.
+
+Because of the autoloading the `directory` default value will not work and setting it will result in a `Exception` being thrown.
+
+An example of a `FQCN` route:
+
+    /*
+     * Routes using FQCN
+     */
+    Route::set('default', 'controller-name/<action>')
+        ->defaults(array(
+            'controller' => '\Acme\Module\Controller\DemoController'
+        ));
 
 ## Route Filters
 

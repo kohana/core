@@ -522,6 +522,24 @@ class Kohana_RouteTest extends Unittest_TestCase
 	}
 
 	/**
+	 * When using a FQCN test if the directory is not set else throw an exception
+	 *
+	 * @test
+	 * @covers Route::defaults
+	 */
+	public function test_defaults_throws_exception_when_setting_fqcn_and_directory()
+	{
+		$this->setExpectedException('Kohana_Exception', 'Route directory should not be set when the controller is a FQCN.');
+
+		$route = new Route('(<controller>(/<action>(/<id>)))');
+		$route->defaults(array(
+			'directory'  => 'directory/path',
+			'controller' => '\FQCN\Class\Name',
+			'action'     => 'index'
+		));
+	}
+
+	/**
 	 * Provider for test_required_parameters_are_needed
 	 *
 	 * @return array

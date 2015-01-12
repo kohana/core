@@ -45,6 +45,12 @@ class Kohana_Request_Client_Internal extends Request_Client {
 			$prefix .= str_replace(array('\\', '/'), '_', trim($directory, '/')).'_';
 		}
 
+		// Use the FQCN to load the Controller
+		if (substr($controller, 0, 1) === '\\')
+		{
+			$prefix = '';
+		}
+
 		if (Kohana::$profiling)
 		{
 			// Set the benchmark name
