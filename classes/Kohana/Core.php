@@ -322,7 +322,7 @@ class Kohana_Core {
 		}
 
 		// Determine if the extremely evil magic quotes are enabled
-		Kohana::$magic_quotes = get_magic_quotes_gpc();
+		Kohana::$magic_quotes = (bool) get_magic_quotes_gpc();
 
 		// Sanitize all request variables
 		$_GET    = Kohana::sanitize($_GET);
