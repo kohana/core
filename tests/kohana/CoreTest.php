@@ -359,5 +359,19 @@ class Kohana_CoreTest extends Unittest_TestCase
 			$this->assertContains($module, $include_paths);
 		}
 	}
-}
 
+	/**
+	 * Tests Kohana::init() for default log file creation
+	 */
+	public function test_init_creates_default_log_instance()
+	{
+		/**
+		 * PHPUnit has already bootstrapped Kohana and init() was called
+		 */
+		
+		// test if a default log instance is created
+		$this->assertInstanceOf('Log', Kohana::$log);
+	}
+
+
+}
