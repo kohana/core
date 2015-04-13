@@ -96,4 +96,85 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 	{
 		$this->assertEquals($expected, Kohana_Exception::text($exception));
 	}
+
+	/**
+	 * Test if Kohana_Exception logs exceptions
+	 *
+	 * @test
+	 * @dataProvider provider_text
+	 * @param object $exception exception to test
+	 * @param string $expected  expected output
+	 */
+	public function test_logs_exception($exception, $expected)
+	{
+		$writer = new Kohana_ExceptionTest_Log_Writer_Memory();
+		Kohana::$log->attach($writer);
+		Kohana_Exception::log($exception);
+		$this->assertSame($expected, $writer->messages[0]['body']);
+
+		// clean up
+		Kohana::$log->detach($writer);
+	}
+
+	/**
+	 * Test if Kohana_Exception logs exceptions if Kohana::$log is not
+	 * a Kohana_Logger
+	 *
+	 * @test
+	 * @dataProvider provider_text
+	 * @param object $exception exception to test
+	 * @param string $expected  expected output
+	 */
+	public function test_log_not_kohana_logger($exception, $expected) {
+		$temp = Kohana::$log;
+		Kohana::$log = new Kohana_ExceptionTest_Log_Psr_Mock();
+		Kohana_Exception::log($exception);
+		$this->assertSame($expected, Kohana::$log->logs[0]['message']);
+
+		// clean up
+		Kohana::$log = $temp;
+	}
+}
+/**
+ * A Log_Writer that appends messages to an internal array, used for testing
+ */
+class Kohana_ExceptionTest_Log_Writer_Memory extends Log_Writer
+{
+	public $messages = array();
+	/**
+	 *
+	 * @param array $messages
+	 */
+	public function write(array $messages)
+	{
+		$this->messages = $messages;
+	}
+
+}
+/**
+ * A PSR-3 compliant stub logger
+ */
+class Kohana_ExceptionTest_Log_Psr_Mock extends Psr\Log\AbstractLogger {
+
+	/**
+	 * @var array registry of logs
+	 */
+	public $logs = array();
+
+	/**
+	 * a stub for logging
+	 *
+	 * @param mixed $level
+	 * @param string $message
+	 * @param array $context
+	 */
+	public function log($level, $message, array $context = array())
+	{
+		$this->logs[] = [
+			'level' => $level,
+			'message' => $message,
+			'context' => $context
+		  ];
+	}
+
 }
