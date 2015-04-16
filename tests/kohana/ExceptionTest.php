@@ -135,6 +135,7 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 		Kohana::$log = $temp;
 	}
 }
+
 /**
  * A Log_Writer that appends messages to an internal array, used for testing
  */
@@ -147,10 +148,10 @@ class Kohana_ExceptionTest_Log_Writer_Memory extends Log_Writer
 	 */
 	public function write(array $messages)
 	{
-		$this->messages = $messages;
+		$this->messages = array_merge($this->messages, $messages);
 	}
-
 }
+
 /**
  * A PSR-3 compliant stub logger
  */
