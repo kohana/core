@@ -189,25 +189,29 @@ class Kohana_LogTest extends Unittest_TestCase
 	}
 
 	/**
-	 *
+	 * A fuzzy log message assertion with line and time deltas
+	 * 
 	 * @param array $expected expected log message
 	 * @param array $actual actual log message
 	 * @param int $line_delta Log message line number delta, for fuzzy equals
 	 * @param int $time_delta Log message time delta, for fuzzy equals
 	 */
-	public function assertLogMessageEquals($expected, $actual, $line_delta = 20, $time_delta = 5) {
-			// level
-			$this->assertSame($expected['level'], $actual['level']);
-			// message
-			$this->assertSame($expected['body'], $actual['body']);
-			// file
-			$this->assertSame($expected['file'], $actual['file']);
-			// line (fuzzy equals)
-			$this->assertInternalType(gettype($expected['line']), $actual['line']);
-			$this->assertEquals($expected['line'], $actual['line'], '', $line_delta);
-			// time (fuzzy equals)
-			$this->assertInternalType(gettype($expected['time']), $actual['time']);
-			$this->assertEquals($expected['time'], $actual['time'], '', $time_delta);
+	// @codingStandardsIgnoreStart
+	public function assertLogMessageEquals($expected, $actual, $line_delta = 20, $time_delta = 5)
+	// @codingStandardsIgnoreEnd
+	{
+		// level
+		$this->assertSame($expected['level'], $actual['level']);
+		// message
+		$this->assertSame($expected['body'], $actual['body']);
+		// file
+		$this->assertSame($expected['file'], $actual['file']);
+		// line (fuzzy equals)
+		$this->assertInternalType(gettype($expected['line']), $actual['line']);
+		$this->assertEquals($expected['line'], $actual['line'], '', $line_delta);
+		// time (fuzzy equals)
+		$this->assertInternalType(gettype($expected['time']), $actual['time']);
+		$this->assertEquals($expected['time'], $actual['time'], '', $time_delta);
 	}
 }
 
