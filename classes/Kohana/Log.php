@@ -216,7 +216,7 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 			}
 		}
 	}
-	
+
 	/**
 	 * Logs with an arbitrary level.
 	 *
@@ -273,11 +273,13 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 		{
 			$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 
-			// if
+			// remove the call that comes from Psr\Log\AbstractLogger
+			// in order to have consistent file and line elements in log
 			$parent_class_file = (new ReflectionClass(get_parent_class()))->getFileName();
 			if (isset($trace[0]['file']) AND  $parent_class_file === $trace[0]['file']) {
 				$trace = array_slice($trace, 1);
 			}
+
 			// set $context['exception'] to FALSE in order to not repeat
 			// the above if conditions again elsewhere
 			$context['exception'] = FALSE;
