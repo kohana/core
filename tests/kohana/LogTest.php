@@ -167,11 +167,9 @@ class Kohana_LogTest extends Unittest_TestCase
 		$logger->attach($writer);
 
 		// test logging with specialized method
-		$logger->$method($message);
+		$logger->$method($message); /* Record line number for fuzzy test */ $expected_line = __LINE__;
 		$logger->write();
 		$expected = $writer->logs[0];
-		// unset the first trace to the specialized method
-		array_shift($expected['trace']);
 
 		// reset writer's logs
 		$writer->logs = array();
@@ -179,16 +177,38 @@ class Kohana_LogTest extends Unittest_TestCase
 		// test logging with the generic log method
 		foreach ($levels as $level) {
 			$method = 'log';
-			$logger->$method($level, $message);
+			$logger->$method($level, $message); /* Record line number */ $actual_line = __LINE__;
 		}
 		$logger->write();
 
 		// assertions
-		foreach ($writer->logs as $log) {
-			$this->assertSame($expected, $log);
+		$line_delta = $actual_line - $expected_line;
+		foreach ($writer->logs as $actual) {
+			$this->assertLogMessageEquals($expected, $actual, $line_delta, 1);
 		}
 	}
 
+	/**
+	 *
+	 * @param array $expected expected log message
+	 * @param array $actual actual log message
+	 * @param int $line_delta Log message line number delta, for fuzzy equals
+	 * @param int $time_delta Log message time delta, for fuzzy equals
+	 */
+	public function assertLogMessageEquals($expected, $actual, $line_delta = 20, $time_delta = 5) {
+			// level
+			$this->assertSame($expected['level'], $actual['level']);
+			// message
+			$this->assertSame($expected['body'], $actual['body']);
+			// file
+			$this->assertSame($expected['file'], $actual['file']);
+			// line (fuzzy equals)
+			$this->assertInternalType(gettype($expected['line']), $actual['line']);
+			$this->assertEquals($expected['line'], $actual['line'], '', $line_delta);
+			// time (fuzzy equals)
+			$this->assertInternalType(gettype($expected['time']), $actual['time']);
+			$this->assertEquals($expected['time'], $actual['time'], '', $time_delta);
+	}
 }
 
 /**

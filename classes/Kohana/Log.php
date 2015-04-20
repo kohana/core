@@ -271,8 +271,13 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 		}
 		else
 		{
-			$trace = array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), 1);
+			$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 
+			// if
+			$parent_class_file = (new ReflectionClass(get_parent_class()))->getFileName();
+			if (isset($trace[0]['file']) AND  $parent_class_file === $trace[0]['file']) {
+				$trace = array_slice($trace, 1);
+			}
 			// set $context['exception'] to FALSE in order to not repeat
 			// the above if conditions again elsewhere
 			$context['exception'] = FALSE;
@@ -283,11 +288,8 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 			'time' => time(),
 			'level' => $level,
 			'body' => $message,
-			'trace' => $trace,
 			'file' => isset($trace[0]['file']) ? $trace[0]['file'] : NULL,
 			'line' => isset($trace[0]['line']) ? $trace[0]['line'] : NULL,
-			'class' => isset($trace[0]['class']) ? $trace[0]['class'] : NULL,
-			'function' => isset($trace[0]['function']) ? $trace[0]['function'] : NULL,
 		);
 
 		// add exception object to message, if available
