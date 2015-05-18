@@ -125,15 +125,11 @@ class Kohana_RequestTest extends Unittest_TestCase
 	{
 		$route = new Route('(<controller>(/<action>(/<id>)))');
 
-		$uri = 'foo/bar/id';
+		$uri = 'kohana_requesttest_dummy/foobar/some_id';
 		$request = Request::factory($uri, NULL, TRUE, array($route));
 
 		// We need to execute the request before it has matched a route
-		try
-		{
-			$request->execute();
-		}
-		catch (Exception $e) {}
+		$request->execute();
 
 		$this->assertArrayHasKey('id', $request->param());
 		$this->assertArrayNotHasKey('foo', $request->param());
@@ -150,17 +146,13 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$this->assertArrayNotHasKey('route', $params);
 
 		$route = new Route('(<uri>)', array('uri' => '.+'));
-		$route->defaults(array('controller' => 'foobar', 'action' => 'index'));
-		$request = Request::factory('foobar', NULL, TRUE, array($route));
+		$route->defaults(array('controller' => 'kohana_requesttest_dummy', 'action' => 'foobar'));
+		$request = Request::factory('kohana_requesttest_dummy', NULL, TRUE, array($route));
 
 		// We need to execute the request before it has matched a route
-		try
-		{
-			$request->execute();
-		}
-		catch (Exception $e) {}
+		$request->execute();
 
-		$this->assertSame('foobar', $request->param('uri'));
+		$this->assertSame('kohana_requesttest_dummy', $request->param('uri'));
 	}
 
 	/**
@@ -730,9 +722,9 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 } // End Kohana_RequestTest
 
-class Controller_Kohana_RequestTest_Dummy extends Controller
+class Controller_Kohana_RequestdTest_Dummy extends Controller
 {
-	public function action_index()
+	public function action_foobar()
 	{
 	
 	}
