@@ -59,6 +59,11 @@ class Kohana_Request_Client_InternalTest extends Unittest_TestCase
 			->method('response')
 			->will($this->returnValue($this->getMock('Response')));
 
+		// mock `method` method to avoid fatals in newer versions of PHPUnit
+		$request->expects($this->any())
+			->method('method')
+			->withAnyParameters();
+
 		$internal_client = new Request_Client_Internal;
 
 		$response = $internal_client->execute($request);
