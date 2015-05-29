@@ -130,8 +130,10 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 		// We need to execute the request before it has matched a route
 		$response = $request->execute();
+		$controller = new Controller_Kohana_RequestTest_Dummy($request, $response);
 
 		$this->assertSame(200, $response->status());
+		$this->assertSame($controller->get_expected_response(), $response->body());
 		$this->assertArrayHasKey('id', $request->param());
 		$this->assertArrayNotHasKey('foo', $request->param());
 		$this->assertEquals($request->uri(), $uri);
@@ -152,8 +154,10 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 		// We need to execute the request before it has matched a route
 		$response = $request->execute();
+		$controller = new Controller_Kohana_RequestTest_Dummy($request, $response);
 
 		$this->assertSame(200, $response->status());
+		$this->assertSame($controller->get_expected_response(), $response->body());
 		$this->assertSame('kohana_requesttest_dummy', $request->param('uri'));
 	}
 
@@ -724,7 +728,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 } // End Kohana_RequestTest
 
-class Controller_Kohana_RequestdTest_Dummy extends Controller
+class Controller_Kohana_RequestTest_Dummy extends Controller
 {
 	// hard coded dummy response
 	protected $dummy_response = "this is a dummy response";
@@ -734,7 +738,7 @@ class Controller_Kohana_RequestdTest_Dummy extends Controller
 		$this->response->body($this->dummy_response);
 	}
 
-	public function get_dummy_response()
+	public function get_expected_response()
 	{
 		return $this->dummy_response;
 	}
