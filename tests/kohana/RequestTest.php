@@ -129,8 +129,9 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$request = Request::factory($uri, NULL, TRUE, array($route));
 
 		// We need to execute the request before it has matched a route
-		$request->execute();
+		$response = $request->execute();
 
+		$this->assertSame(200, $response->status());
 		$this->assertArrayHasKey('id', $request->param());
 		$this->assertArrayNotHasKey('foo', $request->param());
 		$this->assertEquals($request->uri(), $uri);
@@ -150,8 +151,9 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$request = Request::factory('kohana_requesttest_dummy', NULL, TRUE, array($route));
 
 		// We need to execute the request before it has matched a route
-		$request->execute();
+		$response = $request->execute();
 
+		$this->assertSame(200, $response->status());
 		$this->assertSame('kohana_requesttest_dummy', $request->param('uri'));
 	}
 
@@ -724,8 +726,17 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 class Controller_Kohana_RequestdTest_Dummy extends Controller
 {
+	// hard coded dummy response
+	protected $dummy_response = "this is a dummy response";
+
 	public function action_foobar()
 	{
-	
+		$this->response->body($this->dummy_response);
 	}
+
+	public function get_dummy_response()
+	{
+		return $this->dummy_response;
+	}
+
 } // End Kohana_RequestTest
