@@ -180,14 +180,13 @@ abstract class Kohana_HTTP {
 
 		foreach ($_SERVER as $key => $value)
 		{
-			// If there is no HTTP header here, skip
-			if (strpos($key, 'HTTP_') !== 0)
+			// If there is HTTP header here
+			if (strpos($key, 'HTTP_') === 0)
 			{
-				continue;
+				// This is a dirty hack to ensure HTTP_X_FOO_BAR becomes x-foo-bar
+				$key = str_replace('_', '-', strtolower(ltrim($key, 'HTTP_')));
+				$headers[$key] = $value;
 			}
-
-			// This is a dirty hack to ensure HTTP_X_FOO_BAR becomes x-foo-bar
-			$headers[str_replace(array('HTTP_', '_'), array('', '-'), $key)] = $value;
 		}
 
 		return new HTTP_Header($headers);
