@@ -34,6 +34,18 @@ Kohana::init(array(
 ));
 ~~~
 
+ - List your trusted hosts. Open `application/config/url.php` and add regex patterns of the hosts you expect your application to be accessible from.
+
+   [!!] Do not forget to escape your dots (.) as these are regex patterns. These patterns should always fully match, as they are prepended with `^` and appended with `$`.
+~~~
+return array(
+	'trusted_hosts' => array(
+		'example\.org',
+		'.*\.example\.org',
+	),
+);
+~~~
+
  - Define a salt for the `Cookie` class.
 ~~~
 Cookie::$salt = 'some-really-long-cookie-salt-here';

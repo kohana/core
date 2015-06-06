@@ -16,6 +16,18 @@
  */
 class Kohana_HTMLTest extends Unittest_TestCase
 {
+
+	/**
+	 * Sets up the environment
+	 */
+	// @codingStandardsIgnoreStart
+	public function setUp()
+	// @codingStandardsIgnoreEnd
+	{
+		parent::setUp();
+		Kohana::$config->load('url')->set('trusted_hosts', array('www\.kohanaframework\.org'));
+	}
+
 	/**
 	 * Defaults for this test
 	 * @var array
