@@ -11,7 +11,7 @@
  * @category   HTTP
  * @author     Kohana Team
  * @since      3.1.0
- * @copyright  (c) 2008-2014 Kohana Team
+ * @copyright  (c) 2008-2015 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 abstract class Kohana_HTTP {
@@ -91,11 +91,16 @@ abstract class Kohana_HTTP {
 	 */
 	public static function parse_header_string($header_string)
 	{
-		// If the PECL HTTP extension is loaded
-		if (extension_loaded('http'))
+		// Use the fast method to parse header string
+		if (function_exists('http_parse_headers'))
 		{
-			// Use the fast method to parse header string
+			// If the PECL HTTP v1 tools are installed
 			return new HTTP_Header(http_parse_headers($header_string));
+		}
+		elseif (class_exists('\http\Header'))
+		{
+			// If the PECL HTTP v2 tools are installed
+			return new HTTP_Header(\http\Header::parse($header_string));
 		}
 
 		// Otherwise we use the slower PHP parsing
@@ -150,17 +155,21 @@ abstract class Kohana_HTTP {
 	 */
 	public static function request_headers()
 	{
-		// If running on apache server
+		// Return the much faster method
 		if (function_exists('apache_request_headers'))
 		{
-			// Return the much faster method
+			// If running on Apache server
 			return new HTTP_Header(apache_request_headers());
 		}
-		// If the PECL HTTP tools are installed
-		elseif (extension_loaded('http'))
+		elseif (function_exists('http_get_request_headers'))
 		{
-			// Return the much faster method
+			// If the PECL HTTP v1 tools are installed
 			return new HTTP_Header(http_get_request_headers());
+		}
+		elseif (class_exists('\http\Env'))
+		{
+			// If the PECL HTTP v2 tools are installed
+			return new HTTP_Header(\http\Env::getRequestHeader());
 		}
 
 		// Setup the output
@@ -180,14 +189,13 @@ abstract class Kohana_HTTP {
 
 		foreach ($_SERVER as $key => $value)
 		{
-			// If there is no HTTP header here, skip
-			if (strpos($key, 'HTTP_') !== 0)
+			// If there is HTTP header here
+			if (strpos($key, 'HTTP_') === 0)
 			{
-				continue;
+				// This is a dirty hack to ensure HTTP_X_FOO_BAR becomes x-foo-bar
+				$key = str_replace('_', '-', substr($key, 5));
+				$headers[$key] = $value;
 			}
-
-			// This is a dirty hack to ensure HTTP_X_FOO_BAR becomes x-foo-bar
-			$headers[str_replace(array('HTTP_', '_'), array('', '-'), $key)] = $value;
 		}
 
 		return new HTTP_Header($headers);
@@ -203,16 +211,12 @@ abstract class Kohana_HTTP {
 	public static function www_form_urlencode(array $params = array())
 	{
 		if ( ! $params)
-			return;
+			return '';
 
-		$encoded = array();
+		if (version_compare(PHP_VERSION, '5.4.0') >= 0)
+			return http_build_query($params, '', '&', PHP_QUERY_RFC3986);
 
-		foreach ($params as $key => $value)
-		{
-			$encoded[] = $key.'='.rawurlencode($value);
-		}
-
-		return implode('&', $encoded);
+		return http_build_query(array_map('rawurlencode', $params), '', '&');
 	}
 
 }
