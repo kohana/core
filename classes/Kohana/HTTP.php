@@ -150,17 +150,21 @@ abstract class Kohana_HTTP {
 	 */
 	public static function request_headers()
 	{
-		// If running on apache server
+		// Return the much faster method
 		if (function_exists('apache_request_headers'))
 		{
-			// Return the much faster method
+			// If running on Apache server
 			return new HTTP_Header(apache_request_headers());
 		}
-		// If the PECL HTTP tools are installed
-		elseif (extension_loaded('http'))
+		elseif (function_exists('http_get_request_headers'))
 		{
-			// Return the much faster method
+			// If the PECL HTTP v1 tools are installed
 			return new HTTP_Header(http_get_request_headers());
+		}
+		elseif (class_exists('\http\Env'))
+		{
+			// If the PECL HTTP v2 tools are installed
+			return new HTTP_Header(\http\Env::getRequestHeader());
 		}
 
 		// Setup the output
@@ -184,7 +188,7 @@ abstract class Kohana_HTTP {
 			if (strpos($key, 'HTTP_') === 0)
 			{
 				// This is a dirty hack to ensure HTTP_X_FOO_BAR becomes x-foo-bar
-				$key = str_replace('_', '-', strtolower(substr($key, 5)));
+				$key = str_replace('_', '-', substr($key, 5));
 				$headers[$key] = $value;
 			}
 		}
