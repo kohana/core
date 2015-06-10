@@ -17,6 +17,30 @@
  */
 class Kohana_Request_Client_InternalTest extends Unittest_TestCase
 {
+
+	protected $_log_object;
+
+	// @codingStandardsIgnoreStart
+	public function setUp()
+	// @codingStandardsIgnoreEnd
+	{
+		parent::setUp();
+
+		// temporarily save $log object
+		$this->_log_object = Kohana::$log;
+		Kohana::$log = NULL;
+	}
+
+	// @codingStandardsIgnoreStart
+	public function tearDown()
+	// @codingStandardsIgnoreEnd
+	{
+		// re-assign log object
+		Kohana::$log = $this->_log_object;
+
+		parent::tearDown();
+	}
+
 	public function provider_response_failure_status()
 	{
 		return array(
