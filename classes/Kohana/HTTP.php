@@ -187,7 +187,7 @@ abstract class Kohana_HTTP {
 			// If there is HTTP header here
 			if (strpos($key, 'HTTP_') === 0)
 			{
-				// This is a dirty hack to ensure HTTP_X_FOO_BAR becomes x-foo-bar
+				// This is a dirty hack to ensure HTTP_X_FOO_BAR becomes x-foo-bar 
 				$key = str_replace('_', '-', substr($key, 5));
 				$headers[$key] = $value;
 			}
