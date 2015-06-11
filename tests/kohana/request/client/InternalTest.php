@@ -61,7 +61,7 @@ class Kohana_Request_Client_InternalTest extends Unittest_TestCase
 	public function test_response_failure_status($directory, $controller, $action, $uri, $expected)
 	{
 		// Mock for request object
-		$request = $this->getMock('Request', array('directory', 'controller', 'action', 'uri', 'response'), array($uri));
+		$request = $this->getMock('Request', array('directory', 'controller', 'action', 'uri', 'response', 'method'), array($uri));
 
 		$request->expects($this->any())
 			->method('directory')
