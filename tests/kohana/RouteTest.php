@@ -28,6 +28,8 @@ class Kohana_RouteTest extends Unittest_TestCase
 	{
 		parent::setUp();
 
+		Kohana::$config->load('url')->set('trusted_hosts', array('kohanaframework\.org'));
+
 		$this->cleanCacheDir();
 	}
 

@@ -23,6 +23,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	// @codingStandardsIgnoreEnd
 	{
 		parent::setUp();
+		Kohana::$config->load('url')->set('trusted_hosts', array('localhost'));
 		$this->_initial_request = Request::$initial;
 		Request::$initial = new Request('/');
 	}
