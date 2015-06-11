@@ -248,7 +248,13 @@ class Kohana_Kohana_Exception extends Exception {
 			 * The error view ends up several GB in size, taking
 			 * serveral minutes to render.
 			 */
-			if (defined('PHPUnit_MAIN_METHOD'))
+			if (
+				defined('PHPUnit_MAIN_METHOD')
+				OR
+				defined('PHPUNIT_COMPOSER_INSTALL')
+				OR
+				defined('__PHPUNIT_PHAR__')
+			)
 			{
 				$trace = array_slice($trace, 0, 2);
 			}
