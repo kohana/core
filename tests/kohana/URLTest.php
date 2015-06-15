@@ -16,6 +16,18 @@
  */
 class Kohana_URLTest extends Unittest_TestCase
 {
+
+	/**
+	 * Sets up the environment
+	 */
+	// @codingStandardsIgnoreStart
+	public function setUp()
+	// @codingStandardsIgnoreEnd
+	{
+		parent::setUp();
+		Kohana::$config->load('url')->set('trusted_hosts', array('example\.com', 'example\.org'));
+	}
+
 	/**
 	 * Default values for the environment, see setEnvironment
 	 * @var array
@@ -276,4 +288,95 @@ class Kohana_URLTest extends Unittest_TestCase
 			URL::query($params, $use_get)
 		);
 	}
+
+	/**
+	 * Provides test data for URL::is_trusted_host()
+	 * @return array
+	 */
+	public function provider_is_trusted_host()
+	{
+		return array(
+			// data set #0
+			array(
+				'givenhost',
+				array(
+					'list-of-trusted-hosts',
+				),
+				FALSE
+			),
+			// data set #1
+			array(
+				'givenhost',
+				array(
+					'givenhost',
+					'example\.com',
+				),
+				TRUE
+			),
+			// data set #2
+			array(
+				'www.kohanaframework.org',
+				array(
+					'.*\.kohanaframework\.org',
+				),
+				TRUE
+			),
+			// data set #3
+			array(
+				'kohanaframework.org',
+				array(
+					'.*\.kohanaframework\.org',
+				),
+				FALSE // because we are requesting a subdomain
+			),
+		);
+	}
+
+	/**
+	 * Tests URL::is_trusted_hosts()
+	 *
+	 * @test
+	 * @dataProvider provider_is_trusted_host
+	 * @param string $host the given host
+	 * @param array $trusted_hosts list of trusted hosts
+	 * @param boolean $expected TRUE if host is trusted, FALSE otherwise
+	 */
+	public function test_is_trusted_host($host, $trusted_hosts, $expected)
+	{
+		$this->assertSame(
+			$expected,
+			URL::is_trusted_host($host, $trusted_hosts)
+		);
+	}
+
+	/**
+	 * Tests if invalid host throws "Invalid host" exception
+	 *
+	 * @test
+	 * @expectedException Kohana_Exception
+	 * @expectedExceptionMessage Invalid host <invalid>
+	 */
+	public function test_if_invalid_host_throws_exception()
+	{
+		// set the global HTTP_HOST to <invalid>
+		$_SERVER['HTTP_HOST'] = '<invalid>';
+		// trigger exception
+		URL::base('https');
+	}
+
+	/**
+	 * Tests if untrusted host throws "Untrusted host" exception
+	 *
+	 * @test
+	 * @expectedException Kohana_Exception
+	 * @expectedExceptionMessage Untrusted host untrusted.com
+	 */
+	public function test_if_untrusted_host_throws_exception()
+	{
+		// set the global HTTP_HOST to a valid but untrusted host
+		$_SERVER['HTTP_HOST'] = 'untrusted.com';
+		// trigger exception
+		URL::base('https');
+	}
+
 }

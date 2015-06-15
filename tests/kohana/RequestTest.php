@@ -23,6 +23,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	// @codingStandardsIgnoreEnd
 	{
 		parent::setUp();
+		Kohana::$config->load('url')->set('trusted_hosts', array('localhost'));
 		$this->_initial_request = Request::$initial;
 		Request::$initial = new Request('/');
 	}
@@ -125,16 +126,15 @@ class Kohana_RequestTest extends Unittest_TestCase
 	{
 		$route = new Route('(<controller>(/<action>(/<id>)))');
 
-		$uri = 'foo/bar/id';
+		$uri = 'kohana_requesttest_dummy/foobar/some_id';
 		$request = Request::factory($uri, NULL, TRUE, array($route));
 
 		// We need to execute the request before it has matched a route
-		try
-		{
-			$request->execute();
-		}
-		catch (Exception $e) {}
+		$response = $request->execute();
+		$controller = new Controller_Kohana_RequestTest_Dummy($request, $response);
 
+		$this->assertSame(200, $response->status());
+		$this->assertSame($controller->get_expected_response(), $response->body());
 		$this->assertArrayHasKey('id', $request->param());
 		$this->assertArrayNotHasKey('foo', $request->param());
 		$this->assertEquals($request->uri(), $uri);
@@ -150,17 +150,16 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$this->assertArrayNotHasKey('route', $params);
 
 		$route = new Route('(<uri>)', array('uri' => '.+'));
-		$route->defaults(array('controller' => 'foobar', 'action' => 'index'));
-		$request = Request::factory('foobar', NULL, TRUE, array($route));
+		$route->defaults(array('controller' => 'kohana_requesttest_dummy', 'action' => 'foobar'));
+		$request = Request::factory('kohana_requesttest_dummy', NULL, TRUE, array($route));
 
 		// We need to execute the request before it has matched a route
-		try
-		{
-			$request->execute();
-		}
-		catch (Exception $e) {}
+		$response = $request->execute();
+		$controller = new Controller_Kohana_RequestTest_Dummy($request, $response);
 
-		$this->assertSame('foobar', $request->param('uri'));
+		$this->assertSame(200, $response->status());
+		$this->assertSame($controller->get_expected_response(), $response->body());
+		$this->assertSame('kohana_requesttest_dummy', $request->param('uri'));
 	}
 
 	/**
@@ -732,8 +731,17 @@ class Kohana_RequestTest extends Unittest_TestCase
 
 class Controller_Kohana_RequestTest_Dummy extends Controller
 {
-	public function action_index()
+	// hard coded dummy response
+	protected $dummy_response = "this is a dummy response";
+
+	public function action_foobar()
 	{
-	
+		$this->response->body($this->dummy_response);
 	}
+
+	public function get_expected_response()
+	{
+		return $this->dummy_response;
+	}
+
 } // End Kohana_RequestTest

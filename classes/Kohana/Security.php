@@ -28,8 +28,8 @@ class Kohana_Security {
 	 * And then check it when using [Validation]:
 	 *
 	 *     $array->rules('csrf', array(
-	 *         'not_empty'       => NULL,
-	 *         'Security::check' => NULL,
+	 *         array('not_empty'),
+	 *         array('Security::check'),
 	 *     ));
 	 *
 	 * This provides a basic, but effective, method of preventing CSRF attacks.
