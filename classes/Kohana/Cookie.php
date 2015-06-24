@@ -181,7 +181,22 @@ class Kohana_Cookie {
 	 */
 	protected static function _setcookie($name, $value, $expire, $path, $domain, $secure, $httponly)
 	{
-		return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
+		$deleted = FALSE;
+		try
+		{
+			// Remove the cookie
+			unset($_COOKIE[$name]);
+			// Nullify the cookie and make it expire
+			setcookie($name, NULL, -86400, Cookie::$path, Cookie::$domain, Cookie::$secure, Cookie::$httponly);
+			
+			$deleted = TRUE;
+		}
+		catch (Exception $e)
+		{
+			Kohana::$log->add(Log::ERROR, $e->getMessage());
+		}
+
+		return $deleted;
 	}
 
 	/**
