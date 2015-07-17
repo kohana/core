@@ -259,7 +259,7 @@ class Kohana_URL {
 		{
 
 			// make sure we fully match the trusted hosts
-			$pattern = '#^'.$trusted_host.'$#uD';
+			$pattern = '#^'.preg_quote($trusted_host).'$#uD';
 
 			// return TRUE if there is match
 			if (preg_match($pattern, $host)) {
