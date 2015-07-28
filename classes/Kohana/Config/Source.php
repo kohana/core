@@ -11,4 +11,6 @@
  * @license    http://kohanaframework.org/license
  */
 
-interface Kohana_Config_Source {}
+namespace Kohana\Core\Config;
+
+interface Source {}

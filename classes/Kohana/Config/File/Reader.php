@@ -1,4 +1,11 @@
 <?php
+
+namespace Kohana\Core\Config\File;
+
+use Kohana\Core\Arr;
+use Kohana\Core\Core;
+use Kohana\Core\Config\Reader as ConfigReader;
+
 /**
  * File-based configuration reader. Multiple configuration directories can be
  * used by attaching multiple instances of this class to [Kohana_Config].
@@ -9,7 +16,7 @@
  * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Config_File_Reader implements Kohana_Config_Reader {
+class Reader implements ConfigReader {
 
 	/**
 	 * The directory where config files are located
@@ -41,12 +48,12 @@ class Kohana_Config_File_Reader implements Kohana_Config_Reader {
 	{
 		$config = array();
 
-		if ($files = Kohana::find_file($this->_directory, $group, NULL, TRUE))
+		if ($files = Core::find_file($this->_directory, $group, NULL, TRUE))
 		{
 			foreach ($files as $file)
 			{
 				// Merge each file to the configuration array
-				$config = Arr::merge($config, Kohana::load($file));
+				$config = Arr::merge($config, Core::load($file));
 			}
 		}
 

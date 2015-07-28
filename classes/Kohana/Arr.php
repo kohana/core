@@ -1,4 +1,11 @@
 <?php
+
+namespace Kohana\Core;
+
+use ArrayAccess;
+use Countable;
+use Traversable;
+
 /**
  * Array helper.
  *
@@ -8,7 +15,7 @@
  * @copyright  (c) 2007-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-abstract class Kohana_Arr {
+abstract class Arr {
 
 	/**
 	 * @var  string  Default delimiter for [Arr::path()]
@@ -17,7 +24,7 @@ abstract class Kohana_Arr {
 
 	/**
 	 * Tests if an array is associative or not.
-	 * 
+	 *
 	 * [!!] The method works correctly only when the keys start from scratch and go in order:
 	 * good "array(0 => $a, 1 => $b, 2 => 3)", bad "array(0 => $a, 2 => 3, 3 => $b)".
 	 *
@@ -326,7 +333,7 @@ abstract class Kohana_Arr {
 	 *     // Get all of the "id" values from a result
 	 *     $ids = Arr::pluck($result, 'id');
 	 *
-	 * [!!] A list of arrays is an array that contains arrays, 
+	 * [!!] A list of arrays is an array that contains arrays,
 	 * eg: array(array $a, array $b, array $c, ...)
 	 *
 	 * @param   array   $array  List of arrays to check
@@ -339,7 +346,7 @@ abstract class Kohana_Arr {
 		{
 			return array_column($array, $key);
 		}
-	
+
 		$values = array();
 
 		foreach ($array as $row)
@@ -387,8 +394,8 @@ abstract class Kohana_Arr {
 	 *     // Apply strip_tags and $this->filter to every element
 	 *     $array = Arr::map(array('strip_tags', array($this, 'filter')), $array);
 	 *
-	 * [!!] Because you can pass an array of callbacks, if you wish to use 
-	 * an array-form callback you must nest it in an additional array as above. 
+	 * [!!] Because you can pass an array of callbacks, if you wish to use
+	 * an array-form callback you must nest it in an additional array as above.
 	 * Calling Arr::map(array($this, 'filter'), $array) will cause an error.
 	 * [!!] Unlike `array_map`, this method requires a callback and will only map
 	 * a single array.
