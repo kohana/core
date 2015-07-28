@@ -63,7 +63,7 @@ With the introduction of [PSR-0](https://github.com/php-fig/fig-standards/blob/m
 
 Examples:
 
-    Kohana_Core
+    Kohana\Core\Core
 
 would be located in
 

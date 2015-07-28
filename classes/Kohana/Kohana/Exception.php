@@ -1,4 +1,12 @@
 <?php
+
+namespace Kohana\Core\Kohana;
+
+use ErrorException;
+use Exception as PhpException;
+use Kohana\Core\Core;
+use Kohana\Core\I18n;
+
 /**
  * Kohana exception class. Translates exceptions using the [I18n] class.
  *
@@ -8,7 +16,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Kohana_Exception extends Exception {
+class Exception extends PhpException {
 
 	/**
 	 * @var  array  PHP error code => human readable name
@@ -38,7 +46,7 @@ class Kohana_Kohana_Exception extends Exception {
 	/**
 	 * Creates a new translated exception.
 	 *
-	 *     throw new Kohana_Exception('Something went terrible wrong, :user',
+	 *     throw new Exception('Something went terrible wrong, :user',
 	 *         array(':user' => $user));
 	 *
 	 * @param   string          $message    error message
@@ -65,25 +73,25 @@ class Kohana_Kohana_Exception extends Exception {
 	 *
 	 *     echo $exception;
 	 *
-	 * @uses    Kohana_Exception::text
+	 * @uses    Exception::text
 	 * @return  string
 	 */
 	public function __toString()
 	{
-		return Kohana_Exception::text($this);
+		return Exception::text($this);
 	}
 
 	/**
 	 * Inline exception handler, displays the error message, source of the
 	 * exception, and the stack trace of the error.
 	 *
-	 * @uses    Kohana_Exception::response
+	 * @uses    Exception::response
 	 * @param   Exception  $e
 	 * @return  void
 	 */
 	public static function handler(Exception $e)
 	{
-		$response = Kohana_Exception::_handler($e);
+		$response = Exception::_handler($e);
 
 		// Send the response to the browser
 		echo $response->send_headers()->body();
@@ -95,7 +103,7 @@ class Kohana_Kohana_Exception extends Exception {
 	 * Exception handler, logs the exception and generates a Response object
 	 * for display.
 	 *
-	 * @uses    Kohana_Exception::response
+	 * @uses    Exception::response
 	 * @param   Exception  $e
 	 * @return  Response
 	 */
@@ -104,10 +112,10 @@ class Kohana_Kohana_Exception extends Exception {
 		try
 		{
 			// Log the exception
-			Kohana_Exception::log($e);
+			Exception::log($e);
 
 			// Generate the response
-			$response = Kohana_Exception::response($e);
+			$response = Exception::response($e);
 
 			return $response;
 		}
@@ -121,9 +129,9 @@ class Kohana_Kohana_Exception extends Exception {
 			ob_get_level() AND ob_clean();
 
 			// Set the Status code to 500, and Content-Type to text/plain.
-			header('Content-Type: text/plain; charset='.Kohana::$charset, TRUE, 500);
+			header('Content-Type: text/plain; charset='.Core::$charset, TRUE, 500);
 
-			echo Kohana_Exception::text($e);
+			echo Exception::text($e);
 
 			exit(1);
 		}
@@ -132,23 +140,23 @@ class Kohana_Kohana_Exception extends Exception {
 	/**
 	 * Logs an exception.
 	 *
-	 * @uses    Kohana_Exception::text
+	 * @uses    Exception::text
 	 * @param   Exception  $e
 	 * @param   int        $level
 	 * @return  void
 	 */
 	public static function log(Exception $e, $level = Log::EMERGENCY)
 	{
-		if (is_object(Kohana::$log))
+		if (is_object(Core::$log))
 		{
 			// Create a text version of the exception
-			$error = Kohana_Exception::text($e);
+			$error = Exception::text($e);
 
 			// Add this exception to the log
-			Kohana::$log->add($level, $error, NULL, array('exception' => $e));
+            Core::$log->add($level, $error, NULL, array('exception' => $e));
 
 			// Make sure the logs are written
-			Kohana::$log->write();
+            Core::$log->write();
 		}
 	}
 
@@ -169,7 +177,7 @@ class Kohana_Kohana_Exception extends Exception {
 	/**
 	 * Get a Response object representing the exception
 	 *
-	 * @uses    Kohana_Exception::text
+	 * @uses    Exception::text
 	 * @param   Exception  $e
 	 * @return  Response
 	 */
@@ -235,10 +243,10 @@ class Kohana_Kohana_Exception extends Exception {
 					}
 				}
 
-				if (isset(Kohana_Exception::$php_errors[$code]))
+				if (isset(Exception::$php_errors[$code]))
 				{
 					// Use the human-readable error name
-					$code = Kohana_Exception::$php_errors[$code];
+					$code = Exception::$php_errors[$code];
 				}
 			}
 
@@ -260,7 +268,7 @@ class Kohana_Kohana_Exception extends Exception {
 			}
 
 			// Instantiate the error view.
-			$view = View::factory(Kohana_Exception::$error_view, get_defined_vars());
+			$view = View::factory(Exception::$error_view, get_defined_vars());
 
 			// Prepare the response object.
 			$response = Response::factory();
@@ -269,7 +277,7 @@ class Kohana_Kohana_Exception extends Exception {
 			$response->status(($e instanceof HTTP_Exception) ? $e->getCode() : 500);
 
 			// Set the response headers
-			$response->headers('Content-Type', Kohana_Exception::$error_view_content_type.'; charset='.Kohana::$charset);
+			$response->headers('Content-Type', Exception::$error_view_content_type.'; charset='.Core::$charset);
 
 			// Set the response body
 			$response->body($view->render());
@@ -283,7 +291,7 @@ class Kohana_Kohana_Exception extends Exception {
 			$response = Response::factory();
 			$response->status(500);
 			$response->headers('Content-Type', 'text/plain');
-			$response->body(Kohana_Exception::text($e));
+			$response->body(Exception::text($e));
 		}
 
 		return $response;

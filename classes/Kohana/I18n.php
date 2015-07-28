@@ -1,4 +1,7 @@
 <?php
+
+namespace Kohana\Core;
+
 /**
  * Internationalization (i18n) class. Provides language loading and translation
  * methods without dependencies on [gettext](http://php.net/gettext).
@@ -20,7 +23,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_I18n {
+class I18n {
 
 	/**
 	 * @var  string   target language: en-us, es-es, zh-cn, etc
@@ -139,13 +142,13 @@ class Kohana_I18n {
 			// Create a path for this set of parts
 			$path = implode(DIRECTORY_SEPARATOR, $parts);
 
-			if ($files = Kohana::find_file('i18n', $path, NULL, TRUE))
+			if ($files = Core::find_file('i18n', $path, NULL, TRUE))
 			{
 				$t = array();
 				foreach ($files as $file)
 				{
 					// Merge the language strings into the sub table
-					$t = array_merge($t, Kohana::load($file));
+					$t = array_merge($t, Core::load($file));
 				}
 
 				// Append the sub table, preventing less specific language

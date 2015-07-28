@@ -1,4 +1,13 @@
 <?php
+
+namespace Kohana\Core;
+
+use Kohana\Core\Config\Group;
+use Kohana\Core\Config\Reader;
+use Kohana\Core\Config\Source;
+use Kohana\Core\Config\Writer;
+use Kohana\Core\Kohana\Exception;
+
 /**
  * Wrapper for configuration arrays. Multiple configuration readers can be
  * attached to allow loading configuration from files, database, etc.
@@ -15,7 +24,7 @@
  * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Config {
+class Config {
 
 	// Configuration readers
 	protected $_sources = array();
@@ -31,11 +40,11 @@ class Kohana_Config {
 	 *     $config->attach($reader);        // Try first
 	 *     $config->attach($reader, FALSE); // Try last
 	 *
-	 * @param   Kohana_Config_Source    $source instance
+	 * @param   Source                  $source instance
 	 * @param   boolean                 $first  add the reader as the first used object
 	 * @return  $this
 	 */
-	public function attach(Kohana_Config_Source $source, $first = TRUE)
+	public function attach(Source $source, $first = TRUE)
 	{
 		if ($first === TRUE)
 		{
@@ -59,10 +68,10 @@ class Kohana_Config {
 	 *
 	 *     $config->detach($reader);
 	 *
-	 * @param   Kohana_Config_Source    $source instance
+	 * @param   Source    $source instance
 	 * @return  $this
 	 */
-	public function detach(Kohana_Config_Source $source)
+	public function detach(Source $source)
 	{
 		if (($key = array_search($source, $this->_sources)) !== FALSE)
 		{
@@ -83,24 +92,24 @@ class Kohana_Config {
 	 * See [Kohana_Config_Group] for more info
 	 *
 	 * @param   string  $group  configuration group name
-	 * @return  Kohana_Config_Group
-	 * @throws  Kohana_Exception
+	 * @return  Group
+	 * @throws  Exception
 	 */
 	public function load($group)
 	{
 		if ( ! count($this->_sources))
 		{
-			throw new Kohana_Exception('No configuration sources attached');
+			throw new Exception('No configuration sources attached');
 		}
 
 		if (empty($group))
 		{
-			throw new Kohana_Exception("Need to specify a config group");
+			throw new Exception("Need to specify a config group");
 		}
 
 		if ( ! is_string($group))
 		{
-			throw new Kohana_Exception("Config group must be a string");
+			throw new Exception("Config group must be a string");
 		}
 
 		if (strpos($group, '.') !== FALSE)
@@ -125,7 +134,7 @@ class Kohana_Config {
 
 		foreach ($sources as $source)
 		{
-			if ($source instanceof Kohana_Config_Reader)
+			if ($source instanceof Reader)
 			{
 				if ($source_config = $source->load($group))
 				{
@@ -134,7 +143,7 @@ class Kohana_Config {
 			}
 		}
 
-		$this->_groups[$group] = new Config_Group($this, $group, $config);
+		$this->_groups[$group] = new Group($this, $group, $config);
 
 		if (isset($path))
 		{
@@ -171,13 +180,13 @@ class Kohana_Config {
 	 * @param string    $group  Group name
 	 * @param string    $key    Variable name
 	 * @param mixed     $value  The new value
-	 * @return Kohana_Config Chainable instance
+	 * @return Config   Chainable instance
 	 */
 	public function _write_config($group, $key, $value)
 	{
 		foreach ($this->_sources as $source)
 		{
-			if ( ! ($source instanceof Kohana_Config_Writer))
+			if ( ! ($source instanceof Writer))
 			{
 				continue;
 			}

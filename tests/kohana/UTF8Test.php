@@ -1,6 +1,8 @@
 <?php
+use Kohana\Core\UTF8;
+
 /**
- * Tests Kohana_UTF8 class
+ * Tests Kohana\Core\UTF8 class
  *
  * @group kohana
  * @group kohana.core
@@ -12,7 +14,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_UTF8Test extends Unittest_TestCase
+class Kohana_UTF8Test extends PHPUnit_Framework_TestCase
 {
 
 	/**

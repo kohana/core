@@ -23,8 +23,7 @@
 		"php":        ">=5.4.0"
 	},
 	"require-dev": {
-		"kohana/unittest":     "3.4.*@dev",
-		"kohana/koharness":    "*@dev"
+		"phpunit/phpunit":     "3.7.*"
 	},
 	"suggest": {
 		"ext-http":   "*",
@@ -38,6 +37,11 @@
 		"branch-alias": {
 			"dev-3.3/develop":  "3.3.x-dev",
 			"dev-3.4/develop":  "3.4.x-dev"
+		}
+	},
+	"autoload": {
+		"psr-4": {
+			"Kohana\\Core\\": "classes/Kohana"
 		}
 	}
 }
