@@ -404,7 +404,7 @@ abstract class Kohana_Arr {
 		{
 			if (is_array($val))
 			{
-				$array[$key] = Arr::map($callbacks, $array[$key]);
+				$array[$key] = Arr::map($callbacks, $array[$key], $keys);
 			}
 			elseif ( ! is_array($keys) OR in_array($key, $keys))
 			{
