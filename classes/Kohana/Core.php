@@ -905,10 +905,10 @@ class Kohana_Core {
 		if ( ! is_dir($dir))
 		{
 			// Create the cache directory
-			mkdir($dir, 0777, TRUE);
+			mkdir($dir, 0755, TRUE);
 
 			// Set permissions (must be manually set to fix umask issues)
-			chmod($dir, 0777);
+			chmod($dir, 0755);
 		}
 
 		// Force the data to be a string
