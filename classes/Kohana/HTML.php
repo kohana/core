@@ -118,7 +118,7 @@ class Kohana_HTML {
 		}
 		else
 		{
-			if (strpos($uri, '://') !== FALSE)
+			if (strpos($uri, '://') !== FALSE OR strncmp($uri, '//', 2) == 0)
 			{
 				if (HTML::$windowed_urls === TRUE AND empty($attributes['target']))
 				{
