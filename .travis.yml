@@ -8,8 +8,14 @@ php:
   - 7.0
   - hhvm
 
+matrix:
+  include:
+    - php: 5.3
+      env: 'COMPOSER_PHPUNIT="lowest"'
+
 before_script:
   - COMPOSER_ROOT_VERSION=3.3.x-dev composer install --prefer-dist
+  - if [ "$COMPOSER_PHPUNIT" = "lowest" ]; then COMPOSER_ROOT_VERSION=3.3.x-dev composer update --prefer-lowest --with-dependencies phpunit/phpunit; fi;
   - vendor/bin/koharness
 
 script:
