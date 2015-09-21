@@ -150,32 +150,28 @@ abstract class Kohana_HTTP {
 	 */
 	public static function request_headers()
 	{
-		// If running on apache server
-		if (function_exists('apache_request_headers'))
-		{
-			// Return the much faster method
-			return new HTTP_Header(apache_request_headers());
-		}
-		// If the PECL HTTP tools are installed
-		elseif (extension_loaded('http'))
-		{
-			// Return the much faster method
-			return new HTTP_Header(http_get_request_headers());
-		}
-
-		// Setup the output
-		$headers = array();
-
+		$headers = [];
+		
 		// Parse the content type
 		if ( ! empty($_SERVER['CONTENT_TYPE']))
 		{
 			$headers['content-type'] = $_SERVER['CONTENT_TYPE'];
 		}
-
-		// Parse the content length
-		if ( ! empty($_SERVER['CONTENT_LENGTH']))
+		
+		// If running on apache server
+		if (function_exists('apache_request_headers'))
 		{
-			$headers['content-length'] = $_SERVER['CONTENT_LENGTH'];
+			$headers += apache_request_headers();
+			
+			// Return the much faster method
+			return new HTTP_Header($headers);
+		}
+		// If the PECL HTTP tools are installed
+		elseif (extension_loaded('http'))
+		{
+			$headers += http_get_request_headers();
+			// Return the much faster method
+			return new HTTP_Header($headers);
 		}
 
 		foreach ($_SERVER as $key => $value)
