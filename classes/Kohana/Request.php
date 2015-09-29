@@ -668,7 +668,7 @@ class Kohana_Request implements HTTP_Request {
 		$uri = array_shift($split_uri);
 
 		// Initial request has global $_GET already applied
-		if (Request::$initial !== NULL)
+		if (Request::$initial === NULL)
 		{
 			if ($split_uri)
 			{
