@@ -192,8 +192,8 @@ abstract class Kohana_HTTP {
 				continue;
 			}
 
-			// This is a dirty hack to ensure HTTP_X_FOO_BAR becomes x-foo-bar
-			$headers[str_replace(array('HTTP_', '_'), array('', '-'), $key)] = $value;
+			// This is a dirty hack to ensure HTTP_X_FOO_BAR becomes X-FOO-BAR
+			$headers[str_replace('_', '-', substr($key, 5))] = $value;
 		}
 
 		return new HTTP_Header($headers);

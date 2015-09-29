@@ -523,18 +523,18 @@ class Kohana_RequestTest extends Unittest_TestCase
 	{
 		$x_powered_by = 'Kohana Unit Test';
 		$content_type = 'application/x-www-form-urlencoded';
+		$request = new Request('foo/bar', array(), TRUE, array());
 
 		return array(
 			array(
-				$request = Request::factory('foo/bar')
-					->headers(array(
+				$request->headers(array(
 						'x-powered-by' => $x_powered_by,
 						'content-type' => $content_type
 					)
 				),
-			array(
-				'x-powered-by' => $x_powered_by,
-				'content-type' => $content_type
+				array(
+					'x-powered-by' => $x_powered_by,
+					'content-type' => $content_type
 				)
 			)
 		);
@@ -566,7 +566,6 @@ class Kohana_RequestTest extends Unittest_TestCase
 	{
 		return array(
 			array(
-				Request::factory(),
 				array(
 					'content-type'  => 'application/x-www-form-urlencoded',
 					'x-test-header' => 'foo'
@@ -574,7 +573,6 @@ class Kohana_RequestTest extends Unittest_TestCase
 				"Content-Type: application/x-www-form-urlencoded\r\nX-Test-Header: foo\r\n\r\n"
 			),
 			array(
-				Request::factory(),
 				array(
 					'content-type'  => 'application/json',
 					'x-powered-by'  => 'kohana'
@@ -589,13 +587,13 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 * 
 	 * @dataProvider provider_headers_set
 	 *
-	 * @param   Request    request object
 	 * @param   array      header(s) to set to the request object
 	 * @param   string     expected http header
 	 * @return  void
 	 */
-	public function test_headers_set(Request $request, $headers, $expected)
+	public function test_headers_set($headers, $expected)
 	{
+		$request = new Request(TRUE, array(), TRUE, array());
 		$request->headers($headers);
 		$this->assertSame($expected, (string) $request->headers());
 	}
