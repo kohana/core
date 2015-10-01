@@ -23,8 +23,8 @@ To work on this package, you'll want to install it with composer to get the requ
 currently circular dependencies between this module and kohana/unittest. These may cause you problems if you are working
 on a feature branch, because composer may not be able to figure out which version of kohana core you have.
 
-To work around this, run composer like: `COMPOSER_ROOT_VERSION=3.3.x-dev composer install`. This tells composer that the
-current checkout is a 3.3.* development version. Obviously change the argument if your branch is based on a different
+To work around this, run composer like: `COMPOSER_ROOT_VERSION=3.4.x-dev composer install`. This tells composer that the
+current checkout is a 3.4.* development version. Obviously change the argument if your branch is based on a different
 version.
 
 After installing the dependencies, you'll need a skeleton Kohana application before you can run the unit tests etc. The
