@@ -362,16 +362,67 @@ class Kohana_CoreTest extends Unittest_TestCase
 
 	/**
 	 * Tests Kohana::init() for default log file creation
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
 	 */
 	public function test_init_creates_default_log_instance()
 	{
-		/**
-		 * PHPUnit has already bootstrapped Kohana and init() was called
-		 */
+		// Get the current output buffer level
+		// Needed to reset later, so that PHPUnit 4.2+ won't complain
+		$ob_level = ob_get_level();
+
+		// De-initialize Kohana, allows us to init() again
+		Kohana::deinit();
+		
+		// Make sure Kohana::$log is NULL
+		Kohana::$log = NULL;
+		
+		// Call Kohana::init(), this will only affect the separate process
+		Kohana::init();
 		
 		// test if a default log instance is created
 		$this->assertInstanceOf('Log', Kohana::$log);
+		
+		// Clean and end current output buffer
+		// Otherwise PHPUnit 4.2+ will complain and mark the test risky
+		while (ob_get_level() > $ob_level) {
+			ob_end_clean();
+		}
 	}
 
+	/**
+	 * Tests Kohana::init() for not changing log instance if already assigned to a \Psr\Log\LoggerInterface
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_init_not_change_assigned_log_instance()
+	{
+		// Get the current output buffer level
+		// Needed to reset later, so that PHPUnit 4.2+ won't complain
+		$ob_level = ob_get_level();
+
+		// De-initialize Kohana, allows us to init() again
+		Kohana::deinit();
+		
+		// Set Kohana::$log to a stub \Psr\Log\LoggerInterface
+		$stub = $this->getMockBuilder('\Psr\Log\LoggerInterface')->getMock();
+		Kohana::$log = $stub;
+		
+		// Call Kohana::init(), this will only affect the separate process
+		Kohana::init();
+		
+		// test if the log instance is unchanged
+		$this->assertSame($stub, Kohana::$log);
+		$this->assertInstanceOf('\Psr\Log\LoggerInterface', Kohana::$log);
+		$this->assertNotInstanceOf('Log', Kohana::$log);
+		
+		// Clean and reset output buffer
+		// Otherwise PHPUnit 4.2+ will complain and mark the test risky
+		while (ob_get_level() > $ob_level) {
+			ob_end_clean();
+		}
+	}
 
 }
