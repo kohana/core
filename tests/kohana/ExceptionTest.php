@@ -134,6 +134,28 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 		// clean up
 		Kohana::$log = $temp;
 	}
+
+	/**
+	 * Test if Kohana_Exception fails silently when Kohana::$log is unassigned
+	 *
+	 * @test
+	 * @dataProvider provider_text
+	 * @param object $exception exception to test
+	 * @param string $expected  expected output
+	 */
+	public function test_fails_silently_when_log_not_assigned($exception, $expected) {
+		$temp = Kohana::$log;
+		Kohana::$log = NULL;
+
+		// Generic assertion that it is failing silently
+		// Should it raise any exception, the test will fail as expected.
+		$this->assertNull(Kohana_Exception::log($exception));
+
+		// clean up
+		Kohana::$log = $temp;
+	}
+
+
 }
 
 /**
