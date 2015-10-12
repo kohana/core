@@ -61,7 +61,7 @@ class Kohana_Log_Syslog extends Log_Writer {
 			$level = $this->_log_levels[$message['level']];
 
 			// write to syslog
-			syslog($level, $message['body']);
+			$this->_syslog($level, $message['body']);
 
 			if (isset($message['exception']))
 			{
@@ -69,9 +69,23 @@ class Kohana_Log_Syslog extends Log_Writer {
 				$level = $this->_log_levels[Log_Writer::$strace_level];
 
 				// write to syslog
-				syslog($level, $message['exception']->getTraceAsString());
+				$this->_syslog($level, $message['exception']->getTraceAsString());
 			}
 		}
+	}
+
+	/**
+	 * Proxy for the native syslog function - to allow mocking in unit tests
+	 *
+	 * @param int $priority a combination of the facility and the level
+	 * @param string $message the message to send
+	 *
+	 * @return bool
+	 * @see syslog
+	 */
+	protected function _syslog($priority, $message)
+	{
+		return syslog($priority, $message);
 	}
 
 	/**
