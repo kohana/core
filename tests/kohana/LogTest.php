@@ -107,6 +107,11 @@ class Kohana_LogTest extends Unittest_TestCase
 		$this->assertAttributeSame(array(), '_writers', $logger);
 	}
 
+	/**
+	 * Provider for test_specialized_vs_generic_methods
+	 * and test_logging_abstract_logger
+	 *
+	 */
 	public function provider_logging()
 	{
 		return [
@@ -159,7 +164,7 @@ class Kohana_LogTest extends Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_logging
 	 */
-	public function test_logging($method, array $levels, $message)
+	public function test_specialized_vs_generic_methods($method, array $levels, $message)
 	{
 		// initialize
 		$logger = new Log;
