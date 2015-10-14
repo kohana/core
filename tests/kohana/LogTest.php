@@ -194,6 +194,30 @@ class Kohana_LogTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Tests that Log casts message to string
+	 *
+	 * @test
+	 */
+	public function test_log_casts_message_to_string()
+	{
+		// initialize
+		$logger = new Log;
+		$writer = new Kohana_LogTest_Log_Writer_Memory();
+		$logger->attach($writer);
+
+		// test logging with an object as message
+		$object = new Kohana_LogTest_ToString();
+		$logger->log(\Psr\Log\LogLevel::INFO, $object);
+		$logger->write();
+		$actual = $writer->logs[0];
+
+		// assertions
+		$this->assertInternalType('string', $object->message);
+		$this->assertInternalType('string', $actual['body']);
+		$this->assertSame($object->message, $actual['body']);
+	}
+
+	/**
 	 * Tests \Psr\Log\AbstractLogger
 	 *
 	 * @test
@@ -265,4 +289,20 @@ class Kohana_LogTest_Log_Writer_Memory extends Log_Writer {
 		$this->logs = array_merge($this->logs, $logs);
 	}
 
+}
+/**
+ * A simple class with __toString method
+ */
+class Kohana_LogTest_ToString
+{
+	public $message = 'dummy string';
+
+	/**
+	 *
+	 * @return string
+	 */
+	public function __toString()
+	{
+		return $this->message;
+	}
 }
