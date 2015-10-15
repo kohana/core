@@ -40,7 +40,7 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 	/**
 	 * @var  boolean  immediately write when logs are added
 	 */
-	public static $write_on_add = FALSE;
+	protected $write_immediately = FALSE;
 
 	/**
 	 * @var  Log  Singleton instance container
@@ -117,6 +117,29 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 	{
 		// Remove the writer
 		unset($this->_writers["{$writer}"]);
+
+		return $this;
+	}
+
+	/**
+	 * TRUE if Log is set to write immediately, FALSE otherwise
+	 * 
+	 * @return boolean
+	 */
+	public function get_immediate_write()
+	{
+		return $this->write_immediately;
+	}
+
+	/**
+	 * Set/unset immediate writing
+	 * 
+	 * @param boolean $write_immediately
+	 * @return Log
+	 */
+	public function set_immediate_write($write_immediately = TRUE)
+	{
+		$this->write_immediately = (bool) $write_immediately;
 
 		return $this;
 	}
@@ -303,7 +326,7 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 		// add it to the local message array
 		$this->_messages[] = $message;
 
-		if (Log::$write_on_add)
+		if ($this->write_immediately)
 		{
 			// Write logs as they are added
 			$this->write();
