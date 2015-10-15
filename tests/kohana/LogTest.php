@@ -218,6 +218,58 @@ class Kohana_LogTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Provider for test_immediate_writing
+	 */
+	public function provider_immediate_writing()
+	{
+		return [
+			[
+				TRUE, // write immediately
+				1, // $expected_number_of_logs
+			],
+			[
+				FALSE, // do NOT write immediately
+				0, // $expected_number_of_logs
+			]
+		];
+	}
+
+	/**
+	 * Tests that Log writes immediately when immediate writing is ON, otherwise
+	 * it delays writing after call to write()
+	 *
+	 * @test
+	 * @dataProvider provider_immediate_writing
+	 */
+	public function test_immediate_writing($write_immediately, $expected_number_of_logs)
+	{
+		// initialize
+		$logger = new Log;
+		$writer = new Kohana_LogTest_Log_Writer_Memory();
+		$logger->attach($writer);
+
+		// Turn on immediate writing
+		$logger->set_immediate_write($write_immediately);
+
+		// test logging with an object as message
+		$logger->log(\Psr\Log\LogLevel::DEBUG, 'dummy message');
+
+		// We will NOT call $logger->write() here...
+
+		$actual_number_of_logs = count($writer->logs);
+
+		// assertions
+		$this->assertSame($write_immediately, $logger->get_immediate_write());
+		$this->assertSame($expected_number_of_logs, $actual_number_of_logs);
+
+		// force write and assert anew
+		$logger->write();
+		$expected_number_of_logs = 1; // expect logs after forced write
+		$actual_number_of_logs = count($writer->logs); // recalculate actual
+		$this->assertSame($expected_number_of_logs, $actual_number_of_logs);
+	}
+
+	/**
 	 * Tests \Psr\Log\AbstractLogger
 	 *
 	 * @test
