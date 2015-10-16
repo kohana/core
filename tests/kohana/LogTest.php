@@ -108,6 +108,79 @@ class Kohana_LogTest extends Unittest_TestCase
 	}
 
 	/**
+	 * Data provider for test_log_message
+	 *
+	 * @return array
+	 */
+	public function provider_log_message()
+	{
+		// a sample exception used in data sets
+		$exception = new Exception('dummy exception text');
+		return [
+			// data set #0
+			[
+				\Psr\Log\LogLevel::DEBUG, // level
+				'dummy message', // log text
+				[], // context
+				// expected raw log message array
+				[
+					'time' => time(),
+					'level' => \Psr\Log\LogLevel::DEBUG,
+					'body' => 'dummy message',
+					'line' => 0, // to be reset later for fuzzy testing
+					'file' => __FILE__,
+				]
+			],
+			// data set #1
+			[
+				\Psr\Log\LogLevel::ERROR, // level
+				'dummy message', // log text
+				['exception' => $exception], // context
+				// expected raw log message array
+				[
+					'time' => time(),
+					'level' => \Psr\Log\LogLevel::ERROR,
+					'body' => 'dummy message',
+					'file' => NULL,
+					'line' => 0, // to be reset later for fuzzy testing
+					'exception' => $exception,
+				]
+			]
+		];
+	}
+
+	/**
+	 * Tests log message arrays have the expected elements
+	 *
+	 * @test
+	 * @dataProvider provider_log_message
+	 */
+	public function test_log_message($method, $message, $context, $expected)
+	{
+		// initialize
+		$logger = new Log;
+		$writer = new Kohana_LogTest_Log_Writer_Memory();
+		$logger->attach($writer);
+
+		// Call log
+		$logger->log($method, $message, $context);
+
+		// Reset line number
+		if (isset($context['exception'])) {
+			$expected['line'] = NULL;
+		} else {
+			// fix expected line
+			$expected_line = __LINE__;
+			$expected['line'] = $expected_line;
+		}
+
+		$logger->write();
+		$actual = $writer->logs[0];
+
+		// Assert
+		$this->assertLogMessageEquals($expected, $actual);
+	}
+	/**
 	 * Provider for test_specialized_vs_generic_methods
 	 * and test_logging_abstract_logger
 	 *
@@ -317,11 +390,17 @@ class Kohana_LogTest extends Unittest_TestCase
 		// file
 		$this->assertSame($expected['file'], $actual['file']);
 		// line (fuzzy equals)
-		$this->assertInternalType(gettype($expected['line']), $actual['line']);
+		if (isset($expected['line'])) {
+			$this->assertInternalType(gettype($expected['line']), $actual['line']);
+		}
 		$this->assertEquals($expected['line'], $actual['line'], '', $line_delta);
 		// time (fuzzy equals)
 		$this->assertInternalType(gettype($expected['time']), $actual['time']);
 		$this->assertEquals($expected['time'], $actual['time'], '', $time_delta);
+		// exception
+		if(isset($expected['exception'])) {
+			$this->assertSame($expected['exception'], $actual['exception']);
+		}
 	}
 }
 
