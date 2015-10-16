@@ -7,7 +7,7 @@
  * @group kohana
  * @group kohana.core
  * @group kohana.core.logging
- * @group kohana.core.logging.syslog
+ * @group kohana.core.logging.psr
  *
  * @package    Kohana
  * @category   Tests
