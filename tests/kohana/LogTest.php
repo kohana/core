@@ -380,7 +380,7 @@ class Kohana_LogTest extends Unittest_TestCase
 	 * @param int $time_delta Log message time delta, for fuzzy equals
 	 */
 	// @codingStandardsIgnoreStart
-	public function assertLogMessageEquals($expected, $actual, $line_delta = 20, $time_delta = 5)
+	public function assertLogMessageEquals($expected, $actual, $line_delta = 20, $time_delta = 10)
 	// @codingStandardsIgnoreEnd
 	{
 		// level
