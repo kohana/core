@@ -155,7 +155,7 @@ class Kohana_LogTest extends Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_log_message
 	 */
-	public function test_log_message($method, $message, $context, $expected)
+	public function test_log_message($level, $message, $context, $expected)
 	{
 		// initialize
 		$logger = new Log;
@@ -163,7 +163,7 @@ class Kohana_LogTest extends Unittest_TestCase
 		$logger->attach($writer);
 
 		// Call log
-		$logger->log($method, $message, $context);
+		$logger->log($level, $message, $context);
 
 		// Reset line number
 		if (isset($context['exception'])) {
@@ -373,7 +373,7 @@ class Kohana_LogTest extends Unittest_TestCase
 
 	/**
 	 * A fuzzy log message assertion with line and time deltas
-	 * 
+	 *
 	 * @param array $expected expected log message
 	 * @param array $actual actual log message
 	 * @param int $line_delta Log message line number delta, for fuzzy equals
