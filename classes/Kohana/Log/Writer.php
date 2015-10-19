@@ -25,7 +25,7 @@ abstract class Kohana_Log_Writer {
 	public static $timezone;
 
 	/**
-	 * @var  int  Level to use for stack traces
+	 * @var  string  Level to use for stack traces
 	 */
 	public static $strace_level = \Psr\Log\LogLevel::DEBUG;
 
