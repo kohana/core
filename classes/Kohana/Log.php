@@ -260,7 +260,7 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 	 */
 	public function log($level, $message, array $context = [])
 	{
-		// check if level is available
+		// Check if log level exists in the $this->_log_levels array.
 		if (is_int($level) AND isset($this->_log_levels[$level]))
 		{
 			$level = $this->_log_levels[$level];
@@ -298,7 +298,8 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 			// remove the call that comes from Psr\Log\AbstractLogger
 			// in order to have consistent file and line elements in log
 			$parent_class_file = (new ReflectionClass(get_parent_class()))->getFileName();
-			if (isset($trace[0]['file']) AND  $parent_class_file === $trace[0]['file']) {
+			if (isset($trace[0]['file']) AND  $parent_class_file === $trace[0]['file'])
+			{
 				$trace = array_slice($trace, 1);
 			}
 
@@ -307,7 +308,6 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 			$context['exception'] = FALSE;
 		}
 
-		// Create a new message
 		$message = array(
 			'time' => time(),
 			'level' => $level,
@@ -316,7 +316,6 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 			'line' => isset($trace[0]['line']) ? $trace[0]['line'] : NULL,
 		);
 
-		// add exception object to message, if available
 		if ($context['exception'])
 		{
 			$message['exception'] = $context['exception'];
