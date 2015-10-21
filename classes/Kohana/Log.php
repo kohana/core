@@ -286,7 +286,6 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 		// Grab a copy of the trace and sanitize $context['exception']
 		if (
 		  isset($context['exception']) AND
-		  is_object($context['exception']) AND
 		  $context['exception'] instanceof Exception
 		)
 		{
