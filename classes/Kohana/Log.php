@@ -137,7 +137,7 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 	 * @param boolean $write_immediately
 	 * @return Log
 	 */
-	public function set_immediate_write($write_immediately = TRUE)
+	public function set_immediate_write($write_immediately)
 	{
 		$this->write_immediately = (bool) $write_immediately;
 
