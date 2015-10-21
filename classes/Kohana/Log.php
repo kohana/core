@@ -261,7 +261,7 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 	public function log($level, $message, array $context = [])
 	{
 		// check if level is available
-		if (is_int($level) AND array_key_exists($level, $this->_log_levels))
+		if (is_int($level) AND isset($this->_log_levels[$level]))
 		{
 			$level = $this->_log_levels[$level];
 		}
