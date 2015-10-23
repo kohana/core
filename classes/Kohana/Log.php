@@ -26,15 +26,15 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 	 * Numeric log level to string lookup table.
 	 * @var array
 	 */
-	protected $_log_levels = array(
-		LOG_EMERG   => \Psr\Log\LogLevel::EMERGENCY,
-		LOG_ALERT   => \Psr\Log\LogLevel::ALERT,
-		LOG_CRIT    => \Psr\Log\LogLevel::CRITICAL,
-		LOG_ERR     => \Psr\Log\LogLevel::ERROR,
-		LOG_WARNING => \Psr\Log\LogLevel::WARNING,
-		LOG_NOTICE  => \Psr\Log\LogLevel::NOTICE,
-		LOG_INFO    => \Psr\Log\LogLevel::INFO,
-		LOG_DEBUG   => \Psr\Log\LogLevel::DEBUG,
+	private static $_log_levels = array(
+		0 => \Psr\Log\LogLevel::EMERGENCY,
+		1 => \Psr\Log\LogLevel::ALERT,
+		2 => \Psr\Log\LogLevel::CRITICAL,
+		3 => \Psr\Log\LogLevel::ERROR,
+		4 => \Psr\Log\LogLevel::WARNING,
+		5 => \Psr\Log\LogLevel::NOTICE,
+		6 => \Psr\Log\LogLevel::INFO,
+		7 => \Psr\Log\LogLevel::DEBUG,
 	);
 
 	/**
@@ -119,6 +119,11 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 		unset($this->_writers["{$writer}"]);
 
 		return $this;
+	}
+
+	public static function get_levels()
+	{
+		return self::$_log_levels;
 	}
 
 	/**
