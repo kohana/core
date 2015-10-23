@@ -25,9 +25,9 @@ class Kohana_Log_WriterTest extends Unittest_TestCase
 	{
 		// a sample exception used in data sets
 		$exception = new Exception('dummy exception text');
-		$exception_trace_as_string = strtoupper(Log_Writer::$strace_level)
-				. ': '
-				. $exception->getTraceAsString();
+
+		// expected exception trace, assuming the default trace level is unchanged
+		$exception_trace_as_string = 'DEBUG: ' . $exception->getTraceAsString();
 
 		return [
 			// data set #0
