@@ -127,6 +127,36 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 	}
 
 	/**
+	 * Validates and normalizes log levels to PSR-3 levels.
+	 * Supports int, object and uppercase/lowercase string levels
+	 *
+	 * @param type $level
+	 * @return string normalized PSR-3 level
+	 * @throws Psr\Log\InvalidArgumentException
+	 */
+	public static function get_level($level)
+	{
+		// Check if log level exists in the self::$_log_levels array.
+		if (is_int($level) AND isset(self::$_log_levels[$level]))
+		{
+			$level = self::$_log_levels[$level];
+		}
+		else if (is_string($level) AND in_array(strtolower($level), self::$_log_levels))
+		{
+			$level = strtolower($level);
+		}
+		else if (is_object($level) AND in_array((string) $level, self::$_log_levels))
+		{
+			$level = (string) $level;
+		}
+		else
+		{
+			throw new Psr\Log\InvalidArgumentException('Undefined level "' . $level . '"');
+		}
+
+		return $level;
+	}
+	/**
 	 * TRUE if Log is set to write immediately, FALSE otherwise
 	 * 
 	 * @return boolean
@@ -265,19 +295,8 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 	 */
 	public function log($level, $message, array $context = [])
 	{
-		// Check if log level exists in the $this->_log_levels array.
-		if (is_int($level) AND isset($this->_log_levels[$level]))
-		{
-			$level = $this->_log_levels[$level];
-		}
-		else if (is_string($level) AND in_array(strtolower($level), $this->_log_levels))
-		{
-			$level = strtolower($level);
-		}
-		else
-		{
-			throw new Psr\Log\InvalidArgumentException('Undefined level "' . $level . '"');
-		}
+		// validate and normalize level
+		$level = static::get_level($level);
 
 		// cast $message to string in compliance with PSR-3
 		$message = (string) $message;
