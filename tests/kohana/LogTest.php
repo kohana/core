@@ -124,7 +124,7 @@ class Kohana_LogTest extends Unittest_TestCase
 				[], // context
 				// expected raw log message array
 				[
-					'time' => time(),
+					'time' => time(), // to be reset within the test for HHVM
 					'level' => \Psr\Log\LogLevel::DEBUG,
 					'body' => 'dummy message',
 					'line' => 0, // to be reset later for fuzzy testing
@@ -138,7 +138,7 @@ class Kohana_LogTest extends Unittest_TestCase
 				['exception' => $exception], // context
 				// expected raw log message array
 				[
-					'time' => time(),
+					'time' => time(), // to be reset within the test for HHVM
 					'level' => \Psr\Log\LogLevel::ERROR,
 					'body' => 'dummy message',
 					'file' => NULL,
@@ -164,6 +164,9 @@ class Kohana_LogTest extends Unittest_TestCase
 
 		// Call log
 		$logger->log($level, $message, $context);
+
+		// HHVM runs Kohana tests slowly, we're going to reset the time here
+		$expected['time'] = time();
 
 		// Reset line number
 		if (isset($context['exception'])) {
