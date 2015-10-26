@@ -84,9 +84,9 @@ abstract class Kohana_Log_Writer {
 	 * 
 	 * @return string the PSR-3 log level used for stack tracing
 	 */
-	public function get_trace_level()
+	public function get_strace_level()
 	{
-		return $this->trace_level;
+		return $this->strace_level;
 	}
 
 	/**
@@ -96,9 +96,9 @@ abstract class Kohana_Log_Writer {
 	 * @throws InvalidArgumentException
 	 * @return Log_Writer
 	 */
-	public function set_trace_level($level)
+	public function set_strace_level($level)
 	{
-		$this->trace_level = Log::to_psr_level($level);
+		$this->strace_level = Log::to_psr_level($level);
 		
 		return $this;
 	}

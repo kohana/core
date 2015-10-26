@@ -17,7 +17,7 @@
 class Kohana_Log_WriterTest extends Unittest_TestCase
 {
 	/**
-	 * Data provider for provider_log_message
+	 * Data provider for test_format_log
 	 *
 	 * @return array
 	 */
@@ -78,5 +78,48 @@ class Kohana_Log_WriterTest extends Unittest_TestCase
 
 		// Assert
 		$this->assertSame($expected, $actual);
+	}
+	
+	/**
+	 * Data provider for test_getters_setters
+	 *
+	 * @return array
+	 */
+	public function provider_getters_setters()
+	{
+		return [
+			['strace_level', Psr\Log\LogLevel::WARNING, FALSE],
+			['strace_level', "Invalid", 'Psr\Log\InvalidArgumentException'],
+			
+			['format', 'body in file:line', FALSE],
+
+			['timestamp_format', 'Y-m-d', FALSE],
+			
+			['timezone', 'Asia/Beirut', FALSE],
+			['timezone', 'Invalid', '\InvalidArgumentException'],
+		];
+	}
+	
+	/**
+	 * Tests getters setters
+	 *
+	 * @test
+	 * @dataProvider provider_getters_setters
+	 */
+	public function test_getters_setters($property, $value, $exception)
+	{
+		if ($exception)
+		{
+			$this->setExpectedException($exception);
+		}
+		// Get a mock of the abstract Log_Writer
+		$writer = $this->getMockForAbstractClass('Log_Writer');
+		
+		$setter = 'set_' . $property;
+		$getter = 'get_' . $property;
+		
+		$writer->$setter($value);
+		
+		$this->assertSame($value, $writer->$getter());
 	}
 }
