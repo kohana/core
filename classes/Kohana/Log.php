@@ -134,7 +134,7 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 	 * @return string normalized PSR-3 level
 	 * @throws Psr\Log\InvalidArgumentException
 	 */
-	public static function get_level($level)
+	public static function to_psr_level($level)
 	{
 		// Check if log level exists in the self::$_log_levels array.
 		if (is_int($level) AND isset(self::$_log_levels[$level]))
@@ -296,7 +296,7 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 	public function log($level, $message, array $context = [])
 	{
 		// validate and normalize level
-		$level = static::get_level($level);
+		$level = static::to_psr_level($level);
 
 		// cast $message to string in compliance with PSR-3
 		$message = (string) $message;

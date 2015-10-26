@@ -98,7 +98,7 @@ abstract class Kohana_Log_Writer {
 	 */
 	public function set_trace_level($level)
 	{
-		$this->trace_level = Log::get_level($level);
+		$this->trace_level = Log::to_psr_level($level);
 		
 		return $this;
 	}
