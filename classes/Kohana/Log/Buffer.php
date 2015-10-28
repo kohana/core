@@ -4,7 +4,7 @@
  */
 interface Kohana_Log_Buffer {
 
-	public function attach(Log_Writer $writer, $levels = array(), $min_level = 0);
+	public function attach(Log_Writer $writer);
 
 	public function detach(Log_Writer $writer);
 

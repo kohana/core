@@ -84,7 +84,9 @@ class Kohana_Log_File extends Log_Writer {
 			chmod($filename, 0666);
 		}
 
-		foreach ($messages as $message)
+		$filtered_messages = $this->filter($messages);
+
+		foreach ($filtered_messages as $message)
 		{
 			// Write each message into the log file
 			file_put_contents($filename, $this->format_message($message).PHP_EOL, FILE_APPEND);

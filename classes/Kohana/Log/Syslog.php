@@ -55,7 +55,9 @@ class Kohana_Log_Syslog extends Log_Writer {
 	 */
 	public function write(array $messages)
 	{
-		foreach ($messages as $message)
+		$filtered_messages = $this->filter($messages);
+
+		foreach ($filtered_messages as $message)
 		{
 			// convert the level into int level
 			$level = $this->_log_levels[$message['level']];

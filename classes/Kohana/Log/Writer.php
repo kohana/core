@@ -35,6 +35,11 @@ abstract class Kohana_Log_Writer {
 	private $format = "time --- level: body in file:line";
 
 	/**
+	 * @var array log levels that this writer accepts to write
+	 */
+	private $levels;
+
+	/**
 	 * Write an array of messages.
 	 *
 	 *     $writer->write($messages);
@@ -156,7 +161,82 @@ abstract class Kohana_Log_Writer {
 
 		return $this;
 	}
-	
+
+	/**
+	 * Gets the log levels that this writer accepts to write
+	 *
+	 * @return array
+	 */
+	public function get_levels()
+	{
+		return $this->levels;
+	}
+
+	/**
+	 * Sets the log levels that this writer accepts to write
+	 *
+	 * @param array $levels
+	 * @throws InvalidArgumentException
+	 * @return Log_Writer
+	 */
+	public function set_levels(array $levels)
+	{
+		$this->levels = array_map('Log::to_psr_level', $levels);
+
+		return $this;
+	}
+
+	/**
+	 * Sets the log levels' range that this writer accepts to write
+	 *
+	 * @param array $levels
+	 * @throws InvalidArgumentException
+	 * @return Log_Writer
+	 */
+	public function set_levels_range($min_level, $max_level)
+	{
+		$min_level = Log::to_int_level($min_level);
+		$max_level = Log::to_int_level($max_level);
+
+		if ( ! $min_level > $max_level)
+		{
+			throw InvalidArgumentException('maximum level should be greater than minimum level');
+		}
+
+		$this->levels = array_map('Log::to_psr_level', range($min_level, $max_level));
+
+		return $this;
+	}
+
+	/**
+	 * Filter messages according to the levels accepted by this writer
+	 *
+	 * @param array $messages
+	 * @return array Filtered messages
+	 */
+	public function filter(array $messages)
+	{
+		if (empty($this->levels))
+		{
+			// Write all of the messages
+			return $messages;
+		}
+
+		// Filtered messages
+		$filtered = array();
+
+		foreach ($messages as $message)
+		{
+			if (in_array($message['level'], $this->levels))
+			{
+				// Writer accepts this kind of message
+				$filtered[] = $message;
+			}
+		}
+
+		return $filtered;
+	}
+
 	/**
 	 * Formats a log entry.
 	 *

@@ -79,28 +79,16 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Log_Buffer {
 	protected $_writers = array();
 
 	/**
-	 * Attaches a log writer, and optionally limits the levels of messages that
-	 * will be written by the writer.
-	 *
+	 * Attaches a log writer
 	 *     $log->attach($writer);
 	 *
 	 * @param   Log_Writer  $writer     instance
-	 * @param   mixed       $levels     array of messages levels to flush OR max level to flush
-	 * @param   integer     $min_level  min level to flush IF $levels is not an array
 	 * @return  Log
 	 */
-	public function attach(Log_Writer $writer, $levels = array(), $min_level = 0)
+	public function attach(Log_Writer $writer)
 	{
-		if ( ! is_array($levels))
-		{
-			$levels = range($min_level, $levels);
-		}
 
-		$this->_writers["{$writer}"] = array
-		(
-			'object' => $writer,
-			'levels' => $levels
-		);
+		$this->_writers["{$writer}"] = $writer;
 
 		return $this;
 	}
@@ -130,7 +118,7 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Log_Buffer {
 	 * Validates and normalizes log levels to PSR-3 levels.
 	 * Supports int, object and uppercase/lowercase string levels
 	 *
-	 * @param type $level
+	 * @param mixed $level
 	 * @return string normalized PSR-3 level
 	 * @throws Psr\Log\InvalidArgumentException
 	 */
@@ -156,6 +144,23 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Log_Buffer {
 
 		return $level;
 	}
+
+	/**
+	 * Validates and normalizes log levels to integer levels.
+	 * Supports int, object and uppercase/lowercase string levels
+	 *
+	 * @param mixed $level
+	 * @return int normalized integer level
+	 * @throws Psr\Log\InvalidArgumentException
+	 */
+	public static function to_int_level($level)
+	{
+		// first normalize to PSR-3 level
+		$level = static::to_psr_level($level);
+
+		return array_search($level, static::$_log_levels);
+	}
+
 	/**
 	 * TRUE if Log is set to flush immediately, FALSE otherwise
 	 *
@@ -242,37 +247,13 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Log_Buffer {
 			return;
 		}
 
-		// Import all messages locally
-		$messages = $this->_messages;
+		foreach ($this->_writers as $writer)
+		{
+			$writer->write($this->_messages);
+		}
 
 		// Reset the messages array
 		$this->_messages = array();
-
-		foreach ($this->_writers as $writer)
-		{
-			if (empty($writer['levels']))
-			{
-				// Write all of the messages
-				$writer['object']->write($messages);
-			}
-			else
-			{
-				// Filtered messages
-				$filtered = array();
-
-				foreach ($messages as $message)
-				{
-					if (in_array($message['level'], $writer['levels']))
-					{
-						// Writer accepts this kind of message
-						$filtered[] = $message;
-					}
-				}
-
-				// Write the filtered messages
-				$writer['object']->write($filtered);
-			}
-		}
 	}
 
 	/**
