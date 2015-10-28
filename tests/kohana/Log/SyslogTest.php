@@ -80,7 +80,7 @@ class Kohana_Log_SyslogTest extends Unittest_TestCase {
 
 		// test logging with specialized method
 		$logger->$method($message);
-		$logger->write();
+		$logger->flush();
 		$expected = $writer->logs[0];
 
 		// reset writer's logs
@@ -91,7 +91,7 @@ class Kohana_Log_SyslogTest extends Unittest_TestCase {
 			$method = 'log';
 			$logger->$method($level, $message);
 		}
-		$logger->write();
+		$logger->flush();
 
 		// assertions
 		foreach ($writer->logs as $actual) {

@@ -10,7 +10,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
+class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Log_Buffer {
 
 	// Log message levels - Windows users see PHP Bug #18090
 	const EMERGENCY = LOG_EMERG;    // 0
@@ -38,9 +38,9 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 	);
 
 	/**
-	 * @var  boolean  immediately write when logs are added
+	 * @var  boolean  immediately flush when logs are added
 	 */
-	protected $write_immediately = FALSE;
+	protected $flush_immediately = FALSE;
 
 	/**
 	 * @var  Log  Singleton instance container
@@ -62,7 +62,7 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 			Log::$_instance = new Log;
 
 			// Write the logs at shutdown
-			register_shutdown_function(array(Log::$_instance, 'write'));
+			register_shutdown_function(array(Log::$_instance, 'flush'));
 		}
 
 		return Log::$_instance;
@@ -85,8 +85,8 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 	 *     $log->attach($writer);
 	 *
 	 * @param   Log_Writer  $writer     instance
-	 * @param   mixed       $levels     array of messages levels to write OR max level to write
-	 * @param   integer     $min_level  min level to write IF $levels is not an array
+	 * @param   mixed       $levels     array of messages levels to flush OR max level to flush
+	 * @param   integer     $min_level  min level to flush IF $levels is not an array
 	 * @return  Log
 	 */
 	public function attach(Log_Writer $writer, $levels = array(), $min_level = 0)
@@ -157,24 +157,24 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 		return $level;
 	}
 	/**
-	 * TRUE if Log is set to write immediately, FALSE otherwise
-	 * 
+	 * TRUE if Log is set to flush immediately, FALSE otherwise
+	 *
 	 * @return boolean
 	 */
-	public function get_immediate_write()
+	public function get_immediate_flush()
 	{
-		return $this->write_immediately;
+		return $this->flush_immediately;
 	}
 
 	/**
 	 * Set/unset immediate writing
-	 * 
-	 * @param boolean $write_immediately
+	 *
+	 * @param boolean $flush_immediately
 	 * @return Log
 	 */
-	public function set_immediate_write($write_immediately)
+	public function set_immediate_flush($flush_immediately)
 	{
-		$this->write_immediately = (bool) $write_immediately;
+		$this->flush_immediately = (bool) $flush_immediately;
 
 		return $this;
 	}
@@ -230,15 +230,15 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 	/**
 	 * Write and clear all of the messages.
 	 *
-	 *     $log->write();
+	 *     $log->flush();
 	 *
 	 * @return  void
 	 */
-	public function write()
+	public function flush()
 	{
 		if (empty($this->_messages))
 		{
-			// There is nothing to write, move along
+			// There is nothing to flush, move along
 			return;
 		}
 
@@ -348,10 +348,10 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Logger {
 		// add it to the local message array
 		$this->_messages[] = $message;
 
-		if ($this->write_immediately)
+		if ($this->flush_immediately)
 		{
 			// Write logs as they are added
-			$this->write();
+			$this->flush();
 		}
 
 		return $this;

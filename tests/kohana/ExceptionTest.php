@@ -118,14 +118,14 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 
 	/**
 	 * Test if Kohana_Exception logs exceptions if Kohana::$log is not
-	 * a Kohana_Logger
+	 * a Kohana_Log
 	 *
 	 * @test
 	 * @dataProvider provider_text
 	 * @param object $exception exception to test
 	 * @param string $expected  expected output
 	 */
-	public function test_log_not_kohana_logger($exception, $expected) {
+	public function test_log_not_kohana_log($exception, $expected) {
 		$temp = Kohana::$log;
 		Kohana::$log = new Kohana_ExceptionTest_Log_Psr_Mock();
 		Kohana_Exception::log($exception);

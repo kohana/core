@@ -15,12 +15,12 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Log_LoggerTest extends \Psr\Log\Test\LoggerInterfaceTest
+class Kohana_Log_LogTest extends \Psr\Log\Test\LoggerInterfaceTest
 {
 	/**
 	 * @var Log
 	 */
-	protected $logger;
+	protected $log;
 
 	/**
 	 * The memory log writer to read back the logs from
@@ -34,10 +34,10 @@ class Kohana_Log_LoggerTest extends \Psr\Log\Test\LoggerInterfaceTest
 	 */
 	public function getLogger()
 	{
-		$this->logger = new Log;
+		$this->log = new Log;
 		$this->writer = new Kohana_Log_LoggerTest_Log_Writer_Memory();
-		$this->logger->attach($this->writer);
-		return $this->logger;
+		$this->log->attach($this->writer);
+		return $this->log;
 	}
 
 	/**
@@ -45,8 +45,8 @@ class Kohana_Log_LoggerTest extends \Psr\Log\Test\LoggerInterfaceTest
 	 */
 	public function getLogs()
 	{
-		// first, write the logs to the writer
-		$this->logger->write();
+		// first, flush the logs to the writer
+		$this->log->flush();
 
 		// return collected logs
 		return $this->writer->get_logs();

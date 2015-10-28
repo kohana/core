@@ -177,7 +177,7 @@ class Kohana_LogTest extends Unittest_TestCase
 			$expected['line'] = $expected_line;
 		}
 
-		$logger->write();
+		$logger->flush();
 		$actual = $writer->logs[0];
 
 		// Assert
@@ -249,7 +249,7 @@ class Kohana_LogTest extends Unittest_TestCase
 
 		// test logging with specialized method
 		$logger->$method($message); /* Record line number for fuzzy test */ $expected_line = __LINE__;
-		$logger->write();
+		$logger->flush();
 		$expected = $writer->logs[0];
 
 		// reset writer's logs
@@ -260,7 +260,7 @@ class Kohana_LogTest extends Unittest_TestCase
 			$method = 'log';
 			$logger->$method($level, $message); /* Record line number */ $actual_line = __LINE__;
 		}
-		$logger->write();
+		$logger->flush();
 
 		// assertions
 		$line_delta = $actual_line - $expected_line;
@@ -284,7 +284,7 @@ class Kohana_LogTest extends Unittest_TestCase
 		// test logging with an object as message
 		$object = new Kohana_LogTest_ToString();
 		$logger->log(\Psr\Log\LogLevel::INFO, $object);
-		$logger->write();
+		$logger->flush();
 		$actual = $writer->logs[0];
 
 		// assertions
@@ -294,53 +294,53 @@ class Kohana_LogTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Provider for test_immediate_writing
+	 * Provider for test_immediate_flushing
 	 */
-	public function provider_immediate_writing()
+	public function provider_immediate_flushing()
 	{
 		return [
 			[
-				TRUE, // write immediately
+				TRUE, // flush immediately
 				1, // $expected_number_of_logs
 			],
 			[
-				FALSE, // do NOT write immediately
+				FALSE, // do NOT flush immediately
 				0, // $expected_number_of_logs
 			]
 		];
 	}
 
 	/**
-	 * Tests that Log writes immediately when immediate writing is ON, otherwise
-	 * it delays writing after call to write()
+	 * Tests that Log flushes immediately when immediate flushing is ON, otherwise
+	 * it delays flushing after call to flush()
 	 *
 	 * @test
-	 * @dataProvider provider_immediate_writing
+	 * @dataProvider provider_immediate_flushing
 	 */
-	public function test_immediate_writing($write_immediately, $expected_number_of_logs)
+	public function test_immediate_flushing($flush_immediately, $expected_number_of_logs)
 	{
 		// initialize
 		$logger = new Log;
 		$writer = new Kohana_LogTest_Log_Writer_Memory();
 		$logger->attach($writer);
 
-		// Turn on immediate writing
-		$logger->set_immediate_write($write_immediately);
+		// Turn on immediate flushing
+		$logger->set_immediate_flush($flush_immediately);
 
 		// test logging with an object as message
 		$logger->log(\Psr\Log\LogLevel::DEBUG, 'dummy message');
 
-		// We will NOT call $logger->write() here...
+		// We will NOT call $logger->flush() here...
 
 		$actual_number_of_logs = count($writer->logs);
 
 		// assertions
-		$this->assertSame($write_immediately, $logger->get_immediate_write());
+		$this->assertSame($flush_immediately, $logger->get_immediate_flush());
 		$this->assertSame($expected_number_of_logs, $actual_number_of_logs);
 
-		// force write and assert anew
-		$logger->write();
-		$expected_number_of_logs = 1; // expect logs after forced write
+		// force flush and assert anew
+		$logger->flush();
+		$expected_number_of_logs = 1; // expect logs after forced flush
 		$actual_number_of_logs = count($writer->logs); // recalculate actual
 		$this->assertSame($expected_number_of_logs, $actual_number_of_logs);
 	}
