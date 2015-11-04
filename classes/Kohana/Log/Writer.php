@@ -37,7 +37,7 @@ abstract class Kohana_Log_Writer {
 	/**
 	 * @var array log levels that this writer accepts to write
 	 */
-	private $levels;
+	private $write_levels;
 
 	/**
 	 * Write an array of messages.
@@ -167,21 +167,21 @@ abstract class Kohana_Log_Writer {
 	 *
 	 * @return array
 	 */
-	public function get_levels()
+	public function get_write_levels()
 	{
-		return $this->levels;
+		return $this->write_levels;
 	}
 
 	/**
 	 * Sets the log levels that this writer accepts to write
 	 *
-	 * @param array $levels
+	 * @param array $write_levels
 	 * @throws InvalidArgumentException
 	 * @return Log_Writer
 	 */
-	public function set_levels(array $levels)
+	public function set_write_levels(array $write_levels)
 	{
-		$this->levels = array_map('Log::to_psr_level', $levels);
+		$this->write_levels = array_map('Log::to_psr_level', $write_levels);
 
 		return $this;
 	}
@@ -189,11 +189,11 @@ abstract class Kohana_Log_Writer {
 	/**
 	 * Sets the log levels' range that this writer accepts to write
 	 *
-	 * @param array $levels
+	 * @param array $write_levels
 	 * @throws InvalidArgumentException
 	 * @return Log_Writer
 	 */
-	public function set_levels_range($min_level, $max_level)
+	public function set_write_levels_range($min_level, $max_level)
 	{
 		$min_level = Log::to_int_level($min_level);
 		$max_level = Log::to_int_level($max_level);
@@ -203,7 +203,7 @@ abstract class Kohana_Log_Writer {
 			throw InvalidArgumentException('maximum level should be greater than minimum level');
 		}
 
-		$this->levels = array_map('Log::to_psr_level', range($min_level, $max_level));
+		$this->write_levels = array_map('Log::to_psr_level', range($min_level, $max_level));
 
 		return $this;
 	}
@@ -216,7 +216,7 @@ abstract class Kohana_Log_Writer {
 	 */
 	public function filter(array $messages)
 	{
-		if (empty($this->levels))
+		if (empty($this->write_levels))
 		{
 			// Write all of the messages
 			return $messages;
@@ -227,7 +227,7 @@ abstract class Kohana_Log_Writer {
 
 		foreach ($messages as $message)
 		{
-			if (in_array($message['level'], $this->levels))
+			if (in_array($message['level'], $this->write_levels))
 			{
 				// Writer accepts this kind of message
 				$filtered[] = $message;
