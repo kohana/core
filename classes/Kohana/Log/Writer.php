@@ -35,9 +35,20 @@ abstract class Kohana_Log_Writer {
 	private $format = "time --- level: body in file:line";
 
 	/**
+	 * TRUE value indicates that the level at the key is writable
+	 * 
 	 * @var array log levels that this writer accepts to write
 	 */
-	private $write_levels;
+	private $write_levels = array(
+		\Psr\Log\LogLevel::EMERGENCY => TRUE,
+		\Psr\Log\LogLevel::ALERT     => TRUE,
+		\Psr\Log\LogLevel::CRITICAL  => TRUE,
+		\Psr\Log\LogLevel::ERROR     => TRUE,
+		\Psr\Log\LogLevel::WARNING   => TRUE,
+		\Psr\Log\LogLevel::NOTICE    => TRUE,
+		\Psr\Log\LogLevel::INFO      => TRUE,
+		\Psr\Log\LogLevel::DEBUG     => TRUE,
+	);
 
 	/**
 	 * Write an array of messages.
@@ -181,7 +192,13 @@ abstract class Kohana_Log_Writer {
 	 */
 	public function set_write_levels(array $write_levels)
 	{
-		$this->write_levels = array_map('Log::to_psr_level', $write_levels);
+		$write_levels = array_map('Log::to_psr_level', $write_levels);
+
+		$callback = function(&$is_writable, $level) use ($write_levels) {
+			$is_writable = in_array($level, $write_levels);
+		};
+
+		array_walk($this->write_levels, $callback);
 
 		return $this;
 	}
@@ -199,12 +216,12 @@ abstract class Kohana_Log_Writer {
 		$min_level = Log::to_int_level($min_level);
 		$max_level = Log::to_int_level($max_level);
 
-		if ( ! $min_level > $max_level)
+		if ( ! $max_level > $min_level)
 		{
 			throw InvalidArgumentException('maximum level should be greater than minimum level');
 		}
 
-		$this->write_levels = array_map('Log::to_psr_level', range($min_level, $max_level));
+		$this->set_write_levels(range($min_level, $max_level));
 
 		return $this;
 	}
@@ -217,10 +234,11 @@ abstract class Kohana_Log_Writer {
 	 */
 	public function filter(array $messages)
 	{
-		if (empty($this->write_levels))
+		// if all writable levels are either TRUE or FALSE
+		if(count(array_unique($this->write_levels)) === 1)
 		{
-			// Write all of the messages
-			return $messages;
+			// Return all of the messages, or return an empty array 
+			return current($this->write_levels) ? $messages : array();
 		}
 
 		// Filtered messages
@@ -228,7 +246,7 @@ abstract class Kohana_Log_Writer {
 
 		foreach ($messages as $message)
 		{
-			if (in_array($message['level'], $this->write_levels))
+			if ($this->write_levels[$message['level']])
 			{
 				// Writer accepts this kind of message
 				$filtered[] = $message;
