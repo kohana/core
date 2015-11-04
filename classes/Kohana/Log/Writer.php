@@ -174,13 +174,42 @@ abstract class Kohana_Log_Writer {
 	}
 
 	/**
-	 * Gets the log levels that this writer accepts to write
+	 * Gets an array mapping PSR levels to boolean values
+	 *  with TRUE indicating that the level at the key is writable
 	 *
-	 * @return array
+	 * @return array map of PSR levels to boolean values - TRUE for writable
 	 */
-	public function get_write_levels()
+	public function get_psr_write_levels_map()
 	{
 		return $this->write_levels;
+	}
+
+	/**
+	 * Gets the PSR log levels that this writer accepts to write
+	 *
+	 * @return string[] array of PSR writable levels
+	 */
+	public function get_psr_write_levels()
+	{
+		// Filter out the FALSE (not writable) values and return the keys
+		return array_keys(array_filter($this->write_levels));
+	}
+
+	/**
+	 * Gets the integer log levels that this writer accepts to write
+	 *
+	 * @return int[] array of integer writable levels
+	 */
+	public function get_int_write_levels()
+	{
+		// get PSR string write levels
+		$psr_write_levels = $this->get_psr_write_levels();
+
+		// get the list of all log levels with integer keys
+		$all_levels = Log::get_levels();
+
+		// intersect and return the integer keys
+		return array_keys(array_intersect($all_levels, $psr_write_levels));
 	}
 
 	/**
