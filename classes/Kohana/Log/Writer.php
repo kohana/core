@@ -189,7 +189,8 @@ abstract class Kohana_Log_Writer {
 	/**
 	 * Sets the log levels' range that this writer accepts to write
 	 *
-	 * @param array $write_levels
+	 * @param mixed $min_level beginning log level
+	 * @param mixed $max_level ending log level
 	 * @throws InvalidArgumentException
 	 * @return Log_Writer
 	 */
