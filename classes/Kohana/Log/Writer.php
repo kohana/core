@@ -35,9 +35,9 @@ abstract class Kohana_Log_Writer {
 	private $format = "time --- level: body in file:line";
 
 	/**
-	 * TRUE value indicates that the level at the key is writable
-	 * 
 	 * @var array log levels that this writer accepts to write
+	 * 
+	 * TRUE value indicates that the level at the key is writable
 	 */
 	private $write_levels = array(
 		\Psr\Log\LogLevel::EMERGENCY => TRUE,
@@ -174,8 +174,8 @@ abstract class Kohana_Log_Writer {
 	}
 
 	/**
-	 * Gets an array mapping PSR levels to boolean values
-	 *  with TRUE indicating that the level at the key is writable
+	 * Returns an array mapping all PSR levels to boolean values indicating writability.
+	 * A TRUE value indicates that the level at the key is writable for this writer.
 	 *
 	 * @return array map of PSR levels to boolean values - TRUE for writable
 	 */
@@ -187,7 +187,7 @@ abstract class Kohana_Log_Writer {
 	/**
 	 * Gets the PSR log levels that this writer accepts to write
 	 *
-	 * @return string[] array of PSR writable levels
+	 * @return string[] array of PSR levels
 	 */
 	public function get_psr_write_levels()
 	{
@@ -198,7 +198,8 @@ abstract class Kohana_Log_Writer {
 	/**
 	 * Gets the integer log levels that this writer accepts to write
 	 *
-	 * @return int[] array of integer writable levels
+	 * @uses Log_Writer::get_psr_write_levels
+	 * @return int[] array of integer levels
 	 */
 	public function get_int_write_levels()
 	{
@@ -213,7 +214,7 @@ abstract class Kohana_Log_Writer {
 	}
 
 	/**
-	 * Sets the log levels that this writer accepts to write
+	 * Sets the levels of the logs that this writer should write
 	 *
 	 * @param array $write_levels
 	 * @throws InvalidArgumentException
@@ -233,11 +234,12 @@ abstract class Kohana_Log_Writer {
 	}
 
 	/**
-	 * Sets the log levels' range that this writer accepts to write
+	 * Sets the levels' range of the logs that this writer should write
 	 *
 	 * @param mixed $min_level beginning log level
 	 * @param mixed $max_level ending log level
 	 * @throws InvalidArgumentException
+	 * @uses Log_Writer::set_write_levels
 	 * @return Log_Writer
 	 */
 	public function set_write_levels_range($min_level, $max_level)
@@ -256,7 +258,8 @@ abstract class Kohana_Log_Writer {
 	}
 
 	/**
-	 * Filter messages according to the levels accepted by this writer
+	 * Filter the given log entries by log levels that this writer is configured
+	 * to write.
 	 *
 	 * @param array $messages
 	 * @return array Filtered messages

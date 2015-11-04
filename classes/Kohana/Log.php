@@ -150,6 +150,7 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Log_Buffer {
 	 * Supports int, object and uppercase/lowercase string levels
 	 *
 	 * @param mixed $level
+	 * @uses Log::to_psr_level
 	 * @return int normalized integer level
 	 * @throws Psr\Log\InvalidArgumentException
 	 */
