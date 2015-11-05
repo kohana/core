@@ -122,4 +122,73 @@ class Kohana_Log_WriterTest extends Unittest_TestCase
 		
 		$this->assertSame($value, $writer->$getter());
 	}
+
+	/**
+	 * Data provider for test_filter
+	 *
+	 * @return array
+	 */
+	public function provider_filter()
+	{
+		$make_logs = function(array $levels) {
+			$logs = array();
+			foreach ($levels as $level)
+			{
+				$logs[] = [
+					'time' => 1445267784,
+					'level' => $level,
+					'body' => 'dummy text',
+					'line' => 10,
+					'file' => '/path/to/file.php',
+				];
+			}
+			return $logs;
+		};
+
+		return [
+			// data set #0
+			[
+				// logs array
+				$make_logs(Log::get_levels()),
+				// filter to apply
+				$filter = Log::get_levels(), // filter nothing
+				// expected
+				$make_logs($filter),
+			],
+			// data set #1
+			[
+				// logs array
+				$make_logs(Log::get_levels()),
+				// filter to apply
+				$filter = [], // filter all
+				// expected
+				$make_logs($filter),
+			],
+			// data set #2
+			[
+				// logs array
+				$make_logs(Log::get_levels()),
+				// filter to apply
+				$filter = ['info', 'debug'],
+				// expected
+				$make_logs($filter),
+			],
+		];
+	}
+
+	/**
+	 * Tests Log_Writer::filter
+	 *
+	 * @test
+	 * @dataProvider provider_filter
+	 */
+	public function test_filter($logs, $filter, $expected)
+	{
+		// Get a mock of the abstract Log_Writer
+		$writer = $this->getMockForAbstractClass('Log_Writer');
+
+		$writer->set_write_levels($filter);
+
+		$this->assertSame($expected, $writer->filter($logs));
+	}
 }
