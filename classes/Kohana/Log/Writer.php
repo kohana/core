@@ -230,6 +230,8 @@ abstract class Kohana_Log_Writer {
 
 		array_walk($this->write_levels, $callback);
 
+		reset($this->write_levels);
+
 		return $this;
 	}
 
