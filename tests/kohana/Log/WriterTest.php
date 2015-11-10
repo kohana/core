@@ -187,7 +187,7 @@ class Kohana_Log_WriterTest extends Unittest_TestCase
 		// Get a mock of the abstract Log_Writer
 		$writer = $this->getMockForAbstractClass('Log_Writer');
 
-		$writer->set_write_levels($filter);
+		$writer->set_filter($filter);
 
 		$this->assertSame($expected, $writer->filter($logs));
 	}

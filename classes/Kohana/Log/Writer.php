@@ -35,11 +35,16 @@ abstract class Kohana_Log_Writer {
 	private $format = "time --- level: body in file:line";
 
 	/**
-	 * @var array log levels that this writer accepts to write
-	 * 
+	 * @var an array of log levels this writer accepts to write
+	 */
+	private $filter;
+
+	/**
+	 * @var a computed map of log levels this writer accepts to write
+	 *
 	 * TRUE value indicates that the level at the key is writable
 	 */
-	private $write_levels = array(
+	private $filter_map = array(
 		\Psr\Log\LogLevel::EMERGENCY => TRUE,
 		\Psr\Log\LogLevel::ALERT     => TRUE,
 		\Psr\Log\LogLevel::CRITICAL  => TRUE,
@@ -174,87 +179,58 @@ abstract class Kohana_Log_Writer {
 	}
 
 	/**
-	 * Returns an array mapping all PSR levels to boolean values indicating writability.
+	 * Returns a computed map of all PSR levels to boolean values indicating writability.
 	 * A TRUE value indicates that the level at the key is writable for this writer.
 	 *
 	 * @return array map of PSR levels to boolean values - TRUE for writable
 	 */
-	public function get_psr_write_levels_map()
+	public function get_filter_map()
 	{
-		return $this->write_levels;
+		return $this->filter_map;
 	}
 
 	/**
-	 * Gets the PSR log levels that this writer accepts to write
+	 * Gets the log levels that this writer should write
 	 *
-	 * @return string[] array of PSR levels
+	 * @return array log levels
 	 */
-	public function get_psr_write_levels()
+	public function get_filter()
 	{
-		// Filter out the FALSE (not writable) values and return the keys
-		return array_keys(array_filter($this->write_levels));
-	}
-
-	/**
-	 * Gets the integer log levels that this writer accepts to write
-	 *
-	 * @uses Log_Writer::get_psr_write_levels
-	 * @return int[] array of integer levels
-	 */
-	public function get_int_write_levels()
-	{
-		// get PSR string write levels
-		$psr_write_levels = $this->get_psr_write_levels();
-
-		// get the list of all log levels with integer keys
-		$all_levels = Log::get_levels();
-
-		// intersect and return the integer keys
-		return array_keys(array_intersect($all_levels, $psr_write_levels));
-	}
-
-	/**
-	 * Sets the levels of the logs that this writer should write
-	 *
-	 * @param array $write_levels
-	 * @throws InvalidArgumentException
-	 * @return Log_Writer
-	 */
-	public function set_write_levels(array $write_levels)
-	{
-		$write_levels = array_map('Log::to_psr_level', $write_levels);
-
-		$callback = function(&$is_writable, $level) use ($write_levels) {
-			$is_writable = in_array($level, $write_levels);
-		};
-
-		array_walk($this->write_levels, $callback);
-
-		reset($this->write_levels);
-
-		return $this;
-	}
-
-	/**
-	 * Sets the levels' range of the logs that this writer should write
-	 *
-	 * @param mixed $min_level beginning log level
-	 * @param mixed $max_level ending log level
-	 * @throws InvalidArgumentException
-	 * @uses Log_Writer::set_write_levels
-	 * @return Log_Writer
-	 */
-	public function set_write_levels_range($min_level, $max_level)
-	{
-		$min_level = Log::to_int_level($min_level);
-		$max_level = Log::to_int_level($max_level);
-
-		if ( ! $max_level > $min_level)
+		// lazy initialization
+		if ($this->filter===NULL)
 		{
-			throw InvalidArgumentException('maximum level should be greater than minimum level');
+			$this->filter = array_keys($this->filter_map);
 		}
 
-		$this->set_write_levels(range($min_level, $max_level));
+		return $this->filter;
+	}
+
+	/**
+	 * Sets the log levels that this writer should write
+	 *
+	 * @param array $levels
+	 * @throws \InvalidArgumentException
+	 * @throws Psr\Log\InvalidArgumentException
+	 * @return Log_Writer
+	 */
+	public function set_filter(array $levels)
+	{
+		$filter = array_map('Log::to_psr_level', $levels);
+
+		if (count($filter) !== count(array_unique($filter)))
+		{
+			throw new \InvalidArgumentException('Argument 1 to set_filter contains duplicate level entries.');
+		}
+
+		$callback = function(&$is_writable, $level) use ($filter) {
+			$is_writable = in_array($level, $filter);
+		};
+
+		array_walk($this->filter_map, $callback);
+
+		reset($this->filter_map);
+
+		$this->filter = $levels;
 
 		return $this;
 	}
@@ -269,10 +245,10 @@ abstract class Kohana_Log_Writer {
 	public function filter(array $messages)
 	{
 		// if all writable levels are either TRUE or FALSE
-		if(count(array_unique($this->write_levels)) === 1)
+		if(count(array_unique($this->filter_map)) === 1)
 		{
-			// Return all of the messages, or return an empty array 
-			return current($this->write_levels) ? $messages : array();
+			// Return all of the messages, or return an empty array
+			return current($this->filter_map) ? $messages : array();
 		}
 
 		// Filtered messages
@@ -280,7 +256,7 @@ abstract class Kohana_Log_Writer {
 
 		foreach ($messages as $message)
 		{
-			if ($this->write_levels[$message['level']])
+			if ($this->filter_map[$message['level']])
 			{
 				// Writer accepts this kind of message
 				$filtered[] = $message;
