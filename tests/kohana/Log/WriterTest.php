@@ -151,27 +151,27 @@ class Kohana_Log_WriterTest extends Unittest_TestCase
 				// logs array
 				$make_logs(Log::get_levels()),
 				// filter to apply
-				$filter = Log::get_levels(), // filter nothing
+				$levels = Log::get_levels(), // filter nothing
 				// expected
-				$make_logs($filter),
+				$make_logs($levels),
 			],
 			// data set #1
 			[
 				// logs array
 				$make_logs(Log::get_levels()),
 				// filter to apply
-				$filter = [], // filter all
+				$levels = [], // filter all
 				// expected
-				$make_logs($filter),
+				$make_logs($levels),
 			],
 			// data set #2
 			[
 				// logs array
 				$make_logs(Log::get_levels()),
 				// filter to apply
-				$filter = ['info', 'debug'],
+				$levels = ['info', 'debug'],
 				// expected
-				$make_logs($filter),
+				$make_logs($levels),
 			],
 		];
 	}
@@ -182,12 +182,14 @@ class Kohana_Log_WriterTest extends Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_filter
 	 */
-	public function test_filter($logs, $filter, $expected)
+	public function test_filter($logs, $levels, $expected)
 	{
 		// Get a mock of the abstract Log_Writer
 		$writer = $this->getMockForAbstractClass('Log_Writer');
 
-		$writer->set_filter($filter);
+		$filter = new Log_Filter_PSRLevel($levels);
+
+		$writer->attach_filter($filter);
 
 		$this->assertSame($expected, $writer->filter($logs));
 	}
