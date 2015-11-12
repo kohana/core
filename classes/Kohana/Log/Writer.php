@@ -8,7 +8,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-abstract class Kohana_Log_Writer {
+abstract class Kohana_Log_Writer implements Kohana_Log_Filter_Aware {
 
 	/**
 	 * @var  string  date/time format for writing the timestamp of log entries.
@@ -35,25 +35,9 @@ abstract class Kohana_Log_Writer {
 	private $format = "time --- level: body in file:line";
 
 	/**
-	 * @var an array of log levels this writer accepts to write
+	 * @var Kohana_Log_Filter[] array of log filters
 	 */
-	private $filter;
-
-	/**
-	 * @var a computed map of log levels this writer accepts to write
-	 *
-	 * TRUE value indicates that the level at the key is writable
-	 */
-	private $filter_map = array(
-		\Psr\Log\LogLevel::EMERGENCY => TRUE,
-		\Psr\Log\LogLevel::ALERT     => TRUE,
-		\Psr\Log\LogLevel::CRITICAL  => TRUE,
-		\Psr\Log\LogLevel::ERROR     => TRUE,
-		\Psr\Log\LogLevel::WARNING   => TRUE,
-		\Psr\Log\LogLevel::NOTICE    => TRUE,
-		\Psr\Log\LogLevel::INFO      => TRUE,
-		\Psr\Log\LogLevel::DEBUG     => TRUE,
-	);
+	private $filters = array();
 
 	/**
 	 * Write an array of messages.
@@ -179,91 +163,45 @@ abstract class Kohana_Log_Writer {
 	}
 
 	/**
-	 * Returns a computed map of all PSR levels to boolean values indicating writability.
-	 * A TRUE value indicates that the level at the key is writable for this writer.
+	 * Ataches a log filter to the writer
 	 *
-	 * @return array map of PSR levels to boolean values - TRUE for writable
-	 */
-	public function get_filter_map()
-	{
-		return $this->filter_map;
-	}
-
-	/**
-	 * Gets the log levels that this writer should write
-	 *
-	 * @return array log levels
-	 */
-	public function get_filter()
-	{
-		// lazy initialization
-		if ($this->filter===NULL)
-		{
-			$this->filter = array_keys($this->filter_map);
-		}
-
-		return $this->filter;
-	}
-
-	/**
-	 * Sets the log levels that this writer should write
-	 *
-	 * @param array $levels
-	 * @throws \InvalidArgumentException
-	 * @throws Psr\Log\InvalidArgumentException
+	 * @param Kohana_Log_Filter $filter
 	 * @return Log_Writer
 	 */
-	public function set_filter(array $levels)
+	public function attach_filter(Kohana_Log_Filter $filter)
 	{
-		$filter = array_map('Log::to_psr_level', $levels);
-
-		if (count($filter) !== count(array_unique($filter)))
-		{
-			throw new \InvalidArgumentException('Argument 1 to set_filter contains duplicate level entries.');
-		}
-
-		$callback = function(&$is_writable, $level) use ($filter) {
-			$is_writable = in_array($level, $filter);
-		};
-
-		array_walk($this->filter_map, $callback);
-
-		reset($this->filter_map);
-
-		$this->filter = $levels;
+		$this->filters[spl_object_hash($filter)] = $filter;
 
 		return $this;
 	}
 
 	/**
-	 * Filter the given log entries by log levels that this writer is configured
-	 * to write.
+	 * Detaches a log filter
+	 *
+	 * @param Kohana_Log_Filter $filter
+	 * @return Log_Writer
+	 */
+	public function detach_filter(Kohana_Log_Filter $filter)
+	{
+		// Remove the writer
+		unset($this->filters[spl_object_hash($filter)]);
+
+		return $this;
+	}
+
+	/**
+	 * Filter the given log entries if a Kohana_Log_Filter exists
 	 *
 	 * @param array $messages
 	 * @return array Filtered messages
 	 */
 	public function filter(array $messages)
 	{
-		// if all writable levels are either TRUE or FALSE
-		if(count(array_unique($this->filter_map)) === 1)
+		foreach ($this->filters as $filter)
 		{
-			// Return all of the messages, or return an empty array
-			return current($this->filter_map) ? $messages : array();
+			$messages = $filter->process($messages);
 		}
-
-		// Filtered messages
-		$filtered = array();
-
-		foreach ($messages as $message)
-		{
-			if ($this->filter_map[$message['level']])
-			{
-				// Writer accepts this kind of message
-				$filtered[] = $message;
-			}
-		}
-
-		return $filtered;
+		return $messages;
 	}
 
 	/**
@@ -276,7 +214,7 @@ abstract class Kohana_Log_Writer {
 	public function format_message(array $message, $format = NULL)
 	{
 		$format = $format ? (string) $format : $this->format;
-		
+
 		$message['time'] = Date::formatted_time('@'.$message['time'], $this->timestamp_format, $this->timezone, TRUE);
 		$message['level'] = strtoupper($message['level']);
 
