@@ -17,91 +17,162 @@
 class Kohana_Log_SyslogTest extends Unittest_TestCase {
 
 	/**
-	 * Provider for test_specialized_vs_generic_methods
+	 * Provider for test_syslog
 	 *
 	 */
 	public function provider_syslog()
 	{
+		// a sample exception used in data sets
+		$exception = new Exception('dummy exception text');
+
 		return [
+			// data set #0
 			[
-				'emergency',
-				['emergency', Log::EMERGENCY, \Psr\Log\LogLevel::EMERGENCY,],
-				'In case of emergency break glass.',
+				// raw log messages
+				[
+					[
+						'time' => 1445267784,
+						'level' => \Psr\Log\LogLevel::DEBUG,
+						'body' => 'dummy text',
+						'line' => 10,
+						'file' => '/path/to/file.php',
+					]
+				],
+				// expected syslog entries
+				[
+					[LOG_DEBUG, 'dummy text']
+				]
 			],
+			// data set #1
 			[
-				'alert',
-				['alert', Log::ALERT, \Psr\Log\LogLevel::ALERT,],
-				'Alert: this is not a dialog box.',
+				// raw log messages
+				[
+					[
+						'time' => 1445268423,
+						'level' => \Psr\Log\LogLevel::ERROR,
+						'body' => 'another dummy text',
+						'file' => '/path/to/another/file.php',
+						'line' => 20,
+						'exception' => $exception,
+					]
+				],
+				[
+					[LOG_ERR, 'another dummy text'],
+					[LOG_DEBUG, $exception->getTraceAsString()]
+				]
+			]
+		];
+	}
+
+	/**
+	 * Tests logging with the syslog writer
+	 *
+	 * @test
+	 * @dataProvider provider_syslog
+	 */
+	public function test_syslog(array $log_entries, array $expected)
+	{
+		$writer = new Kohana_Log_SyslogTest_Syslog_Memory();
+
+		$writer->write($log_entries);
+
+		// assertions
+		$this->assertSame($expected, $writer->get_logs());
+	}
+
+	/**
+	 * Data provider for test_filter
+	 *
+	 * @return array
+	 */
+	public function provider_filter()
+	{
+		$psr_to_syslog = array(
+			\Psr\Log\LogLevel::EMERGENCY => LOG_EMERG,
+			\Psr\Log\LogLevel::ALERT => LOG_ALERT,
+			\Psr\Log\LogLevel::CRITICAL => LOG_CRIT,
+			\Psr\Log\LogLevel::ERROR => LOG_ERR,
+			\Psr\Log\LogLevel::WARNING => LOG_WARNING,
+			\Psr\Log\LogLevel::NOTICE => LOG_NOTICE,
+			\Psr\Log\LogLevel::INFO => LOG_INFO,
+			\Psr\Log\LogLevel::DEBUG => LOG_DEBUG,
+		);
+
+		$make_logs = function(array $levels)
+		{
+			$logs = array();
+			foreach ($levels as $level)
+			{
+				$logs[] = [
+					'time' => 1445267784,
+					'level' => $level,
+					'body' => 'dummy text',
+					'line' => 10,
+					'file' => '/path/to/file.php',
+				];
+			}
+			return $logs;
+		};
+
+		$make_syslogs = function(array $levels) use ($psr_to_syslog)
+		{
+			$logs = array();
+			foreach ($levels as $level)
+			{
+				$logs[] = [$psr_to_syslog[$level], 'dummy text'];
+			}
+			return $logs;
+		};
+
+		return [
+			// data set #0
+			[
+				// logs array
+				$make_logs(Log::get_levels()),
+				// filter to apply
+				$levels = Log::get_levels(), // filter nothing
+				// expected
+				$make_syslogs($levels),
 			],
+			// data set #1
 			[
-				'critical',
-				['critical', Log::CRITICAL, \Psr\Log\LogLevel::CRITICAL,],
-				'Eye strain reaching critical levels!',
+				// logs array
+				$make_logs(Log::get_levels()),
+				// filter to apply
+				$levels = [], // filter all
+				// expected
+				$make_syslogs($levels),
 			],
+			// data set #2
 			[
-				'error',
-				['error', Log::ERROR, \Psr\Log\LogLevel::ERROR,],
-				'You must be doing something wrong.',
-			],
-			[
-				'warning',
-				['warning', Log::WARNING, \Psr\Log\LogLevel::WARNING,],
-				'Too much cafeine blows up your brain.',
-			],
-			[
-				'notice',
-				['notice', Log::NOTICE, \Psr\Log\LogLevel::NOTICE,],
-				'Not funny any more.',
-			],
-			[
-				'info',
-				['info', Log::INFO, \Psr\Log\LogLevel::INFO,],
-				'Looking good today.',
-			],
-			[
-				'debug',
-				['debug', Log::DEBUG, \Psr\Log\LogLevel::DEBUG,],
-				'Never again.',
+				// logs array
+				$make_logs(Log::get_levels()),
+				// filter to apply
+				$levels = ['info', 'debug'],
+				// expected
+				$make_syslogs($levels),
 			],
 		];
 	}
 
 	/**
-	 * Tests logging calls with a stub Log_Writer
+	 * Tests Log_Syslog::filter
 	 *
 	 * @test
-	 * @dataProvider provider_syslog
+	 * @dataProvider provider_filter
 	 */
-	public function test_syslog($method, array $levels, $message)
+	public function test_filter($logs, $levels, $expected)
 	{
-		$logger = new Log;
 		$writer = new Kohana_Log_SyslogTest_Syslog_Memory();
-		$logger->attach($writer);
 
-		// test logging with specialized method
-		$logger->$method($message);
-		$logger->flush();
-		$expected = $writer->logs[0];
+		$filter = new Log_Filter_PSRLevel($levels);
 
-		// reset writer's logs
-		$writer->logs = array();
+		$writer->attach_filter($filter);
 
-		// test logging with the generic log method
-		foreach ($levels as $level) {
-			$method = 'log';
-			$logger->$method($level, $message);
-		}
-		$logger->flush();
+		$writer->write($logs);
 
-		// assertions
-		foreach ($writer->logs as $actual) {
-			// priority
-			$this->assertSame($expected['priority'], $actual['priority']);
-			// message
-			$this->assertSame($expected['message'], $actual['message']);
-		}
+		$this->assertSame($expected, $writer->get_logs());
 	}
-
 }
 
 /**
@@ -109,7 +180,12 @@ class Kohana_Log_SyslogTest extends Unittest_TestCase {
  */
 class Kohana_Log_SyslogTest_Syslog_Memory extends Log_Syslog {
 
-	public $logs = array();
+	private $logs = array();
+
+	public function get_logs()
+	{
+		return $this->logs;
+	}
 
 	/**
 	 * Writes into public array $logs
@@ -121,13 +197,6 @@ class Kohana_Log_SyslogTest_Syslog_Memory extends Log_Syslog {
 	 */
 	protected function _syslog($priority, $message)
 	{
-		$log = [
-			[
-				'priority' => $priority,
-				'message' => $message
-			]
-		];
-		$this->logs = array_merge($this->logs, $log);
+		$this->logs[] = [$priority, $message];
 	}
-
 }

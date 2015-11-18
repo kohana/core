@@ -60,6 +60,8 @@ class Kohana_Log_Syslog extends Log_Writer {
 	{
 		$filtered_messages = $this->filter($messages);
 
+		$strace_level = $this->get_strace_level();
+
 		foreach ($filtered_messages as $message)
 		{
 			// convert the level into int level
@@ -71,7 +73,7 @@ class Kohana_Log_Syslog extends Log_Writer {
 			if (isset($message['exception']))
 			{
 				// convert PSR log level into syslog log level
-				$level = $this->_log_levels[Log_Writer::$strace_level];
+				$level = $this->_log_levels[$strace_level];
 
 				// write to syslog
 				$this->_syslog($level, $message['exception']->getTraceAsString());
