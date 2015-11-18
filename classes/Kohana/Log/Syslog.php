@@ -17,6 +17,9 @@ class Kohana_Log_Syslog extends Log_Writer {
 
 	/**
 	 * String log level to numeric lookup table.
+	 *
+	 * Windows users see PHP Bug #18090
+	 *
 	 * @var array
 	 */
 	protected $_log_levels = array(

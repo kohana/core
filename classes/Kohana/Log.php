@@ -13,28 +13,28 @@
 class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Log_Buffer {
 
 	// Log message levels - Windows users see PHP Bug #18090
-	const EMERGENCY = LOG_EMERG;    // 0
-	const ALERT     = LOG_ALERT;    // 1
-	const CRITICAL  = LOG_CRIT;     // 2
-	const ERROR     = LOG_ERR;      // 3
-	const WARNING   = LOG_WARNING;  // 4
-	const NOTICE    = LOG_NOTICE;   // 5
-	const INFO      = LOG_INFO;     // 6
-	const DEBUG     = LOG_DEBUG;    // 7
+	const EMERGENCY = 0; // LOG_EMERG
+	const ALERT     = 1; // LOG_ALERT
+	const CRITICAL  = 2; // LOG_CRIT
+	const ERROR     = 3; // LOG_ERR
+	const WARNING   = 4; // LOG_WARNING
+	const NOTICE    = 5; // LOG_NOTICE
+	const INFO      = 6; // LOG_INFO
+	const DEBUG     = 7; // LOG_DEBUG
 
 	/**
 	 * Numeric log level to string lookup table.
 	 * @var array
 	 */
 	private static $_log_levels = array(
-		0 => \Psr\Log\LogLevel::EMERGENCY,
-		1 => \Psr\Log\LogLevel::ALERT,
-		2 => \Psr\Log\LogLevel::CRITICAL,
-		3 => \Psr\Log\LogLevel::ERROR,
-		4 => \Psr\Log\LogLevel::WARNING,
-		5 => \Psr\Log\LogLevel::NOTICE,
-		6 => \Psr\Log\LogLevel::INFO,
-		7 => \Psr\Log\LogLevel::DEBUG,
+		self::EMERGENCY => \Psr\Log\LogLevel::EMERGENCY,
+		self::ALERT     => \Psr\Log\LogLevel::ALERT,
+		self::CRITICAL  => \Psr\Log\LogLevel::CRITICAL,
+		self::ERROR     => \Psr\Log\LogLevel::ERROR,
+		self::WARNING   => \Psr\Log\LogLevel::WARNING,
+		self::NOTICE    => \Psr\Log\LogLevel::NOTICE,
+		self::INFO      => \Psr\Log\LogLevel::INFO,
+		self::DEBUG     => \Psr\Log\LogLevel::DEBUG,
 	);
 
 	/**
