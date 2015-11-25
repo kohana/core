@@ -1,100 +1,116 @@
-# Migrating from 3.2.x
+# Migrating from 3.3
 
-## HVMC Isolation
+## PSR-3 compliance of Kohana logger
 
-HVMC Sub-request isolation has been improved to prevent exceptions leaking from this inner to the outer request. If you were previously catching any exceptions from sub-requests, you should now be checking the [Response] object returned from [Request::execute].
+Starting with version 3.4 the Kohana logger is PSR-3 compliant. This means that
+it 
 
-## HTTP Exceptions
+### The deprecation of the `add` method
 
-The use of HTTP Exceptions is now encouraged over manually setting the [Response] status to, for example, '404'. This allows for easier custom error pages (detailed below);
+Use the PSR-3 \Psr\Log\LoggerInterface methods instead of the `add` method.
 
-The full list of supported codes can be seen in the SYSPATH/classes/HTTP/Exception/ folder.
+The following code:
 
-Syntax:
+~~~
+// Deprecated
+Kohana::$log->add(Log::INFO, "This is an info message");
+~~~
 
-    throw HTTP_Exception::factory($code, $message, array $variables, Exception $previous);
+Should be migrated to this new syntax:
 
-Examples:
+~~~
+// Use the \Psr\Log\LoggerInterface log method
+Kohana::$log->log(Log::INFO, "This is an info message");
 
-    // Page Not Found
-    throw HTTP_Exception::factory(404, 'The requested URL :uri was not found on this server.', array(
-            ':uri' => $this->request->uri(),
-        ));
+// You can also use one of the Psr\Log\LogLevel levels
+Kohana::$log->log(Psr\Log\LogLevel::INFO, "This is an info message");
+~~~
 
-    // Unauthorized / Login Requied
-    throw HTTP_Exception::factory(401)->authenticate('Basic realm="MySite"');
+### Immediate writing instead of buffering
 
-    // Forbidden / Permission Deined
-    throw HTTP_Exception::factory(403);
+You should use `Log_Writer::set_immediate_write` method instead of the static
+`$write_on_add` property
 
-## Redirects (HTTP 300, 301, 302, 303, 307)
+The following code:
 
-Redirects are no longer issued against the [Request] object. The new syntax from inside a controller is:
+~~~
+$writer::$write_on_add = TRUE;
+~~~
 
-    $this->redirect('http://www.google.com', 302);
+Should be migrated to this new syntax:
 
-or from outside a controller:
+~~~
+$writer->set_immediate_write(TRUE);
+~~~
 
-    HTTP::redirect('http://www.google.com', 302);
+### Writer flushes
 
-## Custom Error Pages (HTTP 500, 404, 403, 401 etc)
+The `Log::write` method has been renamed to `Log::flush`. Usually you do
+not call this method, as Kohana calls it when there is an exception thrown
+or at normal request shutdown.
 
-Custom error pages are now easier than ever to implement, thanks to some of the changes brought about by the HVMC and Redirect changes above.
+The following code:
 
-See [Custom Error Pages](tutorials/error-pages) for more details.
+~~~
+Kohana::$log->write();
+~~~
 
-## Browser cache checking (ETags)
+Should be migrated to this new syntax:
 
-The Response::check_cache method has moved to [HTTP::check_cache], with an alias at [Controller::check_cache]. Previously, this method would be used from a controller like this:
+~~~
+Kohana::$log->flush();
+~~~
 
-    $this->response->check_cache(sha1('my content'), Request $this->request);
 
-Now, there are two options for using the method:
+### Filtering
 
-    $this->check_cache(sha1('my content'));
+Define filtering by attaching filters to the writer. In Kohana 3.3,
+we used to specify the level filtering when attaching the writer to the log.
 
-which is an alias for:
+The following code:
 
-    HTTP::check_cache($this->request, $this->response, sha1('my content'));
+~~~
+$writer = new Log_File(APPPATH.'log');
+Kohana::$log->attach($writer, Log::EMERGENCY, Log::ALERT);
+~~~
 
-## PSR-0 support (file/class naming conventions)
+Should be migrated to this new syntax:
 
-With the introduction of [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md) support, the autoloading of classes is case sensitive. Now, the file (and folder) names must match the class name exactly.
+~~~
+use \Psr\Log\LogLevel;
 
-Examples:
+$writer = new Log_File(APPPATH.'log');
+$writer->attach_filter(new Log_Filter_PSRLevel([LogLevel::EMERGENCY, LogLevel::ALERT]));
+Kohana::$log->attach($writer);
+~~~
 
-    Kohana_Core
+### Log_Writer static properties refactor
 
-would be located in
+The `Log_Writer` abstract class had the following public static
+properties that are no more available:
 
-    classes/Kohana/Core.php
+~~~
+public static $timestamp;
+public static $timezone;
+public static $strace_level;
+~~~
 
-and
+You should use the appropriate getter/setter on the `Log_Writer` object instead:
 
-    Kohana_HTTP_Header
+~~~
+$writer->get_timestamp_format();
+$writer->set_timestamp_format('Y-m-d');
 
-would be located in
+$writer->get_timezone();
+$writer->set_timezone('Asia/Beirut');
 
-    classes/Kohana/HTTP/Header.php
+$writer->get_strace_level();
+$writer->set_strace_level('Psr\Log\LogLevel::INFO');
+~~~
 
-This also affects dynamically named classes such as drivers and ORMs. So for example, in the database config using `'mysql'` as the type instead of `'MySQL'` would throw a class not found error.
+In addition to a new API to specify the log writers default format:
 
-## Query Builder Identifier Escaping
-
-The query builder will no longer detect columns like `COUNT("*")`. Instead, you will need to use `DB::expr()` any time you need an unescaped column. For example:
-
-    DB::select(DB::expr('COUNT(*)'))->from('users')->execute()
-
-## Route Filters
-
-In `3.3.0`, you can no longer pass a callback to `Route::uri()`. Instead, we've added the ability to define one or more filters which will be able to decide if the route matches and will also allow you to change any of the parameters. These filters will receive the `Route` object being tested, the currently matched `$params` array, and the `Request` object as the three parameters.
-
-    Route::set('route-name', 'some/uri/<id>')
-        ->filter(function($route, $params, $request) {
-            // Returning FALSE will make this route not match
-            // Returning an array will replace the $params sent to the controller
-        });
-
-These filters can be used for things like prepending the request method to the action, checking if a resource exists before matching the route, or any other logic that the URI alone cannot provide. You can add as many filters as needed so it's useful to keep filters as small as possible to make them reusable.
-
-See [Routing](routing#route-filters) for more details.
+~~~
+$writer->get_format();
+$writer->set_format('body in file:line');
+~~~

@@ -18,9 +18,9 @@
    - [Modules](modules)
    - [Routing](routing)
    - [Error Handling](errors)
+   - [Logging](logging)
    - [Tips & Common Mistakes](tips)
-   - [Upgrading from v3.2](upgrading)
-   - [Upgrading from v3.3.3.1](upgrading-from-3-3-3-1)
+   - [Upgrading from v3.3](upgrading)
 - Basic Usage
    - [Debugging](debugging)
    - [Loading Classes](autoloading)
