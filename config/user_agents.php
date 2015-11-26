@@ -8,6 +8,7 @@
 return array(
 
 	'platform' => array(
+		'windows nt 10.0'=> 'Windows 10',
 		'windows nt 6.3' => 'Windows 8.1',
 		'windows nt 6.2' => 'Windows 8',
 		'windows nt 6.1' => 'Windows 7',
@@ -53,6 +54,7 @@ return array(
 
 	'browser' => array(
 		'Opera'             => 'Opera',
+		'Edge/12'           => 'Edge',
 		'MSIE'              => 'Internet Explorer',
 		'Internet Explorer' => 'Internet Explorer',
 		'Shiira'            => 'Shiira',
