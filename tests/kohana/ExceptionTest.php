@@ -79,7 +79,7 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 	public function provider_text()
 	{
 		return array(
-			array(new Kohana_Exception('foobar'), $this->dirSeparator('Kohana_Exception [ 0 ]: foobar ~ SYSPATH/tests/kohana/ExceptionTest.php [ '.__LINE__.' ]')),
+			array(new Kohana_ExceptionTest_Serializable_Exception('foobar'), $this->dirSeparator('Kohana_ExceptionTest_Serializable_Exception [ 0 ]: foobar ~ SYSPATH/tests/kohana/ExceptionTest.php [ ' . __LINE__ . ' ]')),
 		);
 	}
 
@@ -102,18 +102,19 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_text
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 *
 	 * @param object $exception exception to test
 	 * @param string $expected  expected output
 	 */
 	public function test_logs_exception($exception, $expected)
 	{
+		Kohana::$log = new Log();
 		$writer = new Kohana_ExceptionTest_Log_Writer_Memory();
 		Kohana::$log->attach($writer);
 		Kohana_Exception::log($exception);
 		$this->assertSame($expected, $writer->messages[0]['body']);
-
-		// clean up
-		Kohana::$log->detach($writer);
 	}
 
 	/**
@@ -122,17 +123,17 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_text
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 *
 	 * @param object $exception exception to test
 	 * @param string $expected  expected output
 	 */
-	public function test_log_not_kohana_log($exception, $expected) {
-		$temp = Kohana::$log;
+	public function test_log_not_kohana_log($exception, $expected)
+	{
 		Kohana::$log = new Kohana_ExceptionTest_Log_Psr_Mock();
 		Kohana_Exception::log($exception);
 		$this->assertSame($expected, Kohana::$log->logs[0]['message']);
-
-		// clean up
-		Kohana::$log = $temp;
 	}
 
 	/**
@@ -140,19 +141,19 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 	 *
 	 * @test
 	 * @dataProvider provider_text
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 *
 	 * @param object $exception exception to test
 	 * @param string $expected  expected output
 	 */
-	public function test_fails_silently_when_log_not_assigned($exception, $expected) {
-		$temp = Kohana::$log;
+	public function test_fails_silently_when_log_not_assigned($exception, $expected)
+	{
 		Kohana::$log = NULL;
 
 		// Generic assertion that it is failing silently
 		// Should it raise any exception, the test will fail as expected.
 		$this->assertNull(Kohana_Exception::log($exception));
-
-		// clean up
-		Kohana::$log = $temp;
 	}
 
 
@@ -198,6 +199,27 @@ class Kohana_ExceptionTest_Log_Psr_Mock extends Psr\Log\AbstractLogger {
 			'message' => $message,
 			'context' => $context
 		  ];
+	}
+
+}
+
+/**
+ * A Serializable Exception
+ * An exception can not be serialized when its stack trace contains a closure.
+ * This class implements Serializable without serializing the stack trace.
+ *
+ * @link http://fabien.potencier.org/php-serialization-stack-traces-and-exceptions.html PHP Serialization, Stack Traces, and Exceptions
+ */
+class Kohana_ExceptionTest_Serializable_Exception extends Kohana_Exception implements Serializable {
+
+	public function serialize()
+	{
+		return serialize(array($this->message, $this->code, $this->file, $this->line));
+	}
+
+	public function unserialize($serialized)
+	{
+		list($this->message, $this->code, $this->file, $this->line) = unserialize($serialized);
 	}
 
 }
