@@ -1,4 +1,5 @@
 <?php
+use org\bovigo\vfs\vfsStream;
 
 /**
  * Tests Kohana Logging API - writing to file
@@ -16,7 +17,7 @@
  */
 class Kohana_Log_FileTest extends Unittest_TestCase {
 
-	private $log_dir;
+	private $vfs_root;
 
 	/**
 	 * Sets up the test enviroment
@@ -25,16 +26,8 @@ class Kohana_Log_FileTest extends Unittest_TestCase {
 	function setUp()
 	// @codingStandardsIgnoreEnd
 	{
+		$this->vfs_root = vfsStream::setup('root');
 		parent::setUp();
-
-		$this->log_dir = sys_get_temp_dir()
-		  . DIRECTORY_SEPARATOR
-		  . 'kohana_test_logs-' . microtime(TRUE);
-
-		mkdir($this->log_dir, 02777);
-
-		// Reset permissions to fix umask issues
-		chmod($this->log_dir, 02777);
 	}
 
 	/**
@@ -103,7 +96,7 @@ LOG
 	 */
 	public function test_file(array $log_entries, $expected)
 	{
-		$writer = new Kohana_Log_FileTest_Testable_Log_File($this->log_dir);
+		$writer = new Kohana_Log_FileTest_Testable_Log_File($this->vfs_root->url());
 
 		$writer->write($log_entries);
 
@@ -185,7 +178,7 @@ LOG
 	 */
 	public function test_filter($logs, $levels, $expected)
 	{
-		$writer = new Kohana_Log_FileTest_Testable_Log_File($this->log_dir);
+		$writer = new Kohana_Log_FileTest_Testable_Log_File($this->vfs_root->url());
 
 		$filter = new Log_Filter_PSRLevel($levels);
 

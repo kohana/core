@@ -25,7 +25,8 @@
 	},
 	"require-dev": {
 		"kohana/unittest":     "3.4.*@dev",
-		"kohana/koharness":    "*@dev"
+		"kohana/koharness":    "*@dev",
+		"mikey179/vfsStream":  "^1.6"
 	},
 	"suggest": {
 		"ext-http":   "*",

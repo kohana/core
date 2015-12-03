@@ -33,7 +33,7 @@ class Kohana_Log_File extends Log_Writer {
 		}
 
 		// Determine the directory path
-		$this->_directory = realpath($directory).DIRECTORY_SEPARATOR;
+		$this->_directory = $directory.DIRECTORY_SEPARATOR;
 	}
 
 	/**
