@@ -15,9 +15,11 @@ use org\bovigo\vfs\vfsStream;
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Log_FileTest extends Unittest_TestCase {
+class Kohana_Log_FileTest extends Kohana_Log_AbstractWriterTest {
 
 	private $vfs_root;
+
+	private $writer;
 
 	/**
 	 * Sets up the test enviroment
@@ -166,90 +168,34 @@ EXPECTED
 		$this->assertSame($expected_file_contents, $writer->get_written_logs());
 	}
 
-	/**
-	 * Data provider for test_filter
-	 *
-	 * @return array
-	 */
-	public function provider_filter()
+	protected function get_writer()
 	{
-		$make_logs = function(array $levels)
-		{
-			$logs = array();
-			foreach ($levels as $level)
-			{
-				$logs[] = [
-					'time' => strtotime('2015-11-19 10:05:48'),
-					'level' => $level,
-					'body' => 'dummy text',
-					'line' => 10,
-					'file' => '/path/to/file.php',
-				];
-			}
-			return $logs;
-		};
-
-		$make_expected_file_contents = function(array $levels)
-		{
-			$logs = array();
-			foreach ($levels as $level)
-			{
-				$level = strtoupper($level);
-				$logs[] = "2015-11-19 10:05:48 --- $level: dummy text in /path/to/file.php:10";
-			}
-			$file_header = '<?php exit; ?>' . PHP_EOL . PHP_EOL;
-			return $logs ? $file_header . implode(PHP_EOL, $logs) . PHP_EOL : $file_header;
-		};
-
-		return [
-			// data set #0
-			[
-				// logs array
-				$make_logs(Log::get_levels()),
-				// filter to apply
-				$levels = Log::get_levels(), // filter nothing
-				// expected
-				$make_expected_file_contents($levels),
-			],
-			// data set #1
-			[
-				// logs array
-				$make_logs(Log::get_levels()),
-				// filter to apply
-				$levels = [], // filter all
-				// expected
-				$make_expected_file_contents($levels),
-			],
-			// data set #2
-			[
-				// logs array
-				$make_logs(Log::get_levels()),
-				// filter to apply
-				$levels = ['info', 'debug'],
-				// expected
-				$make_expected_file_contents($levels),
-			],
-		];
+		return $this->writer = new Kohana_Log_FileTest_Testable_Log_File($this->vfs_root->url());
 	}
 
-	/**
-	 * Tests Log_File::filter
-	 *
-	 * @test
-	 * @dataProvider provider_filter
-	 */
-	public function test_filter($logs, $levels, $expected)
+	protected function make_dummy_written_logs(array $levels)
 	{
-		$writer = new Kohana_Log_FileTest_Testable_Log_File($this->vfs_root->url());
+		$file_header = '<?php exit; ?>' . PHP_EOL . PHP_EOL;
+		
+		if (empty($levels)) {
+			return $file_header;
+		}
 
-		$filter = new Log_Filter_PSRLevel($levels);
-
-		$writer->attach_filter($filter);
-
-		$writer->write($logs);
-
-		$this->assertSame($expected, $writer->get_written_logs());
+		$logs = array();
+		foreach ($levels as $level)
+		{
+			$level = strtoupper($level);
+			$logs[] = "2015-10-19 10:16:24 --- $level: dummy text in /path/to/file.php:10";
+		}
+		
+		return $file_header . implode(PHP_EOL, $logs) . PHP_EOL;
 	}
+
+	protected function get_written_logs()
+	{
+		return $this->writer->get_written_logs();
+	}
+
 }
 
 /**
