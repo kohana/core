@@ -318,9 +318,7 @@ class Kohana_LogTest extends Unittest_TestCase
 
 		// force flush and assert anew
 		$logger->flush();
-		$expected_number_of_logs = 1; // expect logs after forced flush
-		$actual_number_of_logs = count($writer->logs); // recalculate actual
-		$this->assertSame($expected_number_of_logs, $actual_number_of_logs);
+		$this->assertSame(1, count($writer->logs), 'Expect a log entry after forced flush');
 	}
 
 	/**
