@@ -946,4 +946,39 @@ class Kohana_TextTest extends Unittest_TestCase
 		Text::readable_list($words);
 	}
 
+	/**
+	 * data provider for test_text_interpolation
+	 * 
+	 * The provider and the related test are adapted
+	 * from Monolog\Processor\PsrLogMessageProcessorTest
+	 * @author Jordi Boggiano <j.boggiano@seld.be>
+	 * 
+	 * @return array
+	 */
+	public function provider_text_interpolation()
+	{
+		return array(
+			array('foo', 'foo'),
+			array('3', '3'),
+			array(3, '3'),
+			array(null, ''),
+			array(true, '1'),
+			array(false, ''),
+			array(new \stdClass, '[object stdClass]'),
+			array(array(), '[array]'),
+		);
+	}
+
+	/**
+	 * Tests Text::interpolate().
+	 * 
+	 * @dataProvider provider_text_interpolation
+	 */
+	public function test_text_interpolation($val, $expected)
+	{
+		$actual = Text::interpolate('{foo}', ['foo' => $val]);
+
+		$this->assertSame($expected, $actual);
+	}
+
 }

@@ -16,6 +16,24 @@ class Kohana_Log_Syslog extends Log_Writer {
 	protected $_ident;
 
 	/**
+	 * String log level to numeric lookup table.
+	 *
+	 * Windows users see PHP Bug #18090
+	 *
+	 * @var array
+	 */
+	protected $_log_levels = array(
+		\Psr\Log\LogLevel::EMERGENCY => LOG_EMERG,
+		\Psr\Log\LogLevel::ALERT     => LOG_ALERT,
+		\Psr\Log\LogLevel::CRITICAL  => LOG_CRIT,
+		\Psr\Log\LogLevel::ERROR     => LOG_ERR,
+		\Psr\Log\LogLevel::WARNING   => LOG_WARNING,
+		\Psr\Log\LogLevel::NOTICE    => LOG_NOTICE,
+		\Psr\Log\LogLevel::INFO      => LOG_INFO,
+		\Psr\Log\LogLevel::DEBUG     => LOG_DEBUG,
+	);
+
+	/**
 	 * Creates a new syslog logger.
 	 *
 	 * @link    http://www.php.net/manual/function.openlog
@@ -40,15 +58,41 @@ class Kohana_Log_Syslog extends Log_Writer {
 	 */
 	public function write(array $messages)
 	{
-		foreach ($messages as $message)
-		{
-			syslog($message['level'], $message['body']);
+		$filtered_messages = $this->filter($messages);
 
-			if (isset($message['additional']['exception']))
+		$strace_level = $this->get_strace_level();
+
+		foreach ($filtered_messages as $message)
+		{
+			// convert the level into int level
+			$level = $this->_log_levels[$message['level']];
+
+			// write to syslog
+			$this->_syslog($level, $message['body']);
+
+			if (isset($message['exception']))
 			{
-				syslog(Log_Writer::$strace_level, $message['additional']['exception']->getTraceAsString());
+				// convert PSR log level into syslog log level
+				$level = $this->_log_levels[$strace_level];
+
+				// write to syslog
+				$this->_syslog($level, $message['exception']->getTraceAsString());
 			}
 		}
+	}
+
+	/**
+	 * Proxy for the native syslog function - to allow mocking in unit tests
+	 *
+	 * @param int $priority a combination of the facility and the level
+	 * @param string $message the message to send
+	 *
+	 * @return bool
+	 * @see syslog
+	 */
+	protected function _syslog($priority, $message)
+	{
+		return syslog($priority, $message);
 	}
 
 	/**

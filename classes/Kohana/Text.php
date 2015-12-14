@@ -48,6 +48,39 @@ class Kohana_Text {
 	);
 
 	/**
+	 * Interpolates context values into the message placeholders.
+	 *
+	 * @author Jordi Boggiano <j.boggiano@seld.be>
+	 *
+	 * @param string $message
+	 * @param array $context
+	 * @return string
+	 */
+	public static function interpolate($message, array $context = array())
+	{
+		// return $message if no placeholder is found
+		if (false === strpos($message, '{')) {
+			return $message;
+		}
+
+		// better context replacements for types other than strings
+		$replacements = array();
+		foreach ($context as $key => $val)
+		{
+			if (is_null($val) || is_scalar($val) || (is_object($val) && method_exists($val, "__toString"))) {
+				$replacements['{' . $key . '}'] = $val;
+			} elseif (is_object($val)) {
+				$replacements['{' . $key . '}'] = '[object ' . get_class($val) . ']';
+			} else {
+				$replacements['{' . $key . '}'] = '[' . gettype($val) . ']';
+			}
+		}
+
+		// interpolate replacement values into the message and return
+		return strtr($message, $replacements);
+	}
+
+	/**
 	 * Limits a phrase to a given number of words.
 	 *
 	 *     $text = Text::limit_words($text);
@@ -599,7 +632,7 @@ class Kohana_Text {
 	 */
 	public static function widont($str)
 	{
-		// use '%' as delimiter and 'x' as modifier 
+		// use '%' as delimiter and 'x' as modifier
  		$widont_regex = "%
 			((?:</?(?:a|em|span|strong|i|b)[^>]*>)|[^<>\s]) # must be proceeded by an approved inline opening or closing tag or a nontag/nonspace
 			\s+                                             # the space to replace
