@@ -197,6 +197,11 @@ abstract class Kohana_Log_Writer implements Kohana_Log_Filter_Aware {
 	 */
 	public function filter(array $messages)
 	{
+		if (empty($messages))
+		{
+			return [];
+		}
+
 		foreach ($this->filters as $filter)
 		{
 			$messages = $filter->process($messages);

@@ -178,7 +178,7 @@ EXPECTED
 		$file_header = '<?php exit; ?>' . PHP_EOL . PHP_EOL;
 		
 		if (empty($levels)) {
-			return $file_header;
+			return NULL;
 		}
 
 		$logs = array();
@@ -219,7 +219,14 @@ class Kohana_Log_FileTest_Testable_Log_File extends Log_File {
 
 	public function get_written_logs()
 	{
-		return file_get_contents($this->get_directory() . $this->get_filename());
+		$file = $this->get_directory() . $this->get_filename();
+
+		if ( ! is_file($file))
+		{
+			return	NULL;
+		}
+
+		return file_get_contents($file);
 	}
 
 }

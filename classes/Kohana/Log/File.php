@@ -48,25 +48,20 @@ class Kohana_Log_File extends Log_Writer {
 	 */
 	public function write(array $messages)
 	{
-		// Set the yearly directory name
-		$directory = $this->_directory.date('Y');
+		$filtered_messages = $this->filter($messages);
 
-		if ( ! is_dir($directory))
+		if (empty($filtered_messages))
 		{
-			// Create the yearly directory
-			mkdir($directory, 02777);
-
-			// Set permissions (must be manually set to fix umask issues)
-			chmod($directory, 02777);
+			return;
 		}
 
-		// Add the month to the directory
-		$directory .= DIRECTORY_SEPARATOR.date('m');
+		// Set the yearly and monthly directory name
+		$directory = $this->_directory . date('Y' . DIRECTORY_SEPARATOR . 'm');
 
 		if ( ! is_dir($directory))
 		{
 			// Create the monthly directory
-			mkdir($directory, 02777);
+			mkdir($directory, 02777, TRUE);
 
 			// Set permissions (must be manually set to fix umask issues)
 			chmod($directory, 02777);
@@ -84,13 +79,13 @@ class Kohana_Log_File extends Log_Writer {
 			chmod($filename, 0666);
 		}
 
-		$filtered_messages = $this->filter($messages);
-
+		$formatted_messages = array();
 		foreach ($filtered_messages as $message)
 		{
-			// Write each message into the log file
-			file_put_contents($filename, $this->format_message($message).PHP_EOL, FILE_APPEND);
+			$formatted_messages[] = $this->format_message($message);
 		}
+
+		file_put_contents($filename, implode(PHP_EOL, $formatted_messages).PHP_EOL, FILE_APPEND);
 	}
 
 }
