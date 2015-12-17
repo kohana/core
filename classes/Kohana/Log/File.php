@@ -16,15 +16,27 @@ class Kohana_Log_File extends Log_Writer {
 	protected $_directory;
 
 	/**
+	 * @var  string  Access mode (permissions) for created folders
+	 */
+	private $_dir_mode;
+
+	/**
+	 * @var  string  Access mode (permissions) for created files
+	 */
+	private $_file_mode;
+
+	/**
 	 * Creates a new file logger. Checks that the directory exists and
 	 * is writable.
 	 *
 	 *     $writer = new Log_File($directory);
 	 *
 	 * @param   string  $directory  log directory
+	 * @param   int     $dir_mode   access mode (permissions) for created folders
+	 * @param   int     $file_mode  access mode (permissions) for created files
 	 * @return  void
 	 */
-	public function __construct($directory)
+	public function __construct($directory, $dir_mode = 0750, $file_mode = 0640)
 	{
 		if ( ! is_dir($directory) OR ! is_writable($directory))
 		{
@@ -34,6 +46,9 @@ class Kohana_Log_File extends Log_Writer {
 
 		// Determine the directory path
 		$this->_directory = $directory.DIRECTORY_SEPARATOR;
+
+		$this->_dir_mode = $dir_mode;
+		$this->_file_mode = $file_mode;
 	}
 
 	/**
@@ -61,10 +76,10 @@ class Kohana_Log_File extends Log_Writer {
 		if ( ! is_dir($directory))
 		{
 			// Create the monthly directory
-			mkdir($directory, 02777, TRUE);
+			mkdir($directory, $this->_dir_mode, TRUE);
 
 			// Set permissions (must be manually set to fix umask issues)
-			chmod($directory, 02777);
+			chmod($directory, $this->_dir_mode);
 		}
 
 		// Set the name of the log file
@@ -75,8 +90,8 @@ class Kohana_Log_File extends Log_Writer {
 			// Create the log file
 			file_put_contents($filename, '<?php exit; ?>'.PHP_EOL.PHP_EOL);
 
-			// Allow anyone to write to log files
-			chmod($filename, 0666);
+			// Set permissions
+			chmod($filename, $this->_file_mode);
 		}
 
 		$formatted_messages = array();
