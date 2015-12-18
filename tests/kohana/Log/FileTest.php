@@ -168,6 +168,86 @@ EXPECTED
 		$this->assertSame($expected_file_contents, $writer->get_written_logs());
 	}
 
+	/**
+	 * Provider for test_created_files_folders_permissions
+	 */
+	public function provider_created_files_folders_permissions()
+	{
+		return [
+			[0777, 0666, TRUE],
+			[0700, 0600, TRUE],
+			[0000, 0666, FALSE],
+			[0777, 0000, FALSE],
+			[0000, 0000, FALSE],
+		];
+	}
+
+	/**
+	 * Tests that different file/folder modes affect the writers ability to
+	 * write
+	 *
+	 * @test
+	 * @dataProvider provider_created_files_folders_permissions
+	 */
+	public function test_created_files_folders_permissions($dir_mode, $file_mode, $should_write)
+	{
+		if ( ! $should_write)
+		{
+			$this->setExpectedException('PHPUnit_Framework_Error_Warning');
+		}
+
+		$writer = new Kohana_Log_FileTest_Testable_Log_File($this->vfs_root->url(), $dir_mode, $file_mode);
+		$writer->write([$this->dummy_log]);
+
+		$this->assertSame($dir_mode, fileperms($writer->get_directory()) & $dir_mode);
+		$this->assertSame($file_mode, fileperms($writer->get_directory() . $writer->get_filename()) & $file_mode);
+	}
+
+	/**
+	 * Provider for test_writer_does_not_create_or_change_mode_existing_file_folder
+	 */
+	public function provider_writer_does_not_create_or_change_mode_existing_file_folder()
+	{
+		return [
+			[
+				0700, // mode of existing folder
+				0600, // mode of existing file
+				0777, // mode for newly created folders
+				0666, // mode for newly created files
+			],
+		];
+	}
+
+	/**
+	 * Tests that writer does not create a folder when it exists and does not
+	 * change its mode
+	 *
+	 * @test
+	 * @dataProvider provider_writer_does_not_create_or_change_mode_existing_file_folder
+	 */
+	public function test_writer_does_not_create_or_change_mode_existing_file_folder($existing_dir_mode, $existing_file_mode, $init_dir_mode, $init_file_mode)
+	{
+		// setup existing directory
+		$dir = $this->vfs_root->url() . DIRECTORY_SEPARATOR . date('Y') . DIRECTORY_SEPARATOR . date('m');
+		mkdir($dir, $existing_dir_mode, TRUE);
+		chmod($dir, $existing_dir_mode);
+
+		// setup existing file
+		$file = $dir . DIRECTORY_SEPARATOR . date('d') . EXT;
+		file_put_contents($file, '<?php exit; ?>' . PHP_EOL . PHP_EOL);
+		chmod($file, $existing_file_mode);
+
+		// initialize writer a write a dummy log
+		$writer = new Kohana_Log_FileTest_Testable_Log_File($this->vfs_root->url(), $init_dir_mode, $init_file_mode);
+		$writer->write([$this->dummy_log]);
+
+		// assert the writer did not change modes of existing file and folder
+		$actual_file = $writer->get_directory() . $writer->get_filename();
+		$this->assertSame($file, $actual_file);
+		$this->assertSame($existing_dir_mode, fileperms($writer->get_directory()) & $existing_dir_mode);
+		$this->assertSame($existing_file_mode, fileperms($writer->get_directory() . $writer->get_filename()) & $existing_file_mode);
+	}
+
 	protected function get_writer()
 	{
 		return $this->writer = new Kohana_Log_FileTest_Testable_Log_File($this->vfs_root->url());
