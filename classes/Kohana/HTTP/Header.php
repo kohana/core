@@ -851,13 +851,13 @@ class Kohana_HTTP_Header extends ArrayObject {
 	 * [!!] if you supply a custom header handler via `$callback`, it is
 	 *  recommended that `$response` is returned
 	 *
-	 * @param   HTTP_Response   $response   header to send
-	 * @param   boolean         $replace    replace existing value
-	 * @param   callback        $callback   optional callback to replace PHP header function
+	 * @param   Kohana_HTTP_Response   $response   header to send
+	 * @param   boolean                $replace    replace existing value
+	 * @param   callback               $callback   optional callback to replace PHP header function
 	 * @return  mixed
 	 * @since   3.2.0
 	 */
-	public function send_headers(HTTP_Response $response = NULL, $replace = FALSE, $callback = NULL)
+	public function send_headers(Kohana_HTTP_Response $response = NULL, $replace = FALSE, $callback = NULL)
 	{
 		$protocol = $response->protocol();
 		$status = $response->status();

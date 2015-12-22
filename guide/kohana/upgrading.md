@@ -1,5 +1,18 @@
 # Migrating from 3.3
 
+## Transparently Extended Interfaces
+
+The following transparently extended interfaces have been removed in favor of
+the interfaces that they extend:
+
+- Interface `HTTP_Message` (use `Kohana_HTTP_Message` instead)
+- Interface `HTTP_Request` (use `Kohana_HTTP_Request` instead)
+- Interface `HTTP_Response` (use `Kohana_HTTP_Response` instead)
+
+Note that `HTTP_Request` constants inherited from `Kohana_HTTP_Request`, like
+`HTTP_Request::POST`, are widely used. Use `Kohana_HTTP_Request::POST` or
+`Request::POST` instead.
+
 ## PSR-3 compliance of Kohana logger
 
 Starting with version 3.4 the Kohana logger is PSR-3 compliant. This means that

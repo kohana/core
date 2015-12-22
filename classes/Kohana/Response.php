@@ -11,7 +11,7 @@
  * @license    http://kohanaframework.org/license
  * @since      3.1.0
  */
-class Kohana_Response implements HTTP_Response {
+class Kohana_Response implements Kohana_HTTP_Response {
 
 	/**
 	 * Factory method to create a new [Response]. Pass properties

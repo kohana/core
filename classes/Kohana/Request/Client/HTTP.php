@@ -54,14 +54,14 @@ class Kohana_Request_Client_HTTP extends Request_Client_External {
 	public function _send_message(Request $request, Response $response)
 	{
 		$http_method_mapping = array(
-			HTTP_Request::GET     => HTTPRequest::METH_GET,
-			HTTP_Request::HEAD    => HTTPRequest::METH_HEAD,
-			HTTP_Request::POST    => HTTPRequest::METH_POST,
-			HTTP_Request::PUT     => HTTPRequest::METH_PUT,
-			HTTP_Request::DELETE  => HTTPRequest::METH_DELETE,
-			HTTP_Request::OPTIONS => HTTPRequest::METH_OPTIONS,
-			HTTP_Request::TRACE   => HTTPRequest::METH_TRACE,
-			HTTP_Request::CONNECT => HTTPRequest::METH_CONNECT,
+			Kohana_HTTP_Request::GET     => HTTPRequest::METH_GET,
+			Kohana_HTTP_Request::HEAD    => HTTPRequest::METH_HEAD,
+			Kohana_HTTP_Request::POST    => HTTPRequest::METH_POST,
+			Kohana_HTTP_Request::PUT     => HTTPRequest::METH_PUT,
+			Kohana_HTTP_Request::DELETE  => HTTPRequest::METH_DELETE,
+			Kohana_HTTP_Request::OPTIONS => HTTPRequest::METH_OPTIONS,
+			Kohana_HTTP_Request::TRACE   => HTTPRequest::METH_TRACE,
+			Kohana_HTTP_Request::CONNECT => HTTPRequest::METH_CONNECT,
 		);
 
 		// Create an http request object
@@ -83,7 +83,7 @@ class Kohana_Request_Client_HTTP extends Request_Client_External {
 		$http_request->setQueryData($request->query());
 
 		// Set the body
-		if ($request->method() == HTTP_Request::PUT)
+		if ($request->method() == Kohana_HTTP_Request::PUT)
 		{
 			$http_request->addPutData($request->body());
 		}
