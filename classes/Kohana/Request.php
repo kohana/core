@@ -1230,9 +1230,9 @@ class Kohana_Request implements HTTP_Request {
 		}
 		else
 		{
-			$this->headers('content-type',
-				'application/x-www-form-urlencoded; charset='.Kohana::$charset);
 			$body = http_build_query($post, NULL, '&');
+			$this->body($body)
+				->headers('content-type', 'application/x-www-form-urlencoded; charset='.Kohana::$charset);
 		}
 
 		// Set the content length
