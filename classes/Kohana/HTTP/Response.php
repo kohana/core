@@ -11,7 +11,7 @@
  * @copyright  (c) 2008-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-interface Kohana_HTTP_Response extends HTTP_Message {
+interface Kohana_HTTP_Response extends Kohana_HTTP_Message {
 
 	/**
 	 * Sets or gets the HTTP status from this response.

@@ -11,7 +11,7 @@
  * @copyright  (c) 2008-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-interface Kohana_HTTP_Request extends HTTP_Message {
+interface Kohana_HTTP_Request extends Kohana_HTTP_Message {
 
 	// HTTP Methods
 	const GET       = 'GET';

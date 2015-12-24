@@ -9,7 +9,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Request implements HTTP_Request {
+class Kohana_Request implements Kohana_HTTP_Request {
 
 	/**
 	 * @var  string  client user agent
@@ -69,7 +69,7 @@ class Kohana_Request implements HTTP_Request {
 			else
 			{
 				// Default to GET requests
-				$method = HTTP_Request::GET;
+				$method = Kohana_HTTP_Request::GET;
 			}
 
 			if (( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
@@ -130,7 +130,7 @@ class Kohana_Request implements HTTP_Request {
 				Request::$client_ip = $_SERVER['REMOTE_ADDR'];
 			}
 
-			if ($method !== HTTP_Request::GET)
+			if ($method !== Kohana_HTTP_Request::GET)
 			{
 				// Ensure the raw body is saved for future use
 				$body = file_get_contents('php://input');
@@ -437,7 +437,7 @@ class Kohana_Request implements HTTP_Request {
 	public static function post_max_size_exceeded()
 	{
 		// Make sure the request method is POST
-		if (Request::$initial->method() !== HTTP_Request::POST)
+		if (Request::$initial->method() !== Kohana_HTTP_Request::POST)
 			return FALSE;
 
 		// Get the post_max_size in bytes

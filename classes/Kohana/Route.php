@@ -370,7 +370,7 @@ class Kohana_Route {
 	 *     $route->filter(
 	 *         function(Route $route, $params, Request $request)
 	 *         {
-	 *             if ($request->method() !== HTTP_Request::POST)
+	 *             if ($request->method() !== Kohana_HTTP_Request::POST)
 	 *             {
 	 *                 return FALSE; // This route only matches POST requests
 	 *             }
