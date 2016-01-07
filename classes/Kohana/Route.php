@@ -69,6 +69,14 @@ class Kohana_Route {
 	 */
 	public static $cache = FALSE;
 
+	/**
+	 * A shim to make the tests run
+	 */
+	public static function set($name, $uri = NULL, $regex = NULL)
+	{
+		return new Route($uri, $regex);
+	}
+
 	/**	 * Create a URL from a route name. This is a shortcut for:
 	 *
 	 *     echo URL::site(Route::get($name)->uri($params), $protocol);
