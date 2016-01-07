@@ -46,126 +46,6 @@ class Kohana_RouteTest extends Unittest_TestCase
 	}
 
 	/**
-	 * If Route::get() is asked for a route that does not exist then
-	 * it should throw a Kohana_Exception
-	 *
-	 * Note use of @expectedException
-	 *
-	 * @test
-	 * @covers Route::get
-	 * @expectedException Kohana_Exception
-	 */
-	public function test_get_throws_exception_if_route_dnx()
-	{
-		Route::get('HAHAHAHAHAHAHAHAHA');
-	}
-
-	/**
-	 * Route::all() should return all routes defined via Route::set()
-	 * and not through new Route()
-	 *
-	 * @test
-	 * @covers Route::all
-	 */
-	public function test_all_returns_all_defined_routes()
-	{
-		$defined_routes = self::readAttribute('Route', '_routes');
-
-		$this->assertSame($defined_routes, Route::all());
-	}
-
-	/**
-	 * Route::name() should fetch the name of a passed route
-	 * If route is not found then it should return FALSE
-	 *
-	 * @TODO: This test needs to segregate the Route::$_routes singleton
-	 * @test
-	 * @covers Route::name
-	 */
-	public function test_name_returns_routes_name_or_false_if_dnx()
-	{
-		$route = Route::set('flamingo_people', 'flamingo/dance');
-
-		$this->assertSame('flamingo_people', Route::name($route));
-
-		$route = new Route('dance/dance');
-
-		$this->assertFalse(Route::name($route));
-	}
-
-	/**
-	 * If Route::cache() was able to restore routes from the cache then
-	 * it should return TRUE and load the cached routes
-	 *
-	 * @test
-	 * @covers Route::cache
-	 */
-	public function test_cache_stores_route_objects()
-	{
-		$routes = Route::all();
-
-		// First we create the cache
-		Route::cache(TRUE);
-
-		// Now lets modify the "current" routes
-		Route::set('nonsensical_route', 'flabbadaga/ding_dong');
-
-		// Then try and load said cache
-		$this->assertTrue(Route::cache());
-
-		// Check the route cache flag
-		$this->assertTrue(Route::$cache);
-
-		// And if all went ok the nonsensical route should be gone...
-		$this->assertEquals($routes, Route::all());
-	}
-
-	/**
-	 * Check appending cached routes. See http://dev.kohanaframework.org/issues/4347
-	 *
-	 * @test
-	 * @covers Route::cache
-	 */
-	public function test_cache_append_routes()
-	{
-		$cached = Route::all();
-
-		// First we create the cache
-		Route::cache(TRUE);
-
-		// Now lets modify the "current" routes
-		Route::set('nonsensical_route', 'flabbadaga/ding_dong');
-
-		$modified = Route::all();
-
-		// Then try and load said cache
-		$this->assertTrue(Route::cache(NULL, TRUE));
-
-		// Check the route cache flag
-		$this->assertTrue(Route::$cache);
-
-		// And if all went ok the nonsensical route should exist with the other routes...
-		$this->assertEquals(Route::all(), $cached + $modified);
-	}
-
-	/**
-	 * Route::cache() should return FALSE if cached routes could not be found
-	 *
-	 * The cache is cleared before and after each test in setUp tearDown
-	 * by cleanCacheDir()
-	 *
-	 * @test
-	 * @covers Route::cache
-	 */
-	public function test_cache_returns_false_if_cache_dnx()
-	{
-		$this->assertSame(FALSE, Route::cache(), 'Route cache was not empty');
-
-		// Check the route cache flag
-		$this->assertFalse(Route::$cache);
-	}
-
-	/**
 	 * If the constructor is passed a NULL uri then it should assume it's
 	 * being loaded from the cache & therefore shouldn't override the cached attributes
 	 *
@@ -738,11 +618,10 @@ class Kohana_RouteTest extends Unittest_TestCase
 	 */
 	public function test_composing_url_from_route($expected, $params = NULL, $protocol = NULL)
 	{
-		Route::set('foobar', '(<controller>(/<action>(/<id>)))')
-			->defaults(array(
-				'controller' => 'welcome',
-			)
-		);
+		$route = (new Route('(<controller>(/<action>(/<id>)))'))
+		  ->defaults(array(
+			'controller' => 'welcome',
+		  ));
 
 		$this->setEnvironment(array(
 			'_SERVER' => array('HTTP_HOST' => 'kohanaframework.org'),
@@ -750,7 +629,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 			'Kohana::$index_file' => '',
 		));
 
-		$this->assertSame($expected, Route::url('foobar', $params, $protocol));
+		$this->assertSame($expected, $route->url($params, $protocol));
 	}
 
 	/**
@@ -781,7 +660,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 	public function test_is_external_route_from_host()
 	{
 		// Setup local route
-		Route::set('internal', 'local/test/route')
+		$internal = (new Route('local/test/route'))
 			->defaults(array(
 				'controller' => 'foo',
 				'action'     => 'bar'
@@ -789,7 +668,7 @@ class Kohana_RouteTest extends Unittest_TestCase
 			);
 
 		// Setup external route
-		Route::set('external', 'local/test/route')
+		$external = (new Route('local/test/route'))
 			->defaults(array(
 				'controller' => 'foo',
 				'action'     => 'bar',
@@ -798,10 +677,10 @@ class Kohana_RouteTest extends Unittest_TestCase
 			);
 
 		// Test internal route
-		$this->assertFalse(Route::get('internal')->is_external());
+		$this->assertFalse($internal->is_external());
 
 		// Test external route
-		$this->assertTrue(Route::get('external')->is_external());
+		$this->assertTrue($external->is_external());
 	}
 
 	/**
@@ -848,10 +727,10 @@ class Kohana_RouteTest extends Unittest_TestCase
 	 */
 	public function test_external_route_includes_params_in_uri($route, $defaults, $expected_uri)
 	{
-		Route::set('test', $route)
+		$route = (new Route($route))
 			->defaults($defaults);
 
-		$this->assertSame($expected_uri, Route::get('test')->uri());
+		$this->assertSame($expected_uri, $route->uri());
 	}
 
 	/**
@@ -915,7 +794,6 @@ class Kohana_RouteTest extends Unittest_TestCase
 	{
 		return array(
 			array(
-				'article',
 				'blog/article/<article_name>',
 				array(
 					'controller' => 'home',
@@ -936,11 +814,11 @@ class Kohana_RouteTest extends Unittest_TestCase
 	 * @ticket 4079
 	 * @dataProvider provider_route_uri_encode_parameters
 	 */
-	public function test_route_uri_encode_parameters($name, $uri_callback, $defaults, $uri_key, $uri_value, $expected)
+	public function test_route_uri_encode_parameters($uri_callback, $defaults, $uri_key, $uri_value, $expected)
 	{
-		Route::set($name, $uri_callback)->defaults($defaults);
+		$route = (new Route($uri_callback))->defaults($defaults);
 
-		$get_route_uri = Route::get($name)->uri(array($uri_key => $uri_value));
+		$get_route_uri = $route->uri(array($uri_key => $uri_value));
 
 		$this->assertSame($expected, $get_route_uri);
 	}

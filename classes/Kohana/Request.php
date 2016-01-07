@@ -454,13 +454,11 @@ class Kohana_Request implements HTTP_Request {
 	 * @param   array   $routes  Route
 	 * @return  array
 	 */
-	public static function process(Request $request, $routes = NULL)
+	public static function process(Request $request, array $routes = [])
 	{
-		// Load routes
-		$routes = (empty($routes)) ? Route::all() : $routes;
 		$params = NULL;
 
-		foreach ($routes as $name => $route)
+		foreach ($routes as $route)
 		{
 			// Use external routes for reverse routing only
 			if ($route->is_external())
@@ -571,7 +569,7 @@ class Kohana_Request implements HTTP_Request {
 	protected $_route;
 
 	/**
-	 * @var  Route       array of routes to manually look at instead of the global namespace
+	 * @var  array  array of routes to manually look at instead of the global namespace
 	 */
 	protected $_routes;
 
@@ -799,6 +797,29 @@ class Kohana_Request implements HTTP_Request {
 
 		// Act as a setter
 		$this->_referrer = (string) $referrer;
+
+		return $this;
+	}
+
+	/**
+	 * Gets injected/set routes from the request.
+	 *
+	 * @return  array injected routes
+	 */
+	public function get_routes()
+	{
+		return $this->_routes;
+	}
+
+	/**
+	 * Set routes to the request. Overrides injected routes.
+	 *
+	 * @param array $routes routes to override injected routes
+	 * @return self
+	 */
+	public function set_routes(array $routes)
+	{
+		$this->_routes = $routes;
 
 		return $this;
 	}
