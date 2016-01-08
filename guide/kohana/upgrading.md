@@ -74,6 +74,30 @@ Should be migrated to this new syntax:
 Kohana::$log->flush();
 ~~~
 
+### Log_File permissions
+
+It is possible now to bootstrap the Log_File writer with custom modes for the
+files and the folders that it creates. The current default modes are more
+restrictive that it used to be in v3.3. Developers should assess their needs
+and are encouraged to bootstrap the writer with modes as strict as possible.
+
+For example:
+
+~~~
+// note that this is just an example
+Kohana::$log->attach(new Log_File(APPPATH.'logs', 0770, 0660));
+~~~
+
+If you used to rely on the `setgid` bit (when logging in PHP safe mode) you need
+to set it now explicitely, as the default omits that as well.
+
+For example:
+
+~~~
+// note that this is just an example
+Kohana::$log->attach(new Log_File(APPPATH.'logs', 02777, 0666));
+~~~
+
 
 ### Filtering
 

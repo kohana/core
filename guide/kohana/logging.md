@@ -35,6 +35,11 @@ Kohana::$log->attach(new Log_File(APPPATH.'logs'));
 You can attach more than one writer to `Kohana::$log`, by locating the above
 code in `bootstrap.php` and attaching writers in similar fashion.
 
+[!!] As of Kohana v3.4, you can bootstrap the Log_File writer with custom modes
+for the files and the folders that it creates. The current default modes are more
+restrictive that it used to be in v3.3. Developers should assess their needs
+and are encouraged to bootstrap the writer with modes as strict as possible.
+
 ### A PSR-3 compliant logger
 
 Any PSR-3 compatible logger can be used instead of the default Kohana logger.
