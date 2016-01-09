@@ -406,11 +406,13 @@ abstract class Kohana_Request_Client {
 			}
 
 			// Prepare the additional request, copying any follow_headers that were present on the original request
+			$orig_routes = $request->get_routes();
 			$orig_headers = $request->headers()->getArrayCopy();
 			$follow_header_keys = array_intersect(array_keys($orig_headers), $client->follow_headers());
 			$follow_headers = \Arr::extract($orig_headers, $follow_header_keys);
 
 			$follow_request = Request::factory($response->headers('Location'))
+			                         ->set_routes($orig_routes)
 			                         ->method($follow_method)
 			                         ->headers($follow_headers);
 

@@ -183,7 +183,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function test_route()
 	{
-		$request = Request::factory(''); // This should always match something, no matter what changes people make
+		$request = Request::factory('', [], TRUE, [new Route('')]); // This should always match something, no matter what changes people make
 
 		// We need to execute the request before it has matched a route
 		try

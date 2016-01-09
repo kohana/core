@@ -70,136 +70,14 @@ class Kohana_Route {
 	public static $cache = FALSE;
 
 	/**
-	 * @var  array
-	 */
-	protected static $_routes = array();
-
-	/**
-	 * Stores a named route and returns it. The "action" will always be set to
-	 * "index" if it is not defined.
-	 *
-	 *     Route::set('default', '(<controller>(/<action>(/<id>)))')
-	 *         ->defaults(array(
-	 *             'controller' => 'welcome',
-	 *         ));
-	 *
-	 * @param   string  $name           route name
-	 * @param   string  $uri            URI pattern
-	 * @param   array   $regex          regex patterns for route keys
-	 * @return  Route
+	 * A shim to make the tests run
 	 */
 	public static function set($name, $uri = NULL, $regex = NULL)
 	{
-		return Route::$_routes[$name] = new Route($uri, $regex);
+		return new Route($uri, $regex);
 	}
 
-	/**
-	 * Retrieves a named route.
-	 *
-	 *     $route = Route::get('default');
-	 *
-	 * @param   string  $name   route name
-	 * @return  Route
-	 * @throws  Kohana_Exception
-	 */
-	public static function get($name)
-	{
-		if ( ! isset(Route::$_routes[$name]))
-		{
-			throw new Kohana_Exception('The requested route does not exist: :route',
-				array(':route' => $name));
-		}
-
-		return Route::$_routes[$name];
-	}
-
-	/**
-	 * Retrieves all named routes.
-	 *
-	 *     $routes = Route::all();
-	 *
-	 * @return  array  routes by name
-	 */
-	public static function all()
-	{
-		return Route::$_routes;
-	}
-
-	/**
-	 * Get the name of a route.
-	 *
-	 *     $name = Route::name($route)
-	 *
-	 * @param   Route   $route  instance
-	 * @return  string
-	 */
-	public static function name(Route $route)
-	{
-		return array_search($route, Route::$_routes);
-	}
-
-	/**
-	 * Saves or loads the route cache. If your routes will remain the same for
-	 * a long period of time, use this to reload the routes from the cache
-	 * rather than redefining them on every page load.
-	 *
-	 *     if ( ! Route::cache())
-	 *     {
-	 *         // Set routes here
-	 *         Route::cache(TRUE);
-	 *     }
-	 *
-	 * @param   boolean $save   cache the current routes
-	 * @param   boolean $append append, rather than replace, cached routes when loading
-	 * @return  void    when saving routes
-	 * @return  boolean when loading routes
-	 * @uses    Kohana::cache
-	 */
-	public static function cache($save = FALSE, $append = FALSE)
-	{
-		if ($save === TRUE)
-		{
-			try
-			{
-				// Cache all defined routes
-				Kohana::cache('Route::cache()', Route::$_routes);
-			}
-			catch (Exception $e)
-			{
-				// We most likely have a lambda in a route, which cannot be cached
-				throw new Kohana_Exception('One or more routes could not be cached (:message)', array(
-						':message' => $e->getMessage(),
-					), 0, $e);
-			}
-		}
-		else
-		{
-			if ($routes = Kohana::cache('Route::cache()'))
-			{
-				if ($append)
-				{
-					// Append cached routes
-					Route::$_routes += $routes;
-				}
-				else
-				{
-					// Replace existing routes
-					Route::$_routes = $routes;
-				}
-
-				// Routes were cached
-				return Route::$cache = TRUE;
-			}
-			else
-			{
-				// Routes were not cached
-				return Route::$cache = FALSE;
-			}
-		}
-	}
-
-	/**
-	 * Create a URL from a route name. This is a shortcut for:
+	/**	 * Create a URL from a route name. This is a shortcut for:
 	 *
 	 *     echo URL::site(Route::get($name)->uri($params), $protocol);
 	 *
@@ -210,15 +88,13 @@ class Kohana_Route {
 	 * @since   3.0.7
 	 * @uses    URL::site
 	 */
-	public static function url($name, array $params = NULL, $protocol = NULL)
+	public function url(array $params = NULL, $protocol = NULL)
 	{
-		$route = Route::get($name);
-
 		// Create a URI with the route and convert it to a URL
-		if ($route->is_external())
-			return $route->uri($params);
+		if ($this->is_external())
+			return $this->uri($params);
 		else
-			return URL::site($route->uri($params), $protocol);
+			return URL::site($this->uri($params), $protocol);
 	}
 
 	/**
