@@ -79,7 +79,7 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 	public function provider_text()
 	{
 		return array(
-			array(new Kohana_ExceptionTest_Serializable_Exception('foobar'), $this->dirSeparator('Kohana_ExceptionTest_Serializable_Exception [ 0 ]: foobar ~ SYSPATH/tests/kohana/ExceptionTest.php [ ' . __LINE__ . ' ]')),
+			array(new Kohana_ExceptionTest_Serializable_Exception('foobar'), $this->dirSeparator('Kohana_ExceptionTest_Serializable_Exception [ 0 ]: foobar ~ SYSPATH/tests/Kohana/ExceptionTest.php [ ' . __LINE__ . ' ]')),
 		);
 	}
 
