@@ -1,4 +1,13 @@
 <?php
+
+namespace Kohana\Core;
+
+use Arr;
+use Kohana;
+use Kohana_Exception;
+use Request;
+use UTF8;
+
 /**
  * URL helper class.
  *
@@ -10,7 +19,7 @@
  * @copyright  (c) 2007-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_URL {
+class URL {
 
 	/**
 	 * Gets the base URL to the application.

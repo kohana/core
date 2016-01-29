@@ -1,3 +1,3 @@
 <?php
 
-class URL extends Kohana_URL {}
+class URL extends \Kohana\Core\URL {}
