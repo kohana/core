@@ -1,3 +1,3 @@
 <?php
 
-class Upload extends Kohana_Upload {}
+class Upload extends \Kohana\Core\Upload {}
