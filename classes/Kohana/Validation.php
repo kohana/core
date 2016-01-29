@@ -1,4 +1,17 @@
 <?php
+
+namespace Kohana\Core;
+
+use Arr;
+use ArrayAccess;
+use I18n;
+use Kohana;
+use Kohana_Exception;
+use Profiler;
+use ReflectionFunction;
+use ReflectionMethod;
+use Valid;
+
 /**
  * Array and variable validation.
  *
@@ -8,7 +21,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Validation implements ArrayAccess {
+class Validation implements ArrayAccess {
 
 	/**
 	 * Creates a new Validation instance.
