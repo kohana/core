@@ -10,7 +10,6 @@ use Kohana_Exception;
 use Profiler;
 use ReflectionFunction;
 use ReflectionMethod;
-use Valid;
 
 /**
  * Array and variable validation.

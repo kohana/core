@@ -1,4 +1,11 @@
 <?php
+
+namespace Kohana\Core;
+
+use ArrayObject;
+use Kohana;
+use UTF8;
+
 /**
  * Validation rules.
  *
@@ -8,7 +15,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Valid {
+class Valid {
 
 	/**
 	 * Checks if a field is not empty.
