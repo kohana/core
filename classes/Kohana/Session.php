@@ -1,4 +1,14 @@
 <?php
+
+namespace Kohana\Core;
+
+use Encrypt;
+use Exception;
+use Kohana;
+use Kohana_Exception;
+use Kohana_Log_Buffer;
+use Session_Exception;
+
 /**
  * Base session class.
  *
@@ -8,7 +18,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-abstract class Kohana_Session {
+abstract class Session {
 
 	/**
 	 * @var  string  default session adapter
