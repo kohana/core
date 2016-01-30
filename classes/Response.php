@@ -1,3 +1,3 @@
 <?php
 
-class Response extends Kohana_Response {}
+class Response extends \Kohana\Core\Response {}

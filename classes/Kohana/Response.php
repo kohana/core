@@ -1,4 +1,20 @@
 <?php
+
+namespace Kohana\Core;
+
+use Arr;
+use Cookie;
+use Exception;
+use File;
+use HTTP;
+use HTTP_Header;
+use Kohana;
+use Kohana_Exception;
+use Kohana_HTTP_Response;
+use Kohana_Log_Buffer;
+use Request;
+use Request_Exception;
+
 /**
  * Response wrapper. Created as the result of any [Request] execution
  * or utility method (i.e. Redirect). Implements standard HTTP
@@ -11,7 +27,7 @@
  * @license    http://kohanaframework.org/license
  * @since      3.1.0
  */
-class Kohana_Response implements Kohana_HTTP_Response {
+class Response implements Kohana_HTTP_Response {
 
 	/**
 	 * Factory method to create a new [Response]. Pass properties
@@ -28,7 +44,7 @@ class Kohana_Response implements Kohana_HTTP_Response {
 	 */
 	public static function factory(array $config = array())
 	{
-		return new Response($config);
+		return new \Response($config);
 	}
 
 	// HTTP status codes and messages
