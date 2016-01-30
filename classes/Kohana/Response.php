@@ -3,7 +3,6 @@
 namespace Kohana\Core;
 
 use Arr;
-use Cookie;
 use Exception;
 use File;
 use HTTP;
