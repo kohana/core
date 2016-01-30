@@ -192,7 +192,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 		}
 		catch (Exception $e) {}
 
-		$this->assertInstanceOf('Route', $request->route());
+		$this->assertInstanceOf('Kohana\Core\Route', $request->route());
 	}
 
 	/**
