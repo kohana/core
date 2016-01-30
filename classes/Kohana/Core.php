@@ -1,4 +1,17 @@
 <?php
+
+namespace Kohana\Core;
+
+use Arr;
+use Config;
+use Debug;
+use DirectoryIterator;
+use ErrorException;
+use Exception;
+use Kohana;
+use Kohana_Exception;
+use Psr\Log\LoggerInterface;
+
 /**
  * Contains the most low-level helpers methods in Kohana:
  *
@@ -13,7 +26,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Core {
+class Core {
 
 	// Release version and codename
 	const VERSION  = '3.3.3';
@@ -305,7 +318,7 @@ class Kohana_Core {
 		$_COOKIE = Kohana::sanitize($_COOKIE);
 
 		// Load the logger if one doesn't already exist
-		if ( ! Kohana::$log instanceof Psr\Log\LoggerInterface)
+		if ( ! Kohana::$log instanceof LoggerInterface)
 		{
 			Kohana::$log = Log::instance();
 		}
