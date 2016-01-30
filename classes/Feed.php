@@ -1,3 +1,3 @@
 <?php
 
-class Feed extends Kohana_Feed {}
+class Feed extends \Kohana\Core\Feed {}
