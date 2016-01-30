@@ -12,7 +12,6 @@ use Kohana;
 use Kohana_Exception;
 use Kohana_HTTP_Response;
 use Kohana_Log_Buffer;
-use Request;
 use Request_Exception;
 
 /**

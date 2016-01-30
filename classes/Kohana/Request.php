@@ -1,4 +1,24 @@
 <?php
+
+namespace Kohana\Core;
+
+use Arr;
+use Cookie;
+use HTTP;
+use HTTP_Exception;
+use HTTP_Exception_404;
+use HTTP_Header;
+use Kohana;
+use Kohana_Exception;
+use Kohana_HTTP_Header;
+use Kohana_HTTP_Request;
+use Kohana_Request_Client;
+use Num;
+use Request_Client;
+use Request_Client_External;
+use Request_Client_Internal;
+use Request_Exception;
+
 /**
  * Request. Uses the [Route] class to determine what
  * [Controller] to send the request to.
@@ -9,7 +29,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Request implements Kohana_HTTP_Request {
+class Request implements Kohana_HTTP_Request {
 
 	/**
 	 * @var  string  client user agent
@@ -153,7 +173,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 			}
 
 			// Create the instance singleton
-			Request::$initial = $request = new Request($uri, $client_params, $allow_external, $injected_routes);
+			Request::$initial = $request = new \Request($uri, $client_params, $allow_external, $injected_routes);
 
 			// Store global GET and POST data in the initial request only
 			$request->protocol($protocol)
@@ -197,7 +217,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 		}
 		else
 		{
-			$request = new Request($uri, $client_params, $allow_external, $injected_routes);
+			$request = new \Request($uri, $client_params, $allow_external, $injected_routes);
 		}
 
 		return $request;
