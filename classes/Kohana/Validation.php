@@ -4,7 +4,6 @@ namespace Kohana\Core;
 
 use Arr;
 use ArrayAccess;
-use I18n;
 use Kohana;
 use Kohana_Exception;
 use ReflectionFunction;
