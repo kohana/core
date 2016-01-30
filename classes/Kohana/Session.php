@@ -2,7 +2,6 @@
 
 namespace Kohana\Core;
 
-use Encrypt;
 use Exception;
 use Kohana;
 use Kohana_Exception;
