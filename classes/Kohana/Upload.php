@@ -2,7 +2,6 @@
 
 namespace Kohana\Core;
 
-use Debug;
 use ErrorException;
 use Kohana_Exception;
 
