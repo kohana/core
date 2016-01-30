@@ -1,4 +1,7 @@
 <?php
+
+namespace Kohana\Core;
+
 /**
  * Model base class. All models should extend this class.
  *
@@ -8,7 +11,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-abstract class Kohana_Model {
+abstract class Model {
 
 	/**
 	 * Create a new model instance.

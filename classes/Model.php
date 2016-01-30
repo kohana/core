@@ -1,3 +1,3 @@
 <?php
 
-abstract class Model extends Kohana_Model {}
+abstract class Model extends \Kohana\Core\Model {}
