@@ -1,4 +1,15 @@
 <?php
+
+namespace Kohana\Core;
+
+use Exception;
+use Kohana_Log_Buffer;
+use Log_Writer;
+use Psr\Log\AbstractLogger;
+use Psr\Log\InvalidArgumentException;
+use Psr\Log\LogLevel;
+use ReflectionClass;
+
 /**
  * Message logging with observer-based log writing.
  *
@@ -10,7 +21,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Log_Buffer {
+class Log extends AbstractLogger implements Kohana_Log_Buffer {
 
 	// Log message levels - Windows users see PHP Bug #18090
 	const EMERGENCY = 0; // LOG_EMERG
@@ -27,14 +38,14 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Log_Buffer {
 	 * @var array
 	 */
 	private static $_log_levels = array(
-		self::EMERGENCY => \Psr\Log\LogLevel::EMERGENCY,
-		self::ALERT     => \Psr\Log\LogLevel::ALERT,
-		self::CRITICAL  => \Psr\Log\LogLevel::CRITICAL,
-		self::ERROR     => \Psr\Log\LogLevel::ERROR,
-		self::WARNING   => \Psr\Log\LogLevel::WARNING,
-		self::NOTICE    => \Psr\Log\LogLevel::NOTICE,
-		self::INFO      => \Psr\Log\LogLevel::INFO,
-		self::DEBUG     => \Psr\Log\LogLevel::DEBUG,
+		self::EMERGENCY => LogLevel::EMERGENCY,
+		self::ALERT     => LogLevel::ALERT,
+		self::CRITICAL  => LogLevel::CRITICAL,
+		self::ERROR     => LogLevel::ERROR,
+		self::WARNING   => LogLevel::WARNING,
+		self::NOTICE    => LogLevel::NOTICE,
+		self::INFO      => LogLevel::INFO,
+		self::DEBUG     => LogLevel::DEBUG,
 	);
 
 	/**
@@ -59,7 +70,7 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Log_Buffer {
 		if (Log::$_instance === NULL)
 		{
 			// Create a new instance
-			Log::$_instance = new Log;
+			Log::$_instance = new \Log;
 
 			// Write the logs at shutdown
 			register_shutdown_function(array(Log::$_instance, 'flush'));
@@ -120,7 +131,7 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Log_Buffer {
 	 *
 	 * @param mixed $level
 	 * @return string normalized PSR-3 level
-	 * @throws Psr\Log\InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
 	public static function to_psr_level($level)
 	{
@@ -139,7 +150,7 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Log_Buffer {
 		}
 		else
 		{
-			throw new Psr\Log\InvalidArgumentException('Undefined level "' . $level . '"');
+			throw new InvalidArgumentException('Undefined level "' . $level . '"');
 		}
 
 		return $level;
@@ -152,7 +163,7 @@ class Kohana_Log extends Psr\Log\AbstractLogger implements Kohana_Log_Buffer {
 	 * @param mixed $level
 	 * @uses Log::to_psr_level
 	 * @return int normalized integer level
-	 * @throws Psr\Log\InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
 	public static function to_int_level($level)
 	{
