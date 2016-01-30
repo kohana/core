@@ -1,4 +1,13 @@
 <?php
+
+namespace Kohana\Core;
+
+use HTTP_Exception;
+use HTTP_Exception_304;
+use HTTP_Exception_Redirect;
+use HTTP_Header;
+use Kohana_Exception;
+
 /**
  * Contains the most low-level helpers methods in Kohana:
  *
@@ -14,10 +23,10 @@
  * @copyright  (c) 2008-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-abstract class Kohana_HTTP {
+abstract class HTTP {
 
 	/**
-	 * @var  The default protocol to use if it cannot be detected
+	 * @var string The default protocol to use if it cannot be detected
 	 */
 	public static $protocol = 'HTTP/1.1';
 
