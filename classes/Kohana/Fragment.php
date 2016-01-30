@@ -1,4 +1,9 @@
 <?php
+
+namespace Kohana\Core;
+
+use Kohana;
+
 /**
  * View fragment caching. This is primarily used to cache small parts of a view
  * that rarely change. For instance, you may want to cache the footer of your
@@ -17,7 +22,7 @@
  * @license    http://kohanaframework.org/license
  * @uses       Kohana::cache
  */
-class Kohana_Fragment {
+class Fragment {
 
 	/**
 	 * @var  integer  default number of seconds to cache for
