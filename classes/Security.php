@@ -1,3 +1,3 @@
 <?php
 
-class Security extends Kohana_Security {}
+class Security extends \Kohana\Core\Security {}
