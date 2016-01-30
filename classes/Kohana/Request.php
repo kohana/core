@@ -2,7 +2,6 @@
 
 namespace Kohana\Core;
 
-use Arr;
 use HTTP;
 use HTTP_Exception;
 use HTTP_Exception_404;

@@ -2,7 +2,6 @@
 
 namespace Kohana\Core;
 
-use Arr;
 use Exception;
 use File;
 use HTTP;

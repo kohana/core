@@ -1,4 +1,12 @@
 <?php
+
+namespace Kohana\Core;
+
+use ArrayAccess;
+use Countable;
+use Kohana_Exception;
+use Traversable;
+
 /**
  * Array helper.
  *
@@ -8,7 +16,7 @@
  * @copyright  (c) 2007-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-abstract class Kohana_Arr {
+class Arr {
 
 	/**
 	 * @var  string  Default delimiter for [Arr::path()]

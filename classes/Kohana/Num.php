@@ -2,7 +2,6 @@
 
 namespace Kohana\Core;
 
-use Arr;
 use Kohana_Exception;
 
 /**

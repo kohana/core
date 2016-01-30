@@ -2,7 +2,6 @@
 
 namespace Kohana\Core;
 
-use Arr;
 use ArrayAccess;
 use Kohana;
 use Kohana_Exception;

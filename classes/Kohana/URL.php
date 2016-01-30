@@ -2,7 +2,6 @@
 
 namespace Kohana\Core;
 
-use Arr;
 use Kohana;
 use Kohana_Exception;
 use UTF8;
