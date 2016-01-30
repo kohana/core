@@ -7,7 +7,6 @@ use ArrayAccess;
 use I18n;
 use Kohana;
 use Kohana_Exception;
-use Profiler;
 use ReflectionFunction;
 use ReflectionMethod;
 
