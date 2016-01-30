@@ -1,3 +1,3 @@
 <?php
 
-class HTML extends Kohana_HTML {}
+class HTML extends \Kohana\Core\HTML {}

@@ -1,4 +1,9 @@
 <?php
+
+namespace Kohana\Core;
+
+use Kohana;
+
 /**
  * HTML helper class. Provides generic methods for generating various HTML
  * tags and making output HTML safe.
@@ -9,7 +14,7 @@
  * @copyright  (c) 2007-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_HTML {
+class HTML {
 
 	/**
 	 * @var  array  preferred order of attributes
