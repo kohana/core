@@ -5,7 +5,6 @@ namespace Kohana\Core;
 use Debug;
 use ErrorException;
 use Kohana_Exception;
-use Num;
 
 /**
  * Upload helper class for working with uploaded files and [Validation].

@@ -1,3 +1,3 @@
 <?php
 
-class Num extends Kohana_Num {}
+class Num extends \Kohana\Core\Num {}
