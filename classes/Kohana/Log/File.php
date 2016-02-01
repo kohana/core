@@ -1,4 +1,11 @@
 <?php
+
+namespace Kohana\Core\Log;
+
+use Debug;
+use Kohana_Exception;
+use Log_Writer;
+
 /**
  * File log writer. Writes out messages and stores them in a YYYY/MM directory.
  *
@@ -8,7 +15,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Log_File extends Log_Writer {
+class File extends Log_Writer {
 
 	/**
 	 * @var  string  Directory to place log files in
