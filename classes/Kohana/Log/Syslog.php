@@ -1,4 +1,10 @@
 <?php
+
+namespace Kohana\Core\Log;
+
+use Log_Writer;
+use Psr\Log\LogLevel;
+
 /**
  * Syslog log writer.
  *
@@ -8,7 +14,7 @@
  * @copyright  (c) 2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Log_Syslog extends Log_Writer {
+class Syslog extends Log_Writer {
 
 	/**
 	 * @var  string  The syslog identifier
@@ -23,14 +29,14 @@ class Kohana_Log_Syslog extends Log_Writer {
 	 * @var array
 	 */
 	protected $_log_levels = array(
-		\Psr\Log\LogLevel::EMERGENCY => LOG_EMERG,
-		\Psr\Log\LogLevel::ALERT     => LOG_ALERT,
-		\Psr\Log\LogLevel::CRITICAL  => LOG_CRIT,
-		\Psr\Log\LogLevel::ERROR     => LOG_ERR,
-		\Psr\Log\LogLevel::WARNING   => LOG_WARNING,
-		\Psr\Log\LogLevel::NOTICE    => LOG_NOTICE,
-		\Psr\Log\LogLevel::INFO      => LOG_INFO,
-		\Psr\Log\LogLevel::DEBUG     => LOG_DEBUG,
+		LogLevel::EMERGENCY => LOG_EMERG,
+		LogLevel::ALERT     => LOG_ALERT,
+		LogLevel::CRITICAL  => LOG_CRIT,
+		LogLevel::ERROR     => LOG_ERR,
+		LogLevel::WARNING   => LOG_WARNING,
+		LogLevel::NOTICE    => LOG_NOTICE,
+		LogLevel::INFO      => LOG_INFO,
+		LogLevel::DEBUG     => LOG_DEBUG,
 	);
 
 	/**
