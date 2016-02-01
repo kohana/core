@@ -274,6 +274,11 @@ class Kohana_RequestTest extends Unittest_TestCase
 				'http',
 				'http://www.google.com'
 			),
+			array(
+				'0',
+				'http',
+				'http://localhost/kohana/0'
+			)
 		);
 	}
 
@@ -434,6 +439,14 @@ class Kohana_RequestTest extends Unittest_TestCase
 			array(
 				new Request('foo/bar'),
 				'foo/bar'
+			),
+			array(
+				new Request('/0'),
+				'0'
+			),
+			array(
+				new Request('0'),
+				'0'
 			),
 			array(
 				new Request('/'),
