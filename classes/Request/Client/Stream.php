@@ -1,3 +1,3 @@
 <?php
 
-class Request_Client_Stream extends Kohana_Request_Client_Stream {}
+class Request_Client_Stream extends \Kohana\Core\Request\Client\Stream {}
