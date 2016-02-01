@@ -1,5 +1,11 @@
 <?php
 
+namespace Kohana\Core\Log\Filter;
+
+use Kohana_Log_Filter;
+use Log;
+use Psr\Log\InvalidArgumentException;
+
 /**
  * A log level filter
  *
@@ -9,10 +15,10 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Log_Filter_PSRLevel implements Kohana_Log_Filter {
+class PSRLevel implements Kohana_Log_Filter {
 
 	/**
-	 * @var a hashtable to lookup if a log level is enabled or not
+	 * @var boolean a hashtable to lookup if a log level is enabled or not
 	 *
 	 * TRUE value indicates that the level at the key is enabled
 	 */
@@ -28,7 +34,7 @@ class Kohana_Log_Filter_PSRLevel implements Kohana_Log_Filter {
 		{
 			if ( ! isset($this->enabled_log_levels[$level]))
 			{
-				throw new Psr\Log\InvalidArgumentException(
+				throw new InvalidArgumentException(
 					"Argument 1 of Log_Filter_PSRLevel constructor must be an array of valid PSR log levels"
 				);
 			}

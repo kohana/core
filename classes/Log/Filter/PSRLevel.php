@@ -1,3 +1,3 @@
 <?php
 
-class Log_Filter_PSRLevel extends Kohana_Log_Filter_PSRLevel {}
+class Log_Filter_PSRLevel extends \Kohana\Core\Log\Filter\PSRLevel {}
