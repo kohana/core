@@ -1,4 +1,7 @@
 <?php
+
+use Kohana\Core\Config\Source;
+
 /**
  * Wrapper for configuration arrays. Multiple configuration readers can be
  * attached to allow loading configuration from files, database, etc.
@@ -31,11 +34,11 @@ class Kohana_Config {
 	 *     $config->attach($reader);        // Try first
 	 *     $config->attach($reader, FALSE); // Try last
 	 *
-	 * @param   Kohana_Config_Source    $source instance
-	 * @param   boolean                 $first  add the reader as the first used object
+	 * @param   Source    $source instance
+	 * @param   boolean   $first  add the reader as the first used object
 	 * @return  $this
 	 */
-	public function attach(Kohana_Config_Source $source, $first = TRUE)
+	public function attach(Source $source, $first = TRUE)
 	{
 		if ($first === TRUE)
 		{
@@ -59,10 +62,10 @@ class Kohana_Config {
 	 *
 	 *     $config->detach($reader);
 	 *
-	 * @param   Kohana_Config_Source    $source instance
+	 * @param   Source    $source instance
 	 * @return  $this
 	 */
-	public function detach(Kohana_Config_Source $source)
+	public function detach(Source $source)
 	{
 		if (($key = array_search($source, $this->_sources)) !== FALSE)
 		{
