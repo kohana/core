@@ -1,4 +1,17 @@
 <?php
+
+namespace Kohana\Core\Request\Client;
+
+use Exception;
+use HTTP_Exception;
+use Kohana;
+use Kohana_Exception;
+use Profiler;
+use ReflectionClass;
+use Request;
+use Request_Client;
+use Response;
+
 /**
  * Request Client for internal execution
  *
@@ -9,7 +22,7 @@
  * @license    http://kohanaframework.org/license
  * @since      3.1.0
  */
-class Kohana_Request_Client_Internal extends Request_Client {
+class Internal extends Request_Client {
 
 	/**
 	 * @var    array
