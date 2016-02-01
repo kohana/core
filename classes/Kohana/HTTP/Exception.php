@@ -1,6 +1,13 @@
 <?php
 
-abstract class Kohana_HTTP_Exception extends Kohana_Exception {
+namespace Kohana\Core\HTTP;
+
+use HTTP_Exception;
+use Kohana_Exception;
+use Request;
+use Response;
+
+abstract class Exception extends Kohana_Exception {
 
 	/**
 	 * Creates an HTTP_Exception of the specified type.
@@ -10,7 +17,7 @@ abstract class Kohana_HTTP_Exception extends Kohana_Exception {
 	 * @param   array   $variables  translation variables
 	 * @return  HTTP_Exception
 	 */
-	public static function factory($code, $message = NULL, array $variables = NULL, Exception $previous = NULL)
+	public static function factory($code, $message = NULL, array $variables = NULL, \Exception $previous = NULL)
 	{
 		$class = 'HTTP_Exception_'.$code;
 
