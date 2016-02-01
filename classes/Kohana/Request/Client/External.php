@@ -1,4 +1,18 @@
 <?php
+
+namespace Kohana\Core\Request\Client;
+
+use Arr;
+use Exception;
+use Kohana;
+use Kohana_Exception;
+use Profiler;
+use Request;
+use Request_Client;
+use Request_Client_External;
+use Request_Exception;
+use Response;
+
 /**
  * [Request_Client_External] provides a wrapper for all external request
  * processing. This class should be extended by all drivers handling external
@@ -29,7 +43,7 @@
  * @license    http://kohanaframework.org/license
  * @uses       [PECL HTTP](http://php.net/manual/en/book.http.php)
  */
-abstract class Kohana_Request_Client_External extends Request_Client {
+abstract class External extends Request_Client {
 
 	/**
 	 * Use:
