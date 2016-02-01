@@ -1,5 +1,10 @@
 <?php
 
+namespace Kohana\Core\Config;
+
+use ArrayObject;
+use Kohana_Config;
+
 /**
  * The group wrapper acts as an interface to all the config directives
  * gathered from across the system.
@@ -14,7 +19,7 @@
  * @copyright  (c) 2012-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Config_Group extends ArrayObject {
+class Group extends ArrayObject {
 
 	/**
 	 * Reference the config object that created this group

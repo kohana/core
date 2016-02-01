@@ -1,5 +1,7 @@
 <?php
 
+use Kohana\Core\Config\Group;
+
 /**
  * Tests the Config group lib
  *
@@ -31,7 +33,7 @@ class Kohana_Config_GroupTest extends Kohana_Unittest_TestCase
 	 * @param string        $group    Config Group name
 	 * @param array         $config   Configuration
 	 * @param Kohana_Config $instance Instance of Kohana_Config
-	 * @return Kohana_Config_Group
+	 * @return Group
 	 */
 	public function get_mock_group($group, $config = array(), $instance = NULL)
 	{
@@ -40,7 +42,7 @@ class Kohana_Config_GroupTest extends Kohana_Unittest_TestCase
 			$instance = $this->get_mock_config();
 		}
 
-		return new Kohana_Config_Group($instance, $group, $config);
+		return new Group($instance, $group, $config);
 	}
 
 	/**
@@ -48,7 +50,7 @@ class Kohana_Config_GroupTest extends Kohana_Unittest_TestCase
 	 * by the constructor
 	 *
 	 * @test
-	 * @covers Kohana_Config_Group
+	 * @covers Group
 	 */
 	public function test_loads_group_name_and_values_in_constructor()
 	{
@@ -70,7 +72,7 @@ class Kohana_Config_GroupTest extends Kohana_Unittest_TestCase
 	 * The config group should allow for this situation and not complain
 	 *
 	 * @test
-	 * @covers Kohana_Config_Group
+	 * @covers Group
 	 */
 	public function test_allows_empty_group_values()
 	{
