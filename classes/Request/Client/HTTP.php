@@ -1,3 +1,3 @@
 <?php
 
-class Request_Client_HTTP extends Kohana_Request_Client_HTTP {}
+class Request_Client_HTTP extends \Kohana\Core\Request\Client\HTTP {}

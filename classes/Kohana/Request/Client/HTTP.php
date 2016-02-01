@@ -1,4 +1,17 @@
 <?php
+
+namespace Kohana\Core\Request\Client;
+
+use HttpEncodingException;
+use HTTPMalformedHeaderException;
+use HttpRequest;
+use HttpRequestException;
+use Kohana_HTTP_Request;
+use Request;
+use Request_Client_External;
+use Request_Exception;
+use Response;
+
 /**
  * [Request_Client_External] HTTP driver performs external requests using the
  * php-http extension. To use this driver, ensure the following is completed
@@ -16,7 +29,7 @@
  * @license    http://kohanaframework.org/license
  * @uses       [PECL HTTP](http://php.net/manual/en/book.http.php)
  */
-class Kohana_Request_Client_HTTP extends Request_Client_External {
+class HTTP extends Request_Client_External {
 
 	/**
 	 * Creates a new `Request_Client` object,
