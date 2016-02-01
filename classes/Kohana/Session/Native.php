@@ -1,4 +1,10 @@
 <?php
+
+namespace Kohana\Core\Session;
+
+use Cookie;
+use Session;
+
 /**
  * Native PHP session class.
  *
@@ -8,7 +14,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Session_Native extends Session {
+class Native extends Session {
 
 	/**
 	 * @return  string
