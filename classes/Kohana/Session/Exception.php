@@ -1,4 +1,9 @@
 <?php
+
+namespace Kohana\Core\Session;
+
+use Kohana_Exception;
+
 /**
  * @package    Kohana
  * @category   Exceptions
@@ -6,7 +11,7 @@
  * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Session_Exception extends Kohana_Exception {
+class Exception extends Kohana_Exception {
 
 	const SESSION_CORRUPT = 1;
 
