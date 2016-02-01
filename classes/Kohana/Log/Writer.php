@@ -1,4 +1,16 @@
 <?php
+
+namespace Kohana\Core\Log;
+
+use Date;
+use DateTimeZone;
+use InvalidArgumentException;
+use Kohana_Log_Filter;
+use Kohana_Log_Filter_Aware;
+use Log;
+use Log_Writer;
+use Psr\Log\LogLevel;
+
 /**
  * Log writer abstract class. All [Log] writers must extend this class.
  *
@@ -8,7 +20,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-abstract class Kohana_Log_Writer implements Kohana_Log_Filter_Aware {
+abstract class Writer implements Kohana_Log_Filter_Aware {
 
 	/**
 	 * @var  string  date/time format for writing the timestamp of log entries.
@@ -27,7 +39,7 @@ abstract class Kohana_Log_Writer implements Kohana_Log_Filter_Aware {
 	/**
 	 * @var  string  Level to use for stack traces
 	 */
-	private $strace_level = \Psr\Log\LogLevel::DEBUG;
+	private $strace_level = LogLevel::DEBUG;
 
 	/**
 	 * @var  string  default string format of the log entry
