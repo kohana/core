@@ -37,7 +37,7 @@ class Response implements Kohana_HTTP_Response {
 	 *      $response = Response::factory(array('status' => 200));
 	 *
 	 * @param   array    $config Setup the response object
-	 * @return  Response
+	 * @return  \Response
 	 */
 	public static function factory(array $config = array())
 	{

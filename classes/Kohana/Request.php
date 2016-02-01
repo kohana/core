@@ -10,7 +10,6 @@ use Kohana;
 use Kohana_Exception;
 use Kohana_HTTP_Header;
 use Kohana_HTTP_Request;
-use Kohana_Request_Client;
 use Num;
 use Request_Client;
 use Request_Client_External;
@@ -649,7 +648,7 @@ class Request implements Kohana_HTTP_Request {
 	protected $_cookies = array();
 
 	/**
-	 * @var Kohana_Request_Client
+	 * @var Kohana\Core\Request\Client
 	 */
 	protected $_client;
 
@@ -1007,7 +1006,7 @@ class Request implements Kohana_HTTP_Request {
 
 		if ( ! $this->_client instanceof Request_Client)
 		{
-			throw new Request_Exception('Unable to execute :uri without a Kohana_Request_Client', array(
+			throw new Request_Exception('Unable to execute :uri without a Kohana\Core\Request\Client', array(
 				':uri' => $this->_uri,
 			));
 		}

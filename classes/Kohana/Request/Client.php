@@ -1,4 +1,14 @@
 <?php
+
+namespace Kohana\Core\Request;
+
+use Arr;
+use Kohana_Exception;
+use Request;
+use Request_Client;
+use Request_Client_Recursion_Exception;
+use Response;
+
 /**
  * Request Client. Processes a [Request] and handles [HTTP_Caching] if
  * available. Will usually return a [Response] object as a result of the
@@ -11,7 +21,7 @@
  * @license    http://kohanaframework.org/license
  * @since      3.1.0
  */
-abstract class Kohana_Request_Client {
+abstract class Client {
 
 	/**
 	 * @var    Cache  Caching library for request caching
@@ -108,7 +118,7 @@ abstract class Kohana_Request_Client {
 		// Execute the request and pass the currently used protocol
 		$orig_response = $response = Response::factory(array('_protocol' => $request->protocol()));
 
-		if (($cache = $this->cache()) instanceof HTTP_Cache)
+		if (($cache = $this->cache()) instanceof \HTTP_Cache)
 			return $cache->execute($this, $request, $response);
 
 		$response = $this->execute_request($request, $response);
@@ -161,11 +171,11 @@ abstract class Kohana_Request_Client {
 	 * Getter and setter for the internal caching engine,
 	 * used to cache responses if available and valid.
 	 *
-	 * @param   HTTP_Cache  $cache  engine to use for caching
-	 * @return  HTTP_Cache
+	 * @param   \HTTP_Cache  $cache  engine to use for caching
+	 * @return  \HTTP_Cache
 	 * @return  Request_Client
 	 */
-	public function cache(HTTP_Cache $cache = NULL)
+	public function cache(\HTTP_Cache $cache = NULL)
 	{
 		if ($cache === NULL)
 			return $this->_cache;
