@@ -681,7 +681,7 @@ class Kohana_Request implements HTTP_Request {
 		// being able to proxy external pages.
 		if ( ! $allow_external OR strpos($uri, '://') === FALSE)
 		{
-			// Remove trailing slashes from the URI
+			// Remove leading and trailing slashes from the URI
 			$this->_uri = trim($uri, '/');
 
 			// Apply the client
@@ -732,7 +732,7 @@ class Kohana_Request implements HTTP_Request {
 		if ($uri === NULL)
 		{
 			// Act as a getter
-			return empty($this->_uri) ? '/' : $this->_uri;
+			return ($this->_uri === '') ? '/' : $this->_uri;
 		}
 
 		// Act as a setter
