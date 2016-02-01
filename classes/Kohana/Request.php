@@ -8,7 +8,6 @@ use HTTP_Exception_404;
 use HTTP_Header;
 use Kohana;
 use Kohana_Exception;
-use Kohana_HTTP_Header;
 use Kohana_HTTP_Request;
 use Num;
 use Request_Client;
@@ -593,7 +592,7 @@ class Request implements Kohana_HTTP_Request {
 	protected $_routes;
 
 	/**
-	 * @var  Kohana_HTTP_Header  headers to sent as part of the request
+	 * @var  Kohana\Core\HTTP\Header  headers to sent as part of the request
 	 */
 	protected $_header;
 

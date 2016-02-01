@@ -1,4 +1,15 @@
 <?php
+
+namespace Kohana\Core\HTTP;
+
+use ArrayObject;
+use Cookie;
+use HTTP_Header;
+use Kohana;
+use Kohana_HTTP_Response;
+use Response;
+use Text;
+
 /**
  * The Kohana_HTTP_Header class provides an Object-Orientated interface
  * to HTTP headers. This can parse header arrays returned from the
@@ -12,7 +23,7 @@
  * @copyright  (c) 2008-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_HTTP_Header extends ArrayObject {
+class Header extends ArrayObject {
 
 	// Default Accept-* quality value if none supplied
 	const DEFAULT_QUALITY = 1;

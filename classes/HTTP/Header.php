@@ -1,3 +1,3 @@
 <?php
 
-class HTTP_Header extends Kohana_HTTP_Header {}
+class HTTP_Header extends \Kohana\Core\HTTP\Header {}
