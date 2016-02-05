@@ -736,9 +736,47 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$this->assertEquals($client->strict_redirect(), FALSE);
 	}
 
+	/**
+	 * Tests correctness request content-length header after calling render
+	 */
+	public function test_content_length_after_render()
+	{
+		$request = Request::factory('https://example.org/post')
+			->client(new Kohana_RequestTest_Header_Spying_Request_Client_External)
+			->method(Request::POST)
+			->post(array('aaa' => 'bbb'));
 
+		$request->render();
+
+		$request->execute();
+
+		$headers = $request->client()->get_received_request_headers();
+
+		$this->assertEquals(strlen($request->body()), $headers['content-length']);
+	}
 
 } // End Kohana_RequestTest
+
+/**
+ * A dummy Request_Client_External implementation, that spies on the headers
+ * of the request
+ */
+class Kohana_RequestTest_Header_Spying_Request_Client_External extends Request_Client_External
+{
+	private $headers;
+
+	protected function _send_message(\Request $request, \Response $response)
+	{
+		$this->headers = $request->headers();
+
+		return $response;
+	}
+
+	public function get_received_request_headers()
+	{
+		return $this->headers;
+	}
+}
 
 class Controller_Kohana_RequestTest_Dummy extends Controller
 {
