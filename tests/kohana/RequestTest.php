@@ -755,6 +755,28 @@ class Kohana_RequestTest extends Unittest_TestCase
 		$this->assertEquals(strlen($request->body()), $headers['content-length']);
 	}
 
+	/**
+	 * Tests correctness request content-length header after calling render
+	 * and changing post
+	 */
+	public function test_content_length_after_changing_post()
+	{
+		$request = Request::factory('https://example.org/post')
+			->client(new Kohana_RequestTest_Header_Spying_Request_Client_External)
+			->method(Request::POST)
+			->post(array('aaa' => 'bbb'));
+
+		$request->render();
+
+		$request->post(array('one' => 'one', 'two' => 'two', 'three' => 'three'));
+
+		$request->execute();
+
+		$headers = $request->client()->get_received_request_headers();
+
+		$this->assertEquals(strlen($request->body()), $headers['content-length']);
+	}
+
 } // End Kohana_RequestTest
 
 /**
