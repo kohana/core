@@ -45,7 +45,7 @@ class Kohana_Form {
 			// Allow empty form actions (submits back to the current url).
 			$action = '';
 		}
-		elseif (strpos($action, '://') === FALSE)
+		elseif (strpos($action, '://') === FALSE AND strncmp($action, '//', 2))
 		{
 			// Make the URI absolute
 			$action = URL::site($action);
@@ -374,7 +374,7 @@ class Kohana_Form {
 	{
 		if ( ! empty($attributes['src']))
 		{
-			if (strpos($attributes['src'], '://') === FALSE)
+			if (strpos($attributes['src'], '://') === FALSE AND strncmp($attributes['src'], '//', 2))
 			{
 				// Add the base URL
 				$attributes['src'] = URL::base($index).$attributes['src'];
