@@ -430,6 +430,10 @@ class Kohana_HTMLTest extends Unittest_TestCase {
 				'https',
 				TRUE
 			],
+			[
+				'<img src="data:image/gif;base64,R0lGODlhBQAFAIAAAHx8fP///yH5BAEAAAEALAAAAAAFAAUAAAIIBGKGF72rTAEAOw==" />',
+				'data:image/gif;base64,R0lGODlhBQAFAIAAAHx8fP///yH5BAEAAAEALAAAAAAFAAUAAAIIBGKGF72rTAEAOw==',
+			],
 		];
 	}
 
