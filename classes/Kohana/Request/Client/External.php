@@ -127,6 +127,8 @@ abstract class Kohana_Request_Client_External extends Request_Client {
 				->headers('content-type', 'application/x-www-form-urlencoded; charset='.Kohana::$charset);
 		}
 
+		$request->headers('content-length', (string) $request->content_length());
+
 		// If Kohana expose, set the user-agent
 		if (Kohana::$expose)
 		{
