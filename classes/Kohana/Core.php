@@ -16,7 +16,7 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.3.4';
+	const VERSION  = '3.3.5';
 	const CODENAME = 'pharrell';
 
 	// Common environment type constants for consistency and convenience
