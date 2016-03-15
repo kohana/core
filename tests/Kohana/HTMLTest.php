@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Tests HTML
  *
@@ -14,8 +13,20 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_HTMLTest extends Unittest_TestCase
-{
+class Kohana_HTMLTest extends Unittest_TestCase {
+
+	/**
+	 * Defaults for this test
+	 * @var array
+	 */
+	// @codingStandardsIgnoreStart
+	protected $environmentDefault = [
+		'Kohana::$base_url' => '/kohana/',
+		'Kohana::$index_file' => 'index.php',
+		'HTML::$strict' => TRUE,
+		'HTTP_HOST'	=> 'www.kohanaframework.org',
+	];
+	// @codingStandardsIgnoreEnd
 
 	/**
 	 * Sets up the environment
@@ -25,21 +36,8 @@ class Kohana_HTMLTest extends Unittest_TestCase
 	// @codingStandardsIgnoreEnd
 	{
 		parent::setUp();
-		Kohana::$config->load('url')->set('trusted_hosts', array('www\.kohanaframework\.org'));
+		Kohana::$config->load('url')->set('trusted_hosts', ['www\.kohanaframework\.org']);
 	}
-
-	/**
-	 * Defaults for this test
-	 * @var array
-	 */
-	// @codingStandardsIgnoreStart
-	protected $environmentDefault = array(
-		'Kohana::$base_url'    => '/kohana/',
-		'Kohana::$index_file'  => 'index.php',
-		'HTML::$strict' => TRUE,
-		'HTTP_HOST'	=> 'www.kohanaframework.org',
-	);
-	// @codingStandardsIgnoreStart
 
 	/**
 	 * Provides test data for test_attributes()
@@ -48,33 +46,33 @@ class Kohana_HTMLTest extends Unittest_TestCase
 	 */
 	public function provider_attributes()
 	{
-		return array(
-			array(
-				array('name' => 'field', 'random' => 'not_quite', 'id' => 'unique_field'),
-				array(),
+		return [
+			[
+				['name' => 'field', 'random' => 'not_quite', 'id' => 'unique_field'],
+				[],
 				' id="unique_field" name="field" random="not_quite"'
-			),
-			array(
-				array('invalid' => NULL),
-				array(),
+			],
+			[
+				['invalid' => NULL],
+				[],
 				''
-			),
-			array(
-				array(),
-				array(),
+			],
+			[
+				[],
+				[],
 				''
-			),
-			array(
-				array('name' => 'field', 'checked'),
-				array(),
+			],
+			[
+				['name' => 'field', 'checked'],
+				[],
 				' name="field" checked="checked"',
-			),
-			array(
-				array('id' => 'disabled_field', 'disabled'),
-				array('HTML::$strict' => FALSE),
+			],
+			[
+				['id' => 'disabled_field', 'disabled'],
+				['HTML::$strict' => FALSE],
 				' id="disabled_field" disabled',
-			),
-		);
+			],
+		];
 	}
 
 	/**
@@ -103,38 +101,37 @@ class Kohana_HTMLTest extends Unittest_TestCase
 	 */
 	public function provider_script()
 	{
-		return array(
-			array(
+		return [
+			[
 				'<script type="text/javascript" src="http://google.com/script.js"></script>',
 				'http://google.com/script.js',
-			),
-			array(
+			],
+			[
 				'<script type="text/javascript" src="http://www.kohanaframework.org/kohana/index.php/my/script.js"></script>',
 				'my/script.js',
 				NULL,
 				'http',
 				TRUE
-			),
-			array(
+			],
+			[
 				'<script type="text/javascript" src="https://www.kohanaframework.org/kohana/my/script.js"></script>',
 				'my/script.js',
 				NULL,
 				'https',
 				FALSE
-			),
-			array(
+			],
+			[
 				'<script type="text/javascript" src="https://www.kohanaframework.org/kohana/my/script.js"></script>',
 				'/my/script.js', // Test absolute paths
 				NULL,
 				'https',
 				FALSE
-			),
-			array(
+			],
+			[
 				'<script type="text/javascript" src="//google.com/script.js"></script>',
 				'//google.com/script.js',
-			),
-
-		);
+			],
+		];
 	}
 
 	/**
@@ -163,60 +160,58 @@ class Kohana_HTMLTest extends Unittest_TestCase
 	 */
 	public function provider_style()
 	{
-		return array(
-			array(
+		return [
+			[
 				'<link type="text/css" href="http://google.com/style.css" rel="stylesheet" />',
 				'http://google.com/style.css',
-				array(),
+				[],
 				NULL,
 				FALSE
-			),
-			array(
+			],
+			[
 				'<link type="text/css" href="/kohana/my/style.css" rel="stylesheet" />',
 				'my/style.css',
-				array(),
+				[],
 				NULL,
 				FALSE
-			),
-			array(
+			],
+			[
 				'<link type="text/css" href="https://www.kohanaframework.org/kohana/my/style.css" rel="stylesheet" />',
 				'my/style.css',
-				array(),
+				[],
 				'https',
 				FALSE
-			),
-			array(
+			],
+			[
 				'<link type="text/css" href="https://www.kohanaframework.org/kohana/index.php/my/style.css" rel="stylesheet" />',
 				'my/style.css',
-				array(),
+				[],
 				'https',
 				TRUE
-			),
-			array(
+			],
+			[
 				'<link type="text/css" href="https://www.kohanaframework.org/kohana/index.php/my/style.css" rel="stylesheet" />',
 				'/my/style.css',
-				array(),
+				[],
 				'https',
 				TRUE
-			),
-			array(
+			],
+			[
 				// #4283: http://dev.kohanaframework.org/issues/4283
 				'<link type="text/css" href="https://www.kohanaframework.org/kohana/index.php/my/style.css" rel="stylesheet/less" />',
 				'my/style.css',
-				array(
-					'rel' => 'stylesheet/less'
-				),
+				['rel' => 'stylesheet/less'],
 				'https',
 				TRUE
-			),
-			array(
+			],
+			[
 				'<link type="text/css" href="//google.com/style.css" rel="stylesheet" />',
 				'//google.com/style.css',
-				array(),
+				[],
 				NULL,
 				FALSE
-			),
-		);
+			],
+		];
 	}
 
 	/**
@@ -245,89 +240,95 @@ class Kohana_HTMLTest extends Unittest_TestCase
 	 */
 	public function provider_anchor()
 	{
-		return array(
+		return [
 			// a fragment-only anchor
-			array(
+			[
 				'<a href="#go-to-section-kohana">Kohana</a>',
-				array(),
+				[],
 				'#go-to-section-kohana',
 				'Kohana',
-			),
+			],
 			// a query-only anchor
-			array(
+			[
 				'<a href="?cat=a">Category A</a>',
-				array(),
+				[],
 				'?cat=a',
 				'Category A',
-			),
-			array(
+			],
+			[
 				'<a href="http://kohanaframework.org">Kohana</a>',
-				array(),
+				[],
 				'http://kohanaframework.org',
 				'Kohana',
-			),
-			array(
+			],
+			[
 				'<a href="http://google.com" target="_blank">GOOGLE</a>',
-				array(),
+				[],
 				'http://google.com',
 				'GOOGLE',
-				array('target' => '_blank'),
+				['target' => '_blank'],
 				'http',
-			),
-			array(
+			],
+			[
+				'<a href="//google.com/">GOOGLE</a>',
+				[],
+				'//google.com/',
+				'GOOGLE',
+			],
+			[
 				'<a href="https://www.kohanaframework.org/kohana/users/example">Kohana</a>',
-				array(),
+				[],
 				'users/example',
 				'Kohana',
 				NULL,
 				'https',
 				FALSE,
-			),
-			array(
+			],
+			[
 				'<a href="https://www.kohanaframework.org/kohana/index.php/users/example">Kohana</a>',
-				array(),
+				[],
 				'users/example',
 				'Kohana',
 				NULL,
 				'https',
 				TRUE,
-			),
-			array(
+			],
+			[
 				'<a href="https://www.kohanaframework.org/kohana/index.php/users/example">Kohana</a>',
-				array(),
+				[],
 				'users/example',
 				'Kohana',
 				NULL,
 				'https',
-			),
-			array(
+			],
+			[
 				'<a href="https://www.kohanaframework.org/kohana/index.php/users/example">Kohana</a>',
-				array(),
+				[],
 				'users/example',
 				'Kohana',
 				NULL,
 				'https',
 				TRUE,
-			),
-			array(
+			],
+			[
 				'<a href="https://www.kohanaframework.org/kohana/users/example">Kohana</a>',
-				array(),
+				[],
 				'users/example',
 				'Kohana',
 				NULL,
 				'https',
 				FALSE,
-			),
-			array(
+			],
+			[
 				'<a href="https://www.kohanaframework.org/kohana/users/example">Kohana</a>',
-				array(),
+				[],
 				'/users/example',
 				'Kohana',
 				NULL,
 				'https',
 				FALSE,
-			),
-		);
+			],
+		];
 	}
 
 	/**
@@ -353,38 +354,38 @@ class Kohana_HTMLTest extends Unittest_TestCase
 	 */
 	public function provider_file_anchor()
 	{
-		return array(
-			array(
+		return [
+			[
 				'<a href="/kohana/mypic.png">My picture file</a>',
-				array(),
+				[],
 				'mypic.png',
 				'My picture file',
-			),
-			array(
+			],
+			[
 				'<a href="https://www.kohanaframework.org/kohana/index.php/mypic.png" attr="value">My picture file</a>',
-				array('attr' => 'value'),
+				['attr' => 'value'],
 				'mypic.png',
 				'My picture file',
 				'https',
 				TRUE
-			),
-			array(
+			],
+			[
 				'<a href="ftp://www.kohanaframework.org/kohana/mypic.png">My picture file</a>',
-				array(),
+				[],
 				'mypic.png',
 				'My picture file',
 				'ftp',
 				FALSE
-			),
-			array(
+			],
+			[
 				'<a href="ftp://www.kohanaframework.org/kohana/mypic.png">My picture file</a>',
-				array(),
+				[],
 				'/mypic.png',
 				'My picture file',
 				'ftp',
 				FALSE
-			),
-		);
+			],
+		];
 	}
 
 	/**
@@ -401,4 +402,58 @@ class Kohana_HTMLTest extends Unittest_TestCase
 			HTML::file_anchor($file, $title, $attributes, $protocol, $index)
 		);
 	}
+
+	/**
+	 * Provides test data for test_image
+	 *
+	 * @return array Array of test data
+	 */
+	public function provider_image()
+	{
+		return [
+			[
+				'<img src="http://google.com/image.png" />',
+				'http://google.com/image.png',
+			],
+			[
+				'<img src="//google.com/image.png" />',
+				'//google.com/image.png',
+			],
+			[
+				'<img src="/kohana/img/image.png" />',
+				'img/image.png',
+			],
+			[
+				'<img src="https://www.kohanaframework.org/kohana/index.php/img/image.png" alt="..." />',
+				'img/image.png',
+				['alt' => '...',],
+				'https',
+				TRUE
+			],
+			[
+				'<img src="data:image/gif;base64,R0lGODlhBQAFAIAAAHx8fP///yH5BAEAAAEALAAAAAAFAAUAAAIIBGKGF72rTAEAOw==" />',
+				'data:image/gif;base64,R0lGODlhBQAFAIAAAHx8fP///yH5BAEAAAEALAAAAAAFAAUAAAIIBGKGF72rTAEAOw==',
+			],
+		];
+	}
+
+	/**
+	 * Tests HTML::image()
+	 *
+	 * @test
+	 * @dataProvider  provider_image
+	 * @param string  $expected       Expected output
+	 * @param string  $file           file name
+	 * @param array   $attributes     HTML attributes for the image
+	 * @param string  $protocol       Protocol to use
+	 * @param bool    $index          Should the index file be included in url?
+	 */
+	public function test_image($expected, $file, array $attributes = NULL, $protocol = NULL, $index = FALSE)
+	{
+		$this->assertSame(
+			$expected,
+			HTML::image($file, $attributes, $protocol, $index)
+		);
+	}
+
 }
