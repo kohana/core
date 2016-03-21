@@ -10,13 +10,13 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2012 Kohana Team
+ * @copyright  (c) 2008-2015 Kohana Team
  * @license    http://kohanaframework.org/license
  */
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.3.3';
+	const VERSION  = '3.4.1';
 	const CODENAME = 'uluru';
 
 	// Common environment type constants for consistency and convenience
