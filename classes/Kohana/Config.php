@@ -3,9 +3,9 @@
 namespace Kohana\Core;
 
 use Kohana\Core\Config\Group;
+use Kohana\Core\Config\Reader;
 use Kohana\Core\Config\Source;
-use Kohana_Config_Reader;
-use Kohana_Config_Writer;
+use Kohana\Core\Config\Writer;
 use Kohana_Exception;
 
 /**
@@ -134,7 +134,7 @@ class Config {
 
 		foreach ($sources as $source)
 		{
-			if ($source instanceof Kohana_Config_Reader)
+			if ($source instanceof Reader)
 			{
 				if ($source_config = $source->load($group))
 				{
@@ -186,7 +186,7 @@ class Config {
 	{
 		foreach ($this->_sources as $source)
 		{
-			if ( ! ($source instanceof Kohana_Config_Writer))
+			if ( ! ($source instanceof Writer))
 			{
 				continue;
 			}

@@ -1,6 +1,6 @@
 <?php
 
-use Kohana\Core\Config\Source;
+namespace Kohana\Core\Config;
 
 /**
  * Interface for config writers
@@ -12,7 +12,7 @@ use Kohana\Core\Config\Source;
  * @copyright  (c) 2008-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-interface Kohana_Config_Writer extends Source
+interface Writer extends Source
 {
 	/**
 	 * Writes the passed config for $group

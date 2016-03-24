@@ -1,6 +1,6 @@
 <?php
 
-use Kohana\Core\Config\Source;
+namespace Kohana\Core\Config;
 
 /**
  * Interface for config readers
@@ -11,7 +11,7 @@ use Kohana\Core\Config\Source;
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-interface Kohana_Config_Reader extends Source
+interface Reader extends Source
 {
 
 	/**

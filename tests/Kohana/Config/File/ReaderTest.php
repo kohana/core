@@ -1,4 +1,5 @@
 <?php
+use Kohana\Core\Config\Reader\FileReader;
 
 /**
  * Tests the Config file reader that's shipped with kohana
@@ -20,11 +21,11 @@ class Kohana_Config_File_ReaderTest extends Kohana_Unittest_TestCase {
 	 * that we want to search the dir 'config' by default
 	 *
 	 * @test
-	 * @covers Kohana_Config_File_Reader
+	 * @covers FileReader
 	 */
 	public function test_default_search_dir_is_config()
 	{
-		$reader = new Kohana_Config_File_Reader;
+		$reader = new FileReader;
 
 		$this->assertAttributeSame('config', '_directory', $reader);
 	}
@@ -34,11 +35,11 @@ class Kohana_Config_File_ReaderTest extends Kohana_Unittest_TestCase {
 	 * should change the search directory
 	 *
 	 * @test
-	 * @covers Kohana_Config_File_Reader
+	 * @covers FileReader
 	 */
 	public function test_constructor_sets_search_dir_from_param()
 	{
-		$reader = new Kohana_Config_File_Reader('gafloog');
+		$reader = new FileReader('gafloog');
 
 		$this->assertAttributeSame('gafloog', '_directory', $reader);
 	}
@@ -48,11 +49,11 @@ class Kohana_Config_File_ReaderTest extends Kohana_Unittest_TestCase {
 	 * return an empty array
 	 *
 	 * @test
-	 * @covers Kohana_Config_File_Reader::load
+	 * @covers FileReader::load
 	 */
 	public function test_load_returns_empty_array_if_conf_dir_dnx()
 	{
-		$config = new Kohana_Config_File_Reader('gafloogle');
+		$config = new FileReader('gafloogle');
 
 		$this->assertSame(array(), $config->load('values'));
 	}
@@ -62,11 +63,11 @@ class Kohana_Config_File_ReaderTest extends Kohana_Unittest_TestCase {
 	 * should return an empty array
 	 *
 	 * @test
-	 * @covers Kohana_Config_File_Reader::load
+	 * @covers FileReader::load
 	 */
 	public function test_load_returns_empty_array_if_conf_dnx()
 	{
-		$config = new Kohana_Config_File_Reader;
+		$config = new FileReader;
 
 		$this->assertSame(array(), $config->load('gafloogle'));
 	}
@@ -76,11 +77,11 @@ class Kohana_Config_File_ReaderTest extends Kohana_Unittest_TestCase {
 	 * configuration from the files.
 	 *
 	 * @test
-	 * @covers Kohana_Config_File_Reader::load
+	 * @covers FileReader::load
 	 */
 	public function test_loads_config_from_files()
 	{
-		$config = new Kohana_Config_File_Reader;
+		$config = new FileReader;
 
 		$values = $config->load('inflector');
 

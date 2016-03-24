@@ -2,7 +2,7 @@
 
 namespace Kohana\Core\Config;
 
-use Kohana_Config_File_Reader;
+use Kohana\Core\Config\Reader\FileReader;
 
 /**
  * File-based configuration reader. Multiple configuration directories can be
@@ -14,7 +14,7 @@ use Kohana_Config_File_Reader;
  * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class File extends Kohana_Config_File_Reader
+class File extends FileReader
 {
-	// @see Kohana_Config_File_Reader
+	// @see FileReader
 }

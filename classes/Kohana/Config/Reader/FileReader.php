@@ -1,4 +1,11 @@
 <?php
+
+namespace Kohana\Core\Config\Reader;
+
+use Kohana;
+use Kohana\Core\Arr;
+use Kohana\Core\Config\Reader;
+
 /**
  * File-based configuration reader. Multiple configuration directories can be
  * used by attaching multiple instances of this class to [Config].
@@ -9,7 +16,7 @@
  * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Config_File_Reader implements Kohana_Config_Reader {
+class FileReader implements Reader {
 
 	/**
 	 * The directory where config files are located
