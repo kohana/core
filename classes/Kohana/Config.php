@@ -1,6 +1,12 @@
 <?php
 
+namespace Kohana\Core;
+
+use Kohana\Core\Config\Group;
 use Kohana\Core\Config\Source;
+use Kohana_Config_Reader;
+use Kohana_Config_Writer;
+use Kohana_Exception;
 
 /**
  * Wrapper for configuration arrays. Multiple configuration readers can be
@@ -18,7 +24,7 @@ use Kohana\Core\Config\Source;
  * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Config {
+class Config {
 
 	// Configuration readers
 	protected $_sources = array();
@@ -83,10 +89,10 @@ class Kohana_Config {
 	 *
 	 *     $array = $config->load($name);
 	 *
-	 * See [Kohana_Config_Group] for more info
+	 * See [Group] for more info
 	 *
 	 * @param   string  $group  configuration group name
-	 * @return  \Kohana\Core\Config\Group
+	 * @return  Group
 	 * @throws  Kohana_Exception
 	 */
 	public function load($group)
@@ -137,7 +143,7 @@ class Kohana_Config {
 			}
 		}
 
-		$this->_groups[$group] = new Config_Group($this, $group, $config);
+		$this->_groups[$group] = new Group($this, $group, $config);
 
 		if (isset($path))
 		{
@@ -174,7 +180,7 @@ class Kohana_Config {
 	 * @param string    $group  Group name
 	 * @param string    $key    Variable name
 	 * @param mixed     $value  The new value
-	 * @return Kohana_Config Chainable instance
+	 * @return Config Chainable instance
 	 */
 	public function _write_config($group, $key, $value)
 	{

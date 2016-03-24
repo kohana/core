@@ -1,3 +1,3 @@
 <?php
 
-class Config extends Kohana_Config {}
+class Config extends \Kohana\Core\Config {}

@@ -1,5 +1,7 @@
 <?php
 
+use Kohana\Core\Config;
+
 /**
  * Tests the Config lib that's shipped with kohana
  *
@@ -205,7 +207,7 @@ class Kohana_ConfigTest extends Unittest_TestCase
 	{
 		// The following code should throw an exception and phpunit will catch / handle it
 		// (see the @expectedException doccomment)
-		$config = new Kohana_config;
+		$config = new Config;
 
 		$config->load('random');
 	}
@@ -238,7 +240,7 @@ class Kohana_ConfigTest extends Unittest_TestCase
 	 */
 	public function test_load_throws_exception_if_invalid_group($value)
 	{
-		$config = new Kohana_Config;
+		$config = new Config;
 
 		$reader = $this->getMock('Kohana_Config_Reader');
 
@@ -252,11 +254,11 @@ class Kohana_ConfigTest extends Unittest_TestCase
 	 * writers in the queue
 	 *
 	 * @test
-	 * @covers Kohana_Config
+	 * @covers Config
 	 */
 	public function test_write_config_passes_changed_config_to_all_writers()
 	{
-		$config = new Kohana_Config;
+		$config = new Config;
 
 		$reader1 = $this->getMock('Kohana_Config_Reader');
 		$writer1 = $this->getMock('Kohana_Config_Writer', array('write'));
@@ -303,7 +305,7 @@ class Kohana_ConfigTest extends Unittest_TestCase
 			->with($group_name)
 			->will($this->returnValue(array('kohana' => 'sweet', 'music' => 'tasteful', 'life' => array('extraordinary', 'destined'))));
 
-		$config = new Kohana_Config;
+		$config = new Config;
 
 		// Attach $reader1 at the "top" and reader2 at the "bottom"
 		$config->attach($reader1)->attach($reader2, FALSE);
@@ -340,7 +342,7 @@ class Kohana_ConfigTest extends Unittest_TestCase
 			->with('something')
 			->will($this->returnValue(array()));
 
-		$config = new Kohana_Config;
+		$config = new Config;
 
 		$config->attach($reader);
 
@@ -354,11 +356,11 @@ class Kohana_ConfigTest extends Unittest_TestCase
 	 *
 	 * @TODO This test sucks due to limitations in the phpunit mock generator.  MAKE THIS AWESOME AGAIN!
 	 * @test
-	 * @covers Kohana_Config::copy
+	 * @covers Config::copy
 	 */
 	public function test_copy_copies_merged_config_to_all_writers()
 	{
-		$config = new Kohana_Config;
+		$config = new Config;
 
 		$reader1 = $this->getMock('Kohana_Config_Reader', array('load'));
 		$reader2 = $this->getMock('Kohana_Config_Reader', array('load'));

@@ -1,7 +1,7 @@
 <?php
 /**
  * File-based configuration reader. Multiple configuration directories can be
- * used by attaching multiple instances of this class to [Kohana_Config].
+ * used by attaching multiple instances of this class to [Config].
  *
  * @package    Kohana
  * @category   Configuration

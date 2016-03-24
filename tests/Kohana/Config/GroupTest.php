@@ -1,5 +1,6 @@
 <?php
 
+use Kohana\Core\Config;
 use Kohana\Core\Config\Group;
 
 /**
@@ -18,13 +19,13 @@ use Kohana\Core\Config\Group;
 class Kohana_Config_GroupTest extends Kohana_Unittest_TestCase
 {
 	/**
-	 * Create a mock Kohana_Config instance
+	 * Create a mock Config instance
 	 *
-	 * @return Kohana_Config
+	 * @return Config
 	 */
 	public function get_mock_config()
 	{
-		return new Kohana_Config;
+		return new Config;
 	}
 
 	/**
@@ -32,7 +33,7 @@ class Kohana_Config_GroupTest extends Kohana_Unittest_TestCase
 	 *
 	 * @param string        $group    Config Group name
 	 * @param array         $config   Configuration
-	 * @param Kohana_Config $instance Instance of Kohana_Config
+	 * @param Config $instance Instance of Config
 	 * @return Group
 	 */
 	public function get_mock_group($group, $config = array(), $instance = NULL)
@@ -135,7 +136,7 @@ class Kohana_Config_GroupTest extends Kohana_Unittest_TestCase
 	 */
 	public function test_writes_changes_to_config()
 	{
-		$mock  = $this->getMock('Kohana_Config', array('_write_config'));
+		$mock  = $this->getMock(Config::class, array('_write_config'));
 
 		$mock
 			->expects($this->exactly(3))
