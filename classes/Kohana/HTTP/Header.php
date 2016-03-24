@@ -6,8 +6,7 @@ use ArrayObject;
 use Cookie;
 use HTTP_Header;
 use Kohana;
-use Kohana_HTTP_Response;
-use Response;
+use Kohana\Core\HTTP\Response as ResponseInterface;
 use Text;
 
 /**
@@ -862,19 +861,19 @@ class Header extends ArrayObject {
 	 * [!!] if you supply a custom header handler via `$callback`, it is
 	 *  recommended that `$response` is returned
 	 *
-	 * @param   Kohana_HTTP_Response   $response   header to send
-	 * @param   boolean                $replace    replace existing value
-	 * @param   callback               $callback   optional callback to replace PHP header function
+	 * @param   ResponseInterface   $response   header to send
+	 * @param   boolean             $replace    replace existing value
+	 * @param   callback            $callback   optional callback to replace PHP header function
 	 * @return  mixed
 	 * @since   3.2.0
 	 */
-	public function send_headers(Kohana_HTTP_Response $response = NULL, $replace = FALSE, $callback = NULL)
+	public function send_headers(ResponseInterface $response = NULL, $replace = FALSE, $callback = NULL)
 	{
 		$protocol = $response->protocol();
 		$status = $response->status();
 
 		// Create the response header
-		$processed_headers = array($protocol.' '.$status.' '.Response::$messages[$status]);
+		$processed_headers = array($protocol.' '.$status.' '.\Response::$messages[$status]);
 
 		// Get the headers array
 		$headers = $response->headers()->getArrayCopy();

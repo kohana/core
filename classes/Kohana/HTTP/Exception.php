@@ -4,8 +4,6 @@ namespace Kohana\Core\HTTP;
 
 use HTTP_Exception;
 use Kohana_Exception;
-use Request;
-use Response;
 
 abstract class Exception extends Kohana_Exception {
 
@@ -52,10 +50,10 @@ abstract class Exception extends Kohana_Exception {
 	/**
 	 * Store the Request that triggered this exception.
 	 *
-	 * @param   Request   $request  Request object that triggered this exception.
+	 * @param   \Request   $request  Request object that triggered this exception.
 	 * @return  HTTP_Exception
 	 */
-	public function request(Request $request = NULL)
+	public function request(\Request $request = NULL)
 	{
 		if ($request === NULL)
 			return $this->_request;
@@ -69,7 +67,7 @@ abstract class Exception extends Kohana_Exception {
 	 * Generate a Response for the current Exception
 	 *
 	 * @uses   Kohana_Exception::response()
-	 * @return Response
+	 * @return \Response
 	 */
 	public function get_response()
 	{

@@ -2,7 +2,7 @@
 
 namespace Kohana\Core\Request\Client;
 
-use Kohana_HTTP_Request;
+use Kohana\Core\HTTP\Request as RequestInterface;
 use Request;
 use Request_Client_External;
 use Response;
@@ -38,7 +38,7 @@ class Stream extends Request_Client_External {
 	public function _send_message(Request $request, Response $response)
 	{
 		// Calculate stream mode
-		$mode = ($request->method() === Kohana_HTTP_Request::GET) ? 'r' : 'r+';
+		$mode = ($request->method() === RequestInterface::GET) ? 'r' : 'r+';
 
 		// Process cookies
 		if ($cookies = $request->cookie())

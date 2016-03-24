@@ -169,7 +169,7 @@ class Kohana_Request_Client_ExternalTest extends Unittest_TestCase {
 
 		// Create a mock Request
 		$request = new Request('http://kohanaframework.org/');
-		$request->method(Kohana_HTTP_Request::POST)
+		$request->method(\Kohana\Core\HTTP\Request::POST)
 			->headers('content-type', $content_type)
 			->body($body)
 			->post($post);

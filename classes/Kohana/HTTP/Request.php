@@ -1,4 +1,7 @@
 <?php
+
+namespace Kohana\Core\HTTP;
+
 /**
  * A HTTP Request specific interface that adds the methods required
  * by HTTP requests. Over and above [Kohana_HTTP_Interaction], this
@@ -11,7 +14,7 @@
  * @copyright  (c) 2008-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-interface Kohana_HTTP_Request extends Kohana_HTTP_Message {
+interface Request extends Message {
 
 	// HTTP Methods
 	const GET       = 'GET';

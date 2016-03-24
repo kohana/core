@@ -7,8 +7,8 @@ use File;
 use HTTP;
 use HTTP_Header;
 use Kohana;
+use Kohana\Core\HTTP\Response as ResponseInterface;
 use Kohana_Exception;
-use Kohana_HTTP_Response;
 use Kohana_Log_Buffer;
 use Request_Exception;
 
@@ -24,8 +24,8 @@ use Request_Exception;
  * @license    http://kohanaframework.org/license
  * @since      3.1.0
  */
-class Response implements Kohana_HTTP_Response {
-
+class Response implements ResponseInterface
+{
 	/**
 	 * Factory method to create a new [Response]. Pass properties
 	 * in using an associative array.

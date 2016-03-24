@@ -7,8 +7,8 @@ use HTTP_Exception;
 use HTTP_Exception_404;
 use HTTP_Header;
 use Kohana;
+use Kohana\Core\HTTP\Request as RequestInterface;
 use Kohana_Exception;
-use Kohana_HTTP_Request;
 use Num;
 use Request_Client;
 use Request_Client_External;
@@ -25,7 +25,8 @@ use Request_Exception;
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Request implements Kohana_HTTP_Request {
+class Request implements RequestInterface
+{
 
 	/**
 	 * @var  string  client user agent
@@ -85,7 +86,7 @@ class Request implements Kohana_HTTP_Request {
 			else
 			{
 				// Default to GET requests
-				$method = Kohana_HTTP_Request::GET;
+				$method = RequestInterface::GET;
 			}
 
 			if (( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
@@ -146,7 +147,7 @@ class Request implements Kohana_HTTP_Request {
 				Request::$client_ip = $_SERVER['REMOTE_ADDR'];
 			}
 
-			if ($method !== Kohana_HTTP_Request::GET)
+			if ($method !== RequestInterface::GET)
 			{
 				// Ensure the raw body is saved for future use
 				$body = file_get_contents('php://input');
@@ -453,7 +454,7 @@ class Request implements Kohana_HTTP_Request {
 	public static function post_max_size_exceeded()
 	{
 		// Make sure the request method is POST
-		if (Request::$initial->method() !== Kohana_HTTP_Request::POST)
+		if (Request::$initial->method() !== RequestInterface::POST)
 			return FALSE;
 
 		// Get the post_max_size in bytes
