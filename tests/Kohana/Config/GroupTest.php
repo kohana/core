@@ -136,7 +136,7 @@ class Kohana_Config_GroupTest extends Kohana_Unittest_TestCase
 	 */
 	public function test_writes_changes_to_config()
 	{
-		$mock  = $this->getMock(Config::class, array('_write_config'));
+		$mock  = $this->getMock('Kohana\Core\Config', array('_write_config'));
 
 		$mock
 			->expects($this->exactly(3))
