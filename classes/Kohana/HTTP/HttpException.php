@@ -2,9 +2,10 @@
 
 namespace Kohana\Core\HTTP;
 
-use Kohana_Exception;
+use Exception;
+use Kohana\Core\Kohana\KohanaException;
 
-abstract class Exception extends Kohana_Exception {
+abstract class HttpException extends KohanaException {
 
 	/**
 	 * Creates an HTTP_Exception of the specified type.
@@ -14,7 +15,7 @@ abstract class Exception extends Kohana_Exception {
 	 * @param   array   $variables  translation variables
 	 * @return  self
 	 */
-	public static function factory($code, $message = NULL, array $variables = NULL, \Exception $previous = NULL)
+	public static function factory($code, $message = NULL, array $variables = NULL, Exception $previous = NULL)
 	{
 		$class = 'HTTP_Exception_'.$code;
 
@@ -34,14 +35,14 @@ abstract class Exception extends Kohana_Exception {
 	/**
 	 * Creates a new translated exception.
 	 *
-	 *     throw new Kohana_Exception('Something went terrible wrong, :user',
+	 *     throw new KohanaException('Something went terrible wrong, :user',
 	 *         array(':user' => $user));
 	 *
 	 * @param   string  $message    status message, custom content to display with error
 	 * @param   array   $variables  translation variables
 	 * @return  void
 	 */
-	public function __construct($message = NULL, array $variables = NULL, \Exception $previous = NULL)
+	public function __construct($message = NULL, array $variables = NULL, Exception $previous = NULL)
 	{
 		parent::__construct($message, $variables, $this->_code, $previous);
 	}
@@ -65,12 +66,12 @@ abstract class Exception extends Kohana_Exception {
 	/**
 	 * Generate a Response for the current Exception
 	 *
-	 * @uses   Kohana_Exception::response()
+	 * @uses   KohanaException::response()
 	 * @return ResponseInterface
 	 */
 	public function get_response()
 	{
-		return Kohana_Exception::response($this);
+		return KohanaException::response($this);
 	}
 
 }

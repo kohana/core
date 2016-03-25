@@ -3,9 +3,11 @@
 namespace Kohana\Core\Kohana;
 
 use ErrorException;
+use Exception;
 use InvalidArgumentException;
 use Kohana;
 use Kohana\Core\Debug;
+use Kohana\Core\HTTP\HttpException;
 use Kohana\Core\I18n;
 use Kohana\Core\Response;
 use Kohana\Core\View;
@@ -21,7 +23,7 @@ use Throwable;
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Exception extends \Exception {
+class KohanaException extends Exception {
 
 	/**
 	 * @var  array  PHP error code => human readable name
@@ -60,7 +62,7 @@ class Exception extends \Exception {
 	 * @param   Exception       $previous   Previous exception
 	 * @return  void
 	 */
-	public function __construct($message = "", array $variables = NULL, $code = 0, \Exception $previous = NULL)
+	public function __construct($message = "", array $variables = NULL, $code = 0, Exception $previous = NULL)
 	{
 		// Set the message
 		$message = I18n::translate($message, $variables);
@@ -124,7 +126,7 @@ class Exception extends \Exception {
 
 			return $response;
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 			/**
 			 * Things are going *really* badly for us, We now have no choice
@@ -146,7 +148,7 @@ class Exception extends \Exception {
 	 * Logs an exception.
 	 *
 	 * @uses    self::text
-	 * @param   \Exception  $e
+	 * @param   Exception  $e
 	 * @param   string        $level
 	 * @return  void
 	 */
@@ -172,12 +174,12 @@ class Exception extends \Exception {
 	 *
 	 * Error [ Code ]: Message ~ File [ Line ]
 	 *
-	 * @param   \Exception  $e
+	 * @param   Exception  $e
 	 * @return  string
 	 */
 	public static function text($e)
 	{
-		if ( ! $e instanceof \Exception AND ! $e instanceof Throwable)
+		if ( ! $e instanceof Exception AND ! $e instanceof Throwable)
 		{
 			throw new InvalidArgumentException('Argument 1 passed to \Kohana\Core\Kohana\Exception::response() must be an instance of Exception or Throwable');
 		}
@@ -190,12 +192,12 @@ class Exception extends \Exception {
 	 * Get a Response object representing the exception
 	 *
 	 * @uses    self::text
-	 * @param   \Exception  $e
+	 * @param   Exception  $e
 	 * @return  Response
 	 */
 	public static function response($e)
 	{
-		if ( ! $e instanceof \Exception AND ! $e instanceof Throwable)
+		if ( ! $e instanceof Exception AND ! $e instanceof Throwable)
 		{
 			throw new InvalidArgumentException('Argument 1 passed to \Kohana\Core\Kohana\Exception::response() must be an instance of Exception or Throwable');
 		}
@@ -215,7 +217,7 @@ class Exception extends \Exception {
 			 * method. We need to remove that entry from the trace and overwrite
 			 * the variables from above.
 			 */
-			if ($e instanceof Kohana\Core\HTTP\Exception AND $trace[0]['function'] == 'factory')
+			if ($e instanceof HttpException AND $trace[0]['function'] == 'factory')
 			{
 				extract(array_shift($trace));
 			}
@@ -291,7 +293,7 @@ class Exception extends \Exception {
 			$response = Response::factory();
 
 			// Set the response status
-			$response->status(($e instanceof Kohana\Core\HTTP\Exception) ? $e->getCode() : 500);
+			$response->status(($e instanceof HttpException) ? $e->getCode() : 500);
 
 			// Set the response headers
 			$response->headers('Content-Type', self::$error_view_content_type.'; charset='.Kohana::$charset);
@@ -299,7 +301,7 @@ class Exception extends \Exception {
 			// Set the response body
 			$response->body($view->render());
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 			/**
 			 * Things are going badly for us, Lets try to keep things under control by

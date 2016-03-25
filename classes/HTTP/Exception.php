@@ -1,3 +1,3 @@
 <?php
 
-class HTTP_Exception extends \Kohana\Core\HTTP\Exception {}
+class HTTP_Exception extends \Kohana\Core\HTTP\HttpException {}
