@@ -1,3 +1,3 @@
 <?php
 
-class Session_Exception extends \Kohana\Core\Session\Exception {}
+class Session_Exception extends \Kohana\Core\Session\SessionException {}

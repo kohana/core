@@ -3,10 +3,9 @@
 namespace Kohana\Core;
 
 use Exception;
-use Kohana;
+use Kohana\Core\Kohana\KohanaException;
 use Kohana\Core\Log\LogBuffer;
-use Kohana_Exception;
-use Session_Exception;
+use Kohana\Core\Session\SessionException;
 
 /**
  * Base session class.
@@ -41,7 +40,7 @@ abstract class Session {
 	 * @param   string  $type   type of session (native, cookie, etc)
 	 * @param   string  $id     session identifier
 	 * @return  Session
-	 * @uses    Kohana::$config
+	 * @uses    Core::$config
 	 */
 	public static function instance($type = NULL, $id = NULL)
 	{
@@ -54,7 +53,7 @@ abstract class Session {
 		if ( ! isset(Session::$instances[$type]))
 		{
 			// Load the configuration for this type
-			$config = Kohana::$config->load('session')->get($type);
+			$config = Core::$config->load('session')->get($type);
 
 			// Set the session class name
 			$class = 'Session_'.ucfirst($type);
@@ -330,7 +329,7 @@ abstract class Session {
 		catch (Exception $e)
 		{
 			// Error reading the session, usually a corrupt session.
-			throw new Session_Exception('Error reading session data.', NULL, Session_Exception::SESSION_CORRUPT);
+			throw new SessionException('Error reading session data.', NULL, SessionException::SESSION_CORRUPT);
 		}
 
 		if (is_array($data))
@@ -362,7 +361,7 @@ abstract class Session {
 	 * been sent.
 	 *
 	 * @return  boolean
-	 * @uses    Kohana::$log
+	 * @uses    Core::$log
 	 */
 	public function write()
 	{
@@ -383,11 +382,11 @@ abstract class Session {
 		catch (Exception $e)
 		{
 			// Log & ignore all errors when a write fails
-			Kohana::$log->error(Kohana_Exception::text($e));
+			Core::$log->error(KohanaException::text($e));
 
-			if (Kohana::$log instanceof LogBuffer)
+			if (Core::$log instanceof LogBuffer)
 			{
-				Kohana::$log->flush();
+				Core::$log->flush();
 			}
 			
 			return FALSE;
