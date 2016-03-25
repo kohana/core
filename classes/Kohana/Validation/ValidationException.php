@@ -2,8 +2,8 @@
 
 namespace Kohana\Core\Validation;
 
-use Kohana_Exception;
-use Validation;
+use Kohana\Core\Kohana\KohanaException;
+use Kohana\Core\Validation;
 
 /**
  * @package    Kohana
@@ -12,7 +12,7 @@ use Validation;
  * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Exception extends Kohana_Exception {
+class ValidationException extends KohanaException {
 
 	/**
 	 * @var  object  Validation instance

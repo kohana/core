@@ -1,4 +1,5 @@
 <?php
+use Kohana\Core\View\ViewException;
 
 /**
  * Tests the View class
@@ -89,7 +90,7 @@ class Kohana_ViewTest extends Unittest_TestCase
 			$view = new View($path);
 			$this->assertSame(FALSE, $expects_exception);
 		}
-		catch(View_Exception $e)
+		catch(ViewException $e)
 		{
 			$this->assertSame(TRUE, $expects_exception);
 		}

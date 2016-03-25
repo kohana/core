@@ -3,10 +3,9 @@
 namespace Kohana\Core;
 
 use Exception;
-use Kohana;
-use Kohana_Exception;
+use Kohana\Core\Kohana\KohanaException;
+use Kohana\Core\View\ViewException;
 use Traversable;
-use View_Exception;
 
 /**
  * Acts as an object wrapper for HTML pages with embedded PHP, called "views".
@@ -181,7 +180,7 @@ class View {
 	 *
 	 * @param   string  $key    variable name
 	 * @return  mixed
-	 * @throws  Kohana_Exception
+	 * @throws  KohanaException
 	 */
 	public function & __get($key)
 	{
@@ -195,7 +194,7 @@ class View {
 		}
 		else
 		{
-			throw new Kohana_Exception('View variable is not set: :var',
+			throw new KohanaException('View variable is not set: :var',
 				array(':var' => $key));
 		}
 	}
@@ -262,7 +261,7 @@ class View {
 			 * We use this method here because it's impossible to throw an
 			 * exception from __toString().
 			 */
-			$error_response = Kohana_Exception::_handler($e);
+			$error_response = KohanaException::_handler($e);
 
 			return $error_response->body();
 		}
@@ -275,13 +274,13 @@ class View {
 	 *
 	 * @param   string  $file   view filename
 	 * @return  View
-	 * @throws  View_Exception
+	 * @throws  ViewException
 	 */
 	public function set_filename($file)
 	{
-		if (($path = Kohana::find_file('views', $file)) === FALSE)
+		if (($path = Core::find_file('views', $file)) === FALSE)
 		{
-			throw new View_Exception('The requested view :file could not be found', array(
+			throw new ViewException('The requested view :file could not be found', array(
 				':file' => $file,
 			));
 		}
@@ -359,7 +358,7 @@ class View {
 	 *
 	 * @param   string  $file   view filename
 	 * @return  string
-	 * @throws  View_Exception
+	 * @throws  ViewException
 	 * @uses    View::capture
 	 */
 	public function render($file = NULL)
@@ -371,7 +370,7 @@ class View {
 
 		if (empty($this->_file))
 		{
-			throw new View_Exception('You must set the file to use within your view before rendering');
+			throw new ViewException('You must set the file to use within your view before rendering');
 		}
 
 		// Combine local and global data and capture the output
