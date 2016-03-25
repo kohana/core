@@ -2,12 +2,11 @@
 
 namespace Kohana\Core\Request;
 
-use Arr;
-use Kohana_Exception;
-use Request;
-use Request_Client;
+use Kohana\Core\Arr;
+use Kohana\Core\Kohana\KohanaException;
+use Kohana\Core\Request;
 use Request_Client_Recursion_Exception;
-use Response;
+use Kohana\Core\Response;
 
 /**
  * Request Client. Processes a [Request] and handles [HTTP_Caching] if
@@ -47,7 +46,7 @@ abstract class Client {
 	 * @var array  Callbacks to use when response contains given headers
 	 */
 	protected $_header_callbacks = array(
-		'Location'  => 'Request_Client::on_header_location'
+		'Location'  => 'Kohana\Core\Request\Client::on_header_location'
 	);
 
 	/**
@@ -61,12 +60,12 @@ abstract class Client {
 	protected $_callback_depth = 1;
 
 	/**
-	 * @var array  Arbitrary parameters that are shared with header callbacks through their Request_Client object
+	 * @var array  Arbitrary parameters that are shared with header callbacks through their Client object
 	 */
 	protected $_callback_params = array();
 
 	/**
-	 * Creates a new `Request_Client` object,
+	 * Creates a new `Client` object,
 	 * allows for dependency injection.
 	 *
 	 * @param   array    $params Params
@@ -100,7 +99,7 @@ abstract class Client {
 	 * @param   Request   $request
 	 * @param   Response  $response
 	 * @return  Response
-	 * @throws  Kohana_Exception
+	 * @throws  KohanaException
 	 * @uses    [Kohana::$profiling]
 	 * @uses    [Profiler]
 	 */
@@ -173,7 +172,7 @@ abstract class Client {
 	 *
 	 * @param   \HTTP_Cache  $cache  engine to use for caching
 	 * @return  \HTTP_Cache
-	 * @return  Request_Client
+	 * @return  self
 	 */
 	public function cache(\HTTP_Cache $cache = NULL)
 	{
@@ -190,7 +189,7 @@ abstract class Client {
 	 *
 	 * @param   bool  $follow  Boolean indicating if redirects should be followed
 	 * @return  bool
-	 * @return  Request_Client
+	 * @return  self
 	 */
 	public function follow($follow = NULL)
 	{
@@ -208,7 +207,7 @@ abstract class Client {
 	 *
 	 * @param   array  $follow_headers  Array of headers to be re-used when following a Location header
 	 * @return  array
-	 * @return  Request_Client
+	 * @return  self
 	 */
 	public function follow_headers($follow_headers = NULL)
 	{
@@ -231,7 +230,7 @@ abstract class Client {
 	 * FALSE to force the client to switch to GET following a 302 response.
 	 *
 	 * @param  bool  $strict_redirect  Boolean indicating if 302 redirects should be followed with the original method
-	 * @return Request_Client
+	 * @return self
 	 */
 	public function strict_redirect($strict_redirect = NULL)
 	{
@@ -251,16 +250,16 @@ abstract class Client {
 	 * the given header and can either issue a subsequent request or manipulate
 	 * the response as required.
 	 *
-	 * By default, the [Request_Client::on_header_location] callback is assigned
+	 * By default, the [Client::on_header_location] callback is assigned
 	 * to the Location header to support automatic redirect following.
 	 *
 	 *     $client->header_callbacks(array(
-	 *         'Location' => 'Request_Client::on_header_location',
+	 *         'Location' => 'Client::on_header_location',
 	 *         'WWW-Authenticate' => function($request, $response, $client) {return $new_response;},
 	 *     );
 	 *
 	 * @param array $header_callbacks	Array of callbacks to trigger on presence of given headers
-	 * @return Request_Client
+	 * @return self
 	 */
 	public function header_callbacks($header_callbacks = NULL)
 	{
@@ -281,7 +280,7 @@ abstract class Client {
 	 * param before execution is aborted with a Request_Client_Recursion_Exception.
 	 *
 	 * @param int $depth  Maximum number of callback requests to execute before aborting
-	 * @return Request_Client|int
+	 * @return self|int
 	 */
 	public function max_callback_depth($depth = NULL)
 	{
@@ -298,7 +297,7 @@ abstract class Client {
 	 * how many recursions have been executed within the current request execution.
 	 *
 	 * @param int $depth  Current recursion depth
-	 * @return Request_Client|int
+	 * @return self|int
 	 */
 	public function callback_depth($depth = NULL)
 	{
@@ -330,7 +329,7 @@ abstract class Client {
 	 *
 	 * @param string|array $param
 	 * @param mixed $value
-	 * @return Request_Client|mixed
+	 * @return self|mixed
 	 */
 	public function callback_params($param = NULL, $value = NULL)
 	{
@@ -359,12 +358,12 @@ abstract class Client {
 	}
 
 	/**
-	 * Assigns the properties of the current Request_Client to another
-	 * Request_Client instance - used when setting up a subsequent request.
+	 * Assigns the properties of the current Client to another
+	 * Client instance - used when setting up a subsequent request.
 	 *
-	 * @param Request_Client $client
+	 * @param self $client
 	 */
-	public function assign_client_properties(Request_Client $client)
+	public function assign_client_properties(self $client)
 	{
 		$client->cache($this->cache());
 		$client->follow($this->follow());
@@ -383,9 +382,9 @@ abstract class Client {
 	 *
 	 * @param Request $request
 	 * @param Response $response
-	 * @param Request_Client $client
+	 * @param self $client
 	 */
-	public static function on_header_location(Request $request, Response $response, Request_Client $client)
+	public static function on_header_location(Request $request, Response $response, self $client)
 	{
 		// Do we need to follow a Location header ?
 		if ($client->follow() AND in_array($response->status(), array(201, 301, 302, 303, 307)))

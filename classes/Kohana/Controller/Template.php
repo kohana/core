@@ -2,8 +2,8 @@
 
 namespace Kohana\Core\Controller;
 
-use Controller;
-use View;
+use Kohana\Core\Controller;
+use Kohana\Core\View;
 
 /**
  * Abstract controller class for automatic templating.

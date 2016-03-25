@@ -3,10 +3,9 @@
 namespace Kohana\Core\HTTP;
 
 use ArrayObject;
-use Cookie;
-use HTTP_Header;
-use Kohana;
-use Text;
+use Kohana\Core\Cookie;
+use Kohana\Core\Core;
+use Kohana\Core\Text;
 
 /**
  * The Kohana_HTTP_Header class provides an Object-Orientated interface
@@ -48,7 +47,7 @@ class Header extends ArrayObject {
 			// If there is no quality directive, return default
 			if ( ! preg_match($pattern, $value, $quality))
 			{
-				$parsed[$value] = (float) HTTP_Header::DEFAULT_QUALITY;
+				$parsed[$value] = (float) self::DEFAULT_QUALITY;
 			}
 			else
 			{
@@ -82,10 +81,10 @@ class Header extends ArrayObject {
 
 		// If there is no accept, lets accept everything
 		if ($accepts === NULL)
-			return array('*' => array('*' => (float) HTTP_Header::DEFAULT_QUALITY));
+			return array('*' => array('*' => (float) self::DEFAULT_QUALITY));
 
 		// Parse the accept header qualities
-		$accepts = HTTP_Header::accept_quality($accepts);
+		$accepts = self::accept_quality($accepts);
 
 		$parsed_accept = array();
 
@@ -120,10 +119,10 @@ class Header extends ArrayObject {
 	{
 		if ($charset === NULL)
 		{
-			return array('*' => (float) HTTP_Header::DEFAULT_QUALITY);
+			return array('*' => (float) self::DEFAULT_QUALITY);
 		}
 
-		return HTTP_Header::accept_quality(explode(',', (string) $charset));
+		return self::accept_quality(explode(',', (string) $charset));
 	}
 
 	/**
@@ -140,15 +139,15 @@ class Header extends ArrayObject {
 		// Accept everything
 		if ($encoding === NULL)
 		{
-			return array('*' => (float) HTTP_Header::DEFAULT_QUALITY);
+			return array('*' => (float) self::DEFAULT_QUALITY);
 		}
 		elseif ($encoding === '')
 		{
-			return array('identity' => (float) HTTP_Header::DEFAULT_QUALITY);
+			return array('identity' => (float) self::DEFAULT_QUALITY);
 		}
 		else
 		{
-			return HTTP_Header::accept_quality(explode(',', (string) $encoding));
+			return self::accept_quality(explode(',', (string) $encoding));
 		}
 	}
 
@@ -165,10 +164,10 @@ class Header extends ArrayObject {
 	{
 		if ($language === NULL)
 		{
-			return array('*' => array('*' => (float) HTTP_Header::DEFAULT_QUALITY));
+			return array('*' => array('*' => (float) self::DEFAULT_QUALITY));
 		}
 
-		$language = HTTP_Header::accept_quality(explode(',', (string) $language));
+		$language = self::accept_quality(explode(',', (string) $language));
 
 		$parsed_language = array();
 
@@ -205,7 +204,7 @@ class Header extends ArrayObject {
 	 *
 	 *     // Create the cache control header, creates :
 	 *     // cache-control: max-age=3600, must-revalidate, public
-	 *     $response->headers('Cache-Control', HTTP_Header::create_cache_control($cache_control);
+	 *     $response->headers('Cache-Control', Header::create_cache_control($cache_control);
 	 *
 	 * @link    http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13
 	 * @param   array   $cache_control  Cache-Control to render to string
@@ -231,7 +230,7 @@ class Header extends ArrayObject {
 	 *     $response->headers('cache-control', 'max-age=3600, must-revalidate, public');
 	 *
 	 *     // Parse the cache control header
-	 *     if ($cache_control = HTTP_Header::parse_cache_control($response->headers('cache-control')))
+	 *     if ($cache_control = Header::parse_cache_control($response->headers('cache-control')))
 	 *     {
 	 *          // Cache-Control header was found
 	 *          $maxage = $cache_control['max-age'];
@@ -287,10 +286,10 @@ class Header extends ArrayObject {
 	protected $_accept_language;
 
 	/**
-	 * Constructor method for [Kohana_HTTP_Header]. Uses the standard constructor
+	 * Constructor method for [Header]. Uses the standard constructor
 	 * of the parent `ArrayObject` class.
 	 *
-	 *     $header_object = new HTTP_Header(array('x-powered-by' => 'Kohana 3.1.x', 'expires' => '...'));
+	 *     $header_object = new Header(array('x-powered-by' => 'Kohana 3.1.x', 'expires' => '...'));
 	 *
 	 * @param   mixed   $input          Input array
 	 * @param   int     $flags          Flags
@@ -435,7 +434,7 @@ class Header extends ArrayObject {
 	}
 
 	/**
-	 * Parses a HTTP Message header line and applies it to this HTTP_Header
+	 * Parses a HTTP Message header line and applies it to this Header
 	 *
 	 *     $header = $response->headers();
 	 *     $header->parse_header_string(NULL, 'content-type: application/json');
@@ -494,13 +493,13 @@ class Header extends ArrayObject {
 				$accept = '*/*';
 			}
 
-			$this->_accept_content = HTTP_Header::parse_accept_header($accept);
+			$this->_accept_content = self::parse_accept_header($accept);
 		}
 
 		// If not a real mime, try and find it in config
 		if (strpos($type, '/') === FALSE)
 		{
-			$mime = Kohana::$config->load('mimes.'.$type);
+			$mime = Core::$config->load('mimes.'.$type);
 
 			if ($mime === NULL)
 				return FALSE;
@@ -606,11 +605,11 @@ class Header extends ArrayObject {
 			if ($this->offsetExists('Accept-Charset'))
 			{
 				$charset_header = strtolower($this->offsetGet('Accept-Charset'));
-				$this->_accept_charset = HTTP_Header::parse_charset_header($charset_header);
+				$this->_accept_charset = self::parse_charset_header($charset_header);
 			}
 			else
 			{
-				$this->_accept_charset = HTTP_Header::parse_charset_header(NULL);
+				$this->_accept_charset = self::parse_charset_header(NULL);
 			}
 		}
 
@@ -692,7 +691,7 @@ class Header extends ArrayObject {
 				$encoding_header = NULL;
 			}
 
-			$this->_accept_encoding = HTTP_Header::parse_encoding_header($encoding_header);
+			$this->_accept_encoding = self::parse_encoding_header($encoding_header);
 		}
 
 		// Normalize the encoding
@@ -711,7 +710,7 @@ class Header extends ArrayObject {
 			}
 			elseif ($encoding === 'identity')
 			{
-				return (float) HTTP_Header::DEFAULT_QUALITY;
+				return (float) self::DEFAULT_QUALITY;
 			}
 		}
 
@@ -786,7 +785,7 @@ class Header extends ArrayObject {
 				$language_header = NULL;
 			}
 
-			$this->_accept_language = HTTP_Header::parse_language_header($language_header);
+			$this->_accept_language = self::parse_language_header($language_header);
 		}
 
 		// Normalize the language
@@ -889,12 +888,12 @@ class Header extends ArrayObject {
 
 		if ( ! isset($headers['content-type']))
 		{
-			$processed_headers[] = 'Content-Type: '.Kohana::$content_type.'; charset='.Kohana::$charset;
+			$processed_headers[] = 'Content-Type: '.Core::$content_type.'; charset='.Core::$charset;
 		}
 
-		if (Kohana::$expose AND ! isset($headers['x-powered-by']))
+		if (Core::$expose AND ! isset($headers['x-powered-by']))
 		{
-			$processed_headers[] = 'X-Powered-By: '.Kohana::version();
+			$processed_headers[] = 'X-Powered-By: '.Core::version();
 		}
 
 		// Get the cookies and apply

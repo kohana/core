@@ -2,7 +2,7 @@
 
 namespace Kohana\Core;
 
-use Kohana_Exception;
+use Kohana\Core\Kohana\KohanaException;
 
 /**
  * Cookie helper.
@@ -152,7 +152,7 @@ class Cookie {
 	 * @param   string $name name of cookie
 	 * @param   string $value value of cookie
 	 *
-	 * @throws Kohana_Exception if Cookie::$salt is not configured
+	 * @throws KohanaException if Cookie::$salt is not configured
 	 * @return  string
 	 */
 	public static function salt($name, $value)
@@ -160,7 +160,7 @@ class Cookie {
 		// Require a valid salt
 		if ( ! Cookie::$salt)
 		{
-			throw new Kohana_Exception('A valid cookie salt is required. Please set Cookie::$salt in your bootstrap.php. For more information check the documentation');
+			throw new KohanaException('A valid cookie salt is required. Please set Cookie::$salt in your bootstrap.php. For more information check the documentation');
 		}
 
 		// Determine the user agent

@@ -2,9 +2,9 @@
 
 namespace Kohana\Core\Config\Reader;
 
-use Kohana;
 use Kohana\Core\Arr;
 use Kohana\Core\Config\Reader;
+use Kohana\Core\Core;
 
 /**
  * File-based configuration reader. Multiple configuration directories can be
@@ -48,12 +48,12 @@ class FileReader implements Reader {
 	{
 		$config = array();
 
-		if ($files = Kohana::find_file($this->_directory, $group, NULL, TRUE))
+		if ($files = Core::find_file($this->_directory, $group, NULL, TRUE))
 		{
 			foreach ($files as $file)
 			{
 				// Merge each file to the configuration array
-				$config = Arr::merge($config, Kohana::load($file));
+				$config = Arr::merge($config, Core::load($file));
 			}
 		}
 

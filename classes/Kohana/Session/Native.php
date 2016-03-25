@@ -2,8 +2,8 @@
 
 namespace Kohana\Core\Session;
 
-use Cookie;
-use Session;
+use Kohana\Core\Cookie;
+use Kohana\Core\Session;
 
 /**
  * Native PHP session class.

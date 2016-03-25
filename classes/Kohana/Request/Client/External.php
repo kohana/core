@@ -2,19 +2,18 @@
 
 namespace Kohana\Core\Request\Client;
 
-use Arr;
+use Kohana\Core\Arr;
 use Exception;
-use Kohana;
-use Kohana_Exception;
-use Profiler;
-use Request;
-use Request_Client;
-use Request_Client_External;
+use Kohana\Core\Core;
+use Kohana\Core\Kohana\KohanaException;
+use Kohana\Core\Request\Client;
+use Kohana\Core\Profiler;
+use Kohana\Core\Request;
 use Request_Exception;
-use Response;
+use Kohana\Core\Response;
 
 /**
- * [Request_Client_External] provides a wrapper for all external request
+ * [Kohana\Core\Request\Client\External] provides a wrapper for all external request
  * processing. This class should be extended by all drivers handling external
  * requests.
  *
@@ -30,11 +29,11 @@ use Response;
  * @example
  *
  *       // In application bootstrap
- *       Request_Client_External::$client = 'Request_Client_Stream';
+ *       Kohana\Core\Request\Client\External::$client = 'Request_Client_Stream';
  *
  *       // Add client to request
  *       $request = Request::factory('http://some.host.tld/foo/bar')
- *           ->client(Request_Client_External::factory('Request_Client_HTTP));
+ *           ->client(Kohana\Core\Request\Client\External::factory('Request_Client_HTTP));
  *
  * @package    Kohana
  * @category   Base
@@ -43,7 +42,7 @@ use Response;
  * @license    http://kohanaframework.org/license
  * @uses       [PECL HTTP](http://php.net/manual/en/book.http.php)
  */
-abstract class External extends Request_Client {
+abstract class External extends Client {
 
 	/**
 	 * Use:
@@ -53,32 +52,32 @@ abstract class External extends Request_Client {
 	 *
 	 * @var     string    defines the external client to use by default
 	 */
-	public static $client = 'Request_Client_Curl';
+	public static $client = 'Kohana\Core\Request\Client\Curl';
 
 	/**
-	 * Factory method to create a new Request_Client_External object based on
-	 * the client name passed, or defaulting to Request_Client_External::$client
+	 * Factory method to create a new Kohana\Core\Request\Client\External object based on
+	 * the client name passed, or defaulting to Kohana\Core\Request\Client\External::$client
 	 * by default.
 	 *
-	 * Request_Client_External::$client can be set in the application bootstrap.
+	 * Kohana\Core\Request\Client\External::$client can be set in the application bootstrap.
 	 *
 	 * @param   array   $params parameters to pass to the client
 	 * @param   string  $client external client to use
-	 * @return  Request_Client_External
+	 * @return  self
 	 * @throws  Request_Exception
 	 */
 	public static function factory(array $params = array(), $client = NULL)
 	{
 		if ($client === NULL)
 		{
-			$client = Request_Client_External::$client;
+			$client = self::$client;
 		}
 
 		$client = new $client($params);
 
-		if ( ! $client instanceof Request_Client_External)
+		if ( ! $client instanceof self)
 		{
-			throw new Request_Exception('Selected client is not a Request_Client_External object.');
+			throw new Request_Exception('Selected client is not a Kohana\Core\Request\Client\External object.');
 		}
 
 		return $client;
@@ -109,13 +108,13 @@ abstract class External extends Request_Client {
 	 * @param   Request   $request   A request object
 	 * @param   Response  $response  A response object
 	 * @return  Response
-	 * @throws  Kohana_Exception
-	 * @uses    [Kohana::$profiling]
+	 * @throws  KohanaException
+	 * @uses    [Core::$profiling]
 	 * @uses    [Profiler]
 	 */
 	public function execute_request(Request $request, Response $response)
 	{
-		if (Kohana::$profiling)
+		if (Core::$profiling)
 		{
 			// Set the benchmark name
 			$benchmark = '"'.$request->uri().'"';
@@ -138,13 +137,13 @@ abstract class External extends Request_Client {
 		if ($post = $request->post())
 		{
 			$request->body(http_build_query($post, NULL, '&'))
-				->headers('content-type', 'application/x-www-form-urlencoded; charset='.Kohana::$charset);
+				->headers('content-type', 'application/x-www-form-urlencoded; charset='.Core::$charset);
 		}
 
 		// If Kohana expose, set the user-agent
-		if (Kohana::$expose)
+		if (Core::$expose)
 		{
-			$request->headers('user-agent', Kohana::version());
+			$request->headers('user-agent', Core::version());
 		}
 
 		try
@@ -185,7 +184,7 @@ abstract class External extends Request_Client {
 	 * @param   mixed    $key    Option name, or array of options
 	 * @param   mixed    $value  Option value
 	 * @return  mixed
-	 * @return  Request_Client_External
+	 * @return  self
 	 */
 	public function options($key = NULL, $value = NULL)
 	{

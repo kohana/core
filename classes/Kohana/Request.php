@@ -2,17 +2,14 @@
 
 namespace Kohana\Core;
 
-use HTTP;
-use HTTP_Exception;
-use HTTP_Exception_404;
-use HTTP_Header;
-use Kohana;
+use Kohana\Core\HTTP;
+use Kohana\Core\HTTP\Header;
+use Kohana\Core\HTTP\HttpException;
 use Kohana\Core\HTTP\RequestInterface;
-use Kohana_Exception;
-use Num;
-use Request_Client;
-use Request_Client_External;
-use Request_Client_Internal;
+use Kohana\Core\Kohana\KohanaException;
+use Kohana\Core\Request\Client;
+use Kohana\Core\Request\Client\External;
+use Kohana\Core\Request\Client\Internal;
 use Request_Exception;
 
 /**
@@ -227,7 +224,7 @@ class Request implements RequestInterface
 	 *     $uri = Request::detect_uri();
 	 *
 	 * @return  string  URI of the main request
-	 * @throws  Kohana_Exception
+	 * @throws  KohanaException
 	 * @since   3.0.8
 	 */
 	public static function detect_uri()
@@ -275,11 +272,11 @@ class Request implements RequestInterface
 			{
 				// If you ever see this error, please report an issue at http://dev.kohanaphp.com/projects/kohana3/issues
 				// along with any relevant information about your web server setup. Thanks!
-				throw new Kohana_Exception('Unable to detect the URI using PATH_INFO, REQUEST_URI, PHP_SELF or REDIRECT_URL');
+				throw new KohanaException('Unable to detect the URI using PATH_INFO, REQUEST_URI, PHP_SELF or REDIRECT_URL');
 			}
 
 			// Get the path from the base URL, including the index file
-			$base_url = parse_url(Kohana::$base_url, PHP_URL_PATH);
+			$base_url = parse_url(Core::$base_url, PHP_URL_PATH);
 
 			if (strpos($uri, $base_url) === 0)
 			{
@@ -287,10 +284,10 @@ class Request implements RequestInterface
 				$uri = (string) substr($uri, strlen($base_url));
 			}
 
-			if (Kohana::$index_file AND strpos($uri, Kohana::$index_file) === 0)
+			if (Core::$index_file AND strpos($uri, Core::$index_file) === 0)
 			{
 				// Remove the index file from the URI
-				$uri = (string) substr($uri, strlen(Kohana::$index_file));
+				$uri = (string) substr($uri, strlen(Core::$index_file));
 			}
 		}
 
@@ -350,7 +347,7 @@ class Request implements RequestInterface
 	 *
 	 *     $types = Request::accept_type();
 	 *
-	 * [!!] Deprecated in favor of using [HTTP_Header::accepts_at_quality].
+	 * [!!] Deprecated in favor of using [Header::accepts_at_quality].
 	 *
 	 * @deprecated  since version 3.3.0
 	 * @param   string  $type Content MIME type
@@ -383,7 +380,7 @@ class Request implements RequestInterface
 	 *
 	 *     $langs = Request::accept_lang();
 	 *
-	 * [!!] Deprecated in favor of using [HTTP_Header::accepts_language_at_quality].
+	 * [!!] Deprecated in favor of using [Header::accepts_language_at_quality].
 	 *
 	 * @deprecated  since version 3.3.0
 	 * @param   string  $lang  Language code
@@ -416,7 +413,7 @@ class Request implements RequestInterface
 	 *
 	 *     $encodings = Request::accept_encoding();
 	 *
-	 * [!!] Deprecated in favor of using [HTTP_Header::accepts_encoding_at_quality].
+	 * [!!] Deprecated in favor of using [Header::accepts_encoding_at_quality].
 	 *
 	 * @deprecated  since version 3.3.0
 	 * @param   string  $type Encoding type
@@ -648,7 +645,7 @@ class Request implements RequestInterface
 	protected $_cookies = array();
 
 	/**
-	 * @var Kohana\Core\Request\Client
+	 * @var Client
 	 */
 	protected $_client;
 
@@ -675,7 +672,7 @@ class Request implements RequestInterface
 		$client_params = is_array($client_params) ? $client_params : array();
 
 		// Initialise the header
-		$this->_header = new HTTP_Header(array());
+		$this->_header = new Header(array());
 
 		// Assign injected routes
 		$this->_routes = $injected_routes;
@@ -702,7 +699,7 @@ class Request implements RequestInterface
 			$this->_uri = trim($uri, '/');
 
 			// Apply the client
-			$this->_client = new Request_Client_Internal($client_params);
+			$this->_client = new Internal($client_params);
 		}
 		else
 		{
@@ -722,7 +719,7 @@ class Request implements RequestInterface
 			$this->_external = TRUE;
 
 			// Setup the client
-			$this->_client = Request_Client_External::factory($client_params);
+			$this->_client = External::factory($client_params);
 		}
 	}
 
@@ -901,12 +898,12 @@ class Request implements RequestInterface
 	}
 
 	/**
-	 * Provides access to the [Request_Client].
+	 * Provides access to the [Client].
 	 *
-	 * @return  Request_Client
+	 * @return  Client
 	 * @return  self
 	 */
-	public function client(Request_Client $client = NULL)
+	public function client(Client $client = NULL)
 	{
 		if ($client === NULL)
 			return $this->_client;
@@ -955,8 +952,8 @@ class Request implements RequestInterface
 	 *
 	 * @return  Response
 	 * @throws  Request_Exception
-	 * @throws  HTTP_Exception_404
-	 * @uses    [Kohana::$profiling]
+	 * @throws  HTTPException
+	 * @uses    [Core::$profiling]
 	 * @uses    [Profiler]
 	 */
 	public function execute()
@@ -998,13 +995,13 @@ class Request implements RequestInterface
 
 		if ( ! $this->_route instanceof Route)
 		{
-			return HTTP_Exception::factory(404, 'Unable to find a route to match the URI: :uri', array(
+			return HTTPException::factory(404, 'Unable to find a route to match the URI: :uri', array(
 				':uri' => $this->_uri,
 			))->request($this)
 				->get_response();
 		}
 
-		if ( ! $this->_client instanceof Request_Client)
+		if ( ! $this->_client instanceof Client)
 		{
 			throw new Request_Exception('Unable to execute :uri without a Kohana\Core\Request\Client', array(
 				':uri' => $this->_uri,
@@ -1123,7 +1120,7 @@ class Request implements RequestInterface
 	 */
 	public function headers($key = NULL, $value = NULL)
 	{
-		if ($key instanceof HTTP_Header)
+		if ($key instanceof Header)
 		{
 			// Act a setter, replace all headers
 			$this->_header = $key;
@@ -1248,7 +1245,7 @@ class Request implements RequestInterface
 		else
 		{
 			$this->headers('content-type',
-				'application/x-www-form-urlencoded; charset='.Kohana::$charset);
+				'application/x-www-form-urlencoded; charset='.Core::$charset);
 			$body = http_build_query($post, NULL, '&');
 		}
 
@@ -1256,9 +1253,9 @@ class Request implements RequestInterface
 		$this->headers('content-length', (string) $this->content_length());
 
 		// If Kohana expose, set the user-agent
-		if (Kohana::$expose)
+		if (Core::$expose)
 		{
-			$this->headers('user-agent', Kohana::version());
+			$this->headers('user-agent', Core::version());
 		}
 
 		// Prepare cookies

@@ -6,7 +6,7 @@ use Date;
 use DateTimeZone;
 use InvalidArgumentException;
 use Kohana\Core\Log\Filter\FilterAware;
-use Log;
+use Kohana\Core\Log;
 use Psr\Log\LogLevel;
 
 /**

@@ -2,7 +2,7 @@
 
 namespace Kohana\Core\Session;
 
-use Kohana_Exception;
+use Kohana\Core\Kohana\KohanaException;
 
 /**
  * @package    Kohana
@@ -11,7 +11,7 @@ use Kohana_Exception;
  * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class SessionException extends Kohana_Exception {
+class SessionException extends KohanaException {
 
 	const SESSION_CORRUPT = 1;
 

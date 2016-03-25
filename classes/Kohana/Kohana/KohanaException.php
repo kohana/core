@@ -5,13 +5,14 @@ namespace Kohana\Core\Kohana;
 use ErrorException;
 use Exception;
 use InvalidArgumentException;
-use Kohana;
+use Kohana\Core\Core;
 use Kohana\Core\Debug;
 use Kohana\Core\HTTP\HttpException;
 use Kohana\Core\I18n;
 use Kohana\Core\Log\LogBuffer;
 use Kohana\Core\Response;
 use Kohana\Core\View;
+use Psr\Log\LogLevel;
 use Throwable;
 
 /**
@@ -53,7 +54,7 @@ class KohanaException extends Exception {
 	/**
 	 * Creates a new translated exception.
 	 *
-	 *     throw new Kohana_Exception('Something went terrible wrong, :user',
+	 *     throw new KohanaException('Something went terrible wrong, :user',
 	 *         array(':user' => $user));
 	 *
 	 * @param   string          $message    error message
@@ -80,7 +81,7 @@ class KohanaException extends Exception {
 	 *
 	 *     echo $exception;
 	 *
-	 * @uses    Kohana_Exception::text
+	 * @uses    KohanaException::text
 	 * @return  string
 	 */
 	public function __toString()
@@ -92,7 +93,7 @@ class KohanaException extends Exception {
 	 * Inline exception handler, displays the error message, source of the
 	 * exception, and the stack trace of the error.
 	 *
-	 * @uses    Kohana_Exception::response
+	 * @uses    KohanaException::response
 	 * @param   Exception  $e
 	 * @return  void
 	 */
@@ -110,7 +111,7 @@ class KohanaException extends Exception {
 	 * Exception handler, logs the exception and generates a Response object
 	 * for display.
 	 *
-	 * @uses    Kohana_Exception::response
+	 * @uses    KohanaException::response
 	 * @param   Exception  $e
 	 * @return  Response
 	 */
@@ -136,7 +137,7 @@ class KohanaException extends Exception {
 			ob_get_level() AND ob_clean();
 
 			// Set the Status code to 500, and Content-Type to text/plain.
-			header('Content-Type: text/plain; charset='.Kohana::$charset, TRUE, 500);
+			header('Content-Type: text/plain; charset='.Core::$charset, TRUE, 500);
 
 			echo self::text($e);
 
@@ -152,19 +153,19 @@ class KohanaException extends Exception {
 	 * @param   string        $level
 	 * @return  void
 	 */
-	public static function log($e, $level = \Psr\Log\LogLevel::EMERGENCY)
+	public static function log($e, $level = LogLevel::EMERGENCY)
 	{
-		if (is_object(Kohana::$log))
+		if (is_object(Core::$log))
 		{
 			// Create a text version of the exception
 			$error = self::text($e);
 
 			// Add this exception to the log
-			Kohana::$log->log($level, $error, array('exception' => $e));
+			Core::$log->log($level, $error, array('exception' => $e));
 
-			if (Kohana::$log instanceof LogBuffer)
+			if (Core::$log instanceof LogBuffer)
 			{
-				Kohana::$log->flush();
+				Core::$log->flush();
 			}
 		}
 	}
@@ -181,7 +182,7 @@ class KohanaException extends Exception {
 	{
 		if ( ! $e instanceof Exception AND ! $e instanceof Throwable)
 		{
-			throw new InvalidArgumentException('Argument 1 passed to \Kohana\Core\Kohana\Exception::response() must be an instance of Exception or Throwable');
+			throw new InvalidArgumentException('Argument 1 passed to \Kohana\Core\Kohana\KohanaException::response() must be an instance of Exception or Throwable');
 		}
 
 		return sprintf('%s [ %s ]: %s ~ %s [ %d ]',
@@ -199,7 +200,7 @@ class KohanaException extends Exception {
 	{
 		if ( ! $e instanceof Exception AND ! $e instanceof Throwable)
 		{
-			throw new InvalidArgumentException('Argument 1 passed to \Kohana\Core\Kohana\Exception::response() must be an instance of Exception or Throwable');
+			throw new InvalidArgumentException('Argument 1 passed to \Kohana\Core\Kohana\KohanaException::response() must be an instance of Exception or Throwable');
 		}
 
 		try
@@ -296,7 +297,7 @@ class KohanaException extends Exception {
 			$response->status(($e instanceof HttpException) ? $e->getCode() : 500);
 
 			// Set the response headers
-			$response->headers('Content-Type', self::$error_view_content_type.'; charset='.Kohana::$charset);
+			$response->headers('Content-Type', self::$error_view_content_type.'; charset='.Core::$charset);
 
 			// Set the response body
 			$response->body($view->render());

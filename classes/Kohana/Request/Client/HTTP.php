@@ -7,10 +7,9 @@ use HTTPMalformedHeaderException;
 use HttpRequest;
 use HttpRequestException;
 use Kohana\Core\HTTP\RequestInterface;
-use Request;
-use Request_Client_External;
+use Kohana\Core\Request;
 use Request_Exception;
-use Response;
+use Kohana\Core\Response;
 
 /**
  * [Request_Client_External] HTTP driver performs external requests using the
@@ -29,7 +28,7 @@ use Response;
  * @license    http://kohanaframework.org/license
  * @uses       [PECL HTTP](http://php.net/manual/en/book.http.php)
  */
-class HTTP extends Request_Client_External {
+class HTTP extends External {
 
 	/**
 	 * Creates a new `Request_Client` object,

@@ -6,7 +6,7 @@ use Kohana\Core\Config\Group;
 use Kohana\Core\Config\Reader;
 use Kohana\Core\Config\Source;
 use Kohana\Core\Config\Writer;
-use Kohana_Exception;
+use Kohana\Core\Kohana\KohanaException;
 
 /**
  * Wrapper for configuration arrays. Multiple configuration readers can be
@@ -93,23 +93,23 @@ class Config {
 	 *
 	 * @param   string  $group  configuration group name
 	 * @return  Group
-	 * @throws  Kohana_Exception
+	 * @throws  KohanaException
 	 */
 	public function load($group)
 	{
 		if ( ! count($this->_sources))
 		{
-			throw new Kohana_Exception('No configuration sources attached');
+			throw new KohanaException('No configuration sources attached');
 		}
 
 		if (empty($group))
 		{
-			throw new Kohana_Exception("Need to specify a config group");
+			throw new KohanaException("Need to specify a config group");
 		}
 
 		if ( ! is_string($group))
 		{
-			throw new Kohana_Exception("Config group must be a string");
+			throw new KohanaException("Config group must be a string");
 		}
 
 		if (strpos($group, '.') !== FALSE)

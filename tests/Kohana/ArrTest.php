@@ -811,7 +811,7 @@ class Kohana_ArrTest extends Unittest_TestCase
 	/**
 	 * @test
 	 * @dataProvider provider_count_invalid
-	 * @expectedException Kohana_Exception
+	 * @expectedException Kohana\Core\Kohana\KohanaException
 	 */
 	public function test_count_invalid($source)
 	{

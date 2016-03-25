@@ -201,7 +201,7 @@ class Kohana_ConfigTest extends Unittest_TestCase
 	 *
 	 * @test
 	 * @covers Config::load
-	 * @expectedException Kohana_Exception
+	 * @expectedException Kohana\Core\Kohana\KohanaException
 	 */
 	public function test_load_throws_exception_if_there_are_no_sources()
 	{
@@ -236,7 +236,7 @@ class Kohana_ConfigTest extends Unittest_TestCase
 	 * @test
 	 * @dataProvider provider_load_throws_exception_if_no_group_is_given
 	 * @covers Config::load
-	 * @expectedException Kohana_Exception
+	 * @expectedException Kohana\Core\Kohana\KohanaException
 	 */
 	public function test_load_throws_exception_if_invalid_group($value)
 	{

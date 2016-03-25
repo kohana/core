@@ -3,9 +3,8 @@
 namespace Kohana\Core\Request\Client;
 
 use Kohana\Core\HTTP\RequestInterface;
-use Request;
-use Request_Client_External;
-use Response;
+use Kohana\Core\Request;
+use Kohana\Core\Response;
 
 /**
  * [Request_Client_External] Stream driver performs external requests using php
@@ -24,7 +23,7 @@ use Response;
  * @license    http://kohanaframework.org/license
  * @uses       [PHP Streams](http://php.net/manual/en/book.stream.php)
  */
-class Stream extends Request_Client_External {
+class Stream extends External {
 
 	/**
 	 * Sends the HTTP message [Request] to a remote server and processes

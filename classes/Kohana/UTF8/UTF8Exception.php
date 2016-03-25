@@ -2,7 +2,7 @@
 
 namespace Kohana\Core\UTF8;
 
-use Kohana_Exception;
+use Kohana\Core\Kohana\KohanaException;
 
 /**
  * @package    Kohana
@@ -11,4 +11,4 @@ use Kohana_Exception;
  * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class UTF8Exception extends Kohana_Exception {}
+class UTF8Exception extends KohanaException {}

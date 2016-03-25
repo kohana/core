@@ -2,7 +2,7 @@
 
 namespace Kohana\Core\Session;
 
-use Session;
+use Kohana\Core\Session;
 
 /**
  * Cookie-based session class.
