@@ -5,8 +5,7 @@ namespace Kohana\Core\Log;
 use Date;
 use DateTimeZone;
 use InvalidArgumentException;
-use Kohana_Log_Filter;
-use Kohana_Log_Filter_Aware;
+use Kohana\Core\Log\Filter\FilterAware;
 use Log;
 use Log_Writer;
 use Psr\Log\LogLevel;
@@ -20,7 +19,7 @@ use Psr\Log\LogLevel;
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-abstract class Writer implements Kohana_Log_Filter_Aware {
+abstract class Writer implements FilterAware {
 
 	/**
 	 * @var  string  date/time format for writing the timestamp of log entries.
@@ -47,7 +46,7 @@ abstract class Writer implements Kohana_Log_Filter_Aware {
 	private $format = "time --- level: body in file:line";
 
 	/**
-	 * @var Kohana_Log_Filter[] array of log filters
+	 * @var LogFilter[] array of log filters
 	 */
 	private $filters = array();
 
@@ -177,10 +176,10 @@ abstract class Writer implements Kohana_Log_Filter_Aware {
 	/**
 	 * Ataches a log filter to the writer
 	 *
-	 * @param Kohana_Log_Filter $filter
+	 * @param LogFilter $filter
 	 * @return Log_Writer
 	 */
-	public function attach_filter(Kohana_Log_Filter $filter)
+	public function attach_filter(LogFilter $filter)
 	{
 		$this->filters[spl_object_hash($filter)] = $filter;
 
@@ -190,10 +189,10 @@ abstract class Writer implements Kohana_Log_Filter_Aware {
 	/**
 	 * Detaches a log filter
 	 *
-	 * @param Kohana_Log_Filter $filter
+	 * @param LogFilter $filter
 	 * @return Log_Writer
 	 */
-	public function detach_filter(Kohana_Log_Filter $filter)
+	public function detach_filter(LogFilter $filter)
 	{
 		// Remove the writer
 		unset($this->filters[spl_object_hash($filter)]);

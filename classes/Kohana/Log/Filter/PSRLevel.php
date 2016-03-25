@@ -2,7 +2,7 @@
 
 namespace Kohana\Core\Log\Filter;
 
-use Kohana_Log_Filter;
+use Kohana\Core\Log\LogFilter;
 use Log;
 use Psr\Log\InvalidArgumentException;
 
@@ -15,7 +15,7 @@ use Psr\Log\InvalidArgumentException;
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class PSRLevel implements Kohana_Log_Filter {
+class PSRLevel implements LogFilter {
 
 	/**
 	 * @var boolean a hashtable to lookup if a log level is enabled or not
