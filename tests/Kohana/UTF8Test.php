@@ -484,7 +484,7 @@ class Kohana_UTF8Test extends Unittest_TestCase
 	 * Tests UTF8::str_pad error
 	 *
 	 * @test
-	 * @expectedException UTF8_Exception
+	 * @expectedException Kohana\Core\UTF8\UTF8Exception
 	 */
 	public function test_str_pad_error()
 	{
