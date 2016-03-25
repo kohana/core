@@ -12,7 +12,7 @@ namespace Kohana\Core\HTTP;
  * @copyright  (c) 2008-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-interface Message {
+interface MessageInterface {
 
 	/**
 	 * Gets or sets the HTTP protocol. The standard protocol to use

@@ -7,7 +7,7 @@ use HTTP_Exception;
 use HTTP_Exception_404;
 use HTTP_Header;
 use Kohana;
-use Kohana\Core\HTTP\Request as RequestInterface;
+use Kohana\Core\HTTP\RequestInterface;
 use Kohana_Exception;
 use Num;
 use Request_Client;

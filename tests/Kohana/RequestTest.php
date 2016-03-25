@@ -392,7 +392,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	public function test_post_max_size_exceeded($content_length, $expected)
 	{
 		// Ensure the request method is set to POST
-		Request::$initial->method(\Kohana\Core\HTTP\Request::POST);
+		Request::$initial->method(\Kohana\Core\HTTP\RequestInterface::POST);
 
 		// Set the content length
 		$_SERVER['CONTENT_LENGTH'] = $content_length;

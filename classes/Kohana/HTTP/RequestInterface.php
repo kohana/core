@@ -14,7 +14,7 @@ namespace Kohana\Core\HTTP;
  * @copyright  (c) 2008-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-interface Request extends Message {
+interface RequestInterface extends MessageInterface {
 
 	// HTTP Methods
 	const GET       = 'GET';

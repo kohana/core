@@ -2,7 +2,7 @@
 
 namespace Kohana\Core\Request\Client;
 
-use Kohana\Core\HTTP\Request as RequestInterface;
+use Kohana\Core\HTTP\RequestInterface;
 use Request;
 use Request_Client_External;
 use Response;

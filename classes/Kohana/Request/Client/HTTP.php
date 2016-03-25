@@ -6,7 +6,7 @@ use HttpEncodingException;
 use HTTPMalformedHeaderException;
 use HttpRequest;
 use HttpRequestException;
-use Kohana\Core\HTTP\Request as RequestInterface;
+use Kohana\Core\HTTP\RequestInterface;
 use Request;
 use Request_Client_External;
 use Request_Exception;

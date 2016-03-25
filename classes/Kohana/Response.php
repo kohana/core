@@ -7,7 +7,7 @@ use File;
 use HTTP;
 use HTTP_Header;
 use Kohana;
-use Kohana\Core\HTTP\Response as ResponseInterface;
+use Kohana\Core\HTTP\ResponseInterface;
 use Kohana_Exception;
 use Kohana_Log_Buffer;
 use Request_Exception;

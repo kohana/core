@@ -14,7 +14,7 @@ namespace Kohana\Core\HTTP;
  * @copyright  (c) 2008-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-interface Response extends Message {
+interface ResponseInterface extends MessageInterface {
 
 	/**
 	 * Sets or gets the HTTP status from this response.

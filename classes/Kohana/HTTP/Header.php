@@ -6,7 +6,6 @@ use ArrayObject;
 use Cookie;
 use HTTP_Header;
 use Kohana;
-use Kohana\Core\HTTP\Response as ResponseInterface;
 use Text;
 
 /**

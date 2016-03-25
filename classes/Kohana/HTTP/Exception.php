@@ -28,7 +28,7 @@ abstract class Exception extends Kohana_Exception {
 	protected $_code = 0;
 
 	/**
-	 * @var  Request    Request instance that triggered this exception.
+	 * @var  RequestInterface    Request instance that triggered this exception.
 	 */
 	protected $_request;
 
@@ -50,10 +50,10 @@ abstract class Exception extends Kohana_Exception {
 	/**
 	 * Store the Request that triggered this exception.
 	 *
-	 * @param   \Request   $request  Request object that triggered this exception.
+	 * @param   RequestInterface   $request  Request object that triggered this exception.
 	 * @return  HTTP_Exception
 	 */
-	public function request(\Request $request = NULL)
+	public function request(RequestInterface $request = NULL)
 	{
 		if ($request === NULL)
 			return $this->_request;
@@ -67,7 +67,7 @@ abstract class Exception extends Kohana_Exception {
 	 * Generate a Response for the current Exception
 	 *
 	 * @uses   Kohana_Exception::response()
-	 * @return \Response
+	 * @return ResponseInterface
 	 */
 	public function get_response()
 	{
