@@ -1,3 +1,3 @@
 <?php
 
-abstract class Session extends Kohana_Session {}
+abstract class Session extends \Kohana\Core\Session {}

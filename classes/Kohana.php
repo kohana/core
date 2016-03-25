@@ -1,3 +1,3 @@
 <?php
 
-class Kohana extends Kohana_Core {}
+class Kohana extends \Kohana\Core\Core {}

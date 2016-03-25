@@ -1,4 +1,9 @@
 <?php
+
+namespace Kohana\Core;
+
+use Kohana_Exception;
+
 /**
  * RSS and Atom feed helper.
  *
@@ -8,7 +13,7 @@
  * @copyright  (c) 2007-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Feed {
+class Feed {
 
 	/**
 	 * Parses a remote feed into an array.

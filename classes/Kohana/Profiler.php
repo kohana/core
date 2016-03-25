@@ -1,4 +1,9 @@
 <?php
+
+namespace Kohana\Core;
+
+use Kohana;
+
 /**
  * Provides simple benchmarking and profiling. To display the statistics that
  * have been collected, load the `profiler/stats` [View]:
@@ -11,7 +16,7 @@
  * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Profiler {
+class Profiler {
 
 	/**
 	 * @var  integer   maximum number of application stats to keep

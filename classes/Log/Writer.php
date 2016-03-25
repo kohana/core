@@ -1,3 +1,3 @@
 <?php
 
-abstract class Log_Writer extends Kohana_Log_Writer {}
+abstract class Log_Writer extends \Kohana\Core\Log\LogWriter {}

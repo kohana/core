@@ -1,4 +1,12 @@
 <?php
+
+namespace Kohana\Core;
+
+use ArrayAccess;
+use Countable;
+use Kohana\Core\Kohana\KohanaException;
+use Traversable;
+
 /**
  * Array helper.
  *
@@ -8,7 +16,7 @@
  * @copyright  (c) 2007-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-abstract class Kohana_Arr {
+class Arr {
 
 	/**
 	 * @var  string  Default delimiter for [Arr::path()]
@@ -645,7 +653,7 @@ abstract class Kohana_Arr {
 	 * @param   mixed  $array      Array or instance of Countable
 	 * @param   bool   $recursive  Whether to use recursively count the number?
 	 * @return  integer
-	 * @throws  Kohana_Exception
+	 * @throws  KohanaException
 	 */
 	public static function count($array, $recursive = FALSE)
 	{
@@ -654,7 +662,7 @@ abstract class Kohana_Arr {
 			return count($array, $recursive ? COUNT_RECURSIVE : COUNT_NORMAL);
 		}
 
-		throw new Kohana_Exception(
+		throw new KohanaException(
 			"Parameter 1 for Arr::count() must be array or object of type Countable, :type given.",
 			array(":type" => Debug::type($array))
 		);

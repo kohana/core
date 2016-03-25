@@ -1,4 +1,9 @@
 <?php
+
+namespace Kohana\Core;
+
+use Kohana\Core\HTTP\HttpException;
+
 /**
  * Abstract controller class. Controllers should only be created using a [Request].
  *
@@ -20,7 +25,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-abstract class Kohana_Controller {
+abstract class Controller {
 
 	/**
 	 * @var  Request  Request that created the controller
@@ -60,7 +65,7 @@ abstract class Kohana_Controller {
 	 * 3. After the controller action is called, the [Controller::after] method
 	 * will be called.
 	 *
-	 * @throws  HTTP_Exception_404
+	 * @throws  HTTPException
 	 * @return  Response
 	 */
 	public function execute()
@@ -74,7 +79,7 @@ abstract class Kohana_Controller {
 		// If the action doesn't exist, it's a 404
 		if ( ! method_exists($this, $action))
 		{
-			throw HTTP_Exception::factory(404,
+			throw HttpException::factory(404,
 				'The requested URL :uri was not found on this server.',
 				array(':uri' => $this->request->uri())
 			)->request($this->request);
@@ -120,7 +125,7 @@ abstract class Kohana_Controller {
 	 *
 	 * @param  string  $uri   URI to redirect to
 	 * @param  int     $code  HTTP Status code to use for the redirect
-	 * @throws HTTP_Exception
+	 * @throws HTTPException
 	 */
 	public static function redirect($uri = '', $code = 302)
 	{

@@ -13,10 +13,10 @@ To read config from a source you need a **Config Reader**. Similarly, to write c
 you need a **Config Writer**.
 
 Implementing them is as simple as extending the
-[Kohana_Config_Reader] / [Kohana_Config_Writer] interfaces:
+[\Kohana\Core\Config\Reader] / [\Kohana\Core\Config\Writer] interfaces:
 
-	class Kohana_Config_Database_Reader implements Kohana_Config_Reader
-	class Kohana_Config_Database_Writer extends Kohana_Config_Database_Reader implements Kohana_Config_Writer
+	class Kohana_Config_Database_Reader implements Kohana\Core\Config\Reader
+	class Kohana_Config_Database_Writer extends Kohana_Config_Database_Reader implements \Kohana\Core\Config\Writer
 
 You'll notice in the above example that the Database Writer extends the Database Reader.
 This is the convention with config sources, the reasoning being that if you can write to a

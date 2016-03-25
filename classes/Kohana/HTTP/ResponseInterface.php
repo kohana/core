@@ -1,4 +1,7 @@
 <?php
+
+namespace Kohana\Core\HTTP;
+
 /**
  * A HTTP Response specific interface that adds the methods required
  * by HTTP responses. Over and above [Kohana_HTTP_Interaction], this
@@ -11,7 +14,7 @@
  * @copyright  (c) 2008-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-interface Kohana_HTTP_Response extends Kohana_HTTP_Message {
+interface ResponseInterface extends MessageInterface {
 
 	/**
 	 * Sets or gets the HTTP status from this response.

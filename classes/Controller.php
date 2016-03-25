@@ -1,3 +1,3 @@
 <?php
 
-abstract class Controller extends Kohana_Controller {}
+abstract class Controller extends \Kohana\Core\Controller {}

@@ -1,3 +1,3 @@
 <?php
 
-class Log_File extends Kohana_Log_File {}
+class Log_File extends \Kohana\Core\Log\LogFile {}

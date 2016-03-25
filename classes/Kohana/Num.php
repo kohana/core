@@ -1,4 +1,9 @@
 <?php
+
+namespace Kohana\Core;
+
+use Kohana_Exception;
+
 /**
  * Number helper class. Provides additional formatting methods that for working
  * with numbers.
@@ -9,7 +14,7 @@
  * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Num {
+class Num {
 
 	const ROUND_HALF_UP		= 1;
 	const ROUND_HALF_DOWN	= 2;

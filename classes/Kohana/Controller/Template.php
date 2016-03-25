@@ -1,4 +1,10 @@
 <?php
+
+namespace Kohana\Core\Controller;
+
+use Kohana\Core\Controller;
+use Kohana\Core\View;
+
 /**
  * Abstract controller class for automatic templating.
  *
@@ -8,7 +14,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-abstract class Kohana_Controller_Template extends Controller {
+abstract class Template extends Controller {
 
 	/**
 	 * @var  View  page template

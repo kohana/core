@@ -1,4 +1,7 @@
 <?php
+use Kohana\Core\Request\Client\External;
+use Kohana\Core\Request\Client\Stream;
+
 /**
  * Unit tests for external request client
  *
@@ -22,18 +25,18 @@ class Kohana_Request_Client_ExternalTest extends Unittest_TestCase {
 	 */
 	public function provider_factory()
 	{
-		Request_Client_External::$client = 'Request_Client_Stream';
+		External::$client = 'Kohana\Core\Request\Client\Stream';
 
 		$return = array(
 			array(
 				array(),
 				NULL,
-				'Request_Client_Stream'
+				'Kohana\Core\Request\Client\Stream'
 			),
 			array(
 				array(),
-				'Request_Client_Stream',
-				'Request_Client_Stream'
+				'Kohana\Core\Request\Client\Stream',
+				'Kohana\Core\Request\Client\Stream'
 			)
 		);
 
@@ -41,8 +44,8 @@ class Kohana_Request_Client_ExternalTest extends Unittest_TestCase {
 		{
 			$return[] = array(
 				array(),
-				'Request_Client_Curl',
-				'Request_Client_Curl'
+				'Kohana\Core\Request\Client\Curl',
+				'Kohana\Core\Request\Client\Curl'
 			);
 		}
 
@@ -50,8 +53,8 @@ class Kohana_Request_Client_ExternalTest extends Unittest_TestCase {
 		{
 			$return[] = array(
 				array(),
-				'Request_Client_HTTP',
-				'Request_Client_HTTP'
+				'Kohana\Core\Request\Client\HTTP',
+				'Kohana\Core\Request\Client\HTTP'
 			);
 		}
 
@@ -70,7 +73,7 @@ class Kohana_Request_Client_ExternalTest extends Unittest_TestCase {
 	 */
 	public function test_factory($params, $client, $expected)
 	{
-		$this->assertInstanceOf($expected, Request_Client_External::factory($params, $client));
+		$this->assertInstanceOf($expected, External::factory($params, $client));
 	}
 
 	/**
@@ -117,7 +120,7 @@ class Kohana_Request_Client_ExternalTest extends Unittest_TestCase {
 	public function test_options($key, $value, $expected)
 	{
 		// Create a mock external client
-		$client = new Request_Client_Stream;
+		$client = new Stream;
 
 		$client->options($key, $value);
 		$this->assertSame($expected, $client->options());
@@ -169,12 +172,12 @@ class Kohana_Request_Client_ExternalTest extends Unittest_TestCase {
 
 		// Create a mock Request
 		$request = new Request('http://kohanaframework.org/');
-		$request->method(Kohana_HTTP_Request::POST)
+		$request->method(\Kohana\Core\HTTP\RequestInterface::POST)
 			->headers('content-type', $content_type)
 			->body($body)
 			->post($post);
 
-		$client = $this->getMock('Request_Client_External', array('_send_message'));
+		$client = $this->getMock('Kohana\Core\Request\Client\External', array('_send_message'));
 		$client->expects($this->once())
 			->method('_send_message')
 			->with($request)

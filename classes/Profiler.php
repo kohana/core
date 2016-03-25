@@ -1,3 +1,3 @@
 <?php
 
-class Profiler extends Kohana_Profiler {}
+class Profiler extends \Kohana\Core\Profiler {}

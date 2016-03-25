@@ -1,5 +1,7 @@
 <?php
 
+use Kohana\Core\Validation;
+
 /**
  * Tests the Validation lib that's shipped with Kohana
  *

@@ -1,4 +1,16 @@
 <?php
+
+namespace Kohana\Core\Request\Client;
+
+use HttpEncodingException;
+use HTTPMalformedHeaderException;
+use HttpRequest;
+use HttpRequestException;
+use Kohana\Core\HTTP\RequestInterface;
+use Kohana\Core\Request;
+use Request_Exception;
+use Kohana\Core\Response;
+
 /**
  * [Request_Client_External] HTTP driver performs external requests using the
  * php-http extension. To use this driver, ensure the following is completed
@@ -16,7 +28,7 @@
  * @license    http://kohanaframework.org/license
  * @uses       [PECL HTTP](http://php.net/manual/en/book.http.php)
  */
-class Kohana_Request_Client_HTTP extends Request_Client_External {
+class HTTP extends External {
 
 	/**
 	 * Creates a new `Request_Client` object,
@@ -54,14 +66,14 @@ class Kohana_Request_Client_HTTP extends Request_Client_External {
 	public function _send_message(Request $request, Response $response)
 	{
 		$http_method_mapping = array(
-			Kohana_HTTP_Request::GET     => HTTPRequest::METH_GET,
-			Kohana_HTTP_Request::HEAD    => HTTPRequest::METH_HEAD,
-			Kohana_HTTP_Request::POST    => HTTPRequest::METH_POST,
-			Kohana_HTTP_Request::PUT     => HTTPRequest::METH_PUT,
-			Kohana_HTTP_Request::DELETE  => HTTPRequest::METH_DELETE,
-			Kohana_HTTP_Request::OPTIONS => HTTPRequest::METH_OPTIONS,
-			Kohana_HTTP_Request::TRACE   => HTTPRequest::METH_TRACE,
-			Kohana_HTTP_Request::CONNECT => HTTPRequest::METH_CONNECT,
+			RequestInterface::GET     => HTTPRequest::METH_GET,
+			RequestInterface::HEAD    => HTTPRequest::METH_HEAD,
+			RequestInterface::POST    => HTTPRequest::METH_POST,
+			RequestInterface::PUT     => HTTPRequest::METH_PUT,
+			RequestInterface::DELETE  => HTTPRequest::METH_DELETE,
+			RequestInterface::OPTIONS => HTTPRequest::METH_OPTIONS,
+			RequestInterface::TRACE   => HTTPRequest::METH_TRACE,
+			RequestInterface::CONNECT => HTTPRequest::METH_CONNECT,
 		);
 
 		// Create an http request object
@@ -83,7 +95,7 @@ class Kohana_Request_Client_HTTP extends Request_Client_External {
 		$http_request->setQueryData($request->query());
 
 		// Set the body
-		if ($request->method() == Kohana_HTTP_Request::PUT)
+		if ($request->method() == RequestInterface::PUT)
 		{
 			$http_request->addPutData($request->body());
 		}

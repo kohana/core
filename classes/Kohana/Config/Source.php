@@ -1,8 +1,11 @@
 <?php
+
+namespace Kohana\Core\Config;
+
 /**
  * Base Config source Interface
  *
- * Used to identify either config readers or writers when calling [Kohana_Config::attach()]
+ * Used to identify either config readers or writers when calling [Config::attach()]
  *
  * @package    Kohana
  * @category   Configuration
@@ -11,4 +14,4 @@
  * @license    http://kohanaframework.org/license
  */
 
-interface Kohana_Config_Source {}
+interface Source {}

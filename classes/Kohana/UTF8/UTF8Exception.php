@@ -1,4 +1,9 @@
 <?php
+
+namespace Kohana\Core\UTF8;
+
+use Kohana\Core\Kohana\KohanaException;
+
 /**
  * @package    Kohana
  * @category   Exceptions
@@ -6,8 +11,4 @@
  * @copyright  (c) 2009-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Session_Exception extends Kohana_Exception {
-
-	const SESSION_CORRUPT = 1;
-
-}
+class UTF8Exception extends KohanaException {}

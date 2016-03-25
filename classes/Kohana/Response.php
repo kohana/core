@@ -1,4 +1,17 @@
 <?php
+
+namespace Kohana\Core;
+
+use Exception;
+use File;
+use HTTP;
+use HTTP_Header;
+use Kohana;
+use Kohana\Core\HTTP\ResponseInterface;
+use Kohana\Core\Log\LogBuffer;
+use Kohana_Exception;
+use Request_Exception;
+
 /**
  * Response wrapper. Created as the result of any [Request] execution
  * or utility method (i.e. Redirect). Implements standard HTTP
@@ -11,8 +24,8 @@
  * @license    http://kohanaframework.org/license
  * @since      3.1.0
  */
-class Kohana_Response implements Kohana_HTTP_Response {
-
+class Response implements ResponseInterface
+{
 	/**
 	 * Factory method to create a new [Response]. Pass properties
 	 * in using an associative array.
@@ -24,11 +37,11 @@ class Kohana_Response implements Kohana_HTTP_Response {
 	 *      $response = Response::factory(array('status' => 200));
 	 *
 	 * @param   array    $config Setup the response object
-	 * @return  Response
+	 * @return  \Response
 	 */
 	public static function factory(array $config = array())
 	{
-		return new Response($config);
+		return new \Response($config);
 	}
 
 	// HTTP status codes and messages
@@ -558,7 +571,7 @@ class Kohana_Response implements Kohana_HTTP_Response {
 					// Add this exception to the log
 					Kohana::$log->error($error);
 
-					if (Kohana::$log instanceof Kohana_Log_Buffer)
+					if (Kohana::$log instanceof LogBuffer)
 					{
 						Kohana::$log->flush();
 					}

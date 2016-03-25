@@ -1,4 +1,9 @@
 <?php
+
+namespace Kohana\Core\Session;
+
+use Kohana\Core\Session;
+
 /**
  * Cookie-based session class.
  *
@@ -8,7 +13,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Session_Cookie extends Session {
+class Cookie extends Session {
 
 	/**
 	 * @param   string  $id  session id
@@ -16,7 +21,7 @@ class Kohana_Session_Cookie extends Session {
 	 */
 	protected function _read($id = NULL)
 	{
-		return Cookie::get($this->_name, NULL);
+		return \Cookie::get($this->_name, NULL);
 	}
 
 	/**
@@ -33,7 +38,7 @@ class Kohana_Session_Cookie extends Session {
 	 */
 	protected function _write()
 	{
-		return Cookie::set($this->_name, $this->__toString(), $this->_lifetime);
+		return \Cookie::set($this->_name, $this->__toString(), $this->_lifetime);
 	}
 
 	/**
@@ -49,7 +54,7 @@ class Kohana_Session_Cookie extends Session {
 	 */
 	protected function _destroy()
 	{
-		return Cookie::delete($this->_name);
+		return \Cookie::delete($this->_name);
 	}
 
 }

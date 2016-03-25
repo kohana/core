@@ -1,4 +1,5 @@
 <?php
+use Kohana\Core\Log\LogWriter;
 
 /**
  * Tests Kohana Logging API - extending the official abstract class for tests
@@ -55,7 +56,7 @@ class Kohana_Log_LogTest extends \Psr\Log\Test\LoggerInterfaceTest
 /**
  * A Log_Writer that appends logs to an internal array, used for testing
  */
-class Kohana_Log_LoggerTest_Log_Writer_Memory extends Log_Writer {
+class Kohana_Log_LoggerTest_Log_Writer_Memory extends LogWriter {
 
 	 protected $logs = array();
 

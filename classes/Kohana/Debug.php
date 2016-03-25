@@ -1,4 +1,12 @@
 <?php
+
+namespace Kohana\Core;
+
+use Kohana;
+use ReflectionFunction;
+use ReflectionMethod;
+use UTF8;
+
 /**
  * Contains debugging and dumping tools.
  *
@@ -8,7 +16,7 @@
  * @copyright  (c) 2008-2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Debug {
+class Debug {
 
 	/**
 	 * Returns the type of a variable

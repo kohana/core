@@ -99,8 +99,8 @@ class Kohana_RequestTest extends Unittest_TestCase
 	public function provider_create()
 	{
 		return array(
-			array('foo/bar', 'Request_Client_Internal'),
-			array('http://google.com', 'Request_Client_External'),
+			array('foo/bar', 'Kohana\Core\Request\Client\Internal'),
+			array('http://google.com', 'Kohana\Core\Request\Client\External'),
 		);
 	}
 
@@ -192,7 +192,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 		}
 		catch (Exception $e) {}
 
-		$this->assertInstanceOf('Route', $request->route());
+		$this->assertInstanceOf('Kohana\Core\Route', $request->route());
 	}
 
 	/**
@@ -392,7 +392,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	public function test_post_max_size_exceeded($content_length, $expected)
 	{
 		// Ensure the request method is set to POST
-		Request::$initial->method(Kohana_HTTP_Request::POST);
+		Request::$initial->method(\Kohana\Core\HTTP\RequestInterface::POST);
 
 		// Set the content length
 		$_SERVER['CONTENT_LENGTH'] = $content_length;
@@ -488,7 +488,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Test for Request_Client_External::options() to ensure options
+	 * Test for Kohana\Core\Request\Client\External::options() to ensure options
 	 * can be set to the external client (for cURL and PECL_HTTP)
 	 *
 	 * @dataProvider provider_options_set_to_external_client
@@ -499,7 +499,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function test_options_set_to_external_client($settings, $expected)
 	{
-		$request_client = Request_Client_External::factory(array(), 'Request_Client_Curl');
+		$request_client = Request_Client_External::factory(array(), 'Kohana\Core\Request\Client\Curl');
 
 		// Test for empty array
 		$this->assertSame(array(), $request_client->options());
@@ -673,8 +673,8 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 */
 	public function provider_client()
 	{
-		$internal_client = new Request_Client_Internal;
-		$external_client = new Request_Client_Stream;
+		$internal_client = new \Kohana\Core\Request\Client\Internal();
+		$external_client = new \Kohana\Core\Request\Client\Stream();
 
 		return array(
 			array(
@@ -700,7 +700,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 * @param   Request_Client $expected 
 	 * @return  void
 	 */
-	public function test_client(Request $request, Request_Client $client, Request_Client $expected)
+	public function test_client(Request $request, Kohana\Core\Request\Client $client, Kohana\Core\Request\Client $expected)
 	{
 		$request->client($client);
 		$this->assertSame($expected, $request->client());

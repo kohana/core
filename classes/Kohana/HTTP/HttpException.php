@@ -1,6 +1,11 @@
 <?php
 
-abstract class Kohana_HTTP_Exception extends Kohana_Exception {
+namespace Kohana\Core\HTTP;
+
+use Exception;
+use Kohana\Core\Kohana\KohanaException;
+
+abstract class HttpException extends KohanaException {
 
 	/**
 	 * Creates an HTTP_Exception of the specified type.
@@ -8,7 +13,7 @@ abstract class Kohana_HTTP_Exception extends Kohana_Exception {
 	 * @param   integer $code       the http status code
 	 * @param   string  $message    status message, custom content to display with error
 	 * @param   array   $variables  translation variables
-	 * @return  HTTP_Exception
+	 * @return  self
 	 */
 	public static function factory($code, $message = NULL, array $variables = NULL, Exception $previous = NULL)
 	{
@@ -23,14 +28,14 @@ abstract class Kohana_HTTP_Exception extends Kohana_Exception {
 	protected $_code = 0;
 
 	/**
-	 * @var  Request    Request instance that triggered this exception.
+	 * @var  RequestInterface    Request instance that triggered this exception.
 	 */
 	protected $_request;
 
 	/**
 	 * Creates a new translated exception.
 	 *
-	 *     throw new Kohana_Exception('Something went terrible wrong, :user',
+	 *     throw new KohanaException('Something went terrible wrong, :user',
 	 *         array(':user' => $user));
 	 *
 	 * @param   string  $message    status message, custom content to display with error
@@ -45,10 +50,10 @@ abstract class Kohana_HTTP_Exception extends Kohana_Exception {
 	/**
 	 * Store the Request that triggered this exception.
 	 *
-	 * @param   Request   $request  Request object that triggered this exception.
-	 * @return  HTTP_Exception
+	 * @param   RequestInterface   $request  Request object that triggered this exception.
+	 * @return  self
 	 */
-	public function request(Request $request = NULL)
+	public function request(RequestInterface $request = NULL)
 	{
 		if ($request === NULL)
 			return $this->_request;
@@ -61,12 +66,12 @@ abstract class Kohana_HTTP_Exception extends Kohana_Exception {
 	/**
 	 * Generate a Response for the current Exception
 	 *
-	 * @uses   Kohana_Exception::response()
-	 * @return Response
+	 * @uses   KohanaException::response()
+	 * @return ResponseInterface
 	 */
 	public function get_response()
 	{
-		return Kohana_Exception::response($this);
+		return KohanaException::response($this);
 	}
 
 }

@@ -1,4 +1,10 @@
 <?php
+
+namespace Kohana\Core\Log;
+
+use Kohana\Core\Debug;
+use Kohana\Core\Kohana\KohanaException;
+
 /**
  * File log writer. Writes out messages and stores them in a YYYY/MM directory.
  *
@@ -8,7 +14,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Log_File extends Log_Writer {
+class LogFile extends LogWriter {
 
 	/**
 	 * @var  string  Directory to place log files in
@@ -29,7 +35,7 @@ class Kohana_Log_File extends Log_Writer {
 	 * Creates a new file logger. Checks that the directory exists and
 	 * is writable.
 	 *
-	 *     $writer = new Log_File($directory);
+	 *     $writer = new LogFile($directory);
 	 *
 	 * @param   string  $directory  log directory
 	 * @param   int     $dir_mode   access mode (permissions) for created folders
@@ -40,7 +46,7 @@ class Kohana_Log_File extends Log_Writer {
 	{
 		if ( ! is_dir($directory) OR ! is_writable($directory))
 		{
-			throw new Kohana_Exception('Directory :dir must be writable',
+			throw new KohanaException('Directory :dir must be writable',
 				array(':dir' => Debug::path($directory)));
 		}
 

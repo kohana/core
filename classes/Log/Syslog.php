@@ -1,3 +1,3 @@
 <?php
 
-class Log_Syslog extends Kohana_Log_Syslog {}
+class Log_Syslog extends \Kohana\Core\Log\Syslog {}

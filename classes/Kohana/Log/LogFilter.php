@@ -1,8 +1,11 @@
 <?php
+
+namespace Kohana\Core\Log;
+
 /**
  * Interface to filter logs
  */
-interface Kohana_Log_Filter {
+interface LogFilter {
 
 	/**
 	 * Process filtering of the log messages

@@ -1,3 +1,3 @@
 <?php
 
-class Encrypt extends Kohana_Encrypt {}
+class Encrypt extends \Kohana\Core\Encrypt {}

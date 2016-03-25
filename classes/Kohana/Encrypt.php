@@ -1,4 +1,10 @@
 <?php
+
+namespace Kohana\Core;
+
+use Kohana;
+use Kohana_Exception;
+
 /**
  * The Encrypt library provides two-way encryption of text and binary strings
  * using the [Mcrypt](http://php.net/mcrypt) extension, which consists of three
@@ -23,7 +29,7 @@
  * @copyright  (c) 2007-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Encrypt {
+class Encrypt {
 
 	/**
 	 * @var  string  default instance name
@@ -105,7 +111,7 @@ class Kohana_Encrypt {
 			}
 
 			// Create a new instance
-			Encrypt::$instances[$name] = new Encrypt($config['key'], $config['mode'], $config['cipher']);
+			Encrypt::$instances[$name] = new \Encrypt($config['key'], $config['mode'], $config['cipher']);
 		}
 
 		return Encrypt::$instances[$name];

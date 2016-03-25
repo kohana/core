@@ -1,3 +1,3 @@
 <?php
 
-class Valid extends Kohana_Valid {}
+class Valid extends \Kohana\Core\Valid {}

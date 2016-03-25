@@ -1,4 +1,17 @@
 <?php
+
+namespace Kohana\Core;
+
+use Kohana\Core\HTTP;
+use Kohana\Core\HTTP\Header;
+use Kohana\Core\HTTP\HttpException;
+use Kohana\Core\HTTP\RequestInterface;
+use Kohana\Core\Kohana\KohanaException;
+use Kohana\Core\Request\Client;
+use Kohana\Core\Request\Client\External;
+use Kohana\Core\Request\Client\Internal;
+use Request_Exception;
+
 /**
  * Request. Uses the [Route] class to determine what
  * [Controller] to send the request to.
@@ -9,7 +22,8 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Request implements Kohana_HTTP_Request {
+class Request implements RequestInterface
+{
 
 	/**
 	 * @var  string  client user agent
@@ -69,7 +83,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 			else
 			{
 				// Default to GET requests
-				$method = Kohana_HTTP_Request::GET;
+				$method = RequestInterface::GET;
 			}
 
 			if (( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
@@ -130,7 +144,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 				Request::$client_ip = $_SERVER['REMOTE_ADDR'];
 			}
 
-			if ($method !== Kohana_HTTP_Request::GET)
+			if ($method !== RequestInterface::GET)
 			{
 				// Ensure the raw body is saved for future use
 				$body = file_get_contents('php://input');
@@ -153,7 +167,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 			}
 
 			// Create the instance singleton
-			Request::$initial = $request = new Request($uri, $client_params, $allow_external, $injected_routes);
+			Request::$initial = $request = new \Request($uri, $client_params, $allow_external, $injected_routes);
 
 			// Store global GET and POST data in the initial request only
 			$request->protocol($protocol)
@@ -197,7 +211,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 		}
 		else
 		{
-			$request = new Request($uri, $client_params, $allow_external, $injected_routes);
+			$request = new \Request($uri, $client_params, $allow_external, $injected_routes);
 		}
 
 		return $request;
@@ -210,7 +224,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 	 *     $uri = Request::detect_uri();
 	 *
 	 * @return  string  URI of the main request
-	 * @throws  Kohana_Exception
+	 * @throws  KohanaException
 	 * @since   3.0.8
 	 */
 	public static function detect_uri()
@@ -258,11 +272,11 @@ class Kohana_Request implements Kohana_HTTP_Request {
 			{
 				// If you ever see this error, please report an issue at http://dev.kohanaphp.com/projects/kohana3/issues
 				// along with any relevant information about your web server setup. Thanks!
-				throw new Kohana_Exception('Unable to detect the URI using PATH_INFO, REQUEST_URI, PHP_SELF or REDIRECT_URL');
+				throw new KohanaException('Unable to detect the URI using PATH_INFO, REQUEST_URI, PHP_SELF or REDIRECT_URL');
 			}
 
 			// Get the path from the base URL, including the index file
-			$base_url = parse_url(Kohana::$base_url, PHP_URL_PATH);
+			$base_url = parse_url(Core::$base_url, PHP_URL_PATH);
 
 			if (strpos($uri, $base_url) === 0)
 			{
@@ -270,10 +284,10 @@ class Kohana_Request implements Kohana_HTTP_Request {
 				$uri = (string) substr($uri, strlen($base_url));
 			}
 
-			if (Kohana::$index_file AND strpos($uri, Kohana::$index_file) === 0)
+			if (Core::$index_file AND strpos($uri, Core::$index_file) === 0)
 			{
 				// Remove the index file from the URI
-				$uri = (string) substr($uri, strlen(Kohana::$index_file));
+				$uri = (string) substr($uri, strlen(Core::$index_file));
 			}
 		}
 
@@ -333,7 +347,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 	 *
 	 *     $types = Request::accept_type();
 	 *
-	 * [!!] Deprecated in favor of using [HTTP_Header::accepts_at_quality].
+	 * [!!] Deprecated in favor of using [Header::accepts_at_quality].
 	 *
 	 * @deprecated  since version 3.3.0
 	 * @param   string  $type Content MIME type
@@ -366,7 +380,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 	 *
 	 *     $langs = Request::accept_lang();
 	 *
-	 * [!!] Deprecated in favor of using [HTTP_Header::accepts_language_at_quality].
+	 * [!!] Deprecated in favor of using [Header::accepts_language_at_quality].
 	 *
 	 * @deprecated  since version 3.3.0
 	 * @param   string  $lang  Language code
@@ -399,7 +413,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 	 *
 	 *     $encodings = Request::accept_encoding();
 	 *
-	 * [!!] Deprecated in favor of using [HTTP_Header::accepts_encoding_at_quality].
+	 * [!!] Deprecated in favor of using [Header::accepts_encoding_at_quality].
 	 *
 	 * @deprecated  since version 3.3.0
 	 * @param   string  $type Encoding type
@@ -437,7 +451,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 	public static function post_max_size_exceeded()
 	{
 		// Make sure the request method is POST
-		if (Request::$initial->method() !== Kohana_HTTP_Request::POST)
+		if (Request::$initial->method() !== RequestInterface::POST)
 			return FALSE;
 
 		// Get the post_max_size in bytes
@@ -576,7 +590,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 	protected $_routes;
 
 	/**
-	 * @var  Kohana_HTTP_Header  headers to sent as part of the request
+	 * @var  Kohana\Core\HTTP\Header  headers to sent as part of the request
 	 */
 	protected $_header;
 
@@ -631,7 +645,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 	protected $_cookies = array();
 
 	/**
-	 * @var Kohana_Request_Client
+	 * @var Client
 	 */
 	protected $_client;
 
@@ -658,7 +672,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 		$client_params = is_array($client_params) ? $client_params : array();
 
 		// Initialise the header
-		$this->_header = new HTTP_Header(array());
+		$this->_header = new Header(array());
 
 		// Assign injected routes
 		$this->_routes = $injected_routes;
@@ -685,7 +699,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 			$this->_uri = trim($uri, '/');
 
 			// Apply the client
-			$this->_client = new Request_Client_Internal($client_params);
+			$this->_client = new Internal($client_params);
 		}
 		else
 		{
@@ -705,7 +719,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 			$this->_external = TRUE;
 
 			// Setup the client
-			$this->_client = Request_Client_External::factory($client_params);
+			$this->_client = External::factory($client_params);
 		}
 	}
 
@@ -884,12 +898,12 @@ class Kohana_Request implements Kohana_HTTP_Request {
 	}
 
 	/**
-	 * Provides access to the [Request_Client].
+	 * Provides access to the [Client].
 	 *
-	 * @return  Request_Client
+	 * @return  Client
 	 * @return  self
 	 */
-	public function client(Request_Client $client = NULL)
+	public function client(Client $client = NULL)
 	{
 		if ($client === NULL)
 			return $this->_client;
@@ -938,8 +952,8 @@ class Kohana_Request implements Kohana_HTTP_Request {
 	 *
 	 * @return  Response
 	 * @throws  Request_Exception
-	 * @throws  HTTP_Exception_404
-	 * @uses    [Kohana::$profiling]
+	 * @throws  HTTPException
+	 * @uses    [Core::$profiling]
 	 * @uses    [Profiler]
 	 */
 	public function execute()
@@ -981,15 +995,15 @@ class Kohana_Request implements Kohana_HTTP_Request {
 
 		if ( ! $this->_route instanceof Route)
 		{
-			return HTTP_Exception::factory(404, 'Unable to find a route to match the URI: :uri', array(
+			return HTTPException::factory(404, 'Unable to find a route to match the URI: :uri', array(
 				':uri' => $this->_uri,
 			))->request($this)
 				->get_response();
 		}
 
-		if ( ! $this->_client instanceof Request_Client)
+		if ( ! $this->_client instanceof Client)
 		{
-			throw new Request_Exception('Unable to execute :uri without a Kohana_Request_Client', array(
+			throw new Request_Exception('Unable to execute :uri without a Kohana\Core\Request\Client', array(
 				':uri' => $this->_uri,
 			));
 		}
@@ -1106,7 +1120,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 	 */
 	public function headers($key = NULL, $value = NULL)
 	{
-		if ($key instanceof HTTP_Header)
+		if ($key instanceof Header)
 		{
 			// Act a setter, replace all headers
 			$this->_header = $key;
@@ -1231,7 +1245,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 		else
 		{
 			$this->headers('content-type',
-				'application/x-www-form-urlencoded; charset='.Kohana::$charset);
+				'application/x-www-form-urlencoded; charset='.Core::$charset);
 			$body = http_build_query($post, NULL, '&');
 		}
 
@@ -1239,9 +1253,9 @@ class Kohana_Request implements Kohana_HTTP_Request {
 		$this->headers('content-length', (string) $this->content_length());
 
 		// If Kohana expose, set the user-agent
-		if (Kohana::$expose)
+		if (Core::$expose)
 		{
-			$this->headers('user-agent', Kohana::version());
+			$this->headers('user-agent', Core::version());
 		}
 
 		// Prepare cookies

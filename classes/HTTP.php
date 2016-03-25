@@ -1,3 +1,3 @@
 <?php
 
-abstract class HTTP extends Kohana_HTTP {}
+abstract class HTTP extends \Kohana\Core\HTTP {}

@@ -1,3 +1,3 @@
 <?php
 
-class Inflector extends Kohana_Inflector {}
+class Inflector extends \Kohana\Core\Inflector {}

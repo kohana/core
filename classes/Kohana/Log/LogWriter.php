@@ -1,4 +1,14 @@
 <?php
+
+namespace Kohana\Core\Log;
+
+use Date;
+use DateTimeZone;
+use InvalidArgumentException;
+use Kohana\Core\Log\Filter\FilterAware;
+use Kohana\Core\Log;
+use Psr\Log\LogLevel;
+
 /**
  * Log writer abstract class. All [Log] writers must extend this class.
  *
@@ -8,7 +18,7 @@
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-abstract class Kohana_Log_Writer implements Kohana_Log_Filter_Aware {
+abstract class LogWriter implements FilterAware {
 
 	/**
 	 * @var  string  date/time format for writing the timestamp of log entries.
@@ -27,7 +37,7 @@ abstract class Kohana_Log_Writer implements Kohana_Log_Filter_Aware {
 	/**
 	 * @var  string  Level to use for stack traces
 	 */
-	private $strace_level = \Psr\Log\LogLevel::DEBUG;
+	private $strace_level = LogLevel::DEBUG;
 
 	/**
 	 * @var  string  default string format of the log entry
@@ -35,7 +45,7 @@ abstract class Kohana_Log_Writer implements Kohana_Log_Filter_Aware {
 	private $format = "time --- level: body in file:line";
 
 	/**
-	 * @var Kohana_Log_Filter[] array of log filters
+	 * @var LogFilter[] array of log filters
 	 */
 	private $filters = array();
 
@@ -75,7 +85,7 @@ abstract class Kohana_Log_Writer implements Kohana_Log_Filter_Aware {
 	 * Sets the date/time format for writing a timestamp
 	 * 
 	 * @param string $timestamp_format
-	 * @return Log_Writer
+	 * @return self
 	 */
 	public function set_timestamp_format($timestamp_format)
 	{
@@ -99,7 +109,7 @@ abstract class Kohana_Log_Writer implements Kohana_Log_Filter_Aware {
 	 * 
 	 * @param mixed $level
 	 * @throws InvalidArgumentException
-	 * @return Log_Writer
+	 * @return self
 	 */
 	public function set_strace_level($level)
 	{
@@ -122,7 +132,7 @@ abstract class Kohana_Log_Writer implements Kohana_Log_Filter_Aware {
 	 * Sets the default string format of the log entry
 	 * 
 	 * @param string $format
-	 * @return Log_Writer
+	 * @return self
 	 */
 	public function set_format($format)
 	{
@@ -146,7 +156,7 @@ abstract class Kohana_Log_Writer implements Kohana_Log_Filter_Aware {
 	 * 
 	 * @param string $timezone
 	 * @throws InvalidArgumentException
-	 * @return Log_Writer
+	 * @return self
 	 */
 	public function set_timezone($timezone)
 	{
@@ -165,10 +175,10 @@ abstract class Kohana_Log_Writer implements Kohana_Log_Filter_Aware {
 	/**
 	 * Ataches a log filter to the writer
 	 *
-	 * @param Kohana_Log_Filter $filter
-	 * @return Log_Writer
+	 * @param LogFilter $filter
+	 * @return self
 	 */
-	public function attach_filter(Kohana_Log_Filter $filter)
+	public function attach_filter(LogFilter $filter)
 	{
 		$this->filters[spl_object_hash($filter)] = $filter;
 
@@ -178,10 +188,10 @@ abstract class Kohana_Log_Writer implements Kohana_Log_Filter_Aware {
 	/**
 	 * Detaches a log filter
 	 *
-	 * @param Kohana_Log_Filter $filter
-	 * @return Log_Writer
+	 * @param LogFilter $filter
+	 * @return self
 	 */
-	public function detach_filter(Kohana_Log_Filter $filter)
+	public function detach_filter(LogFilter $filter)
 	{
 		// Remove the writer
 		unset($this->filters[spl_object_hash($filter)]);

@@ -1,3 +1,3 @@
 <?php
 
-class Cookie extends Kohana_Cookie {}
+class Cookie extends \Kohana\Core\Cookie {}

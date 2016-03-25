@@ -1,4 +1,7 @@
 <?php
+
+namespace Kohana\Core;
+
 /**
  * Security helper class.
  *
@@ -8,7 +11,7 @@
  * @copyright  (c) 2007-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Security {
+class Security {
 
 	/**
 	 * @var  string  key name used for token storage

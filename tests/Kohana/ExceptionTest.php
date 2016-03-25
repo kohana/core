@@ -1,4 +1,6 @@
 <?php
+use Kohana\Core\Kohana\KohanaException;
+use Kohana\Core\Log\LogWriter;
 
 /**
  * Tests Kohana Exception Class
@@ -44,11 +46,11 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Kohana_Kohana_Exception::__construct()
+	 * Tests \Kohana\Core\Kohana\Exception::__construct()
 	 *
 	 * @test
 	 * @dataProvider provider_constructor
-	 * @covers Kohana_Kohana_Exception::__construct
+	 * @covers \Kohana\Core\Kohana\Exception::__construct
 	 * @param array             $arguments          Arguments
 	 * @param string            $expected_message   Value from getMessage()
 	 * @param integer|string    $expected_code      Value from getCode()
@@ -58,13 +60,13 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 		switch (count($arguments))
 		{
 			case 1:
-				$exception = new Kohana_Exception(reset($arguments));
+				$exception = new KohanaException(reset($arguments));
 			break;
 			case 2:
-				$exception = new Kohana_Exception(reset($arguments), next($arguments));
+				$exception = new KohanaException(reset($arguments), next($arguments));
 			break;
 			default:
-				$exception = new Kohana_Exception(reset($arguments), next($arguments), next($arguments));
+				$exception = new KohanaException(reset($arguments), next($arguments), next($arguments));
 		}
 
 		$this->assertSame($expected_code, $exception->getCode());
@@ -84,21 +86,21 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 	}
 
 	/**
-	 * Tests Kohana_Exception::text()
+	 * Tests KohanaException::text()
 	 *
 	 * @test
 	 * @dataProvider provider_text
-	 * @covers Kohana_Exception::text
+	 * @covers KohanaException::text
 	 * @param object $exception exception to test
 	 * @param string $expected  expected output
 	 */
 	public function test_text($exception, $expected)
 	{
-		$this->assertEquals($expected, Kohana_Exception::text($exception));
+		$this->assertEquals($expected, KohanaException::text($exception));
 	}
 
 	/**
-	 * Test if Kohana_Exception logs exceptions
+	 * Test if KohanaException logs exceptions
 	 *
 	 * @test
 	 * @dataProvider provider_text
@@ -113,12 +115,12 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 		Kohana::$log = new Log();
 		$writer = new Kohana_ExceptionTest_Log_Writer_Memory();
 		Kohana::$log->attach($writer);
-		Kohana_Exception::log($exception);
+		KohanaException::log($exception);
 		$this->assertSame($expected, $writer->messages[0]['body']);
 	}
 
 	/**
-	 * Test if Kohana_Exception logs exceptions if Kohana::$log is not
+	 * Test if KohanaException logs exceptions if Kohana::$log is not
 	 * a Kohana_Log
 	 *
 	 * @test
@@ -132,12 +134,12 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 	public function test_log_not_kohana_log($exception, $expected)
 	{
 		Kohana::$log = new Kohana_ExceptionTest_Log_Psr_Mock();
-		Kohana_Exception::log($exception);
+		KohanaException::log($exception);
 		$this->assertSame($expected, Kohana::$log->logs[0]['message']);
 	}
 
 	/**
-	 * Test if Kohana_Exception fails silently when Kohana::$log is unassigned
+	 * Test if KohanaException fails silently when Kohana::$log is unassigned
 	 *
 	 * @test
 	 * @dataProvider provider_text
@@ -153,7 +155,7 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 
 		// Generic assertion that it is failing silently
 		// Should it raise any exception, the test will fail as expected.
-		$this->assertNull(Kohana_Exception::log($exception));
+		$this->assertNull(KohanaException::log($exception));
 	}
 
 
@@ -162,7 +164,7 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 /**
  * A Log_Writer that appends messages to an internal array, used for testing
  */
-class Kohana_ExceptionTest_Log_Writer_Memory extends Log_Writer
+class Kohana_ExceptionTest_Log_Writer_Memory extends LogWriter
 {
 	public $messages = array();
 	/**

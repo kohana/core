@@ -1,4 +1,11 @@
 <?php
+
+namespace Kohana\Core\Request\Client;
+
+use Kohana\Core\HTTP\RequestInterface;
+use Kohana\Core\Request;
+use Kohana\Core\Response;
+
 /**
  * [Request_Client_External] Stream driver performs external requests using php
  * sockets. To use this driver, ensure the following is completed
@@ -16,21 +23,21 @@
  * @license    http://kohanaframework.org/license
  * @uses       [PHP Streams](http://php.net/manual/en/book.stream.php)
  */
-class Kohana_Request_Client_Stream extends Request_Client_External {
+class Stream extends External {
 
 	/**
 	 * Sends the HTTP message [Request] to a remote server and processes
 	 * the response.
 	 *
 	 * @param   Request   $request  request to send
-	 * @param   Response  $request  response to send
+	 * @param   Response  $response  response to send
 	 * @return  Response
 	 * @uses    [PHP cURL](http://php.net/manual/en/book.curl.php)
 	 */
 	public function _send_message(Request $request, Response $response)
 	{
 		// Calculate stream mode
-		$mode = ($request->method() === Kohana_HTTP_Request::GET) ? 'r' : 'r+';
+		$mode = ($request->method() === RequestInterface::GET) ? 'r' : 'r+';
 
 		// Process cookies
 		if ($cookies = $request->cookie())

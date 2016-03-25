@@ -1,4 +1,10 @@
 <?php
+
+namespace Kohana\Core;
+
+use DateTime;
+use DateTimeZone;
+
 /**
  * Date helper.
  *
@@ -8,7 +14,7 @@
  * @copyright  (c) 2007-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_Date {
+class Date {
 
 	// Second amounts for various time increments
 	const YEAR   = 31556926;

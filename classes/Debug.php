@@ -1,3 +1,3 @@
 <?php
 
-class Debug extends Kohana_Debug {}
+class Debug extends \Kohana\Core\Debug {}
