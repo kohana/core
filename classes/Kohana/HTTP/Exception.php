@@ -2,7 +2,6 @@
 
 namespace Kohana\Core\HTTP;
 
-use HTTP_Exception;
 use Kohana_Exception;
 
 abstract class Exception extends Kohana_Exception {
@@ -13,7 +12,7 @@ abstract class Exception extends Kohana_Exception {
 	 * @param   integer $code       the http status code
 	 * @param   string  $message    status message, custom content to display with error
 	 * @param   array   $variables  translation variables
-	 * @return  HTTP_Exception
+	 * @return  self
 	 */
 	public static function factory($code, $message = NULL, array $variables = NULL, \Exception $previous = NULL)
 	{
@@ -42,7 +41,7 @@ abstract class Exception extends Kohana_Exception {
 	 * @param   array   $variables  translation variables
 	 * @return  void
 	 */
-	public function __construct($message = NULL, array $variables = NULL, Exception $previous = NULL)
+	public function __construct($message = NULL, array $variables = NULL, \Exception $previous = NULL)
 	{
 		parent::__construct($message, $variables, $this->_code, $previous);
 	}
@@ -51,7 +50,7 @@ abstract class Exception extends Kohana_Exception {
 	 * Store the Request that triggered this exception.
 	 *
 	 * @param   RequestInterface   $request  Request object that triggered this exception.
-	 * @return  HTTP_Exception
+	 * @return  self
 	 */
 	public function request(RequestInterface $request = NULL)
 	{
