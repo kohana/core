@@ -9,9 +9,9 @@ use Kohana;
 use Kohana\Core\Debug;
 use Kohana\Core\HTTP\HttpException;
 use Kohana\Core\I18n;
+use Kohana\Core\Log\LogBuffer;
 use Kohana\Core\Response;
 use Kohana\Core\View;
-use Kohana_Log_Buffer;
 use Throwable;
 
 /**
@@ -162,7 +162,7 @@ class KohanaException extends Exception {
 			// Add this exception to the log
 			Kohana::$log->log($level, $error, array('exception' => $e));
 
-			if (Kohana::$log instanceof Kohana_Log_Buffer)
+			if (Kohana::$log instanceof LogBuffer)
 			{
 				Kohana::$log->flush();
 			}

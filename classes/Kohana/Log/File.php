@@ -4,7 +4,6 @@ namespace Kohana\Core\Log;
 
 use Debug;
 use Kohana_Exception;
-use Log_Writer;
 
 /**
  * File log writer. Writes out messages and stores them in a YYYY/MM directory.
@@ -15,7 +14,7 @@ use Log_Writer;
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class File extends Log_Writer {
+class File extends LogWriter {
 
 	/**
 	 * @var  string  Directory to place log files in

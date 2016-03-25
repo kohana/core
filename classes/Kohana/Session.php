@@ -4,8 +4,8 @@ namespace Kohana\Core;
 
 use Exception;
 use Kohana;
+use Kohana\Core\Log\LogBuffer;
 use Kohana_Exception;
-use Kohana_Log_Buffer;
 use Session_Exception;
 
 /**
@@ -385,7 +385,7 @@ abstract class Session {
 			// Log & ignore all errors when a write fails
 			Kohana::$log->error(Kohana_Exception::text($e));
 
-			if (Kohana::$log instanceof Kohana_Log_Buffer)
+			if (Kohana::$log instanceof LogBuffer)
 			{
 				Kohana::$log->flush();
 			}

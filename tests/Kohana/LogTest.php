@@ -1,4 +1,5 @@
 <?php
+use Kohana\Core\Log\LogWriter;
 
 /**
  * Tests Kohana Logging API
@@ -386,7 +387,7 @@ class Kohana_LogTest extends Unittest_TestCase
 /**
  * A Log_Writer that appends logs to an internal array, used for testing
  */
-class Kohana_LogTest_Log_Writer_Memory extends Log_Writer {
+class Kohana_LogTest_Log_Writer_Memory extends LogWriter {
 
 	public $logs = array();
 

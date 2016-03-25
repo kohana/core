@@ -1,4 +1,5 @@
 <?php
+use Kohana\Core\Log\LogWriter;
 
 /**
  * Tests Kohana Exception Class
@@ -162,7 +163,7 @@ class Kohana_ExceptionTest extends Unittest_TestCase
 /**
  * A Log_Writer that appends messages to an internal array, used for testing
  */
-class Kohana_ExceptionTest_Log_Writer_Memory extends Log_Writer
+class Kohana_ExceptionTest_Log_Writer_Memory extends LogWriter
 {
 	public $messages = array();
 	/**

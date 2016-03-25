@@ -2,7 +2,6 @@
 
 namespace Kohana\Core\Log;
 
-use Log_Writer;
 use Psr\Log\LogLevel;
 
 /**
@@ -14,7 +13,7 @@ use Psr\Log\LogLevel;
  * @copyright  (c) 2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Syslog extends Log_Writer {
+class Syslog extends LogWriter {
 
 	/**
 	 * @var  string  The syslog identifier

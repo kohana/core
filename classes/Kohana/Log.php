@@ -3,8 +3,8 @@
 namespace Kohana\Core;
 
 use Exception;
-use Kohana_Log_Buffer;
-use Log_Writer;
+use Kohana\Core\Log\LogBuffer;
+use Kohana\Core\Log\LogWriter;
 use Psr\Log\AbstractLogger;
 use Psr\Log\InvalidArgumentException;
 use Psr\Log\LogLevel;
@@ -21,7 +21,7 @@ use ReflectionClass;
  * @copyright  (c) 2008-2012 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Log extends AbstractLogger implements Kohana_Log_Buffer {
+class Log extends AbstractLogger implements LogBuffer {
 
 	// Log message levels - Windows users see PHP Bug #18090
 	const EMERGENCY = 0; // LOG_EMERG
@@ -93,10 +93,10 @@ class Log extends AbstractLogger implements Kohana_Log_Buffer {
 	 * Attaches a log writer
 	 *     $log->attach($writer);
 	 *
-	 * @param   Log_Writer  $writer     instance
+	 * @param   LogWriter  $writer     instance
 	 * @return  Log
 	 */
-	public function attach(Log_Writer $writer)
+	public function attach(LogWriter $writer)
 	{
 
 		$this->_writers["{$writer}"] = $writer;
@@ -109,10 +109,10 @@ class Log extends AbstractLogger implements Kohana_Log_Buffer {
 	 *
 	 *     $log->detach($writer);
 	 *
-	 * @param   Log_Writer  $writer instance
+	 * @param   LogWriter  $writer instance
 	 * @return  Log
 	 */
-	public function detach(Log_Writer $writer)
+	public function detach(LogWriter $writer)
 	{
 		// Remove the writer
 		unset($this->_writers["{$writer}"]);

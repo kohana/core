@@ -8,8 +8,8 @@ use HTTP;
 use HTTP_Header;
 use Kohana;
 use Kohana\Core\HTTP\ResponseInterface;
+use Kohana\Core\Log\LogBuffer;
 use Kohana_Exception;
-use Kohana_Log_Buffer;
 use Request_Exception;
 
 /**
@@ -571,7 +571,7 @@ class Response implements ResponseInterface
 					// Add this exception to the log
 					Kohana::$log->error($error);
 
-					if (Kohana::$log instanceof Kohana_Log_Buffer)
+					if (Kohana::$log instanceof LogBuffer)
 					{
 						Kohana::$log->flush();
 					}
