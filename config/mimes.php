@@ -89,6 +89,7 @@ return array(
 	'm4p'      => array('video/mp4v-es'),
 	'm4v'      => array('video/mp4'),
 	'man'      => array('application/x-troff-man'),
+	'manifest' => array('text/cache-manifest'),
 	'mdb'      => array('application/x-msaccess'),
 	'midi'     => array('audio/midi'),
 	'mid'      => array('audio/midi'),
