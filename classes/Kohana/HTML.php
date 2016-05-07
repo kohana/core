@@ -280,6 +280,33 @@ class Kohana_HTML {
 
 		return '<img'.HTML::attributes($attributes).' />';
 	}
+	
+	/**
+	* Creates a svg link.
+	*
+	*     echo HTML::svg('media/img/logo.svg', array('class' => 'my-class'));
+	*
+	* @param   string  $file file name
+	* @param   array   $attributes default attributes
+	* @return  string
+	*/
+	public static function svg($file, array $attributes = NULL)
+	{
+		$ret = file_get_contents($file);
+		
+		if ( ! empty($attributes))
+		{
+		    $dom = new DOMDocument();
+		    $dom->loadXml($ret);
+		
+		    foreach($attributes as $key => $value)
+		        $dom->documentElement->setAttribute($key, $value);
+		
+		    $ret = $dom->saveHTML();
+		}
+		
+		return $ret;
+	}
 
 	/**
 	 * Compiles an array of HTML attributes into an attribute string.
