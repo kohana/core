@@ -17,6 +17,7 @@
 class Kohana_DateTest extends Unittest_TestCase
 {
 	protected $_original_timezone = NULL;
+	protected $default_locale;
 
 	/**
 	 * Ensures we have a consistant timezone for testing.
@@ -28,8 +29,10 @@ class Kohana_DateTest extends Unittest_TestCase
 		parent::setUp();
 
 		$this->_original_timezone = date_default_timezone_get();
+		$this->default_locale = setlocale(LC_ALL, 0);
 
 		date_default_timezone_set('America/Chicago');
+		setlocale(LC_ALL, 'en_US.utf8');
 	}
 
 	/**
@@ -40,6 +43,7 @@ class Kohana_DateTest extends Unittest_TestCase
 	// @codingStandardsIgnoreEnd
 	{
 		date_default_timezone_set($this->_original_timezone);
+		setlocale(LC_ALL, $this->default_locale);
 
 		parent::tearDown();
 	}
