@@ -195,7 +195,7 @@ class Kohana_URL {
 		}
 
 		// Note: http_build_query returns an empty string for a params array with only NULL values
-		$query = http_build_query($params, '', '&');
+		$query = http_build_query($params, '', '&amp;');
 
 		// Don't prepend '?' to an empty string
 		return ($query === '') ? '' : ('?'.$query);
