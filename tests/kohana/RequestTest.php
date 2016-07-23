@@ -620,7 +620,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 	{
 		return array(
 			array(
-				new Request('foo/bar'),
+				'foo/bar',
 				array(
 					'foo'   => 'bar',
 					'sna'   => 'fu'
@@ -631,7 +631,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 				),
 			),
 			array(
-				new Request('foo/bar?john=wayne&peggy=sue'),
+				'foo/bar?john=wayne&peggy=sue',
 				array(
 					'foo'   => 'bar',
 					'sna'   => 'fu'
@@ -644,7 +644,7 @@ class Kohana_RequestTest extends Unittest_TestCase
 				),
 			),
 			array(
-				new Request('http://host.tld/foo/bar?john=wayne&peggy=sue'),
+				'http://host.tld/foo/bar?john=wayne&peggy=sue',
 				array(
 					'foo'   => 'bar',
 					'sna'   => 'fu'
@@ -664,13 +664,41 @@ class Kohana_RequestTest extends Unittest_TestCase
 	 * 
 	 * @dataProvider provider_query_parameter_parsing
 	 *
-	 * @param   Request   request 
+	 * @param   string    url
 	 * @param   array     query 
 	 * @param   array    expected 
 	 * @return  void
 	 */
-	public function test_query_parameter_parsing(Request $request, $query, $expected)
+	public function test_query_parameter_parsing($url, $query, $expected)
 	{
+		Request::$initial = NULL;
+
+		$request = new Request($url);
+
+		foreach ($query as $key => $value)
+		{
+			$request->query($key, $value);
+		}
+
+		$this->assertSame($expected, $request->query());
+	}
+
+	/**
+	 * Tests that query parameters are parsed correctly
+	 *
+	 * @dataProvider provider_query_parameter_parsing
+	 *
+	 * @param   string    url
+	 * @param   array     query
+	 * @param   array    expected
+	 * @return  void
+	 */
+	public function test_query_parameter_parsing_in_subrequest($url, $query, $expected)
+	{
+		Request::$initial = new Request(TRUE);
+
+		$request = new Request($url);
+
 		foreach ($query as $key => $value)
 		{
 			$request->query($key, $value);
