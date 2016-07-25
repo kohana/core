@@ -667,13 +667,9 @@ class Kohana_Request implements HTTP_Request {
 		$split_uri = explode('?', $uri);
 		$uri = array_shift($split_uri);
 
-		// Initial request has global $_GET already applied
-		if (Request::$initial === NULL)
+		if ($split_uri)
 		{
-			if ($split_uri)
-			{
-				parse_str($split_uri[0], $this->_get);
-			}
+			parse_str($split_uri[0], $this->_get);
 		}
 
 		// Detect protocol (if present)
