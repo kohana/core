@@ -220,5 +220,24 @@ abstract class Kohana_HTTP {
 
 		return implode('&', $encoded);
 	}
+	
+	public static function current_protocol()
+	{
+		$protocol = Request::$initial;
+
+		if ($protocol instanceof Request)
+		{
+			if ($protocol->secure())
+				$protocol = 'https';
+			else
+				list($protocol) = explode('/', strtolower($protocol->protocol()));
+		}
+        	else
+        	{
+        		$protocol = 'http';
+        	}
+
+		return $protocol;
+	}
 
 }
