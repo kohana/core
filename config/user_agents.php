@@ -54,7 +54,7 @@ return array(
 
 	'browser' => array(
 		'Opera'             => 'Opera',
-		'Edge/12'           => 'Edge',
+		'Edge'              => 'Edge',
 		'MSIE'              => 'Internet Explorer',
 		'Internet Explorer' => 'Internet Explorer',
 		'Shiira'            => 'Shiira',
