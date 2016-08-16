@@ -106,23 +106,6 @@ class Kohana_Security {
 
 
 	/**
-	 * Deprecated for security reasons.
-	 * See https://github.com/kohana/kohana/issues/107
-	 *
-	 * Remove image tags from a string.
-	 *
-	 *     $str = Security::strip_image_tags($str);
-	 *
-	 * @deprecated since version 3.3.6
-	 * @param   string  $str    string to sanitize
-	 * @return  string
-	 */
-	public static function strip_image_tags($str)
-	{
-		return preg_replace('#<img\s.*?(?:src\s*=\s*["\']?([^"\'<>\s]*)["\']?[^>]*)?>#is', '$1', $str);
-	}
-
-	/**
 	 * Encodes PHP tags in a string.
 	 *
 	 *     $str = Security::encode_php_tags($str);
