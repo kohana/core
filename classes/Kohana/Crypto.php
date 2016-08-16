@@ -1,0 +1,31 @@
+/**
+ * A simple encryption interface used to abstract implementations
+ * of external libraries
+ */
+interface Kohana_Crypto {
+
+	/**
+	 * Constructor
+	 *
+	 * @param  array settings, should include encryption key(s)
+	 * @return Kohana_Crypto
+	 */
+	public function __construct(array $settings);
+
+	/**
+	 * Encrypts a plaintext string into hex-encoded cipher
+	 *
+	 * @param  string Text to encrypt
+	 * @return string Encrypted cipher text
+	 */
+	public function encrypt($plaintext);
+
+	/**
+	 * Decrypts a hex-encoded ciphertext string into a plaintext string
+	 *
+	 * @param  string Hex-encoded ciphertext
+	 * @return string Decrypted plaintext
+	 */
+	public function decrypt($ciphertext);
+
+}
