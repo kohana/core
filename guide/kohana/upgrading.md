@@ -151,3 +151,9 @@ In addition to a new API to specify the log writers default format:
 $writer->get_format();
 $writer->set_format('body in file:line');
 ~~~
+
+### Security::strip_image_tags
+
+This method (which was deprecated in 3.3) has been removed for [security reasons](https://github.com/kohana/kohana/issues/107)
+as it is not reliable to parse and sanitise HTML with regular expressions. You should either encode HTML tags entirely, eg
+with HTML::chars, or use a more robust HTML filtering solution such as [HTMLPurifier](http://htmlpurifier.org/).
