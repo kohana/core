@@ -29,9 +29,10 @@
 		"mikey179/vfsStream":  "^1.6"
 	},
 	"suggest": {
-		"ext-http":   "*",
-		"ext-curl":   "*",
-		"ext-mcrypt": "*"
+		"ext-http":                "*",
+		"ext-curl":                "*",
+		"ext-mcrypt":              "*",
+		"defuse/php-encryption":   "^2.0"
 	},
 	"extra": {
 		"installer-paths": {
