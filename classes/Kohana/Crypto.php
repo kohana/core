@@ -7,7 +7,7 @@ interface Kohana_Crypto {
 	/**
 	 * Constructor
 	 *
-	 * @param  array settings, should include encryption key(s)
+	 * @param  array $settings Should include encryption key(s)
 	 * @return Kohana_Crypto
 	 */
 	public function __construct(array $settings);
@@ -15,7 +15,7 @@ interface Kohana_Crypto {
 	/**
 	 * Encrypts a plaintext string into hex-encoded cipher
 	 *
-	 * @param  string Text to encrypt
+	 * @param  string $plaintext Text to encrypt
 	 * @return string Encrypted cipher text
 	 */
 	public function encrypt($plaintext);
@@ -23,7 +23,7 @@ interface Kohana_Crypto {
 	/**
 	 * Decrypts a hex-encoded ciphertext string into a plaintext string
 	 *
-	 * @param  string Hex-encoded ciphertext
+	 * @param  string $ciphertext Hex-encoded ciphertext
 	 * @return string Decrypted plaintext
 	 */
 	public function decrypt($ciphertext);
