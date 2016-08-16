@@ -862,7 +862,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 	/**
 	 * Sets and gets the action for the controller.
 	 *
-	 * @param   string   $action  Action to execute the controller from
+	 * @param   string   $action  Action to execute the controller of
 	 * @return  mixed
 	 */
 	public function action($action = NULL)
