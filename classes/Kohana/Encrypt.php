@@ -56,10 +56,14 @@ class Kohana_Encrypt {
 		// Load the configuration data
 		$config = Kohana::$config->load('encrypt')->$name;
 
+		// read `driver` and `settings` from config
+		$driver = $config['driver'];
+		$settings = $config['settings'];
+
 		// Add the "Encrypt" prefix
-		$class = 'Encrypt_'.$name;
+		$class = 'Encrypt_'.$driver;
 
 		// Create a new instance
-		return new $class($config);
+		return new $class($settings);
 	}
 }
