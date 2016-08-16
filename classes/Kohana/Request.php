@@ -667,13 +667,9 @@ class Kohana_Request implements Kohana_HTTP_Request {
 		$split_uri = explode('?', $uri);
 		$uri = array_shift($split_uri);
 
-		// Initial request has global $_GET already applied
-		if (Request::$initial === NULL)
+		if ($split_uri)
 		{
-			if ($split_uri)
-			{
-				parse_str($split_uri[0], $this->_get);
-			}
+			parse_str($split_uri[0], $this->_get);
 		}
 
 		// Detect protocol (if present)
@@ -681,7 +677,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 		// being able to proxy external pages.
 		if ( ! $allow_external OR strpos($uri, '://') === FALSE)
 		{
-			// Remove trailing slashes from the URI
+			// Remove leading and trailing slashes from the URI
 			$this->_uri = trim($uri, '/');
 
 			// Apply the client
@@ -732,7 +728,7 @@ class Kohana_Request implements Kohana_HTTP_Request {
 		if ($uri === NULL)
 		{
 			// Act as a getter
-			return empty($this->_uri) ? '/' : $this->_uri;
+			return ($this->_uri === '') ? '/' : $this->_uri;
 		}
 
 		// Act as a setter
@@ -1230,9 +1226,9 @@ class Kohana_Request implements Kohana_HTTP_Request {
 		}
 		else
 		{
-			$this->headers('content-type',
-				'application/x-www-form-urlencoded; charset='.Kohana::$charset);
 			$body = http_build_query($post, NULL, '&');
+			$this->body($body)
+				->headers('content-type', 'application/x-www-form-urlencoded; charset='.Kohana::$charset);
 		}
 
 		// Set the content length
