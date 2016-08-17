@@ -61,7 +61,6 @@ class Kohana_EncryptTest extends Unittest_TestCase
 
 	/**
 	 * Test to multiple calls to the instance() method returns same instance
-	 * also test if the instances are appropriately configured.
 	 *
 	 * @param string $instance_name instance name
 	 * @param array  $config_array  array of config variables missing from config
@@ -87,36 +86,10 @@ class Kohana_EncryptTest extends Unittest_TestCase
 		$e2 = Encrypt::instance($instance_name);
 
 		// assert instances
-		$this->assertInstanceOf('Encrypt', $e);
-		$this->assertInstanceOf('Encrypt', $e2);
+		$this->assertInstanceOf('Kohana_Crypto', $e);
+		$this->assertInstanceOf('Kohana_Crypto', $e2);
 		$this->assertSame($e, $e2);
 
-		// test if instances are well configured
-		// prepare expected variables
-		$expected_cipher = $config[$config_group]['cipher'];
-		$expected_mode = $config[$config_group]['mode'];
-		$expected_key_size = mcrypt_get_key_size($expected_cipher, $expected_mode);
-		$expected_key = substr($config[$config_group]['key'], 0, $expected_key_size);
-
-		// assert
-		$this->assertSameProtectedProperty($expected_key, $e, '_key');
-		$this->assertSameProtectedProperty($expected_cipher, $e, '_cipher');
-		$this->assertSameProtectedProperty($expected_mode, $e, '_mode');
-	}
-
-	/**
-	 * Helper method to test for private/protected properties
-	 *
-	 * @param mixed $expect Expected value
-	 * @param mixed $object object that holds the private/protected property
-	 * @param string $name the name of the private/protected property
-	 */
-	protected function assertSameProtectedProperty($expect, $object, $name)
-	{
-		$refl = new ReflectionClass($object);
-		$property = $refl->getProperty($name);
-		$property->setAccessible(TRUE);
-		$this->assertSame($expect, $property->getValue($object));
 	}
 
 }
