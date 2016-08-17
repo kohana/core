@@ -1,3 +1,4 @@
+<?php
 /**
  * A simple encryption interface used to abstract implementations
  * of external libraries
