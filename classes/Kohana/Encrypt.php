@@ -63,7 +63,13 @@ class Kohana_Encrypt {
 		// Add the "Encrypt" prefix
 		$class = 'Encrypt_'.ucfirst($driver);
 
+		// Create a new instance and make sure it's Kohana_Crypto
+		$encrypt = new $class($settings);
+		if ( ! $encrypt instanceof Kohana_Crypto )
+		{
+			 throw new Kohana_Exception('Encryption class should implement `Kohana_Crypto` interface');
+		}
 		// Create a new instance
-		return new $class($settings);
+		return $encrypt;
 	}
 }
