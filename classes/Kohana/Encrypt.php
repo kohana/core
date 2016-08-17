@@ -61,7 +61,7 @@ class Kohana_Encrypt {
 		$settings = $config['settings'];
 
 		// Add the "Encrypt" prefix
-		$class = 'Encrypt_'.$driver;
+		$class = 'Encrypt_'.ucfirst($driver);
 
 		// Create a new instance
 		return new $class($settings);
