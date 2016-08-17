@@ -26,7 +26,7 @@ class Kohana_EncryptTest extends Unittest_TestCase
 	{
 		return array(
 			array(
-				'default',
+				'legacy-default',
 				array(
 					'driver' => 'legacy',
 					'settings' => array(
@@ -35,7 +35,7 @@ class Kohana_EncryptTest extends Unittest_TestCase
 				)
 			),
 			array(
-				'blowfish',
+				'legacy-blowfish',
 				array(
 					'driver' => 'legacy',
 					'settings' => array(
@@ -46,7 +46,7 @@ class Kohana_EncryptTest extends Unittest_TestCase
 				)
 			),
 			array(
-				'tripledes',
+				'legacy-tripledes',
 				array(
 					'driver' => 'legacy',
 					'settings' => array(
