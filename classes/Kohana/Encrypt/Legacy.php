@@ -69,27 +69,16 @@ class Kohana_Encrypt_Legacy implements Kohana_Crypto {
 	public function __construct(array $settings)
 	{
 
-			if ( ! isset($settings['key']))
-			{
-				// No default encryption key is provided!
-				throw new Kohana_Exception('No encryption key is defined in the encryption configuration group: :group',
-					array(':group' => $name));
-			}
+		if ( ! isset($settings['key']))
+		{
+			// No default encryption key is provided!
+			throw new Kohana_Exception('No encryption key defined');
+		}
 
-			if ( ! isset($settings['mode']))
-			{
-				// Add the default mode
-				$settings['mode'] = MCRYPT_MODE_NOFB;
-			}
+		$key = $settings['key'];
+		$mode = isset($settings['mode']) ? $settings['mode'] : MCRYPT_MODE_NOFB;
+		$cipher = isset($settings['cipher']) ? $settings['cipher'] : MCRYPT_RIJNDAEL_128;
 
-			if ( ! isset($settings['cipher']))
-			{
-				// Add the default cipher
-				$settings['cipher'] = MCRYPT_RIJNDAEL_128;
-			}
-
-			// Create a new instance
-			Encrypt::$instances[$name] = new Encrypt($settings['key'], $settings['mode'], $settings['cipher']);
 		// Find the max length of the key, based on cipher and mode
 		$size = mcrypt_get_key_size($cipher, $mode);
 
@@ -113,42 +102,43 @@ class Kohana_Encrypt_Legacy implements Kohana_Crypto {
 	}
 
 	/**
-	 * Encrypts a string and returns an encrypted string that can be decoded.
+	 * Encrypts a plaintext and returns an encrypted ciphertext that can be
+	 * decrypted back.
 	 *
-	 *     $data = $encrypt->encode($data);
+	 *     $cyphertext = $crypto->encrypt($plaintext);
 	 *
-	 * The encrypted binary data is encoded using [base64](http://php.net/base64_encode)
+	 * The encrypted binary data is encrypted using [base64](http://php.net/base64_encode)
 	 * to convert it to a string. This string can be stored in a database,
 	 * displayed, and passed using most other means without corruption.
 	 *
-	 * @param   string  $data   data to be encrypted
-	 * @return  string
+	 * @param   string  $plaintext   Text to be encrypted
+	 * @return  string  Cyphertext
 	 */
-	public function encode($data)
+	public function encrypt($plaintext)
 	{
 		// Get an initialization vector
 		$iv = $this->_create_iv();
 
-		// Encrypt the data using the configured options and generated iv
-		$data = mcrypt_encrypt($this->_cipher, $this->_key, $data, $this->_mode, $iv);
+		// Encrypt the plaintext using the configured options and generated iv
+		$cipher = mcrypt_encrypt($this->_cipher, $this->_key, $plaintext, $this->_mode, $iv);
 
 		// Use base64 encoding to convert to a string
-		return base64_encode($iv.$data);
+		return base64_encode($iv.$cipher);
 	}
 
 	/**
-	 * Decrypts an encoded string back to its original value.
+	 * Decrypts an encrypted ciphertext back to its original plaintext value.
 	 *
-	 *     $data = $encrypt->decode($data);
+	 *     $plaintext = $crypto->decrypt($ciphertext);
 	 *
-	 * @param   string  $data   encoded string to be decrypted
+	 * @param   string  $ciphertext   encrypted string to be decrypted
 	 * @return  FALSE   if decryption fails
 	 * @return  string
 	 */
-	public function decode($data)
+	public function decrypt($ciphertext)
 	{
 		// Convert the data back to binary
-		$data = base64_decode($data, TRUE);
+		$data = base64_decode($ciphertext, TRUE);
 
 		if ( ! $data)
 		{
@@ -183,15 +173,15 @@ class Kohana_Encrypt_Legacy implements Kohana_Crypto {
 		 * Silently use MCRYPT_DEV_URANDOM when the chosen random number generator
 		 * is not one of those that are considered secure.
 		 *
-		 * Also sets Encrypt::$_rand to MCRYPT_DEV_URANDOM when it's not already set
+		 * Also sets static::$_rand to MCRYPT_DEV_URANDOM when it's not already set
 		 */
-		if ((Encrypt::$_rand !== MCRYPT_DEV_URANDOM) AND ( Encrypt::$_rand !== MCRYPT_DEV_RANDOM))
+		if ((static::$_rand !== MCRYPT_DEV_URANDOM) AND ( static::$_rand !== MCRYPT_DEV_RANDOM))
 		{
-			Encrypt::$_rand = MCRYPT_DEV_URANDOM;
+			static::$_rand = MCRYPT_DEV_URANDOM;
 		}
 
 		// Create a random initialization vector of the proper size for the current cipher
-		return mcrypt_create_iv($this->_iv_size, Encrypt::$_rand);
+		return mcrypt_create_iv($this->_iv_size, static::$_rand);
 	}
 
 	/**
