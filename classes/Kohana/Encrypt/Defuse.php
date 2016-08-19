@@ -19,12 +19,12 @@ class Kohana_Encrypt_Defuse implements Kohana_Crypto {
 		$this->key = Key::loadFromAsciiSafeString($settings['key']);
 	}
 
-	public function encrypt($plaintext)
+	public function encode($plaintext)
 	{
 		return Crypto::encrypt($plaintext, $this->key);
 	}
 
-	public function decrypt($cyphertext)
+	public function decode($cyphertext)
 	{
 		return Crypto::decrypt($cyphertext, $this->key);
 	}

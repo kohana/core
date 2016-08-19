@@ -209,7 +209,7 @@ class Kohana_EncryptLegacyTest extends Unittest_TestCase
 
 		// prepare data
 		$expected = base64_encode($iv . $txt_encoded);
-		$actual = $e->encrypt($txt_plain);
+		$actual = $e->encode($txt_plain);
 
 		// assert
 		$this->assertSame($expected, $actual);
@@ -392,7 +392,7 @@ class Kohana_EncryptLegacyTest extends Unittest_TestCase
 
 		// prepare data
 		$expected = $txt_plain;
-		$actual = $e->decrypt(base64_encode($iv . $txt_encoded));
+		$actual = $e->decode(base64_encode($iv . $txt_encoded));
 
 		// assert
 		$this->assertSame($expected, $actual);
@@ -448,11 +448,11 @@ class Kohana_EncryptLegacyTest extends Unittest_TestCase
 			'cipher' => $cipher
 		];
 		$e = new Encrypt_Legacy($settings);
-		$txt_encoded = $e->encrypt($txt_plain);
+		$txt_encoded = $e->encode($txt_plain);
 
 		// prepare data
 		$expected = $txt_plain;
-		$actual = $e->decrypt($txt_encoded);
+		$actual = $e->decode($txt_encoded);
 
 		// assert
 		$this->assertSame($expected, $actual);
@@ -511,7 +511,7 @@ class Kohana_EncryptLegacyTest extends Unittest_TestCase
 		$e = new Encrypt_Legacy($settings);
 
 		// assert
-		$this->AssertFalse($e->decrypt($txt_invalid_encoded));
+		$this->AssertFalse($e->decode($txt_invalid_encoded));
 	}
 
 	/**
@@ -532,8 +532,8 @@ class Kohana_EncryptLegacyTest extends Unittest_TestCase
 			'cipher' => $cipher
 		];
 		$e = new Encrypt_Legacy($settings);
-		$txt_encoded_first = $e->encrypt($txt_plain);
-		$txt_encoded_second = $e->encrypt($txt_plain);
+		$txt_encoded_first = $e->encode($txt_plain);
+		$txt_encoded_second = $e->encode($txt_plain);
 
 		// assert
 		$this->assertNotEquals($txt_encoded_first, $txt_encoded_second);
@@ -607,8 +607,8 @@ class Kohana_EncryptLegacyTest extends Unittest_TestCase
 		$e1 = new Kohana_EncryptTest_IvStubbed($settings);
 		$e2 = new Kohana_EncryptTest_KeyNormalized($settings);
 
-		$txt_encoded_1 = $e1->encrypt($txt_plain);
-		$txt_encoded_2 = $e2->encrypt($txt_plain);
+		$txt_encoded_1 = $e1->encode($txt_plain);
+		$txt_encoded_2 = $e2->encode($txt_plain);
 
 		// assert
 		$this->assertSame($txt_encoded_1, $txt_encoded_2);

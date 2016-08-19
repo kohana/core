@@ -19,7 +19,7 @@ interface Kohana_Crypto {
 	 * @param  string $plaintext Text to encrypt
 	 * @return string Encrypted cipher text
 	 */
-	public function encrypt($plaintext);
+	public function encode($plaintext);
 
 	/**
 	 * Decrypts a hex-encoded ciphertext string into a plaintext string
@@ -27,6 +27,6 @@ interface Kohana_Crypto {
 	 * @param  string $ciphertext Hex-encoded ciphertext
 	 * @return string Decrypted plaintext
 	 */
-	public function decrypt($ciphertext);
+	public function decode($ciphertext);
 
 }

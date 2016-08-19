@@ -105,7 +105,7 @@ class Kohana_Encrypt_Legacy implements Kohana_Crypto {
 	 * Encrypts a plaintext and returns an encrypted ciphertext that can be
 	 * decrypted back.
 	 *
-	 *     $cyphertext = $crypto->encrypt($plaintext);
+	 *     $cyphertext = $crypto->encode($plaintext);
 	 *
 	 * The encrypted binary data is encrypted using [base64](http://php.net/base64_encode)
 	 * to convert it to a string. This string can be stored in a database,
@@ -114,7 +114,7 @@ class Kohana_Encrypt_Legacy implements Kohana_Crypto {
 	 * @param   string  $plaintext   Text to be encrypted
 	 * @return  string  Cyphertext
 	 */
-	public function encrypt($plaintext)
+	public function encode($plaintext)
 	{
 		// Get an initialization vector
 		$iv = $this->_create_iv();
@@ -129,13 +129,13 @@ class Kohana_Encrypt_Legacy implements Kohana_Crypto {
 	/**
 	 * Decrypts an encrypted ciphertext back to its original plaintext value.
 	 *
-	 *     $plaintext = $crypto->decrypt($ciphertext);
+	 *     $plaintext = $crypto->decode($ciphertext);
 	 *
 	 * @param   string  $ciphertext   encrypted string to be decrypted
 	 * @return  FALSE   if decryption fails
 	 * @return  string
 	 */
-	public function decrypt($ciphertext)
+	public function decode($ciphertext)
 	{
 		// Convert the data back to binary
 		$data = base64_decode($ciphertext, TRUE);
