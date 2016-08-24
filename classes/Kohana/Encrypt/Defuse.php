@@ -16,6 +16,12 @@ class Kohana_Encrypt_Defuse implements Kohana_Crypto {
 
 	public function __construct(array $settings)
 	{
+		if ( ! isset($settings['key']))
+		{
+			// No encryption key is provided!
+			throw new Kohana_Exception('No encryption key defined');
+		}
+
 		$this->key = Key::loadFromAsciiSafeString($settings['key']);
 	}
 
