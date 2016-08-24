@@ -14,7 +14,7 @@
  * @copyright  (c) 2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_EncryptLegacyTest extends Unittest_TestCase
+class Kohana_Encrypt_LegacyTest extends Unittest_TestCase
 {
 
 	/**
