@@ -14,7 +14,7 @@
  * @copyright  (c) 2014 Kohana Team
  * @license    http://kohanaframework.org/license
  */
-class Kohana_EncryptTest extends Unittest_TestCase
+class Kohana_Encrypt_LegacyTest extends Unittest_TestCase
 {
 
 	/**
@@ -199,7 +199,13 @@ class Kohana_EncryptTest extends Unittest_TestCase
 	public function test_encode($mode, $cipher, $key, $iv, $txt_plain, $txt_encoded)
 	{
 		// initialize
-		$e = new Kohana_EncryptTest_IvStubbed($key, $iv, $mode, $cipher);
+		$settings = [
+			'key' => $key,
+			'iv' => $iv,
+			'mode' => $mode,
+			'cipher' => $cipher
+		];
+		$e = new Kohana_EncryptTest_IvStubbed($settings);
 
 		// prepare data
 		$expected = base64_encode($iv . $txt_encoded);
@@ -377,7 +383,12 @@ class Kohana_EncryptTest extends Unittest_TestCase
 	public function test_decode($mode, $cipher, $key, $iv, $txt_encoded, $txt_plain)
 	{
 		// initialize
-		$e = new Encrypt($key, $mode, $cipher);
+		$settings = [
+			'key' => $key,
+			'mode' => $mode,
+			'cipher' => $cipher
+		];
+		$e = new Encrypt_Legacy($settings);
 
 		// prepare data
 		$expected = $txt_plain;
@@ -425,13 +436,18 @@ class Kohana_EncryptTest extends Unittest_TestCase
 	 * @param type $txt_plain Plain text to encode and then decode back
 	 *
 	 * @dataProvider provider_encode_decode
-	 * @covers Encrypt::encode
-	 * @covers Encrypt::decode
+	 * @covers Encrypt_Legacy::encode
+	 * @covers Encrypt_Legacy::decode
 	 */
 	public function test_encode_decode($key, $mode, $cipher, $txt_plain)
 	{
 		// initialize, encode
-		$e = new Encrypt($key, $mode, $cipher);
+		$settings = [
+			'key' => $key,
+			'mode' => $mode,
+			'cipher' => $cipher
+		];
+		$e = new Encrypt_Legacy($settings);
 		$txt_encoded = $e->encode($txt_plain);
 
 		// prepare data
@@ -487,7 +503,12 @@ class Kohana_EncryptTest extends Unittest_TestCase
 	public function test_decode_invalid_data($key, $mode, $cipher, $txt_invalid_encoded)
 	{
 		// initialize
-		$e = new Encrypt($key, $mode, $cipher);
+		$settings = [
+			'key' => $key,
+			'mode' => $mode,
+			'cipher' => $cipher
+		];
+		$e = new Encrypt_Legacy($settings);
 
 		// assert
 		$this->AssertFalse($e->decode($txt_invalid_encoded));
@@ -505,7 +526,12 @@ class Kohana_EncryptTest extends Unittest_TestCase
 	public function test_consecutive_encode_produce_different_results($key, $mode, $cipher, $txt_plain)
 	{
 		// initialize, encode twice
-		$e = new Encrypt($key, $mode, $cipher);
+		$settings = [
+			'key' => $key,
+			'mode' => $mode,
+			'cipher' => $cipher
+		];
+		$e = new Encrypt_Legacy($settings);
 		$txt_encoded_first = $e->encode($txt_plain);
 		$txt_encoded_second = $e->encode($txt_plain);
 
@@ -572,8 +598,14 @@ class Kohana_EncryptTest extends Unittest_TestCase
 		}
 
 		// initialize, encode twice
-		$e1 = new Kohana_EncryptTest_IvStubbed($key, $iv, $mode, $cipher);
-		$e2 = new Kohana_EncryptTest_KeyNormalized($key, $iv, $mode, $cipher);
+		$settings = [
+			'key' => $key,
+			'iv' => $iv,
+			'mode' => $mode,
+			'cipher' => $cipher
+		];
+		$e1 = new Kohana_EncryptTest_IvStubbed($settings);
+		$e2 = new Kohana_EncryptTest_KeyNormalized($settings);
 
 		$txt_encoded_1 = $e1->encode($txt_plain);
 		$txt_encoded_2 = $e2->encode($txt_plain);
@@ -584,104 +616,11 @@ class Kohana_EncryptTest extends Unittest_TestCase
 
 	/**
 	 * @expectedException Kohana_Exception
-	 * @expectedExceptionMessage No encryption key is defined in the encryption configuration group
+	 * @expectedExceptionMessage No encryption key defined
 	 */
 	public function test_instance_throw_exception_when_no_key_provided()
 	{
-		Encrypt::instance();
-	}
-
-	/**
-	 * Provider for test_instance_returns_singleton
-	 *
-	 * @return array of $instance_name, $missing_config
-	 */
-	public function provider_instance_returns_singleton()
-	{
-		return array(
-			array(
-				'default',
-				array(
-					'key' => 'trwQwVXX96TIJoKxyBHB9AJkwAOHixuV1ENZmIWyanI0j1zNgSVvqywy044Agaj',
-				)
-			),
-			array(
-				'blowfish',
-				array(
-					'key' => '7bZJJkmNrelj5NaKoY6h6rMSRSmeUlJuTeOd5HHka5XknyMX4uGSfeVolTz4IYy',
-					'cipher' => MCRYPT_BLOWFISH,
-					'mode' => MCRYPT_MODE_ECB,
-				)
-			),
-			array(
-				'tripledes',
-				array(
-					'key' => 'a9hcSLRvA3LkFc7EJgxXIKQuz1ec91J7P6WNq1IaxMZp4CTj5m31gZLARLxI1jD',
-					'cipher' => MCRYPT_3DES,
-					'mode' => MCRYPT_MODE_CBC,
-				)
-			),
-		);
-	}
-
-	/**
-	 * Test to multiple calls to the instance() method returns same instance
-	 * also test if the instances are appropriately configured.
-	 *
-	 * @param string $instance_name instance name
-	 * @param array $config_array array of config variables missing from config
-	 *
-	 * @dataProvider provider_instance_returns_singleton
-	 */
-	public function test_instance_returns_singleton($instance_name, array $config_array)
-	{
-		// load config
-		$config = Kohana::$config->load('encrypt');
-		// if instance name is NULL the config group should be the default
-		$config_group = $instance_name ? : Encrypt::$default;
-		// if config group does not exists, create
-		if (!array_key_exists($config_group, $config))
-		{
-			$config[$config_group] = array();
-		}
-		// fill in the missing config variables
-		$config[$config_group] = $config[$config_group] + $config_array;
-
-		// call instance twice
-		$e = Encrypt::instance($instance_name);
-		$e2 = Encrypt::instance($instance_name);
-
-		// assert instances
-		$this->assertInstanceOf('Encrypt', $e);
-		$this->assertInstanceOf('Encrypt', $e2);
-		$this->assertSame($e, $e2);
-
-		// test if instances are well configured
-		// prepare expected variables
-		$expected_cipher = $config[$config_group]['cipher'];
-		$expected_mode = $config[$config_group]['mode'];
-		$expected_key_size = mcrypt_get_key_size($expected_cipher, $expected_mode);
-		$expected_key = substr($config[$config_group]['key'], 0, $expected_key_size);
-
-		// assert
-		$this->assertSameProtectedProperty($expected_key, $e, '_key');
-		$this->assertSameProtectedProperty($expected_cipher, $e, '_cipher');
-		$this->assertSameProtectedProperty($expected_mode, $e, '_mode');
-	}
-
-	/**
-	 * Helper method to test for private/protected properties
-	 *
-	 * @param mixed $expect Expected value
-	 * @param mixed $object object that holds the private/protected property
-	 * @param string $name the name of the private/protected property
-	 */
-	protected function assertSameProtectedProperty($expect, $object, $name)
-	{
-		$refl = new ReflectionClass($object);
-		$property = $refl->getProperty($name);
-		$property->setAccessible(TRUE);
-		$this->assertSame($expect, $property->getValue($object));
+		new Encrypt_Legacy([]);
 	}
 
 }
@@ -690,7 +629,7 @@ class Kohana_EncryptTest extends Unittest_TestCase
  * Class Kohana_EncryptTest_IvStubbed wraps the Encrypt class to mock out
  * the actual mcrypt_create_iv calls for unit testing.
  */
-class Kohana_EncryptTest_IvStubbed extends Encrypt
+class Kohana_EncryptTest_IvStubbed extends Encrypt_Legacy
 {
 
 	/**
@@ -701,11 +640,11 @@ class Kohana_EncryptTest_IvStubbed extends Encrypt
 	 * @param   string  $mode   mcrypt mode
 	 * @param   string  $cipher mcrypt cipher
 	 */
-	public function __construct($key, $iv, $mode, $cipher)
+	public function __construct(array $settings)
 	{
-		parent::__construct($key, $mode, $cipher);
+		parent::__construct($settings);
 
-		$this->_iv = $iv;
+		$this->_iv = $settings['iv'];
 	}
 
 	/**
@@ -731,13 +670,11 @@ class Kohana_EncryptTest_KeyNormalized extends Kohana_EncryptTest_IvStubbed
 	/**
 	 * override constructor to force key normalization
 	 *
-	 * @param   string  $key    encryption key
-	 * @param   string  $mode   mcrypt mode
-	 * @param   string  $cipher mcrypt cipher
+	 * @param   string  $settings    encryption settings
 	 */
-	public function __construct($key, $iv, $mode, $cipher)
+	public function __construct(array $settings)
 	{
-		parent::__construct($key, $iv, $mode, $cipher);
+		parent::__construct($settings);
 
 		$this->_key = $this->_normalize_key($this->_key, $this->_cipher, $this->_mode);
 	}

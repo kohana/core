@@ -26,12 +26,14 @@
 	"require-dev": {
 		"kohana/unittest":     "3.4.*@dev",
 		"kohana/koharness":    "*@dev",
-		"mikey179/vfsStream":  "^1.6"
+		"mikey179/vfsStream":  "^1.6",
+		"defuse/php-encryption": "^2.0"
 	},
 	"suggest": {
-		"ext-http":   "*",
-		"ext-curl":   "*",
-		"ext-mcrypt": "*"
+		"ext-http":                "*",
+		"ext-curl":                "*",
+		"ext-mcrypt":              "*",
+		"defuse/php-encryption":   "Used when encrypting session, install version ^2.0"
 	},
 	"extra": {
 		"installer-paths": {
