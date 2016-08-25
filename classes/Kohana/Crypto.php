@@ -2,6 +2,12 @@
 /**
  * A simple encryption interface used to abstract implementations
  * of external libraries
+ *
+ * @package    Kohana
+ * @category   Security
+ * @author     Kohana Team
+ * @copyright  (c) 2007-2016 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 interface Kohana_Crypto {
 

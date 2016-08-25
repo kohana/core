@@ -2,6 +2,12 @@
 /**
  * A wrapper class for the `defuse\php-encryption` package to be initialized
  * by the Encrypt factory class
+ *
+ * @package    Kohana
+ * @category   Security
+ * @author     Kohana Team
+ * @copyright  (c) 2007-2016 Kohana Team
+ * @license    http://kohanaframework.org/license
  */
 
 use \Defuse\Crypto\Crypto;
