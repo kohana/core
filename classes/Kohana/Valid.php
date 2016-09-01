@@ -231,7 +231,7 @@ class Kohana_Valid {
 
 		$is_valid_public_ip = (bool) filter_var($ip, FILTER_VALIDATE_IP, $flags);
 
-		if ( ! $allow_private)
+		if ($allow_private === FALSE)
 		{
 			return $is_valid_public_ip;
 		}
