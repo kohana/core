@@ -224,16 +224,27 @@ class Kohana_Valid {
 	 */
 	public static function ip($ip, $allow_private = TRUE)
 	{
-		// Do not allow reserved addresses
-		$flags = FILTER_FLAG_NO_RES_RANGE;
+
+		// In PHP v7.0.10+ AND v5.6.25+ FILTER_FLAG_NO_PRIV_RANGE ∈ FILTER_FLAG_NO_RES_RANGE
+		// However we have to combine both flags to support older versions
+		$flags = FILTER_FLAG_NO_RES_RANGE | FILTER_FLAG_NO_PRIV_RANGE;
+
+		$is_valid_public_ip = (bool) filter_var($ip, FILTER_VALIDATE_IP, $flags);
 
 		if ($allow_private === FALSE)
 		{
-			// Do not allow private or reserved addresses
-			$flags = $flags | FILTER_FLAG_NO_PRIV_RANGE;
+			return $is_valid_public_ip;
 		}
 
-		return (bool) filter_var($ip, FILTER_VALIDATE_IP, $flags);
+		// at this point we are allowing private IPs as well
+		return
+		(
+			$is_valid_public_ip OR
+			(
+				(bool) filter_var($ip, FILTER_VALIDATE_IP) AND
+				! (bool) filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE)
+			)
+		);
 	}
 
 	/**
