@@ -224,6 +224,15 @@ class Kohana_Valid {
 	 */
 	public static function ip($ip, $allow_private = TRUE)
 	{
+		$versions_to_skip = array('5.6.25', '5.6.26', '7.0.10', '7.0.11');
+		foreach ($versions_to_skip as $version)
+		{
+			if (version_compare(PHP_VERSION, $version, '=='))
+			{
+				throw new Kohana_Exception("Valid::ip not compatible with PHP $version");
+			}
+		}
+
 		// Do not allow reserved addresses
 		$flags = FILTER_FLAG_NO_RES_RANGE;
 
