@@ -593,6 +593,15 @@ class Kohana_ValidTest extends Unittest_TestCase
 	 */
 	public function test_ip($input_ip, $allow_private, $expected_result)
 	{
+		$versions_to_skip = array('5.6.25', '5.6.26', '7.0.10', '7.0.11');
+		foreach ($versions_to_skip as $version)
+		{
+			if (version_compare(PHP_VERSION, $version, '=='))
+			{
+				$this->setExpectedException('Kohana_Exception');
+			}
+		}
+
 		$this->assertEquals(
 			$expected_result,
 			Valid::ip($input_ip, $allow_private)
