@@ -73,13 +73,15 @@ abstract class Kohana_Log_Writer {
 	 * @param   string  $format
 	 * @return  string
 	 */
-	public function format_message(array $message, $format = "time --- level: body in file:line")
+	public function format_message(array $message, $format = "time --- level: body ~ file [ line ]")
 	{
 		$message['time'] = Date::formatted_time('@'.$message['time'], Log_Writer::$timestamp, Log_Writer::$timezone, TRUE);
 		$message['level'] = $this->_log_levels[$message['level']];
 
 		$string = strtr($format, array_filter($message, 'is_scalar'));
 
+		if (substr($string,-16)===' ~ file [ line ]')
+			$string=substr($string,0,-16);
 		if (isset($message['additional']['exception']))
 		{
 			// Re-use as much as possible, just resetting the body to the trace

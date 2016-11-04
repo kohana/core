@@ -161,7 +161,7 @@ class Kohana_Log {
 			'level'      => $level,
 			'body'       => $message,
 			'trace'      => $trace,
-			'file'       => isset($trace[0]['file']) ? $trace[0]['file'] : NULL,
+			'file'       => isset($trace[0]['file']) ? Debug::path($trace[0]['file']) : NULL,
 			'line'       => isset($trace[0]['line']) ? $trace[0]['line'] : NULL,
 			'class'      => isset($trace[0]['class']) ? $trace[0]['class'] : NULL,
 			'function'   => isset($trace[0]['function']) ? $trace[0]['function'] : NULL,
