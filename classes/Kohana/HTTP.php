@@ -30,6 +30,9 @@ abstract class Kohana_HTTP {
 	 */
 	public static function redirect($uri = '', $code = 302)
 	{
+		if ( ! $uri)
+			return;
+
 		$e = HTTP_Exception::factory($code);
 
 		if ( ! $e instanceof HTTP_Exception_Redirect)
