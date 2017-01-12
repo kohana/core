@@ -705,7 +705,17 @@ class Kohana_Request implements HTTP_Request {
 		}
 	}
 
-	/**
+    /**
+     * Sets some parameters of cloning object
+     */
+    public function __clone()
+    {
+        $this->_route  = isset($this->_route) ? clone $this->_route : null;
+        $this->_header = isset($this->_header) ? clone $this->_header : null;
+        $this->_client = isset($this->_client) ? clone $this->_client : null;
+    }
+
+    /**
 	 * Returns the response as the string representation of a request.
 	 *
 	 *     echo $request;
@@ -1220,43 +1230,45 @@ class Kohana_Request implements HTTP_Request {
 	 */
 	public function render()
 	{
-		if ( ! $post = $this->post())
+        $req = clone $this;
+
+		if ( ! $post = $req->post())
 		{
-			$body = $this->body();
+			$body = $req->body();
 		}
 		else
 		{
 			$body = http_build_query($post, NULL, '&');
-			$this->body($body)
-				->headers('content-type', 'application/x-www-form-urlencoded; charset='.Kohana::$charset);
+			$req->headers('content-type', 'application/x-www-form-urlencoded; charset='.Kohana::$charset);
 		}
+        $req->body($body);
 
 		// Set the content length
-		$this->headers('content-length', (string) $this->content_length());
+		$req->headers('content-length', (string) $req->content_length());
 
 		// If Kohana expose, set the user-agent
 		if (Kohana::$expose)
 		{
-			$this->headers('user-agent', Kohana::version());
+			$req->headers('user-agent', Kohana::version());
 		}
 
 		// Prepare cookies
-		if ($this->_cookies)
+		if ($req->_cookies)
 		{
 			$cookie_string = array();
 
 			// Parse each
-			foreach ($this->_cookies as $key => $value)
+			foreach ($req->_cookies as $key => $value)
 			{
 				$cookie_string[] = $key.'='.$value;
 			}
 
 			// Create the cookie string
-			$this->_header['cookie'] = implode('; ', $cookie_string);
+			$req->_header['cookie'] = implode('; ', $cookie_string);
 		}
 
-		$output = $this->method().' '.$this->uri().' '.$this->protocol()."\r\n";
-		$output .= (string) $this->_header;
+		$output = $req->method().' '.$req->uri().' '.$req->protocol()."\r\n";
+		$output .= (string) $req->_header;
 		$output .= $body;
 
 		return $output;
