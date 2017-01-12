@@ -72,7 +72,11 @@ class Kohana_Request implements HTTP_Request {
 				$method = HTTP_Request::GET;
 			}
 
-			if (( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
+			if (
+				( ! empty($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN)
+			)
+			   OR ( ! empty($_SERVER['HTTP_HTTPS']) AND filter_var($_SERVER['HTTP_HTTPS'], FILTER_VALIDATE_BOOLEAN)
+			)
 			   OR (isset($_SERVER['HTTP_X_FORWARDED_PROTO'])
 			   	   AND $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
 			       AND in_array($_SERVER['REMOTE_ADDR'], Request::$trusted_proxies))
