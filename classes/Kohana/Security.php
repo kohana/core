@@ -10,6 +10,9 @@
  */
 class Kohana_Security {
 
+	// The length of the random string
+	const RANDOM_LENGTH = 16;
+
 	/**
 	 * @var  string  key name used for token storage
 	 */
@@ -18,6 +21,8 @@ class Kohana_Security {
 	/**
 	 * Generate and store a unique token which can be used to help prevent
 	 * [CSRF](http://wikipedia.org/wiki/Cross_Site_Request_Forgery) attacks.
+	 *
+	 * See [RFC 3548](http://tools.ietf.org/html/rfc3548) for the definition of URL-safe base64.
 	 *
 	 *     $token = Security::token();
 	 *
@@ -33,12 +38,15 @@ class Kohana_Security {
 	 *     ));
 	 *
 	 * This provides a basic, but effective, method of preventing CSRF attacks.
+	 * If $n is not specified, Secure::RANDOM_LENGTH is assumed. It may be larger in future.
 	 *
-	 * @param   boolean $new    force a new token to be generated?
-	 * @return  string
+	 * @param   boolean $new     force a new token to be generated?
+	 * @param   integer $n       specifies the length of the random string
+	 * @param   bool    $padding
+	 * @return  string  The result may contain A-Z, a-z, 0-9, "-" and "_". "=" is also used if $padding is true.
 	 * @uses    Session::instance
 	 */
-	public static function token($new = FALSE)
+	public static function token($new = FALSE, $n = NULL, $padding = FALSE)
 	{
 		$session = Session::instance();
 
@@ -52,13 +60,16 @@ class Kohana_Security {
 			{
 				// Generate a random pseudo bytes token if openssl_random_pseudo_bytes is available
 				// This is more secure than uniqid, because uniqid relies on microtime, which is predictable
-				$token = base64_encode(openssl_random_pseudo_bytes(32));
+				$token = pack('a*', openssl_random_pseudo_bytes($n ?: Security::RANDOM_LENGTH));
+				$token = str_replace(array("\n", "\r", "\n\r"), '', $token);
 			}
 			else
 			{
 				// Otherwise, fall back to a hashed uniqid
-				$token = sha1(uniqid(NULL, TRUE));
+				$token = substr(hash('sha256', uniqid(null, true)), 0, $n ?: Security::RANDOM_LENGTH);
 			}
+
+			$token = $padding ? strtr(base64_encode($token), '+/', '-_') : rtrim(strtr(base64_encode($token), '+/', '-_'), '=');
 
 			// Store the new token
 			$session->set(Security::$token_name, $token);
@@ -83,25 +94,25 @@ class Kohana_Security {
 	{
 		return Security::slow_equals(Security::token(), $token);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Compare two hashes in a time-invariant manner.
 	 * Prevents cryptographic side-channel attacks (timing attacks, specifically)
-	 * 
+	 *
 	 * @param string $a cryptographic hash
 	 * @param string $b cryptographic hash
 	 * @return boolean
 	 */
-	public static function slow_equals($a, $b) 
+	public static function slow_equals($a, $b)
 	{
 		$diff = strlen($a) ^ strlen($b);
 		for($i = 0; $i < strlen($a) AND $i < strlen($b); $i++)
 		{
 			$diff |= ord($a[$i]) ^ ord($b[$i]);
 		}
-		return $diff === 0; 
+		return $diff === 0;
 	}
 
 
