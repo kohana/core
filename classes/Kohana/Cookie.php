@@ -74,6 +74,7 @@ class Kohana_Cookie {
 			if (Security::slow_equals(Cookie::salt($key, $value), $hash))
 			{
 				// Cookie signature is valid
+				$value = str_replace('\\', '', $value); //deleting slashes (json, etc)
 				return $value;
 			}
 
@@ -117,7 +118,7 @@ class Kohana_Cookie {
 		}
 
 		// Add the salt to the cookie value
-		$value = Cookie::salt($name, $value).'~'.$value;
+		$value = Cookie::salt($name, addslashes($value)).'~'.$value; //add slashes(json support, etc)
 
 		return static::_setcookie($name, $value, $lifetime, Cookie::$path, Cookie::$domain, Cookie::$secure, Cookie::$httponly);
 	}
