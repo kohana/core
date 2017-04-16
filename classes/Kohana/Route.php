@@ -405,9 +405,8 @@ class Kohana_Route {
 	}
 
 	/**
-	 * Tests if the route matches a given Request. A successful match will return
-	 * all of the routed parameters as an array. A failed match will return
-	 * boolean FALSE.
+	 * Tests if the route matches a given [Request]. A successful match will return
+	 * all of the routed parameters as an array, a failed match will return FALSE.
 	 *
 	 *     // Params: controller = users, action = edit, id = 10
 	 *     $params = $route->matches(Request::factory('users/edit/10'));
@@ -419,34 +418,29 @@ class Kohana_Route {
 	 *         // Parse the parameters
 	 *     }
 	 *
-	 * @param   Request $request  Request object to match
-	 * @return  array             on success
-	 * @return  FALSE             on failure
+	 * @param   Request  $request  Request object to match
+	 * @return  mixed
 	 */
 	public function matches(Request $request)
 	{
 		// Get the URI from the Request
 		$uri = trim($request->uri(), '/');
 
-		if ( ! preg_match($this->_route_regex, $uri, $matches))
+		if ( ! preg_match($this->_route_regex, $uri, $params))
 			return FALSE;
 
-		$params = array();
-		foreach ($matches as $key => $value)
+		foreach ($params as $key => $value)
 		{
+			// Delete all unnamed keys
 			if (is_int($key))
 			{
-				// Skip all unnamed keys
-				continue;
+				unset($params[$key]);
 			}
-
-			// Set the value for all matched keys
-			$params[$key] = $value;
 		}
 
 		foreach ($this->_defaults as $key => $value)
 		{
-			if ( ! isset($params[$key]) OR $params[$key] === '')
+			if ( ! isset($params[$key]) OR empty($params[$key]))
 			{
 				// Set default values for any key that was not matched
 				$params[$key] = $value;
@@ -455,14 +449,27 @@ class Kohana_Route {
 
 		if ( ! empty($params['controller']))
 		{
-			// PSR-0: Replace underscores with spaces, run ucwords, then replace underscore
-			$params['controller'] = str_replace(' ', '_', ucwords(str_replace('_', ' ', $params['controller'])));
+			if (strpos($params['controller'], '_') !== FALSE)
+			{
+				// PSR-0: Replace underscores with spaces, run ucwords, then replace underscore
+				$params['controller'] = str_replace(' ', '_', ucwords(str_replace('_', ' ', $params['controller'])));
+			}
+			else
+			{
+				$params['controller'] = ucfirst($params['controller']);
+			}
 		}
 
 		if ( ! empty($params['directory']))
 		{
-			// PSR-0: Replace underscores with spaces, run ucwords, then replace underscore
-			$params['directory'] = str_replace(' ', '_', ucwords(str_replace('_', ' ', $params['directory'])));
+			$params['directory'] = ucwords(str_replace(array('\\', '/'), ' ', $params['directory']));
+			$params['directory'] = str_replace(' ', DIRECTORY_SEPARATOR, $params['directory']);
+
+			if (strpos($params['directory'], '_') !== false)
+			{
+				// PSR-0: Replace underscores with spaces, run ucwords, then replace underscore
+				$params['directory'] = str_replace(' ', '_', ucwords(str_replace('_', ' ', $params['directory'])));
+			}
 		}
 
 		if ($this->_filters)
@@ -481,10 +488,12 @@ class Kohana_Route {
 				{
 					// Filter has modified the parameters
 					$params = $return;
+					// @todo if $return != $params, then uppercase values (directory, controller)
 				}
 			}
 		}
 
+		// @todo throw exception then some params not exists (controller, action)
 		return $params;
 	}
 
