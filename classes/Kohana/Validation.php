@@ -48,7 +48,7 @@ class Kohana_Validation implements ArrayAccess {
 	 */
 	public function __construct(array $array)
 	{
-		$this->_data = $array;
+		 $this->_data = Arr::get_paths($array);
 	}
 
 	/**
