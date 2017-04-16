@@ -230,5 +230,29 @@ class Kohana_Num {
 
 		return $bytes;
 	}
+	
+	/**
+	 * Get the length of a number like strlen does for a string.
+	 *
+	 *     echo Num::length(10);     // 2
+	 *     echo Num::length(50000);  // 5
+	 *
+	 * @param   integer  $number  the number
+	 * @return  integer
+	 */
+	public static function length($number)
+	{
+		if ( ! is_numeric($number))
+			return 0;
+
+		$length = 0;
+
+		if ($number == 0)
+			$length = 1;
+		else
+			$length = (int) log10($number) + 1;
+
+		return $length;
+	}
 
 }
