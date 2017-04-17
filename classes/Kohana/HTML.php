@@ -118,7 +118,7 @@ class Kohana_HTML {
 		}
 		else
 		{
-			if (strpos($uri, '://') !== FALSE)
+			if (strpos($uri, '://') !== FALSE OR strncmp($uri, '//', 2) == 0)
 			{
 				if (HTML::$windowed_urls === TRUE AND empty($attributes['target']))
 				{
@@ -206,7 +206,7 @@ class Kohana_HTML {
 	 */
 	public static function style($file, array $attributes = NULL, $protocol = NULL, $index = FALSE)
 	{
-		if (strpos($file, '://') === FALSE AND strpos($file, '//') !== 0)
+		if (strpos($file, '://') === FALSE AND strncmp($file, '//', 2))
 		{
 			// Add the base URL
 			$file = URL::site($file, $protocol, $index);
@@ -239,7 +239,7 @@ class Kohana_HTML {
 	 */
 	public static function script($file, array $attributes = NULL, $protocol = NULL, $index = FALSE)
 	{
-		if (strpos($file, '://') === FALSE AND strpos($file, '//') !== 0)
+		if (strpos($file, '://') === FALSE AND strncmp($file, '//', 2))
 		{
 			// Add the base URL
 			$file = URL::site($file, $protocol, $index);
@@ -269,7 +269,7 @@ class Kohana_HTML {
 	 */
 	public static function image($file, array $attributes = NULL, $protocol = NULL, $index = FALSE)
 	{
-		if (strpos($file, '://') === FALSE)
+		if (strpos($file, '://') === FALSE AND strncmp($file, '//', 2) AND strncasecmp($file, 'data:', 5))
 		{
 			// Add the base URL
 			$file = URL::site($file, $protocol, $index);
