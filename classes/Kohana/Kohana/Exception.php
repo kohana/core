@@ -81,7 +81,7 @@ class Kohana_Kohana_Exception extends Exception {
 	 * @param   Exception  $e
 	 * @return  void
 	 */
-	public static function handler(Exception $e)
+	public static function handler($e)
 	{
 		$response = Kohana_Exception::_handler($e);
 
@@ -99,7 +99,7 @@ class Kohana_Kohana_Exception extends Exception {
 	 * @param   Exception  $e
 	 * @return  Response
 	 */
-	public static function _handler(Exception $e)
+	public static function _handler($e)
 	{
 		try
 		{
@@ -137,7 +137,7 @@ class Kohana_Kohana_Exception extends Exception {
 	 * @param   int        $level
 	 * @return  void
 	 */
-	public static function log(Exception $e, $level = Log::EMERGENCY)
+	public static function log($e, $level = Log::EMERGENCY)
 	{
 		if (is_object(Kohana::$log))
 		{
@@ -160,8 +160,11 @@ class Kohana_Kohana_Exception extends Exception {
 	 * @param   Exception  $e
 	 * @return  string
 	 */
-	public static function text(Exception $e)
+	public static function text($e)
 	{
+        if ( ! $e instanceof Exception AND ! $e instanceof Throwable )
+            throw InvalidArgumentException;
+
 		return sprintf('%s [ %s ]: %s ~ %s [ %d ]',
 			get_class($e), $e->getCode(), strip_tags($e->getMessage()), Debug::path($e->getFile()), $e->getLine());
 	}
@@ -173,8 +176,11 @@ class Kohana_Kohana_Exception extends Exception {
 	 * @param   Exception  $e
 	 * @return  Response
 	 */
-	public static function response(Exception $e)
+	public static function response($e)
 	{
+        if ( ! $e instanceof Exception AND ! $e instanceof Throwable )
+            throw InvalidArgumentException;
+
 		try
 		{
 			// Get the exception information
