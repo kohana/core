@@ -47,7 +47,7 @@ return array(
 
 	'mastercard' => array(
 		'length' => '16',
-		'prefix' => '5[1-5]',
+		'prefix' => '5[1-5]|2[2-7]',
 		'luhn'   => TRUE,
 	),
 
